@@ -9,9 +9,12 @@ Die HTML-Werkzeuge laufen per Doppelklick im Browser — ohne Installation, ohne
 
 ## In 30 Sekunden starten
 
-1. **Werkzeug aussuchen** — die Übersicht
-   [START-HIER.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/START-HIER.html)
-   hat für jedes Werkzeug einen Knopf.
+Direkt im Browser, ohne Download: **<https://mitchel85.github.io/EAM-Toolfamilie/>** — dort hat
+jedes Werkzeug einen Knopf.
+
+1. **Werkzeug aussuchen** — auf der Übersichtsseite hat jedes Werkzeug einen Knopf.
+   Alternativ als Datei:
+   [START-HIER.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/START-HIER.html).
 2. **Datei herunterladen** — Klick auf den Namen, der Download startet sofort. Kein Konto.
 3. **Doppelklick.** Die Datei öffnet sich im Browser; die eigene `.qea` oder die MDG-XML
    hineinziehen.
