@@ -39,7 +39,7 @@ Dieses Paket macht dein Open WebUI-Modell für QEA-Analysen **zielgenau** — st
 ```bash
 # Auf dem Open WebUI Server:
 cd /pfad/zu/open-webui/data/tools/
-wget https://raw.githubusercontent.com/Mitchel85/EAM-AI-QEA-Analyzer/main/eam_qea_tool.py
+wget https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam_qea_analyzer_openwebui.py
 ```
 
 **Ohne Internet:** Die Datei `eam_qea_tool.py` vom GitHub-Release herunterladen und per USB/Netzlaufwerk in das Tools-Verzeichnis kopieren.

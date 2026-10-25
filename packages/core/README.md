@@ -224,7 +224,7 @@ stdout, Exit 0 nur bei null Fehlern. Details, Optionen, Findings-Format und
 DOCX-Grenzen: **`BUILD.md`**.
 
 ```bash
-./eam-ai build --mdg technologie.xml --text architektur.pdf --out modell.qea
+eam-ai build --mdg technologie.xml --text architektur.pdf --out modell.qea
 ```
 
 Ohne PATH-Eintrag: `python3 -m eam_ai build ...`. `--dry-run` prüft den ganzen
@@ -240,13 +240,13 @@ aufgelöst — erfundene Namen werden abgelehnt.
 
 ```bash
 # 1. Vorschau: nichts wird geschrieben
-./eam-ai korrigiere --qea modell.qea --anweisung 'Benenne "Lagedienst" in "Lagedienst Bw" um.'
+eam-ai korrigiere --qea modell.qea --anweisung 'Benenne "Lagedienst" in "Lagedienst Bw" um.'
 
 # 2. Anwenden in eine neue Datei (Original bleibt unberührt)
-./eam-ai korrigiere --qea modell.qea --anweisung '…' --out neu.qea --apply
+eam-ai korrigiere --qea modell.qea --anweisung '…' --out neu.qea --apply
 
 # Löschen nur mit ausdrücklicher Bestätigung
-./eam-ai korrigiere --qea modell.qea --anweisung 'Lösche das Element "Alt".' --out neu.qea --apply --ja
+eam-ai korrigiere --qea modell.qea --anweisung 'Lösche das Element "Alt".' --out neu.qea --apply --ja
 ```
 
 - `--anweisung` oder `--anweisung-datei` (UTF-8) liefert den Text; mehrere
@@ -287,21 +287,31 @@ Layout, keine Attribute/Operationen.
 Voraussetzung: Python 3.11 oder neuer, kein Docker, keine Fremdpakete. Der Kern
 nutzt nur die Standardbibliothek (inklusive `sqlite3`).
 
+Im Quell-Repo (dort liegen `tools/` und `scripts/`):
+
 ```bash
-python3 tools/build_bundle.py --out dist/offline
-tar xzf dist/offline/eam-ai-2.1.0-offline.tar.gz -C /tmp
-cd /tmp/eam-ai-2.1.0-offline
+python3 packages/core/tools/build_bundle.py --out dist/offline
+tar xzf dist/offline/eam-ai-2.4.0-offline.tar.gz -C /tmp
+cd /tmp/eam-ai-2.4.0-offline
 ./install.sh
-./eam-ai.sh --version
+eam-ai --version
 ./run-example.sh
+```
+
+Im Release-ZIP ist der Kern bereits installierbar; dort genügt:
+
+```bash
+unzip eam-ai-suite-python-3.0.3.zip
+pip install ./eam-ai-suite-python
+eam-ai --version
 ```
 
 Das Bundle enthält das Wheel, Installations- und Startskripte für Linux und
 Windows, ein lauffähiges Beispiel, den Quellstand, `BUILD-INFO.json` mit
 `build_id` und `SHA256SUMS.txt`. Ein zweiter Build ist byte-identisch, auch aus
 dem mitgelieferten Quellstand. Details: `PACKAGING.md`. Die Definition of Done
-prüft `python3 tools/verify_bundle.py <archiv>` (frisches venv, Version,
-Beispiel, Wiederholung).
+prüft `python3 packages/core/tools/verify_bundle.py <archiv>` (frisches venv,
+Version, Beispiel, Wiederholung).
 
 ## Weboberfläche und Container
 

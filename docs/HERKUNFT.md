@@ -12,11 +12,11 @@ Stand 24.10.2026. Jede HTML-Datei wird aus ihrem eigenen Altstand gebaut.
 
 ## Bereinigung für die Veröffentlichung
 
-Ein interner Teams-Link war im Editor-Quellstand und im MASC-Fixture enthalten.
-Der Editor lädt MASC nur noch aus der Datei neben der HTML; im Fixture wurde der
-Link durch eine gleich lange Platzhalter-URL ersetzt. Die SQLite-Struktur und
-der Modellumfang bleiben unverändert. MASC ist als Beispieldatei bewusst
-enthalten.
+Die früheren Alt-Repos sind archiviert und privat. Interne Verweise wurden aus
+dem Editor-Quellstand und dem MASC-Fixture entfernt. Der Editor lädt MASC nur
+noch aus der Datei neben der HTML; im Fixture wurde der Verweis durch eine
+gleich lange Platzhalter-URL ersetzt. Die SQLite-Struktur und der Modellumfang
+bleiben unverändert. MASC ist als Beispieldatei bewusst enthalten.
 
 ## Gebaute Hashes
 

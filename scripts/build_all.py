@@ -66,6 +66,18 @@ def main() -> int:
         for name in (manifest["output"], manifest["aspx"]):
             shutil.copyfile(ROOT / "apps" / app / "dist" / name, dist / "html" / name)
 
+    # Der MDG-Parser ist ein eigenstaendiges Werkzeug mit eigenem Build-Skript.
+    # Er muss in denselben Auslieferungsordner, sonst findet verify_graph.py
+    # die in dist/SHA256SUMS erwartete Datei nicht.
+    run(sys.executable, "apps/mdg-web/build.py")
+    mdg_manifest = json.loads(
+        (ROOT / "apps" / "mdg-web" / "app.json").read_text(encoding="utf-8")
+    )
+    shutil.copyfile(
+        ROOT / "apps" / "mdg-web" / "dist" / mdg_manifest["output"],
+        dist / "html" / mdg_manifest["output"],
+    )
+
     sys.path.insert(0, str(CORE))
     import build_backend  # noqa: E402
 
@@ -78,7 +90,7 @@ def main() -> int:
         sums.append(f"{sha256(path)}  {path.relative_to(dist)}\n")
     (dist / "SHA256SUMS").write_text("".join(sums), encoding="utf-8")
     print(f"fertig: {dist}")
-    print(f"  HTML:  {len(APPS)} eigenständige Werkzeuge")
+    print(f"  HTML:  {len(APPS) + 1} eigenständige Werkzeuge")
     print(f"  Wheel: {wheel}")
     print(f"  Dateien: {len(sums)}")
     return 0

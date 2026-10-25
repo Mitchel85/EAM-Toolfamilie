@@ -14,15 +14,20 @@ ENV PYTHONUNBUFFERED=1 \
 WORKDIR /app
 
 COPY packages/core/*.py /app/
+# CLI-Einstieg auch im Container als `eam-ai` verfuegbar machen.
+COPY packages/core/eam-ai /usr/local/bin/eam-ai
 # Der einzige MDG-Leser liegt neben dem Kern in packages/rules; im Image
 # liegen beide flach in /app, weil der Kern flache Modulnamen importiert.
 COPY packages/rules/mdg_parser.py /app/
 COPY packages/rules/documents.py packages/rules/documents_format.py /app/
 COPY packages/core/rules.schema.json /app/
 COPY packages/core/README.md packages/core/CHANGELOG.md packages/core/PACKAGING.md /app/
+COPY LICENSE NOTICE.md /app/
 COPY packages/core/examples/offline /app/examples/offline
 
-RUN useradd --system --uid 10001 --create-home --shell /usr/sbin/nologin eamai \
+RUN chmod 0755 /usr/local/bin/eam-ai \
+    && rm -f /app/conftest.py \
+    && useradd --system --uid 10001 --create-home --shell /usr/sbin/nologin eamai \
     && chown -R eamai:eamai /app
 USER eamai:eamai
 

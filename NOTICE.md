@@ -12,8 +12,9 @@ Schnittstellen und Dateiformaten.
 | Datei | Zweck | Lizenz |
 |---|---|---|
 | `vendor/sql-wasm.js`, `vendor/sql-wasm.wasm` | Modelldateien im Browser lesen | siehe `vendor/LICENSE-sql.js` |
-| `vendor/pdf.min.js`, `vendor/pdf.worker.min.js` | PDF-Vorschau und Textextraktion | Apache-2.0 (Mozilla Foundation) |
+| `vendor/pdf.min.js`, `vendor/pdf.worker.min.js` | PDF-Vorschau und Textextraktion | Apache-2.0 (Mozilla Foundation); Volltext in `vendor/LICENSE-pdfjs.txt` |
 | `vendor/jszip.min.js` | ZIP-Erzeugung im Browser | MIT oder GPLv3 (Stuart Knightley; MIT gewählt) |
+| `apps/mcp/eam_qea_tool.py` | QEA-Analyse/Open-WebUI-Anbindung, abgeleitet von `schmitze87/AAroN` | Apache-2.0; Volltext in `apps/mcp/LICENSE-AAroN.txt` |
 
 ## Wissensbasis
 

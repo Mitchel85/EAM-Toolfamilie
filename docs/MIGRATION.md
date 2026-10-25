@@ -41,7 +41,7 @@ Ihre READMEs verweisen auf dieses Repository. Gelöscht wurde nichts.
   (Upload, fünf Ansichten, sechs Exporte) und wird unverändert ausgeliefert.
   Der Altparser bleibt Prüfmaßstab unter `tools/referenz_parser/`.
 - **Auslieferung:** `eam-html.service` dient direkt `apps/html-suite/dist`;
-  Container `eam-ai-web` läuft mit `ghcr.io/mitchel85/eam-toolfamilie:v3.0.2`.
+  Container `eam-ai-web` läuft mit `ghcr.io/mitchel85/eam-toolfamilie:v3.0.3`.
 - **Rollback:** der Vorgänger steht gestoppt als `eam-ai-web-rollback-3.0.0`
   bereit; Zurücknehmen in einem Schritt:
   `docker rm -f eam-ai-web && docker rename eam-ai-web-rollback-3.0.0 eam-ai-web && docker start eam-ai-web`

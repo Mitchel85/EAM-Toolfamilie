@@ -11,8 +11,8 @@
     {
       "name": "NAFv4-ADMBw-MDG-2026.05.xml",
       "target": "fixtures/NAFv4-ADMBw-MDG-2026.05.xml",
-      "sha256": "c014ceda600b5bb9e42c2a8e58f02bf9655e8fe9b6a5e8df6a28693b3b701c84",
-      "bytes": 786172
+      "sha256": "e2e8c69281dcc83ad4382bd1b196c23850a847defb33d0a0ffcb429d747f3643",
+      "bytes": 786164
     }
   ]
 }

@@ -861,6 +861,12 @@ class _Merger:
         target.next_object_id += 1
         mirror["object_id"] = mirror_id
         mirror["package_id"] = parent_target
+        # ``qea_reader`` ordnet Paketspiegel zuerst ueber ``PDATA1`` zu. Der
+        # Wert zeigt auf die ``t_package.Package_ID`` des gespiegelten Pakets
+        # und muss deshalb auf die neue Ziel-ID umgebogen werden; sonst kollidiert
+        # ein eingefuegtes Unterpaket mit einem vorhandenen Paket gleicher ID.
+        if "pdata1" in mirror:
+            mirror["pdata1"] = str(target_package_id)
         if "diagram_id" in mirror:
             mirror["diagram_id"] = 0
         mirror["ea_guid"] = guid
@@ -869,6 +875,11 @@ class _Merger:
         self.plan.add("t_object", mirror)
         target.object_ids[mirror_id] = mirror
         target.object_guids[_guid_key(guid)] = mirror_id
+        # Tags eines Paketspiegels haengen an dessen Object_ID, nicht am Paket.
+        if source_mirror is not None:
+            source_mirror_id = int(_as_text(_Table.get(source_mirror, "object_id")) or 0)
+            if source_mirror_id:
+                self._copy_tags(source, source_mirror_id, mirror_id)
         return mirror_id
 
     # -- xref -----------------------------------------------------------

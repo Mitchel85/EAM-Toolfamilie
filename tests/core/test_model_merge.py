@@ -559,6 +559,50 @@ def test_unterbefehl_merge_in_eam_ai(basis: Path, zulieferung: Path, tmp_path: P
 
 
 # --------------------------------------------------------------------------
+# Regression: Paketspiegel must point to the new package ID
+# --------------------------------------------------------------------------
+
+
+def test_neues_unterpaket_kollidiert_nicht_mit_vorhandener_package_id(tmp_path: Path) -> None:
+    """PDATA1 des neuen Spiegels muss auf die Ziel-Package_ID zeigen.
+
+    Sonst ordnet ``qea_reader`` den Spiegel ueber die zufaellig gleiche
+    Quell-Package_ID einem vorhandenen Paket zu und meldet zwei Spiegel.
+    """
+    base = _write(
+        tmp_path / "base.qea",
+        [
+            {"path": "A", "guid": "{AAAA0000-0000-0000-0000-000000000011}"},
+            {"path": "A/Sub", "guid": "{AAAA0000-0000-0000-0000-000000000012}"},
+        ],
+        [{"package": "A", "name": "X", "ea_type": "Class", "guid": "{BBBB0000-0000-0000-0000-000000000011}"}],
+    )
+    add = _write(
+        tmp_path / "add.qea",
+        [
+            {"path": "A", "guid": "{AAAA0000-0000-0000-0000-000000000011}"},
+            {"path": "A/New", "guid": "{AAAA0000-0000-0000-0000-000000000013}"},
+        ],
+        [{"package": "A/New", "name": "Y", "ea_type": "Class", "guid": "{BBBB0000-0000-0000-0000-000000000012}"}],
+    )
+    out = tmp_path / "out.qea"
+
+    result = mm.merge_models([base, add], out)
+
+    assert result.packages == 1
+    ir, report = qea_reader.read_qea_ex(out)
+    assert any(p.get("path") == "A/New" for p in ir["packages"])
+    assert not any("zwei Spiegel" in warning for warning in report.warnings)
+    mirror = _rows(
+        out,
+        "SELECT o.PDATA1, p.Package_ID FROM t_object o"
+        " JOIN t_package p ON p.ea_guid = o.ea_guid"
+        " WHERE p.Name = 'New'",
+    )
+    assert mirror and mirror[0][0] == str(mirror[0][1])
+
+
+# --------------------------------------------------------------------------
 # Beleglaeufe gegen echte Modelle
 # --------------------------------------------------------------------------
 

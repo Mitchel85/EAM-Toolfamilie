@@ -95,6 +95,7 @@ QUELLSTAND = [
     "packages/core/rules.schema.json",
     "packages/rules/mdg_parser.py",
     "LICENSE",
+    "NOTICE.md",
 ]
 
 #: Ordnernamen und Muster, die frühere Sammelläufe hinterlassen haben
@@ -149,7 +150,11 @@ def raeume_altbestand(dist: Path) -> None:
 def quellstand_dateien() -> list[tuple[str, Path]]:
     """Alle Dateien des Archivs als (Name im Archiv, Pfad im Repo), sortiert."""
     kern = ROOT / "packages" / "core"
-    dateien = [(f"eam-ai-suite-python/{pfad.name}", pfad) for pfad in sorted(kern.glob("*.py"))]
+    dateien = [
+        (f"eam-ai-suite-python/{pfad.name}", pfad)
+        for pfad in sorted(kern.glob("*.py"))
+        if pfad.name != "conftest.py"
+    ]
     dateien += [(f"eam-ai-suite-python/{Path(rel).name}", ROOT / rel) for rel in QUELLSTAND]
     beispiele = ROOT / "packages" / "core" / "examples" / "offline"
     if beispiele.is_dir():

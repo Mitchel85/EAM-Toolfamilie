@@ -67,4 +67,7 @@ modules = [
 ]
 resources = [
     "rules.schema.json",
+    "examples/offline/mdg_admbw_auszug.xml",
+    "examples/offline/prosa.txt",
+    "examples/offline/antwort.json",
 ]

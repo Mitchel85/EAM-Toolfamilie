@@ -84,6 +84,7 @@ Eine Zelle ist ein Ordner mit `package.json`. `dependencies` sind Laufzeit-,
 
 | Bibliothek | SHA-256 | Suite | Analyzer | Editor |
 |---|---|---|---|---|
+| `vendor/LICENSE-pdfjs.txt` | `cfc7749b96f63bd3…` | — | — | — |
 | `vendor/LICENSE-sql.js` | `60a3f6e4d7b29b43…` | x | x | x |
 | `vendor/jszip.min.js` | `acc7e41455a80765…` | x | — | — |
 | `vendor/pdf.min.js` | `1fc294eefda602e5…` | x | — | — |

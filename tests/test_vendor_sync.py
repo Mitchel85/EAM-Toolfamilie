@@ -16,7 +16,7 @@ import sync_vendor  # noqa: E402
 def test_alle_kanonischen_dateien_sind_zugeordnet() -> None:
     dateien = {
         p.name for p in (ROOT / "vendor").iterdir()
-        if p.is_file() and p.name not in {"package.json", "README.md"}
+        if p.is_file() and p.name not in {"package.json", "README.md", "LICENSE-pdfjs.txt"}
     }
     zugeordnet = {name for namen in sync_vendor.ZUORDNUNG.values() for name in namen}
     assert dateien == zugeordnet

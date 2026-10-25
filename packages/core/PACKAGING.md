@@ -25,11 +25,11 @@ Ergebnis:
 
 ```text
 dist/offline/
-  eam-ai-2.1.0-offline/          # entpacktes Bundle
-  eam-ai-2.1.0-offline.zip        # universell, auch Windows
-  eam-ai-2.1.0-offline.tar.gz     # Linux, mit Ausfuehrungsrechten
-  eam-ai-2.1.0-offline.zip.sha256
-  eam-ai-2.1.0-offline.tar.gz.sha256
+  eam-ai-2.4.0-offline/          # entpacktes Bundle
+  eam-ai-2.4.0-offline.zip        # universell, auch Windows
+  eam-ai-2.4.0-offline.tar.gz     # Linux, mit Ausfuehrungsrechten
+  eam-ai-2.4.0-offline.zip.sha256
+  eam-ai-2.4.0-offline.tar.gz.sha256
 ```
 
 Das Wheel allein baut auch `python3 -m pip wheel . --no-deps -w dist/wheel`;
@@ -48,8 +48,8 @@ Zweimal bauen ergibt byte-identische Archive. Auch ein Neubau aus dem
 mitgelieferten `source/`-Ordner ist byte-identisch:
 
 ```bash
-python3 eam-ai-2.1.0-offline/source/tools/build_bundle.py --out /tmp/neubau
-sha256sum eam-ai-2.1.0-offline.zip /tmp/neubau/eam-ai-2.1.0-offline.zip
+python3 eam-ai-2.4.0-offline/source/tools/build_bundle.py --out /tmp/neubau
+sha256sum eam-ai-2.4.0-offline.zip /tmp/neubau/eam-ai-2.4.0-offline.zip
 ```
 
 Die Definition of Done laesst sich mit dem mitgelieferten Pruefer wiederholen
@@ -57,7 +57,7 @@ Die Definition of Done laesst sich mit dem mitgelieferten Pruefer wiederholen
 Beispiel):
 
 ```bash
-python3 tools/verify_bundle.py dist/offline/eam-ai-2.1.0-offline.tar.gz
+python3 packages/core/tools/verify_bundle.py dist/offline/eam-ai-2.4.0-offline.tar.gz
 ```
 
 Das gilt fuer den Build selbst. Die erzeugte `.qea` ist bei gleichem Input und
@@ -87,10 +87,10 @@ Fuer Abgaben in Bw-Umgebungen deshalb den Interpreter festhalten.
 Linux:
 
 ```bash
-tar xzf eam-ai-2.1.0-offline.tar.gz
-cd eam-ai-2.1.0-offline
+tar xzf eam-ai-2.4.0-offline.tar.gz
+cd eam-ai-2.4.0-offline
 ./install.sh
-./eam-ai.sh --version
+eam-ai --version
 ./run-example.sh
 ```
 
@@ -121,7 +121,7 @@ in `SHA256SUMS.txt` und `BUILD-INFO.json`.
 ## Beispiel-Lauf (Definition of Done)
 
 ```bash
-./eam-ai.sh build \
+eam-ai build \
   --mdg example/mdg_admbw_auszug.xml \
   --text example/prosa.txt \
   --out out/beispiel.qea \

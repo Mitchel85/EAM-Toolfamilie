@@ -22,7 +22,7 @@
 |---|---|
 | Open-WebUI (nativ) | [`openwebui_integration.md`](openwebui_integration.md) |
 | Lokaler Wrapper | [`local_wrapper.md`](local_wrapper.md) |
-| MCP-Server | [`mcp_server.md`](mcp_server.md) |
+| MCP-Server | [`mcp_server.py`](mcp_server.py) |
 
 ---
 
@@ -137,7 +137,7 @@ EAM-AI-QEA-Analyzer/
 ├── system_prompt.md             # System Prompt für alle Modi
 ├── openwebui_integration.md     # Anleitung: nativer Open-WebUI-Modus
 ├── local_wrapper.md             # Anleitung: lokaler API-Wrapper-Modus
-├── mcp_server.md                # Anleitung: MCP-Server (NEU v0.4)
+├── mcp_server.py                # Anleitung: MCP-Server (NEU v0.4)
 ├── requirements-mcp.txt         # Dependencies für MCP-Server
 ├── Demo-Output/                 # Beispiel-Ausgaben
 ├── LICENSE                      # Apache 2.0
@@ -175,7 +175,7 @@ Apache License 2.0
 
 ---
 
-*Open-WebUI (nativ): [openwebui_integration.md](openwebui_integration.md) | Lokaler Wrapper: [local_wrapper.md](local_wrapper.md) | MCP-Server: [mcp_server.md](mcp_server.md)*
+*Open-WebUI (nativ): [openwebui_integration.md](openwebui_integration.md) | Lokaler Wrapper: [local_wrapper.md](local_wrapper.md) | MCP-Server: [mcp_server.py](mcp_server.py)*
 
 ---
 

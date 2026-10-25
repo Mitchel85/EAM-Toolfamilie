@@ -33,8 +33,8 @@ Alle Dateien liegen unter
 | MDG-Prüfung | 0 Fehler, 0 Warnungen | alle Läufe |
 | Sprachverstöße | 0 | alle Läufe |
 | Open-WebUI-Werkzeug | **OK** (Datei, Statistik, Suche, Paketbaum) | `apps/mcp/checks/verify_openwebui.py` |
-| Download-Einstieg | **7 Karten, 14 Release-Assets** | `START-HIER.html`, Release `v3.0.2` |
-| Release `v3.0.2` | **14 Assets**, `sha256sum -c` **11/11 OK** | Asset-Prüfung 24.10. |
+| Download-Einstieg | **7 Karten, 14 Release-Assets** | `START-HIER.html`, Release `v3.0.3` |
+| Release `v3.0.3` | **14 Assets**, `sha256sum -c` **11/11 OK** | Asset-Prüfung 24.10. |
 | Release `v2.4.3` | **10 Assets**, `sha256sum -c` OK | Asset-Prüfung 24.10. |
 
 Die Abschnitte darunter sind der Verlauf in der Reihenfolge der Läufe; die
@@ -107,7 +107,7 @@ setze für `Schleuse` die Notiz …“.
 
 ### Container und Release
 
-- `eam-ai-web` läuft mit `ghcr.io/mitchel85/eam-toolfamilie:v3.0.2`,
+- `eam-ai-web` läuft mit `ghcr.io/mitchel85/eam-toolfamilie:v3.0.3`,
   `healthz` meldet `version 2.4.0` (Produktversion des Kerns), Port
   `<Tailscale-IP>:8080`. Rollback steht als `eam-ai-web-rollback-3.0.0`.
 - Release `v2.4.1`: sieben Assets (drei HTML-Apps, ASPX, MDG-Parser,
