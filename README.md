@@ -2,29 +2,19 @@
 
 Werkzeuge für Architekturmodelle im Format `.qea`: aus Regelwerk und Beschreibung ein
 geprüftes Modell bauen, vorhandene Modelle ansehen, zusammenführen und bearbeiten.
-Die HTML-Werkzeuge laufen per Doppelklick im Browser — ohne Installation, ohne Konto.
+Die HTML-Werkzeuge laufen im Browser.
 
-> Unabhängiges Werkzeug, ohne Verbindung zum Hersteller der Modellierungssoftware.
-> Produktnamen Dritter beschreiben nur Dateiformate.
-
-## In 30 Sekunden starten
+## Einstieg
 
 Direkt im Browser, ohne Download: **<https://mitchel85.github.io/EAM-Toolfamilie/>** — dort hat
 jedes Werkzeug einen Knopf.
 
-1. **Werkzeug aussuchen** — auf der Übersichtsseite hat jedes Werkzeug einen Knopf.
+1. **Werkzeug wählen** — auf der Übersichtsseite hat jedes Werkzeug einen Knopf.
    Alternativ als Datei:
    [START-HIER.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/START-HIER.html).
-2. **Datei herunterladen** — Klick auf den Namen, der Download startet sofort. Kein Konto.
-3. **Doppelklick.** Die Datei öffnet sich im Browser; die eigene `.qea` oder die MDG-XML
+2. **Datei herunterladen** — Klick auf den Namen, der Download startet sofort.
+3. **Datei öffnen** — sie öffnet sich im Browser; die eigene `.qea` oder die MDG-XML
    hineinziehen.
-
-Nichts zu installieren, nichts zu registrieren, keine Cloud. Das Modell bleibt auf dem
-eigenen Rechner.
-
-> **Windows:** Chrome und Edge fragen beim ersten Mal „Dateien dieses Typs werden
-> normalerweise nicht geöffnet“. Das ist richtig so — die Datei ist eine Web-Anwendung,
-> kein Programm. Auf „Öffnen“ klicken.
 
 ## Was ist eine `.qea`?
 
@@ -58,26 +48,22 @@ Kurzbegriffe, die im Ablauf vorkommen:
 
 ## Der Ablauf in sieben Schritten
 
-1. **MDG rein** — die Technologie-XML laden. Daraus entsteht das Regelwerk: Stereotype
+1. **MDG einlesen** — die Technologie-XML laden. Daraus entsteht das Regelwerk: Stereotype
    (auch die abstrakten 🔒), Topologie-Regeln, Viewpoints, Tag-Typen. Wie viele es sind,
    bestimmt der MDG-Stand; die Regeldatei wird laufend fortgeschrieben.
-2. **ggf. Startpaket rein** — Standardelemente kommen als zweite `.qea`. Ihre `ea_guid`
+2. **ggf. Startpaket übernehmen** — Standardelemente kommen als zweite `.qea`. Ihre `ea_guid`
    bleibt wörtlich erhalten, damit Modelle mit demselben Standard zusammenfinden.
-3. **Prosa rein** — Handbuch, Text, PDF oder Bild. Daraus werden Elemente und Beziehungen,
+3. **Prosa einlesen** — Handbuch, Text, PDF oder Bild. Daraus werden Elemente und Beziehungen,
    jede mit Angabe ihrer Herkunft.
-4. **Architektur bauen** — gegen die Regeln der MDG prüfen. Abstrakte Stereotype (🔒)
+4. **Architektur bauen und prüfen** — gegen die Regeln der MDG prüfen. Abstrakte Stereotype (🔒)
    werden nie instanziiert; eine Regel mit abstraktem Endpunkt gilt für alle konkreten
    Subtypen.
 5. **Architektur sehen** — Viewer: Pakete, Sichten, Graph, Pfade zwischen Elementen.
 6. **Architektur bearbeiten** — korrigieren (von Hand oder in Worten), Standardelemente
    nachziehen, als neue `.qea` speichern. Das Original bleibt unberührt.
-7. **Fertig** — die `.qea` liegt vor.
+7. **Ergebnis** — die `.qea` liegt vor.
 
 ![Workflow-Abdeckung: welche der fünf Werkzeuge welchen Schritt können](docs/workflow-abdeckung.png)
-
-**Der Rückweg ist ein Test, kein Workflowschritt.** `.qea` → Doku (Handbuch) → Vergleich
-mit der Eingabe zeigt beiläufig, ob das Modell die Eingabe noch trägt. Er gehört nicht in
-den Ablauf. Messwerte und Grenzen: [docs/ABNAHME.md](docs/ABNAHME.md).
 
 - Die MDG kommt zuerst. Ohne Regelwerk wird nichts gebaut.
 - Das Startpaket übernehmen beide AI Suiten technisch als Zusammenführung in ein Modell
@@ -88,7 +74,7 @@ den Ablauf. Messwerte und Grenzen: [docs/ABNAHME.md](docs/ABNAHME.md).
 
 - **EAM AI Suite** (eine HTML-Datei, Fassung 9.1) — die ganze Kette im Browser: MDG laden,
   Standardelemente übernehmen, Prosa mit KI in ein Modell übersetzen, prüfen, ansehen,
-  bearbeiten, Handbuch für den Rückweg-Test erzeugen.
+  bearbeiten, Handbuch erzeugen.
 - **EAM AI Suite Python** (Kommandozeile `eam-ai` und Webdienst) — dieselbe Kette ohne
   Browser, für Serienläufe, Server und Läufe ohne KI.
 - **EAM Suite** (eine HTML-Datei, Fassung 8.4) — vorhandene Modelle öffnen, mehrere
@@ -153,7 +139,7 @@ Alle Dateien liegen im öffentlichen Release — kein Konto, kein Login.
 
 So geht's
 1. Datei herunterladen.
-2. Doppelklick — sie öffnet sich im Browser.
+2. Datei öffnen — sie öffnet sich im Browser.
 3. Die eigene `.qea` bzw. die MDG-XML hineinziehen.
 
 - Die `.aspx`-Dateien sind dieselben Anwendungen für SharePoint/IIS (UTF-8 mit BOM).
@@ -176,7 +162,7 @@ eam-ai --help
   in Worten korrigieren.
 - `eam-ai frage` — Frage an eine vorhandene `.qea`.
 - `eam-ai serve` — Weboberfläche.
-- Viewer (`viewer_html.py`) und Handbuch für den Rückweg-Test (`handbuch_generator.py`,
+- Viewer (`viewer_html.py`) und Handbuch (`handbuch_generator.py`,
   `prosa_vergleich.py`) liegen als Module im Paket; eigene `eam-ai`-Befehle dafür gibt es
   noch nicht.
 
@@ -255,6 +241,6 @@ Weiterlesen
 - [docs/STRUKTUR.md](docs/STRUKTUR.md) — Struktur und Auslieferungen
 - [docs/ABHAENGIGKEITEN.md](docs/ABHAENGIGKEITEN.md) — Abhängigkeitskarte (erzeugt)
 - [docs/MIGRATION.md](docs/MIGRATION.md) — Migration
-- [docs/ABNAHME.md](docs/ABNAHME.md) — Abnahmelauf und Rückweg-Test
+- [docs/ABNAHME.md](docs/ABNAHME.md) — Abnahmelauf und Prüfungen
 
 Lizenz: [LICENSE](LICENSE) · Hinweise zu Drittkomponenten: [NOTICE.md](NOTICE.md)

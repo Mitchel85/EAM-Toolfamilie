@@ -39,7 +39,7 @@ AUSLIEFERUNGEN = [
         "apps/html-suite/dist/EAM-AI-Suite.html",
         "EAM-AI-Suite.html",
         "EAM AI Suite v9.1 — eine HTML-Datei",
-        "Prosa oder Handbuch hinein, `.qea` heraus: prüfen, ansehen, bearbeiten, Handbuch zurück. Offline per Doppelklick.",
+        "Prosa oder Handbuch hinein, `.qea` heraus: prüfen, ansehen, bearbeiten, Handbuch zurück.",
     ),
     (
         "apps/html-suite/dist/EAM-AI-Suite.aspx",
@@ -244,15 +244,13 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
   <div class="wrap">
     <div class="kicker">EAM Toolfamilie · Release ${version}</div>
     <h1>Werkzeuge für<br>Architekturmodelle</h1>
-    <p>Fünf Werkzeuge für <code>.qea</code>-Modelle: aus Regelwerk und Text ein Modell bauen, ein vorhandenes Modell lesen und prüfen, mehrere Modelle zusammenführen und bearbeiten. Die HTML-Werkzeuge laufen im Browser, ohne Installation.</p>
+    <p>Fünf Werkzeuge für <code>.qea</code>-Modelle: aus Regelwerk und Text ein Modell bauen, ein vorhandenes Modell lesen und prüfen, mehrere Modelle zusammenführen und bearbeiten. Die HTML-Werkzeuge laufen im Browser.</p>
     <div class="steps"><span><b>1</b> Werkzeug wählen</span><span><b>2</b> Datei herunterladen</span><span><b>3</b> Im Browser öffnen</span></div>
     <a class="btn light" href="${releases}">Alle Dateien im Release ansehen</a>
     <a class="btn light" href="${repo}">Quelltext und README</a>
   </div>
 </header>
 <main class="wrap">
-  <div class="note"><b>Hinweis:</b> Die HTML-Werkzeuge brauchen keine Installation; die Dateien liegen als Release-Dateien bereit. Ein Konto ist nicht nötig.</div>
-
   <h2>Welches Werkzeug wofür</h2>
   <p class="lead">Eine Karte je Werkzeug. Dateiname und Größe stehen darunter.</p>
   <div class="quick"><b>Schnellwahl:</b> <a href="#ai-suite">Bauen → EAM AI Suite</a> · <a href="#analyzer">Prüfen → QEA Analyzer</a> · <a href="#suite">Bearbeiten → EAM Suite</a> · <a href="#mdg">Nachschlagen → MDG Parser</a></div>
@@ -275,22 +273,19 @@ ${cards}
   <h2>So entsteht eine Architektur</h2>
   <p class="lead">Der Weg durch die Werkzeuge, in dieser Reihenfolge.</p>
   <ol class="decision">
-    <li><b>MDG rein.</b> Die Technologie-Datei (XML) wird geladen. Daraus entsteht das Regelwerk: Stereotype, Topologie-Regeln, Viewpoints, Tag-Typen. Die Anzahl hängt vom MDG-Stand ab und wird nicht festgeschrieben.</li>
-    <li><b>Startpaket rein — wenn vorhanden.</b> Die Standardelemente (StEKa) kommen als zweite <code>.qea</code> hinein; ihre GUIDs werden wörtlich übernommen, damit Modelle zusammenfinden.</li>
-    <li><b>Prosa rein.</b> Handbuch, Text oder ein Abschnitt daraus — daraus werden Elemente, Beziehungen und die Herkunft jeder Aussage.</li>
+    <li><b>MDG einlesen.</b> Die Technologie-Datei (XML) wird geladen. Daraus entsteht das Regelwerk: Stereotype, Topologie-Regeln, Viewpoints, Tag-Typen. Die Anzahl hängt vom MDG-Stand ab und wird nicht festgeschrieben.</li>
+    <li><b>Startpaket übernehmen — wenn vorhanden.</b> Die Standardelemente (StEKa) kommen als zweite <code>.qea</code> hinein; ihre GUIDs werden wörtlich übernommen, damit Modelle zusammenfinden.</li>
+    <li><b>Prosa einlesen.</b> Handbuch, Text oder ein Abschnitt daraus — daraus werden Elemente, Beziehungen und die Herkunft jeder Aussage.</li>
     <li><b>Architektur bauen.</b> Geprüft wird gegen die Regeln der MDG; abstrakte Stereotype dürfen nicht instanziiert werden.</li>
     <li><b>Architektur sehen.</b> Modell im Viewer öffnen: Pakete, Sichten, Beziehungen, Pfade.</li>
     <li><b>Architektur bearbeiten.</b> Korrigieren, Standardelemente nachziehen, als neue <code>.qea</code> speichern.</li>
-    <li><b>Fertig.</b> Die <code>.qea</code> liegt vor und ist in Auswertewerkzeugen lesbar.</li>
+    <li><b>Ergebnis.</b> Die <code>.qea</code> liegt vor und ist in Auswertewerkzeugen lesbar.</li>
   </ol>
-  <p class="lead">Der Rückweg — aus dem Modell wieder ein Handbuch — ist <b>kein</b> Schritt in diesem Ablauf, sondern ein Test: Er zeigt beiläufig, ob das Modell die Eingabe noch trägt.</p>
-
   <h2>Prüfen</h2>
   <p class="lead">Jede Datei hat eine Prüfsumme. <a href="${sums}">SHA256SUMS herunterladen</a> und danach im Download-Ordner <code>sha256sum -c SHA256SUMS</code> ausführen.</p>
 
   <div class="footer">
-    EAM Toolfamilie · Release ${version} · <a href="${releases}">Alle Releases</a> · <a href="${sums}">SHA256SUMS</a><br>
-    Unabhängiges Werkzeug, ohne Verbindung zum Hersteller der Modellierungssoftware. Produktnamen Dritter beschreiben nur Dateiformate.
+    EAM Toolfamilie · Release ${version} · <a href="${releases}">Alle Releases</a> · <a href="${sums}">SHA256SUMS</a>
   </div>
 </main>
 </body>
@@ -338,7 +333,7 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
             "EAM AI Suite", "Bauen",
             "Text, Handbuch, PDF oder Bild einlesen und daraus ein Modell erzeugen; prüfen, ansehen, bearbeiten und ein Handbuch zurückschreiben.",
             "EAM-AI-Suite.html", "EAM-AI-Suite.html herunterladen",
-            ["Datei herunterladen", "Doppelklick", "Modell erzeugen"],
+            ["Datei herunterladen", "Datei öffnen", "Modell erzeugen"],
             groesse=groesse("EAM-AI-Suite.html"),
             slug="ai-suite",
         ),
@@ -346,7 +341,7 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
             "EAM QEA Analyzer", "Nur prüfen",
             "Vorhandene .qea lesen, prüfen und verstehen: Pakete, Sichten, Elemente, Verbindungen.",
             "EAM-QEA-Analyzer.html", "EAM-QEA-Analyzer.html herunterladen",
-            ["Datei herunterladen", "Doppelklick", "Modell laden"],
+            ["Datei herunterladen", "Datei öffnen", "Modell laden"],
             groesse=groesse("EAM-QEA-Analyzer.html"),
             slug="analyzer",
         ),
@@ -354,7 +349,7 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
             "EAM Suite", "Bearbeiten",
             "Mehrere Modelle laden, verschmelzen, bearbeiten und als neue .qea zurückschreiben.",
             "EAM-Suite.html", "EAM-Suite.html herunterladen",
-            ["Datei herunterladen", "Doppelklick", "Modelle bearbeiten"],
+            ["Datei herunterladen", "Datei öffnen", "Modelle bearbeiten"],
             groesse=groesse("EAM-Suite.html"),
             slug="suite",
         ),
@@ -362,7 +357,7 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
             "EAM MDG Parser", "Nachschlagen und exportieren",
             "MDG-XML laden: Stereotype, Topologie, Viewpoints, Tag-Typen und Stereotyp-Tags durchsuchen; sechs Regeldateien exportieren. Die Anzahl hängt vom MDG-Stand ab.",
             "EAM-MDG-Parser.html", "EAM-MDG-Parser.html herunterladen",
-            ["Datei herunterladen", "Doppelklick", "MDG-XML laden und durchsuchen"],
+            ["Datei herunterladen", "Datei öffnen", "MDG-XML laden und durchsuchen"],
             groesse=groesse("EAM-MDG-Parser.html"),
             slug="mdg",
         ),
