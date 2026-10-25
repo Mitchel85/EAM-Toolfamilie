@@ -113,6 +113,10 @@ class ElementStereotype:
     metaclasses: tuple[str, ...]
     metatype: str = ""
     generalizes: tuple[str, ...] = ()
+    #: Zweite Elternquelle der MDG (``baseStereotypes``). Sie traegt Rollen wie
+    #: ``CapableElement``, die nicht in ``generalizes`` stehen -- ohne sie fehlen
+    #: ganze Endpunktmengen im Prompt.
+    base_stereotypes: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -285,7 +289,7 @@ def _element_closures(
             rule = elements.get(current) or elements.get(name)
             if rule is None:
                 continue
-            for parent in rule.generalizes:
+            for parent in (*rule.generalizes, *rule.base_stereotypes):
                 stack.append(_local_element_name(parent))
         closures[name] = frozenset(seen)
     return closures
@@ -317,6 +321,10 @@ def rulebook_from_mapping(data: Any, what: str = "rules") -> RuleBook:
             metatype=_text(entry.get("metatype"), f"{what}.elementStereotypes[{index}].metatype"),
             generalizes=_string_list(
                 entry.get("generalizes"), f"{what}.elementStereotypes[{index}].generalizes"
+            ),
+            base_stereotypes=_string_list(
+                entry.get("baseStereotypes"),
+                f"{what}.elementStereotypes[{index}].baseStereotypes",
             ),
         )
 
@@ -448,17 +456,32 @@ def normalize_ref(value: str) -> str:
 
 
 CONCRETE_ENDPOINTS_MAX = 8
-ROLE_MEMBERS_MAX = 20
+ROLE_MEMBERS_MAX = 32
 
 
 def _element_lines(rules: RuleBook) -> list[str]:
+    """Elementzeilen mit Metaklasse und Eltern.
+
+    Die Eltern (``generalizes`` **und** ``baseStereotypes``) sind fuer die
+    Kantenbildung entscheidend: eine Beziehungsregel nennt oft eine Sammelrolle
+    wie ``CapableElement``, und ohne die Vererbung kann das Modell nicht
+    erkennen, dass ``ServiceSpecification`` dazugehoert -- die Kante entfaellt
+    dann still.
+    """
     lines: list[str] = []
     for name in sorted(rules.elements):
         rule = rules.elements[name]
-        if rule.metaclasses:
-            lines.append(f"- {name} [{', '.join(rule.metaclasses)}]")
-        else:
-            lines.append(f"- {name}")
+        parents = sorted(
+            {
+                _local_element_name(parent)
+                for parent in (*rule.generalizes, *rule.base_stereotypes)
+                if _local_element_name(parent)
+            }
+        )
+        kopf = f"- {name} [{', '.join(rule.metaclasses)}]" if rule.metaclasses else f"- {name}"
+        if parents:
+            kopf += f" < {', '.join(parents)}"
+        lines.append(kopf)
     return lines
 
 
@@ -585,9 +608,10 @@ def build_prompt(
         "   Ziels in der Zielliste. Steht dort eine Sammelrolle mit *, ist jedes\n"
         "   Element zulaessig, das in der Rollenliste hinter dieser Rolle steht.\n"
         "7. Jeder Satz, der zwei benannte Elemente mit einer Handlung verbindet\n"
-        "   (nutzt, liefert, stellt bereit, steuert, erfasst, uebermittelt, gehoert\n"
-        "   zu, benoetigt, greift auf, erzeugt Wirkung, bekaempft, prueft, bedient,\n"
-        "   wartet), erzeugt eine Beziehung - sofern Regel 6 erfuellt ist. Waehle den\n"
+        "   (nutzt, liefert, stellt bereit, erbringt, erfuellt, haengt ab von,\n"
+        "   fordert an, unterstuetzt, ermoeglicht, versorgt, steuert, erfasst,\n"
+        "   uebermittelt, gehoert zu, benoetigt, greift auf, erzeugt Wirkung,\n"
+        "   bekaempft, prueft, bedient, wartet), erzeugt eine Beziehung - sofern Regel 6 erfuellt ist. Waehle den\n"
         "   Stereotyp, der die Handlung benennt UND dessen Endpunktlisten beide\n"
         "   Elemente decken. Deckt keiner beide Endpunkte, lass die Beziehung weg;\n"
         "   eine unzulaessige Beziehung wird bei der Pruefung entfernt und zaehlt\n"

@@ -4,7 +4,7 @@
   "sourceRepo": "Mitchel85/EAM-QEA-Analyzer",
   "sourceCommit": "9967a89",
   "sourceNote": "Titel/H1 auf EAM QEA Analyzer; Analyse-Fassung wird aus dem Edit-Master durch Entfernen der Edit-Teile gebaut",
-  "sourceTreeSha256": "dc68083176fcc3b1949ca14cb5748713ba3ce30df216a3d0f056387979e8040d",
+  "sourceTreeSha256": "f360d2001541041041b9724a8afe9a46cabccbbe487ddbc700bc8104c0e0f1cb",
   "buildScript": "src/build_release.py",
   "sourceOutput": "ADMBw_QEA_Analyzer.html",
   "sourceAspx": "ADMBw_QEA_Analyzer.aspx",

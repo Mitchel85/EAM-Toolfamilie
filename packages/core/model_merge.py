@@ -572,6 +572,10 @@ class _Target:
     next_attribute_id: int
     next_package_tpos: dict[int, int]
     next_object_tpos: dict[int, int]
+    #: Je Tabelle die Spalten, die das Ziel als Zahl ablegt (klein geschrieben).
+    int_columns: dict[str, frozenset[str]]
+    #: Naechste freie ``t_xref.XrefID``, wenn das Ziel sie als Zahl fuehrt.
+    next_xref_id: int
 
 
 def _read_target(path: Path, warnings: list[str]) -> _Target:
@@ -587,13 +591,20 @@ def _read_target(path: Path, warnings: list[str]) -> _Target:
                 f"(fehlen: {', '.join(missing)}) -- es wird nur in vorhandene Tabellen geschrieben",
             )
         snapshot: dict[str, _Table] = {}
+        int_columns: dict[str, frozenset[str]] = {}
         for name in _WRITE_ORDER:
             actual = tables.get(name.lower())
             if actual is None:
                 _warn(warnings, f"Ziel: Tabelle {name} fehlt -- Inhalte koennen nicht uebernommen werden")
                 snapshot[name] = _empty_table(name)
                 continue
-            columns = [str(row[1]) for row in con.execute(f"PRAGMA table_info({_quote(actual)})")]
+            info = list(con.execute(f"PRAGMA table_info({_quote(actual)})"))
+            columns = [str(row[1]) for row in info]
+            int_columns[name] = frozenset(
+                str(row[1]).lower()
+                for row in info
+                if "INT" in str(row[2] or "").upper()
+            )
             rows = [
                 {column.lower(): raw[index] for index, column in enumerate(columns)}
                 for raw in con.execute(f"SELECT * FROM {_quote(actual)}")
@@ -687,6 +698,8 @@ def _read_target(path: Path, warnings: list[str]) -> _Target:
         next_attribute_id=_max_int(snapshot["t_attribute"], "ID") + 1,
         next_package_tpos=_next_tpos_map(snapshot["t_package"], "Parent_ID"),
         next_object_tpos=_next_tpos_map(snapshot["t_object"], "Package_ID"),
+        int_columns=int_columns,
+        next_xref_id=_max_int(snapshot["t_xref"], "XrefID") + 1,
     )
 
 
@@ -892,8 +905,15 @@ class _Merger:
         allow_existing: bool,
         owner: str,
     ) -> None:
-        """Uebernimmt ``t_xref``-Zeilen eines Objekts (Stereotyp und ``@PROP``)."""
+        """Uebernimmt ``t_xref``-Zeilen eines Objekts (Stereotyp und ``@PROP``).
+
+        ``t_xref.XrefID`` ist je nach Modellstand eine Zahl (aeltere Dateien)
+        oder eine GUID (ab EA 16). Das Ziel gibt die Form vor; eine GUID in
+        einer INTEGER-Spalte war bisher ein harter Abbruch ("datatype
+        mismatch") mitten im Schreiben.
+        """
         target = self.target
+        xref_numeric = "xrefid" in target.int_columns.get("t_xref", frozenset())
         for row in source.xrefs_by_client.get(client_key, []):
             xref_type = _as_text(_Table.get(row, "Type"))
             description = _as_text(_Table.get(row, "Description"))
@@ -909,18 +929,22 @@ class _Merger:
                 # Zielwert gewinnt -- kein Duplikat, kein Konflikt (der Tag-Bericht
                 # fuer t_objectproperties nennt den Widerspruch bereits).
                 continue
-            seed = f"model_merge|xref|{client_key}|{xref_type}|{name}|{description}"
-            candidate = _stable_guid(seed)
-            suffix = 1
-            while _guid_key(candidate) in target.xref_ids:
-                if not allow_existing:
-                    candidate = ""
-                    break
-                candidate = _stable_guid(f"{seed}|{suffix}")
-                suffix += 1
-            if not candidate:
-                continue
-            target.xref_ids.add(_guid_key(candidate))
+            if xref_numeric:
+                candidate = target.next_xref_id
+                target.next_xref_id += 1
+            else:
+                seed = f"model_merge|xref|{client_key}|{xref_type}|{name}|{description}"
+                candidate = _stable_guid(seed)
+                suffix = 1
+                while _guid_key(candidate) in target.xref_ids:
+                    if not allow_existing:
+                        candidate = ""
+                        break
+                    candidate = _stable_guid(f"{seed}|{suffix}")
+                    suffix += 1
+                if not candidate:
+                    continue
+                target.xref_ids.add(_guid_key(candidate))
             new_row = _copy_row(row)
             new_row["xrefid"] = candidate
             new_row["client"] = client_guid
@@ -1255,8 +1279,41 @@ def _insert_rows(
         + f") VALUES ({placeholders})"
     )
     payload = [tuple(row.get(column.lower()) for column in columns) for row in rows]
+    _pruefe_zahlenspalten(con, table, columns, payload)
     con.executemany(sql, payload)
     return len(payload), len(unknown)
+
+
+def _pruefe_zahlenspalten(
+    con: sqlite3.Connection,
+    table: _Table,
+    columns: Sequence[str],
+    payload: Sequence[Sequence[Any]],
+) -> None:
+    """Meldet Text in einer Zielspalte, die laut Schema nur Zahlen aufnimmt.
+
+    Ohne diese Pruefung bricht SQLite mitten im Schreiben mit
+    ``datatype mismatch`` ab, ohne Tabelle und Spalte zu nennen. Die Typen
+    kommen aus dem Zielschema (``PRAGMA table_info``), nicht aus Spaltennamen --
+    ``ea_guid`` endet zwar auf ``id``, ist aber Text.
+    """
+    typen = {
+        str(row[1]).lower(): str(row[2] or "").upper()
+        for row in con.execute(f"PRAGMA table_info({_quote(table.name)})")
+    }
+    zahlenspalten = {column for column in columns if "INT" in typen.get(column.lower(), "")}
+    if not zahlenspalten:
+        return
+    for zeile in payload:
+        for column, wert in zip(columns, zeile):
+            if column not in zahlenspalten or not isinstance(wert, str):
+                continue
+            if wert.strip().lstrip("-").isdigit():
+                continue
+            raise MergeError(
+                f"{table.name}.{column}: Zielspalte nimmt Zahlen auf, Quelle liefert "
+                f"den Text {wert!r} -- Abbruch vor dem Schreiben"
+            )
 
 
 def _write(plan: _Plan, base_path: Path, out_path: Path, target: _Target) -> None:

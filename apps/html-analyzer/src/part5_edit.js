@@ -629,6 +629,31 @@ var EDIT = (function () {
     });
     return sqlPromise;
   }
+
+  /* Schemakundige Schreibhilfen: aeltere .qea-Dateien fuehren z. B. kein
+     ModifiedDate in t_object. Ein blindes UPDATE bricht dann mit
+     "no such column" ab und das Speichern scheitert ohne Not. */
+  function spalteDa(db, tabelle, spalte) {
+    if (!db.__spalten) db.__spalten = {};
+    var key = tabelle + '.' + spalte;
+    if (db.__spalten[key] === undefined) {
+      var ok = false;
+      try {
+        var r = db.exec('PRAGMA table_info(' + tabelle + ')');
+        if (r.length) {
+          for (var i = 0; i < r[0].values.length; i++) {
+            if (String(r[0].values[i][1]) === spalte) { ok = true; break; }
+          }
+        }
+      } catch (e) { ok = false; }
+      db.__spalten[key] = ok;
+    }
+    return db.__spalten[key];
+  }
+  function stempel(db, tabelle, sets, vals, now) {
+    if (spalteDa(db, tabelle, 'ModifiedDate')) { sets.push('ModifiedDate=?'); vals.push(now); }
+  }
+
   function execRows(db, sql, params) {
     var st = db.prepare(sql), rows = [];
     if (params) st.bind(params);
@@ -696,7 +721,7 @@ var EDIT = (function () {
       if (has(f, 'Alias')) { sets.push('Alias=?'); vals.push(f.Alias || null); }
       if (has(f, 'Status')) { sets.push('Status=?'); vals.push(f.Status || null); }
       if (has(f, 'Note')) { sets.push('Note=?'); vals.push(encNote(f.Note) || null); }
-      sets.push('ModifiedDate=?'); vals.push(now);
+      stempel(db, 't_object', sets, vals, now);
       vals.push(ch.id);
       db.run('UPDATE t_object SET ' + sets.join(', ') + ' WHERE Object_ID=?', vals);
       if (has(f, 'Stereotype')) {
@@ -708,16 +733,17 @@ var EDIT = (function () {
     if (ch.kind === 'pkg.set') {
       var psets = [], pvals = [];
       if (has(f, 'Name')) { psets.push('Name=?'); pvals.push(f.Name); }
-      if (has(f, 'Notes')) { psets.push('Notes=?'); pvals.push(encNote(f.Notes)); }
-      psets.push('ModifiedDate=?'); pvals.push(now); pvals.push(ch.id);
+      if (has(f, 'Notes') && spalteDa(db, 't_package', 'Notes')) { psets.push('Notes=?'); pvals.push(encNote(f.Notes)); }
+      stempel(db, 't_package', psets, pvals, now); pvals.push(ch.id);
       db.run('UPDATE t_package SET ' + psets.join(', ') + ' WHERE Package_ID=?', pvals);
       var p = one(db, 'SELECT ea_guid FROM t_package WHERE Package_ID=?', [ch.id]);
       if (p && p.ea_guid) {
         var osets = [], ovals = [];
         if (has(f, 'Name')) { osets.push('Name=?'); ovals.push(f.Name); }
-        if (has(f, 'Notes')) { osets.push('Note=?'); ovals.push(encNote(f.Notes)); }
+        if (has(f, 'Notes') && spalteDa(db, 't_object', 'Note')) { osets.push('Note=?'); ovals.push(encNote(f.Notes)); }
         if (osets.length) {
-          osets.push('ModifiedDate=?'); ovals.push(now); ovals.push(p.ea_guid);
+          if (spalteDa(db, 't_object', 'ModifiedDate')) { osets.push('ModifiedDate=?'); ovals.push(now); }
+          ovals.push(p.ea_guid);
           db.run('UPDATE t_object SET ' + osets.join(', ') + ' WHERE ea_guid=?', ovals);
         }
       }
@@ -726,8 +752,8 @@ var EDIT = (function () {
     if (ch.kind === 'diag.set') {
       var dsets = [], dvals = [];
       if (has(f, 'Name')) { dsets.push('Name=?'); dvals.push(f.Name); }
-      if (has(f, 'Notes')) { dsets.push('Notes=?'); dvals.push(encNote(f.Notes)); }
-      dsets.push('ModifiedDate=?'); dvals.push(now); dvals.push(ch.id);
+      if (has(f, 'Notes') && spalteDa(db, 't_diagram', 'Notes')) { dsets.push('Notes=?'); dvals.push(encNote(f.Notes)); }
+      stempel(db, 't_diagram', dsets, dvals, now); dvals.push(ch.id);
       db.run('UPDATE t_diagram SET ' + dsets.join(', ') + ' WHERE Diagram_ID=?', dvals);
       return;
     }
@@ -784,7 +810,8 @@ var EDIT = (function () {
       row.Note = ch.note ? encNote(ch.note) : null;
       row.Package_ID = ch.pkgId;
       row.ea_guid = newGuid();
-      row.CreatedDate = now; row.ModifiedDate = now;
+      if (has(row, 'CreatedDate')) row.CreatedDate = now;
+      if (has(row, 'ModifiedDate')) row.ModifiedDate = now;
       row.Author = '';
       row.Status = 'Proposed';
       row.Diagram_ID = 0; row.TPos = 0; row.ParentID = 0; row.Classifier = 0;

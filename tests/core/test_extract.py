@@ -172,9 +172,16 @@ def test_prompt_contains_allowed_stereotypes_and_paragraphs(rules):
         assert f"- {name}:" in connector_section
     assert "Provides: System -> ServicePort" in connector_section
 
-    # Abstrakte und Paket-Stereotype sind keine Element-Kandidaten.
-    assert "MeasurableElement" not in element_section
-    assert "ArchitecturalDescription" not in element_section
+    # Abstrakte und Paket-Stereotype sind keine Element-Kandidaten: sie duerfen
+    # hoechstens als Elternteil in der Zeile eines nutzbaren Stereotyps stehen,
+    # nie als eigener Eintrag ("- Name [Metaklasse]").
+    kandidaten = [
+        line for line in element_section.splitlines() if line.startswith("- ")
+    ]
+    assert not any(line.startswith("- MeasurableElement [") for line in kandidaten)
+    assert not any(line.startswith("- ArchitecturalDescription [") for line in kandidaten)
+    # Die Eltern stehen an der Zeile, damit das Modell Endpunktrollen erkennt.
+    assert "- ServiceSpecification [Class] <" in element_section
     # Die abstrakte Wurzel steht als Sammelrolle im Prompt -- mit ihren Mitgliedern.
     role_section = _role_section(prompt)
     assert "- MeasurableElement:" in role_section

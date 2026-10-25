@@ -236,6 +236,10 @@ class ElementRule:
     abstract: bool
     metaclasses: tuple[str, ...]
     generalizes: tuple[str, ...]
+    #: Zweite Elternquelle der MDG. Traegt Rollen wie ``CapableElement``, ueber
+    #: die eine Kante zulaessig wird -- ohne sie meldet der Validator einen
+    #: Verstoss, den es nicht gibt.
+    base_stereotypes: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -268,7 +272,12 @@ class RuleSet:
 
 
 def _stereotype_closures(elements: Mapping[str, ElementRule]) -> dict[str, frozenset[str]]:
-    """Transitive 'generalizes'-Huelle je Element-Stereotyp (lokal, zyklensicher)."""
+    """Transitive Elternhuelle je Element-Stereotyp (lokal, zyklensicher).
+
+    Folgt ``generalizes`` **und** ``baseStereotypes``: die MDG verteilt
+    Vererbung auf beide Felder, und eine Kante ueber eine Sammelrolle wie
+    ``CapableElement`` ist nur mit beiden Elternquellen zulaessig.
+    """
     closures: dict[str, frozenset[str]] = {}
     for name in elements:
         if name in closures:
@@ -283,7 +292,7 @@ def _stereotype_closures(elements: Mapping[str, ElementRule]) -> dict[str, froze
             rule = elements.get(current)
             if rule is None:
                 continue
-            for parent in rule.generalizes:
+            for parent in (*rule.generalizes, *rule.base_stereotypes):
                 stack.append(_local_name(parent))
         closures[name] = frozenset(seen)
     return closures
@@ -380,6 +389,9 @@ def build_rules(
             abstract=abstract,
             metaclasses=_text_list(obj.get("metaclasses", []), f"{what}.metaclasses", allow_empty=True),
             generalizes=_text_list(obj.get("generalizes", []), f"{what}.generalizes", allow_empty=True),
+            base_stereotypes=_text_list(
+                obj.get("baseStereotypes", []), f"{what}.baseStereotypes", allow_empty=True
+            ),
         )
 
     connectors: dict[str, ConnectorRule] = {}
