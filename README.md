@@ -6,15 +6,8 @@ Die HTML-Werkzeuge laufen im Browser.
 
 ## Einstieg
 
-Direkt im Browser, ohne Download: **<https://mitchel85.github.io/EAM-Toolfamilie/>** — dort hat
-jedes Werkzeug einen Knopf.
-
-1. **Werkzeug wählen** — auf der Übersichtsseite hat jedes Werkzeug einen Knopf.
-   Alternativ als Datei:
-   [START-HIER.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/START-HIER.html).
-2. **Datei herunterladen** — Klick auf den Namen, der Download startet sofort.
-3. **Datei öffnen** — sie öffnet sich im Browser; die eigene `.qea` oder die MDG-XML
-   hineinziehen.
+**<https://mitchel85.github.io/EAM-Toolfamilie/>** — Übersichtsseite mit allen
+Werkzeugen. Ein Klick lädt die Datei herunter; sie öffnet sich anschließend im Browser.
 
 ## Was ist eine `.qea`?
 
@@ -110,10 +103,9 @@ Abgrenzung
 
 ## Herunterladen
 
-Alle Dateien liegen im öffentlichen Release — kein Konto, kein Login.
+Alle Dateien liegen im öffentlichen Release.
 
-- Einstieg mit Übersicht aller Werkzeuge:
-  [START-HIER.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/START-HIER.html)
+- Übersichtsseite: <https://mitchel85.github.io/EAM-Toolfamilie/>
 - EAM AI Suite:
   [EAM-AI-Suite.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-AI-Suite.html)
   · für SharePoint:
@@ -177,8 +169,8 @@ Einzige Ausnahme: die AI Suiten dürfen auf Wunsch eine KI anbinden — nur wenn
 eingetragen ist, und nur der ausgewählte Text bzw. Modellausschnitt geht dorthin.
 
 **Warum sehe ich auf GitHub nur Text, wenn ich auf die Datei klicke?**
-Weil GitHub HTML als Quelltext anzeigt. Nimm die Download-Links oben oder die Übersicht
-[START-HIER.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/START-HIER.html).
+Weil GitHub HTML als Quelltext anzeigt. Nimm die Download-Links oben oder die
+Übersichtsseite <https://mitchel85.github.io/EAM-Toolfamilie/>.
 
 **Welche Datei ist die richtige: `.html` oder `.aspx`?**
 `.html` für den eigenen Rechner. `.aspx` nur, wenn die Datei auf einem SharePoint-/IIS-Server
