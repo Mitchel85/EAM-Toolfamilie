@@ -202,7 +202,7 @@ a{color:var(--blue)}
 .wrap{max-width:1120px;margin:0 auto;padding:0 20px}
 .hero{background:linear-gradient(135deg,#0b1f3a 0%,#123a6b 60%,#0b57d0 100%);color:#fff;padding:46px 0 40px;margin-bottom:26px}
 .kicker{font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.8;font-weight:700}
-h1{font-size:clamp(34px,5vw,58px);line-height:1.05;margin:12px 0 14px;letter-spacing:-.03em}
+h1{font-size:clamp(28px,4vw,44px);line-height:1.12;margin:12px 0 14px;letter-spacing:-.02em}
 .hero p{font-size:18px;max-width:760px;opacity:.94;margin:0 0 20px}
 .steps{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 24px}
 .steps span{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);padding:8px 12px;border-radius:999px;font-size:14px}
@@ -243,25 +243,25 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
 <header class="hero">
   <div class="wrap">
     <div class="kicker">EAM Toolfamilie · Release ${version}</div>
-    <h1>Werkzeug aussuchen.<br>Knopf drücken.<br>Loslegen.</h1>
-    <p>Alle Einzeltools an einer Stelle. Die HTML-Dateien laufen per Doppelklick im Browser — ohne Installation und ohne Netz. Die Apps selbst brauchen kein Konto.</p>
-    <div class="steps"><span><b>1</b> Werkzeug wählen</span><span><b>2</b> Herunterladen</span><span><b>3</b> Datei öffnen</span></div>
+    <h1>Werkzeuge für<br>Architekturmodelle</h1>
+    <p>Fünf Werkzeuge für <code>.qea</code>-Modelle: aus Regelwerk und Text ein Modell bauen, ein vorhandenes Modell lesen und prüfen, mehrere Modelle zusammenführen und bearbeiten. Die HTML-Werkzeuge laufen im Browser, ohne Installation.</p>
+    <div class="steps"><span><b>1</b> Werkzeug wählen</span><span><b>2</b> Datei herunterladen</span><span><b>3</b> Im Browser öffnen</span></div>
     <a class="btn light" href="${releases}">Alle Dateien im Release ansehen</a>
     <a class="btn light" href="${repo}">Quelltext und README</a>
   </div>
 </header>
 <main class="wrap">
-  <div class="note"><b>Wichtig:</b> Die HTML-Apps brauchen keine Installation. Die Dateien liegen als Release-Assets; kein GitHub-Konto nötig.</div>
+  <div class="note"><b>Hinweis:</b> Die HTML-Werkzeuge brauchen keine Installation; die Dateien liegen als Release-Dateien bereit. Ein Konto ist nicht nötig.</div>
 
-  <h2>Welches Werkzeug brauchst du?</h2>
-  <p class="lead">Ein Klick pro Karte. Dateiname und Größe stehen darunter.</p>
+  <h2>Welches Werkzeug wofür</h2>
+  <p class="lead">Eine Karte je Werkzeug. Dateiname und Größe stehen darunter.</p>
   <div class="quick"><b>Schnellwahl:</b> <a href="#ai-suite">Bauen → EAM AI Suite</a> · <a href="#analyzer">Prüfen → QEA Analyzer</a> · <a href="#suite">Bearbeiten → EAM Suite</a> · <a href="#mdg">Nachschlagen → MDG Parser</a></div>
   <section class="grid">
 ${cards}
   </section>
   <p class="lead" style="margin-top:14px">SharePoint-Fassung: <a href="https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-AI-Suite.aspx">EAM-AI-Suite.aspx</a> — dieselbe App für SharePoint/IIS.</p>
 
-  <h2>Welche Datei brauche ich?</h2>
+  <h2>Auswahl nach Aufgabe</h2>
   <ul class="decision">
     <li><b>Ich habe Text, ein Handbuch, PDF oder ein Bild und will ein Modell bauen.</b> → EAM AI Suite</li>
     <li><b>Ich habe ein Modell und will es verstehen und prüfen.</b> → EAM QEA Analyzer</li>
@@ -273,7 +273,7 @@ ${cards}
   </ul>
 
   <h2>So entsteht eine Architektur</h2>
-  <p class="lead">Der Weg durch die Werkzeuge — sieben Schritte, in dieser Reihenfolge.</p>
+  <p class="lead">Der Weg durch die Werkzeuge, in dieser Reihenfolge.</p>
   <ol class="decision">
     <li><b>MDG rein.</b> Die Technologie-Datei (XML) wird geladen. Daraus entsteht das Regelwerk: Stereotype, Topologie-Regeln, Viewpoints, Tag-Typen. Die Anzahl hängt vom MDG-Stand ab und wird nicht festgeschrieben.</li>
     <li><b>Startpaket rein — wenn vorhanden.</b> Die Standardelemente (StEKa) kommen als zweite <code>.qea</code> hinein; ihre GUIDs werden wörtlich übernommen, damit Modelle zusammenfinden.</li>
@@ -290,7 +290,7 @@ ${cards}
 
   <div class="footer">
     EAM Toolfamilie · Release ${version} · <a href="${releases}">Alle Releases</a> · <a href="${sums}">SHA256SUMS</a><br>
-    Unabhängiges Werkzeug. Keine Verbindung zu Sparx Systems Pty Ltd.
+    Unabhängiges Werkzeug, ohne Verbindung zum Hersteller der Modellierungssoftware. Produktnamen Dritter beschreiben nur Dateiformate.
   </div>
 </main>
 </body>
@@ -335,10 +335,10 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
 
     karten = [
         _karte(
-            "EAM AI Suite", "Alles in einem",
-            "Prosa, Handbuch, PDF oder Bild hinein — fertige .qea heraus. Prüfen, ansehen, bearbeiten und Handbuch zurück.",
+            "EAM AI Suite", "Bauen",
+            "Text, Handbuch, PDF oder Bild einlesen und daraus ein Modell erzeugen; prüfen, ansehen, bearbeiten und ein Handbuch zurückschreiben.",
             "EAM-AI-Suite.html", "EAM-AI-Suite.html herunterladen",
-            ["Datei herunterladen", "Doppelklick", "Im Browser arbeiten — fertig"],
+            ["Datei herunterladen", "Doppelklick", "Modell erzeugen"],
             groesse=groesse("EAM-AI-Suite.html"),
             slug="ai-suite",
         ),
@@ -368,7 +368,7 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
         ),
         _karte(
             "Open-WebUI-Tool", "Für Open WebUI",
-            "Eine .py-Datei, die deinem Modell beibringt, .qea-Dateien zu lesen statt zu raten.",
+            "Ein Werkzeug für Open WebUI, das <code>.qea</code>-Dateien liest und Abfragen daraus beantwortet.",
             "eam_qea_analyzer_openwebui.py", "eam_qea_analyzer_openwebui.py herunterladen",
             ["Datei herunterladen", "In Open WebUI unter Werkzeuge einfügen", "Modell fragen"],
             groesse=groesse("eam_qea_analyzer_openwebui.py"),
@@ -376,7 +376,7 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
         ),
         _karte(
             "EAM AI Suite Python", "Für Terminal und Server",
-            "CLI eam-ai, Webdienst und MCP. Quellstand als ZIP; immer die neueste Fassung.",
+            "Kommandozeile <code>eam-ai</code>, Webdienst und MCP. Quellstand als ZIP.",
             "eam-ai-suite-python.zip", "eam-ai-suite-python.zip herunterladen",
             ["ZIP entpacken", "<code>pip install ./eam-ai-suite-python</code>", "<code>eam-ai --version</code>"],
             groesse=groesse("eam-ai-suite-python.zip"),
@@ -385,7 +385,7 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
         f"""<article class="card wide">
   <span class="badge">Für Server</span>
   <h3>Container</h3>
-  <p>Fertiges Image mit Webdienst, Upload und Job-Status. Kein Python auf dem Host nötig.</p>
+  <p>Fertiges Image mit Webdienst, Upload und Job-Status; Python muss auf dem Host nicht installiert sein.</p>
   <div class="meta">ghcr.io/mitchel85/eam-toolfamilie:v{html.escape(version)}</div>
   <a class="btn" href="{html.escape(REPO_URL + "/pkgs/container/eam-toolfamilie")}">Zur Container-Seite</a>
   <pre><code>docker pull ghcr.io/mitchel85/eam-toolfamilie:v{html.escape(version)}
