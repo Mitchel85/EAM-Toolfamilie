@@ -16,10 +16,12 @@ from pathlib import Path
 
 import pytest
 
+import mdg_source  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "build_knowledge.py"
 PARSER = ROOT / "packages" / "rules" / "mdg_parser.py"
-MDG = ROOT / "packages" / "rules" / "NAFv4-ADMBw-MDG-2026.05.xml"
+MDG = mdg_source.path()
 KNOWLEDGE = ROOT / "knowledge"
 PROVENANCE = KNOWLEDGE / "PROVENANCE.json"
 

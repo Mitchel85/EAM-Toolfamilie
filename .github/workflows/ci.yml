@@ -1,50 +1,13 @@
 name: ci
 
+# Jeder Push und jeder Pull Request laufen durch denselben Ablauf wie ein
+# Release — er steht in `_build.yml` und wird hier nur aufgerufen.
+
 on:
   push:
     branches: [main, 'rebuild/**']
   pull_request:
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: Abhaengigkeiten (nur Tests)
-        run: python -m pip install --quiet -r requirements-dev.txt
-      - name: Wissensbasis gegen Quelle pruefen
-        run: python scripts/build_knowledge.py --mdg packages/rules/NAFv4-ADMBw-MDG-2026.05.xml --check --check-provenance
-      - name: Ein-Quellen-Regel (ein Leser, keine Kopien)
-        run: python scripts/check_single_source.py
-      - name: Abhängigkeiten weiterreichen (Drift-Check)
-        run: python scripts/propagate.py --check
-      - name: HTML-Auslieferungen bauen
-        run: |
-          python scripts/build_legacy_app.py apps/html-suite
-          python scripts/build_legacy_app.py apps/html-analyzer
-          python scripts/build_legacy_app.py apps/html-editor
-          python apps/mdg-web/build.py
-      - name: Auslieferungsgraph (jede Zelle, jede Kante, jedes Artefakt)
-        run: python scripts/verify_graph.py --md dist/GRAPH.md
-      - name: Datei-Kanten im Manifest (Dependency Graph)
-        run: python scripts/sync_dependency_files.py --check
-      - name: Auslieferungen einsammeln
-        run: python scripts/collect_releases.py
-      - name: Graph gegen das Manifest
-        run: python scripts/verify_graph.py
-      - name: ADMBw-Werkzeuge pruefen
-        run: |
-          python apps/admbw-batch/checks/verify.py
-          python apps/admbw-extractor/checks/verify.py
-      - name: Open-WebUI-Werkzeug rauchtesten
-        run: python apps/mcp/checks/verify_openwebui.py
-      - name: Script-Maker-Tests
-        run: node apps/admbw-script-maker/tests/run_tests.js
-      - name: Tests
-        run: python -m pytest -q
+  pruefen:
+    uses: ./.github/workflows/_build.yml

@@ -34,7 +34,7 @@
   },
   "checks": [
     {
-      "name": "Stereotypes: 318 Tabellenzeilen",
+      "name": "Stereotypes: Tabellenzeilen: 318",
       "ok": true,
       "detail": "ist 318"
     },
@@ -44,7 +44,7 @@
       "detail": "ist 0"
     },
     {
-      "name": "Stereotypes: 44 abstrakte Stereotype (🔒)",
+      "name": "Stereotypes: abstrakte Stereotype (🔒): 44",
       "ok": true,
       "detail": "ist 44"
     },
@@ -54,7 +54,7 @@
       "detail": "ist 0"
     },
     {
-      "name": "Stereotypes: 293 nutzbare",
+      "name": "Stereotypes: nutzbare: 293",
       "ok": true,
       "detail": "ist 293"
     },
@@ -84,12 +84,12 @@
       "detail": ""
     },
     {
-      "name": "JSON: 318 Einträge",
+      "name": "JSON: Einträge: 318",
       "ok": true,
       "detail": "ist 318"
     },
     {
-      "name": "JSON: 44 abstrakt",
+      "name": "JSON: abstrakt: 44",
       "ok": true,
       "detail": "ist 44"
     },
@@ -119,17 +119,17 @@
       "detail": ""
     },
     {
-      "name": "Topology: 203 Zeilen",
+      "name": "Topology: Zeilen: 203",
       "ok": true,
       "detail": "ist 203"
     },
     {
-      "name": "Topology: 133 Regeln mit beiden Enden",
+      "name": "Topology: Regeln mit beiden Enden: 133",
       "ok": true,
       "detail": "ist 133"
     },
     {
-      "name": "Topology: 70 reine Rollen-Zeilen",
+      "name": "Topology: reine Rollen-Zeilen: 70",
       "ok": true,
       "detail": "ist 70"
     },
@@ -154,7 +154,7 @@
       "detail": ""
     },
     {
-      "name": "Viewpoints: 52 Überschriften",
+      "name": "Viewpoints: Überschriften: 52",
       "ok": true,
       "detail": "ist 52"
     },
@@ -164,7 +164,7 @@
       "detail": ""
     },
     {
-      "name": "TagTypes: 27 Property-Typen",
+      "name": "TagTypes: Property-Typen: 27",
       "ok": true,
       "detail": "ist 27"
     },
@@ -174,22 +174,7 @@
       "detail": ""
     },
     {
-      "name": "Connectors: Dependency (100)",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "Connectors: Class (68)",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "Connectors: Activity (6)",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "Connectors: Connector (3)",
+      "name": "Connectors: 27 Metatyp-Zeilen in sich stimmig",
       "ok": true,
       "detail": ""
     },
@@ -244,7 +229,7 @@
       "detail": ""
     },
     {
-      "name": "Prompt: abstrakte Typen mit 44 und Subtyp-Auflösung",
+      "name": "Prompt: nennt 44 abstrakte Typen und die Subtyp-Auflösung",
       "ok": true,
       "detail": ""
     },
@@ -264,12 +249,12 @@
       "detail": ""
     },
     {
-      "name": "README: korrigierte Zahlen (318/293/133/52)",
+      "name": "README: nennt die Zahlen des aktuellen MDG-Stands",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "ANLEITUNG: korrigierte Zahlen",
+      "name": "ANLEITUNG: nennt die Zahlen des aktuellen MDG-Stands",
       "ok": true,
       "detail": ""
     },

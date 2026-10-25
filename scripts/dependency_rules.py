@@ -8,9 +8,17 @@ an einer Datei vorbeiläuft. `scripts/impact.py` nutzt sie für die Anzeige,
 
 from __future__ import annotations
 
+import sys
 from fnmatch import fnmatch
+from pathlib import Path
 
-MDG = "packages/rules/NAFv4-ADMBw-MDG-2026.05.xml"
+_RULES = Path(__file__).resolve().parents[1] / "packages" / "rules"
+if str(_RULES) not in sys.path:
+    sys.path.insert(0, str(_RULES))
+import mdg_source  # noqa: E402  (bewusst nach dem Pfad-Aufbau)
+
+#: Aktuelle MDG, relativ zur Repo-Wurzel — Quelle ist packages/rules/CURRENT.
+MDG = f"packages/rules/{mdg_source.name()}"
 
 #: id, Pfadmuster, betroffene Zellen, auszuführender Befehl, Erklärung
 REGELN: tuple[dict[str, object], ...] = (

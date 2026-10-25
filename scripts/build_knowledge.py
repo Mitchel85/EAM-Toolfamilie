@@ -3,9 +3,13 @@
 
 Drei Modi:
 
-  python3 scripts/build_knowledge.py --mdg DATEI         # schreiben
-  python3 scripts/build_knowledge.py --mdg DATEI --check # nur pruefen (Exit 1 bei Drift)
-  python3 scripts/build_knowledge.py --mdg DATEI --check --check-provenance
+  python3 scripts/build_knowledge.py              # schreiben (aktuelle MDG aus CURRENT)
+  python3 scripts/build_knowledge.py --check      # nur pruefen (Exit 1 bei Drift)
+  python3 scripts/build_knowledge.py --check --check-provenance
+
+`--mdg DATEI` ist nur fuer einen ausdruecklichen Sonderfall: ohne Angabe gilt
+die Datei, die ``packages/rules/CURRENT`` nennt. Damit bleibt ein MDG-Wechsel
+eine Zeile statt einer Suche ueber das halbe Repo.
 
 Warum es diese Datei gibt
 -------------------------
@@ -38,6 +42,10 @@ ROOT = Path(__file__).resolve().parents[1]
 KNOWLEDGE = ROOT / "knowledge"
 RULES = ROOT / "packages" / "rules"
 PARSER = RULES / "mdg_parser.py"
+
+if str(RULES) not in sys.path:
+    sys.path.insert(0, str(RULES))
+import mdg_source  # noqa: E402  (der Pfad entsteht erst zwei Zeilen weiter oben)
 PROVENANCE = KNOWLEDGE / "PROVENANCE.json"
 
 # Zeile in admbw-meta.md, die den Aufrufpfad statt des Dateinamens enthaelt.
@@ -133,11 +141,18 @@ def check(mdg: Path, check_provenance: bool) -> int:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Wissensbasis aus der MDG erzeugen oder pruefen.")
-    ap.add_argument("--mdg", required=True, help="Pfad zur MDG-XML")
+    ap.add_argument(
+        "--mdg",
+        default=None,
+        help=(
+            "Pfad zur MDG-XML; ohne Angabe die Datei aus packages/rules/CURRENT "
+            f"(aktuell: {mdg_source.name()})"
+        ),
+    )
     ap.add_argument("--check", action="store_true", help="nur pruefen, nichts schreiben")
     ap.add_argument("--check-provenance", action="store_true", help="zusaetzlich PROVENANCE.json pruefen")
     args = ap.parse_args()
-    mdg = Path(args.mdg)
+    mdg = Path(args.mdg) if args.mdg else mdg_source.path()
     if not mdg.is_file():
         raise SystemExit(f"MDG nicht gefunden: {mdg}")
     return check(mdg, args.check_provenance) if args.check else write(mdg)

@@ -32,7 +32,9 @@ RULES = Path(__file__).resolve().parents[2] / 'packages' / 'rules'  # einziger M
 FIXTURES = Path(__file__).resolve().parents[2] / "packages" / "core" / "fixtures"  # Monorepo
 ADMBW = FIXTURES / "admbw_auszug.xml"
 FREMD = FIXTURES / "fremd_klein.xml"
-REAL = ROOT / "fixtures" / "NAFv4-ADMBw-MDG-2026.05.xml"
+import mdg_source  # noqa: E402
+
+REAL = mdg_source.path()
 SCHEMA = ROOT / "rules.schema.json"
 
 BOTH = pytest.mark.parametrize("pfad", [ADMBW, FREMD], ids=["admbw", "fremd"])

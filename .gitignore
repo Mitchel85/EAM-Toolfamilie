@@ -7,3 +7,16 @@ dist/
 
 # Altwerkzeug-Build schreibt GitHub-Pages-Spiegel; nicht Teil der Auslieferung.
 apps/*/docs/
+
+# Grosse Fixtures liegen im internen Fixture-Store, nie im Repo.
+# (Musterarchitektur_MASC.qea, 12 MB — Pruefsumme in packages/core/ci/fixtures_manifest.json)
+packages/core/fixtures/*.qea
+
+# Vendor-Kopien der Apps entstehen beim Bauen aus vendor/ (scripts/sync_vendor.py).
+apps/*/vendor/
+
+# Lokale Agent-Arbeitsstaende
+.hermes/
+
+# Testergebnis des Script-Makers: enthaelt absolute Pfade, wird beim Lauf erzeugt
+apps/admbw-script-maker/tests/results.json

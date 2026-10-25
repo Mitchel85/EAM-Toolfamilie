@@ -4,6 +4,21 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.0.4 - 2026-10-25
+
+### Geaendert
+
+- **Version angeglichen.** Paket (`eam_ai.__version__`, `pyproject.toml`) und
+  Release-Tags liefen auseinander: im Release 3.0.3 steckte ein Paket 2.4.0.
+  Beide stehen jetzt auf 3.0.4.
+- **README neu.** Einstieg ohne Vorkenntnisse, Workflow in sieben Schritten,
+  je ein Satz pro Werkzeug, alle Downloads auf `EAM-Toolfamilie`. Der
+  Rueckweg ist ausdruecklich als Test beschrieben, nicht als Ablaufschritt.
+- **Startseite.** Workflow-Abschnitt ergaenzt; keine festen Katalogzahlen mehr
+  in der MDG-Karte (die Anzahl haengt vom MDG-Stand ab).
+- **Container-Angaben** kommen aus einer Konstante; Image-Name und Link
+  stimmen wieder mit dem ausgelieferten Paket ueberein.
+
 ## 2.4.0 - 2026-10-24
 
 ### Hinzugefuegt

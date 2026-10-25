@@ -1,293 +1,197 @@
 # EAM Toolfamilie
 
-Werkzeuge für Architekturmodelle: eine `.qea`-Datei lesen, prüfen, bearbeiten
-und wieder herausschreiben — ohne Installation, ohne Konto, ohne Internet.
-Alles läuft direkt im Browser.
+Werkzeuge für Architekturmodelle im Format `.qea`: aus Regelwerk und Beschreibung ein
+geprüftes Modell bauen, vorhandene Modelle ansehen, zusammenführen und bearbeiten.
+Die HTML-Werkzeuge laufen per Doppelklick im Browser — ohne Installation, ohne Konto.
 
-**Du brauchst keine Programmierkenntnisse und keinen GitHub-Account.**
-Drei Schritte: Datei herunterladen, Doppelklick, fertig.
+> Unabhängiges Werkzeug, ohne Verbindung zum Hersteller der Modellierungssoftware.
+> Produktnamen Dritter beschreiben nur Dateiformate.
 
-> Unabhängiges Werkzeug. Keine Verbindung zu Sparx Systems Pty Ltd.
-> Produktnamen Dritter dienen nur der Beschreibung von Dateiformaten.
+## Was die Toolfamilie tut
 
----
+- **Hinein:** das Regelwerk der Technologie (MDG-XML), bei Bedarf ein Startpaket mit
+  Standardelementen, ein vorhandenes Modell und Text — Handbuch, Beschreibung, PDF oder Bild.
+- **Heraus:** eine `.qea`-Datei mit Paketen, Elementen, Beziehungen und Tags, geprüft gegen
+  das Regelwerk, gedacht für Werkzeuge, die `.qea` auswerten.
+- **Wofür:** eine Architekturbeschreibung in ein prüfbares Modell übersetzen, statt sie von
+  Hand nachzubauen; vorhandene Modelle verstehen, zusammenlegen und nachbessern.
+- **Was sie nicht ist:** kein Ersatz für ein Modellierungswerkzeug, keine Layout-Engine.
+  Substanz sind Pakete, Elemente, Beziehungen und Tags; Diagramme sind Darstellung.
+- **Daten:** ohne KI arbeiten die HTML-Werkzeuge lokal im Browser. Mit KI gehen der Text
+  bzw. der gewählte Modellausschnitt an den KI-Zugang, den man selbst einträgt.
 
-## In 30 Sekunden starten
+## Der Ablauf in sieben Schritten
 
-1. **Werkzeug aussuchen** — Tabelle unten oder die Übersichtsseite
-   [`START-HIER.html`](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/START-HIER.html)
-   (dort gibt es für jedes Werkzeug einen Knopf).
-2. **Auf den Dateinamen klicken** — der Download startet sofort. Kein Login.
-3. **Die Datei doppelklicken.** Sie öffnet sich im Browser. Jetzt die eigene
-   `.qea` hineinziehen.
+1. **MDG rein** — die Technologie-XML laden. Daraus entsteht das Regelwerk: Stereotype
+   (auch die abstrakten 🔒), Topologie-Regeln, Viewpoints, Tag-Typen. Wie viele es sind,
+   bestimmt der MDG-Stand; die Regeldatei wird laufend fortgeschrieben.
+2. **ggf. Startpaket rein** — Standardelemente kommen als zweite `.qea`. Ihre `ea_guid`
+   bleibt wörtlich erhalten, damit Modelle mit demselben Standard zusammenfinden.
+3. **Prosa rein** — Handbuch, Text, PDF oder Bild. Daraus werden Elemente und Beziehungen,
+   jede mit Angabe ihrer Herkunft.
+4. **Architektur bauen** — gegen die Regeln der MDG prüfen. Abstrakte Stereotype (🔒)
+   werden nie instanziiert; eine Regel mit abstraktem Endpunkt gilt für alle konkreten
+   Subtypen.
+5. **Architektur sehen** — Viewer: Pakete, Sichten, Graph, Pfade zwischen Elementen.
+6. **Architektur bearbeiten** — korrigieren (von Hand oder in Worten), Standardelemente
+   nachziehen, als neue `.qea` speichern. Das Original bleibt unberührt.
+7. **Fertig** — die `.qea` liegt vor.
 
-Es gibt nichts zu installieren, nichts zu registrieren, kein Abo, keine Cloud.
-Die Modelldatei bleibt auf dem eigenen Rechner.
+![Workflow-Abdeckung: welche der fünf Werkzeuge welchen Schritt können](docs/workflow-abdeckung.png)
 
-> **Windows:** Chrome oder Edge fragen beim ersten Mal „Dateien dieses Typs
-> werden normalerweise nicht geöffnet“. Das ist normal — die Datei ist eine
-> Web-Anwendung, kein Programm. Auf „Öffnen“ klicken.
+**Der Rückweg ist ein Test, kein Workflowschritt.** `.qea` → Doku (Handbuch) → Vergleich
+mit der Eingabe zeigt beiläufig, ob das Modell die Eingabe noch trägt. Er gehört nicht in
+den Ablauf. Messwerte und Grenzen: [docs/ABNAHME.md](docs/ABNAHME.md).
 
----
+- Die MDG kommt zuerst. Ohne Regelwerk wird nichts gebaut.
+- Das Startpaket übernehmen beide AI Suiten technisch als Zusammenführung in ein Modell
+  (HTML: Bereich „Standardelemente“, Python: `eam-ai toolbox`). Es lässt sich deshalb auch
+  nach dem Bauen nachziehen.
 
-## Welches Werkzeug wofür?
+## Welches Werkzeug wofür
 
-| Ich möchte … | Werkzeug | Download (ein Klick) |
-|---|---|---|
-| **aus Prosa, PDF oder Handbuch eine `.qea` bauen** und prüfen | **EAM AI Suite 9.1** | [EAM-AI-Suite.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-AI-Suite.html) |
-| **nur nachsehen**, was in einer `.qea` steckt | **EAM QEA Analyzer 4.0** | [EAM-QEA-Analyzer.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-QEA-Analyzer.html) |
-| **Modelle bearbeiten oder zwei Modelle verschmelzen** | **EAM Suite 8.4** | [EAM-Suite.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.html) |
-| **die MDG-Regeln nachschlagen** (Stereotype, Viewpoints, Tags) | **EAM MDG Parser** | [EAM-MDG-Parser.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-MDG-Parser.html) |
-| **in Open WebUI** ein Modell `.qea`-fähig machen | **Open-WebUI-Tool** | [eam_qea_analyzer_openwebui.py](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam_qea_analyzer_openwebui.py) |
-| **in der Konsole oder auf einem Server** arbeiten | **Python-Kern 2.4.0** | [eam-ai-suite-python.zip](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam-ai-suite-python.zip) |
+- **EAM AI Suite** (eine HTML-Datei, Fassung 9.1) — die ganze Kette im Browser: MDG laden,
+  Standardelemente übernehmen, Prosa mit KI in ein Modell übersetzen, prüfen, ansehen,
+  bearbeiten, Handbuch für den Rückweg-Test erzeugen.
+- **EAM AI Suite Python** (Kommandozeile `eam-ai` und Webdienst) — dieselbe Kette ohne
+  Browser, für Serienläufe, Server und Läufe ohne KI.
+- **EAM Suite** (eine HTML-Datei, Fassung 8.4) — vorhandene Modelle öffnen, mehrere
+  verschmelzen, von Hand bearbeiten und als neue `.qea` speichern; ohne MDG-Prüfung, ohne
+  KI, ohne Prosa.
+- **EAM QEA Analyzer** (eine HTML-Datei, Fassung 4.0) — vorhandene `.qea` nur lesen und
+  verstehen: Explorer, Sichten, Graph, Pfade, Export als Bild oder Tabelle; schreibt nichts.
+- **EAM MDG Parser** (eine HTML-Datei) — MDG-XML im Browser durchsuchen und als
+  Regeldateien exportieren; baut kein Modell.
 
-**Kurzfassung:**
+Schnellwahl
+- Neues Modell aus Text → EAM AI Suite (für Serien und Server: EAM AI Suite Python)
+- Modell nur ansehen → EAM QEA Analyzer
+- Modelle zusammenlegen oder von Hand ändern → EAM Suite
+- Regelwerk nachschlagen → EAM MDG Parser
 
-- **AI Suite** ist das größte Werkzeug: Prosa rein, Modell raus, prüfen,
-  ansehen, bearbeiten, Handbuch zurück.
-- **QEA Analyzer** liest und prüft nur. Kein Bearbeiten, keine KI — ideal,
-  um fremde Modelle gefahrlos anzusehen.
-- **EAM Suite** lädt mehrere Modelle, führt sie zusammen und schreibt eine neue
-  `.qea`. Ohne KI.
-- **MDG Parser** braucht keine Modelldatei, nur die MDG-XML (Regelwerk).
+Abgrenzung
+- Nur die beiden AI Suiten können den ganzen Ablauf. HTML und Python sind zwei getrennte
+  Umsetzungen derselben Kette.
+- EAM Suite, EAM QEA Analyzer und EAM MDG Parser sind eigenständige Einzelwerkzeuge mit
+  eigenem Quellstand. Es gibt keinen gemeinsamen UI-Kern.
+- Änderungen wandern nicht automatisch mit: ein Fix in der EAM Suite ist kein Fix in der
+  EAM AI Suite — und umgekehrt.
+- EAM Suite und EAM QEA Analyzer zeigen ein fest eingebautes ADMBw-Referenzraster. Es folgt
+  einer neuen MDG nicht; gegen die aktuelle MDG prüfen nur die beiden AI Suiten.
+- Die KI-Schritte der EAM AI Suite brauchen einen KI-Zugang (Endpunkt, Schlüssel). Laden,
+  Sehen und Bearbeiten gehen ohne.
+- Fragen an ein Modell, nur lesend, beantworten die EAM AI Suite, `eam-ai frage` und das
+  Open-WebUI-Werkzeug.
+- Weitere Werkzeuge der Familie: EAM-AI-QEA-Analyzer (das Open-WebUI-Werkzeug) und die
+  Prompt-Werkzeuge EAM-AI-ADMBw-Extractor, -Batch und -Script-Maker. Sie arbeiten mit der
+  Wissensbasis aus der MDG; Quellen unter `apps/`.
 
----
+## Herunterladen
 
-## Was die HTML-Werkzeuge können
+Alle Dateien liegen im öffentlichen Release — kein Konto, kein Login.
 
-| | AI Suite 9.1 | QEA Analyzer 4.0 | EAM Suite 8.4 | MDG Parser |
-|---|---|---|---|---|
-| `.qea` lesen | ✅ | ✅ | ✅ | — |
-| Prüfen / Validieren | ✅ | ✅ | ✅ | — |
-| Ansehen, Suchen, Pfade | ✅ | ✅ | ✅ | ✅ |
-| Bearbeiten, speichern | ✅ | — | ✅ | — |
-| Mehrere Modelle verschmelzen | — | — | ✅ | — |
-| Prosa / PDF / Bild → Modell | ✅ | — | — | — |
-| MDG-Regeln durchsuchen | ✅ | — | — | ✅ |
-| KI nötig | optional | nein | nein | nein |
-| Installation | keine | keine | keine | keine |
-| Größe | 3,4 MB | 299 KB | 1,3 MB | 31 KB |
+- Einstieg mit Übersicht aller Werkzeuge:
+  [START-HIER.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/START-HIER.html)
+- EAM AI Suite:
+  [EAM-AI-Suite.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-AI-Suite.html)
+  · für SharePoint:
+  [EAM-AI-Suite.aspx](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-AI-Suite.aspx)
+- EAM AI Suite Python:
+  [eam-ai-suite-python.zip](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam-ai-suite-python.zip)
+- EAM Suite:
+  [EAM-Suite.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.html)
+  · für SharePoint:
+  [EAM-Suite.aspx](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.aspx)
+- EAM QEA Analyzer:
+  [EAM-QEA-Analyzer.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-QEA-Analyzer.html)
+  · für SharePoint:
+  [EAM-QEA-Analyzer.aspx](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-QEA-Analyzer.aspx)
+- EAM MDG Parser:
+  [EAM-MDG-Parser.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-MDG-Parser.html)
+- Open-WebUI-Werkzeug (fragt eine `.qea` ab, statt zu raten):
+  [eam_qea_analyzer_openwebui.py](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam_qea_analyzer_openwebui.py)
+- Prüfsummen:
+  [SHA256SUMS](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/SHA256SUMS)
+  · Inhalt des Release:
+  [RELEASES.md](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/RELEASES.md)
 
-Alle vier laufen offline. Die Modelldatei wird nie hochgeladen — der Browser
-liest sie lokal.
+So geht's
+1. Datei herunterladen.
+2. Doppelklick — sie öffnet sich im Browser.
+3. Die eigene `.qea` bzw. die MDG-XML hineinziehen.
 
----
+- Die `.aspx`-Dateien sind dieselben Anwendungen für SharePoint/IIS (UTF-8 mit BOM).
+- Prüfsummen kontrollieren, im Download-Ordner: `sha256sum -c --ignore-missing SHA256SUMS`
 
-## Was ist eine `.qea`?
-
-Eine `.qea` ist eine Modell-Datenbank, wie sie Sparx Enterprise Architect
-erzeugt (SQLite-Format). Die Werkzeuge lesen und schreiben dieses Format,
-brauchen aber **kein** Enterprise Architect und keine Lizenz.
-
----
-
-## Häufige Fragen
-
-**Muss ich ein Konto anlegen?**
-Nein. Weder bei GitHub noch sonst wo.
-
-**Ist das sicher für interne Modelle?**
-Ja. Die HTML-Dateien laden nichts nach, senden nichts weg und arbeiten ohne
-Netz. Du kannst den Rechner vom Netz nehmen, es funktioniert weiter.
-Ausnahme: Die AI Suite darf optional eine KI anbinden — abgeschaltet, solange
-kein Schlüssel eingetragen ist.
-
-**Warum sehe ich auf GitHub nur Text, wenn ich auf die Datei klicke?**
-Weil GitHub HTML nur als Quelltext anzeigt. Nimm die Download-Links oben oder
-die Seite
-[`START-HIER.html`](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/START-HIER.html) —
-dort gibt es für jedes Werkzeug einen Knopf.
-
-**Welche Datei ist die richtige: `.html` oder `.aspx`?**
-`.html` für den eigenen Rechner. `.aspx` nur, wenn die Datei auf einem
-SharePoint-/IIS-Server liegt.
-
-**Wie prüfe ich, dass der Download vollständig ist?**
-Die Prüfsummen stehen in
-[`SHA256SUMS`](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/SHA256SUMS).
-Für den Alltag nicht nötig.
-
-**Darf ich die Datei weitergeben?**
-Ja, unverändert weitergeben ist erlaubt (MIT-Lizenz). Details in
-[`LICENSE`](LICENSE) und [`NOTICE.md`](NOTICE.md).
-
----
-
-## Alle Downloads und Prüfsummen
-
-- **Alle Dateien auf einen Blick:**
-  [Releases ansehen](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest)
-- **Übersichtsseite mit Knöpfen:**
-  [`START-HIER.html`](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/START-HIER.html)
-- **Prüfsummen:**
-  [`SHA256SUMS`](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/SHA256SUMS)
-
-Aktuelle Fassung: **3.0.3** (Release-Tag `v3.0.3`).
-
----
-
-## Für Terminal, Server und Automatisierung
-
-<details>
-<summary><b>Python-Paket installieren (aufklappen)</b></summary>
-
-Voraussetzung: Python 3.11 oder neuer. Sonst nichts.
+### EAM AI Suite Python
 
 ```bash
 unzip eam-ai-suite-python.zip
 pip install ./eam-ai-suite-python
-eam-ai --version
 eam-ai --help
 ```
 
-Weboberfläche starten:
-
-```bash
-eam-ai serve --host 127.0.0.1 --port 8080
-# -> http://127.0.0.1:8080/
-```
-
-</details>
-
-<details>
-<summary><b>Container (Docker)</b></summary>
-
-```bash
-docker pull ghcr.io/mitchel85/eam-toolfamilie:v3.0.3
-docker run --rm -p 8080:8080 ghcr.io/mitchel85/eam-toolfamilie:v3.0.3
-# -> http://127.0.0.1:8080/
-```
-
-`eam-ai` ist im Image direkt aufrufbar:
-
-```bash
-docker run --rm --entrypoint eam-ai ghcr.io/mitchel85/eam-toolfamilie:v3.0.3 --help
-```
-
-</details>
-
-<details>
-<summary><b>Open WebUI</b></summary>
-
-1. In Open WebUI unter **Werkzeuge** eine neue Werkzeugdatei anlegen.
-2. Inhalt von
-   [`eam_qea_analyzer_openwebui.py`](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam_qea_analyzer_openwebui.py)
-   einfügen oder die Datei hochladen.
-3. Werkzeug für das Modell aktivieren.
-
-Details: [`apps/mcp/openwebui_integration.md`](apps/mcp/openwebui_integration.md).
-
-</details>
-
----
+- `eam-ai build --mdg technologie.xml --text beschreibung.pdf --out modell.qea` — Schritte 1,
+  3 und 4; braucht ein KI-Backend (`--backend openai` oder `ollama`, offline `--backend datei`).
+- `eam-ai build --mdg technologie.xml --out geruest.qea` — Gerüst nur aus dem Regelwerk,
+  ohne Text, ohne KI.
+- `eam-ai toolbox` — Standardelemente aus einem Startpaket übernehmen, GUID-erhaltend.
+- `eam-ai merge` · `eam-ai edit` · `eam-ai korrigiere` — zusammenführen, gezielt ändern,
+  in Worten korrigieren.
+- `eam-ai frage` — Frage an eine vorhandene `.qea`.
+- `eam-ai serve` — Weboberfläche.
+- Viewer (`viewer_html.py`) und Handbuch für den Rückweg-Test (`handbuch_generator.py`,
+  `prosa_vergleich.py`) liegen als Module im Paket; eigene `eam-ai`-Befehle dafür gibt es
+  noch nicht.
 
 ## Für Entwickler
 
-<details>
-<summary><b>Aufbau des Repositories</b></summary>
+Aufbau
+- `packages/rules/` — MDG-Leser. Welche MDG-Datei gilt, steht in einer einzigen Zeile:
+  `packages/rules/CURRENT`.
+- `packages/core/` — Python-Kern: lesen, prüfen, schreiben, zusammenführen, bearbeiten,
+  Viewer, Handbuch.
+- `apps/html-suite`, `apps/html-editor`, `apps/html-analyzer`, `apps/mdg-web` — die
+  HTML-Auslieferungen, je mit eigenem Quellstand und eigenem Build; der MDG Parser wird
+  byte-gleich übernommen.
+- `apps/cli`, `apps/mcp`, `apps/admbw-*` — Kommandozeile, MCP und Open WebUI,
+  Prompt-Werkzeuge.
+- `knowledge/` — Wissensbasis, **erzeugt** aus der MDG; nicht von Hand ändern.
+- `vendor/` — Browser-Bibliotheken, kanonisch; wird beim Bauen in die Apps gespiegelt
+  (`apps/*/vendor/` ist nicht versioniert).
 
-```
-packages/
-  rules/     MDG-Parser — die einzige Wahrheit für Stereotype und Regeln
-  core/      Lesen, Schreiben und Prüfen von Modelldateien, CLI-Kern
-apps/
-  html-suite/         EAM AI Suite 9.1     (eigener Quellstand, eigener Build)
-  html-analyzer/      EAM QEA Analyzer 4.0 (eigener Quellstand, eigener Build)
-  html-editor/        EAM Suite 8.4        (eigener Quellstand, eigener Build)
-  mdg-web/            EAM MDG Parser       (ältere Browser-Fassung, byte-gleich)
-  cli/                Kommandozeile
-  mcp/                Modelleinbindung (MCP, Open WebUI)
-  admbw-batch/        Prosa → JSON-Batches
-  admbw-extractor/    Prosa → Stereotype/Beziehungen
-  admbw-script-maker/ Modellbehelf → EA-JScript
-knowledge/            Wissensbasis, erzeugt — nicht von Hand ändern
-vendor/               kanonische Browser-Bibliotheken (sql.js, PDF.js, JSZip)
-scripts/              Bau, Prüfung, Einsammeln
-tests/                ein Testlauf für alles
-```
+Keine festen Zahlen
+- Die MDG ändert sich laufend: Stereotype, Regeln, Viewpoints und Tag-Typen kommen und
+  gehen. Der Parser extrahiert immer vollständig; die Anzahl ist variabel.
+- Die Zahlen eines MDG-Stands stehen in der Baseline
+  `packages/rules/schemas/baseline-mdg-<release>.json` und in `knowledge/admbw-meta.md` —
+  nicht in Code, README oder Prüfskript.
+- Neuer MDG-Stand: XML ablegen → `packages/rules/CURRENT` anpassen → Wissensbasis neu
+  erzeugen → nach fachlicher Prüfung eine neue Baseline schreiben.
 
-Jede HTML-App bringt ihren eigenen `src/`- und `vendor/`-Stand mit. `app.json`
-nennt nur Produkt, Fassung, Quellstand und erwartete Ausgabedateien. Verbindlich
-für den Auslieferungsgraphen ist `scripts/verify_graph.py`, nicht der native
-GitHub-Graph (interne Paketnamen, kein npm-Lockfile).
-
-</details>
-
-<details>
-<summary><b>Bauen und prüfen</b></summary>
+Bauen und prüfen
 
 ```bash
-python3 scripts/build_all.py          # HTML, Wheel, Offline-Bundle, SHA256SUMS
-python3 scripts/collect_releases.py   # Auslieferungen + Quell-Archiv, Manifest
-python3 scripts/verify_graph.py       # jede Zelle, jede Kante, jedes Artefakt
-python3 -m pytest -q                  # ein Testlauf für alles
+python3 scripts/build_knowledge.py --check --check-provenance
+python3 scripts/propagate.py --check
+python3 scripts/build_all.py
+python -m pytest -q
+python3 scripts/verify_graph.py
 ```
 
-Jeder App-Build prüft seine JavaScript-Blöcke mit `node --check`, schreibt
-`.html` und `.aspx` (UTF-8 mit BOM) und ist deterministisch: zweimal bauen
-ergibt dieselben Bytes. `tests/test_html_artifacts.py` hält Größe, Titel,
-Funktionsmarker und die Trennung der drei Werkzeuge fest.
+- Builds sind deterministisch; `tests/test_html_artifacts.py` hält Größe, Titel,
+  Funktionsmarker und die Trennung der Werkzeuge fest.
+- Die große Musterarchitektur liegt bewusst nicht im Repository (Prüfsumme in
+  `packages/core/ci/fixtures_manifest.json`). Ohne sie werden die Prüfläufe, die sie
+  brauchen, sichtbar übersprungen. Lokal: Datei nach `packages/core/fixtures/` legen oder
+  `EAM_FIXTURE_STORE` setzen; die MCP-Tests brauchen zusätzlich `MASC_QEA_PATH`.
+- Regelpfad ohne KI im Quellstand: in `packages/core/` `python3 eam_suite.py --no-llm run …`.
 
-</details>
+Weiterlesen
+- [docs/HERKUNFT.md](docs/HERKUNFT.md) — Herkunft der Einzelwerkzeuge und gebaute Hashes
+- [docs/STRUKTUR.md](docs/STRUKTUR.md) — Struktur und Auslieferungen
+- [docs/ABHAENGIGKEITEN.md](docs/ABHAENGIGKEITEN.md) — Abhängigkeitskarte (erzeugt)
+- [docs/MIGRATION.md](docs/MIGRATION.md) — Migration
+- [docs/ABNAHME.md](docs/ABNAHME.md) — Abnahmelauf und Rückweg-Test
 
-<details>
-<summary><b>Abhängigkeiten und Propagation</b></summary>
-
-Die Karte steht in [`docs/ABHAENGIGKEITEN.md`](docs/ABHAENGIGKEITEN.md). Sie ist
-erzeugt und wird von `scripts/dependency_report.py --check` gegen den
-Arbeitsbaum geprüft.
-
-```bash
-python3 scripts/propagate.py --check   # Drift: Wissensbasis, Vendor, Manifeste, Karte
-python3 scripts/propagate.py --write   # Quellen weiterreichen, ohne zu bauen
-python3 scripts/propagate.py --all     # weiterreichen, bauen, einsammeln, Graph prüfen
-python3 scripts/impact.py --git        # welche Zellen und Befehle sind betroffen?
-```
-
-Regel: **`vendor/` und die MDG-XML sind Quellen; alles andere ist daraus
-abgeleitet.** `knowledge/` wird erzeugt, die Apps lesen es über Symlinks,
-`vendor/` wird in die drei HTML-Apps gespiegelt, die Builds schreiben
-`apps/*/dist`. `propagate --check` bricht in der CI ab, wenn eine Kopie oder
-die Karte nicht zum Quellstand passt.
-
-„Automatisch“ heißt hier an der Build- und CI-Grenze, nicht per Datei-Watcher.
-Änderungen in einer App-Quelle wirken bewusst **nur** in dieser App — die drei
-HTML-Stände bleiben eigenständig.
-
-</details>
-
-<details>
-<summary><b>Wissensbasis</b></summary>
-
-`knowledge/` ist erzeugt, nicht gepflegt. Einzige Quelle ist die MDG-XML in
-`packages/rules/`.
-
-```bash
-python3 scripts/build_knowledge.py --mdg packages/rules/NAFv4-ADMBw-MDG-2026.05.xml
-python3 scripts/build_knowledge.py --mdg packages/rules/NAFv4-ADMBw-MDG-2026.05.xml --check --check-provenance
-```
-
-`knowledge/PROVENANCE.json` hält MDG-Datei und Parserstand mit SHA-256 fest.
-Die drei ADMBw-Apps lesen dieselben Dateien über Symlinks; es gibt keine
-zweiten Kopien.
-
-</details>
-
-<details>
-<summary><b>Herkunft und Dokumentation</b></summary>
-
-Jede HTML-Datei wird aus ihrem eigenen Altstand gebaut; Zuordnung von Repo,
-Commit, Anpassung und Ausgabe steht in [`docs/HERKUNFT.md`](docs/HERKUNFT.md).
-Weiter: [`docs/STRUKTUR.md`](docs/STRUKTUR.md),
-[`docs/MIGRATION.md`](docs/MIGRATION.md),
-[`docs/ABNAHME.md`](docs/ABNAHME.md),
-[`docs/ABHAENGIGKEITEN.md`](docs/ABHAENGIGKEITEN.md).
-
-</details>
-
----
-
-## Lizenz
-
-MIT für eigene Anteile — siehe [`LICENSE`](LICENSE). Eingebundene
-Bibliotheken Dritter und deren Lizenzen stehen in [`NOTICE.md`](NOTICE.md).
+Lizenz: [LICENSE](LICENSE) · Hinweise zu Drittkomponenten: [NOTICE.md](NOTICE.md)

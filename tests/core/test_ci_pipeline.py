@@ -31,7 +31,9 @@ from ci import build_reference, lint_core, miniyaml, release, stage_fixtures, va
 
 ROOT = Path(__file__).resolve().parents[2] / 'packages' / 'core'  # Monorepo: Bezugswurzel umgesetzt (Pfade beim Monorepo-Umzug gesetzt)
 MANIFEST = ROOT / "ci" / "fixtures_manifest.json"
-REAL_MDG = ROOT / "fixtures" / "NAFv4-ADMBw-MDG-2026.05.xml"
+import mdg_source  # noqa: E402
+
+REAL_MDG = mdg_source.path()
 
 
 # --------------------------------------------------------------------------
@@ -63,10 +65,11 @@ def _kleine_fixture(tmp_path: Path, content: bytes = b"inhalt-1") -> tuple[Path,
 
 def test_manifest_der_internen_fixtures_ist_vollstaendig() -> None:
     fixtures = stage_fixtures.load_manifest(MANIFEST)
-    assert [item.name for item in fixtures] == [
-        "Musterarchitektur_MASC.qea",
-        "NAFv4-ADMBw-MDG-2026.05.xml",
-    ]
+    namen = [item.name for item in fixtures]
+    assert "Musterarchitektur_MASC.qea" in namen
+    # Die MDG ist kein Fixture: sie steht in packages/rules und wird dort
+    # über CURRENT gefunden, nicht über den Fixture-Store.
+    assert mdg_source.name() not in namen
     for item in fixtures:
         assert item.bytes > 0
         assert len(item.sha256) == 64

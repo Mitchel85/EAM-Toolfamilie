@@ -26,7 +26,13 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-MDG = "packages/rules/NAFv4-ADMBw-MDG-2026.05.xml"
+_RULES = ROOT / "packages" / "rules"
+if str(_RULES) not in sys.path:
+    sys.path.insert(0, str(_RULES))
+import mdg_source  # noqa: E402  (bewusst nach dem Pfad-Aufbau)
+
+#: Aktuelle MDG, relativ zur Repo-Wurzel — Quelle ist packages/rules/CURRENT.
+MDG = f"packages/rules/{mdg_source.name()}"
 APPS = ("html-suite", "html-analyzer", "html-editor")
 
 
@@ -36,16 +42,18 @@ def run(*args: str) -> None:
 
 
 def write() -> None:
-    run(sys.executable, "scripts/build_knowledge.py", "--mdg", MDG)
+    # Ohne --mdg: build_knowledge.py liest packages/rules/CURRENT.
+    run(sys.executable, "scripts/build_knowledge.py")
     run(sys.executable, "scripts/sync_vendor.py", "--write")
     run(sys.executable, "scripts/sync_dependency_files.py")
     run(sys.executable, "scripts/dependency_report.py", "--write")
 
 
 def check() -> None:
-    run(sys.executable, "scripts/build_knowledge.py", "--mdg", MDG,
+    run(sys.executable, "scripts/build_knowledge.py",
         "--check", "--check-provenance")
-    run(sys.executable, "scripts/sync_vendor.py", "--check")
+    # Die Vendor-Kopien entstehen beim Bauen; im frischen Klon fehlen sie.
+    run(sys.executable, "scripts/sync_vendor.py", "--check", "--allow-missing")
     run(sys.executable, "scripts/sync_dependency_files.py", "--check")
     run(sys.executable, "scripts/dependency_report.py", "--check")
     run(sys.executable, "scripts/check_single_source.py")

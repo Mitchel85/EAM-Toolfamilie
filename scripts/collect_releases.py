@@ -271,6 +271,19 @@ ${cards}
     <li><b>Ich will einen eigenen Server.</b> → Container-Image</li>
   </ul>
 
+  <h2>So entsteht eine Architektur</h2>
+  <p class="lead">Der Weg durch die Werkzeuge — sieben Schritte, in dieser Reihenfolge.</p>
+  <ol class="decision">
+    <li><b>MDG rein.</b> Die Technologie-Datei (XML) wird geladen. Daraus entsteht das Regelwerk: Stereotype, Topologie-Regeln, Viewpoints, Tag-Typen. Die Anzahl hängt vom MDG-Stand ab und wird nicht festgeschrieben.</li>
+    <li><b>Startpaket rein — wenn vorhanden.</b> Die Standardelemente (StEKa) kommen als zweite <code>.qea</code> hinein; ihre GUIDs werden wörtlich übernommen, damit Modelle zusammenfinden.</li>
+    <li><b>Prosa rein.</b> Handbuch, Text oder ein Abschnitt daraus — daraus werden Elemente, Beziehungen und die Herkunft jeder Aussage.</li>
+    <li><b>Architektur bauen.</b> Geprüft wird gegen die Regeln der MDG; abstrakte Stereotype dürfen nicht instanziiert werden.</li>
+    <li><b>Architektur sehen.</b> Modell im Viewer öffnen: Pakete, Sichten, Beziehungen, Pfade.</li>
+    <li><b>Architektur bearbeiten.</b> Korrigieren, Standardelemente nachziehen, als neue <code>.qea</code> speichern.</li>
+    <li><b>Fertig.</b> Die <code>.qea</code> liegt vor und ist in Auswertewerkzeugen lesbar.</li>
+  </ol>
+  <p class="lead">Der Rückweg — aus dem Modell wieder ein Handbuch — ist <b>kein</b> Schritt in diesem Ablauf, sondern ein Test: Er zeigt beiläufig, ob das Modell die Eingabe noch trägt.</p>
+
   <h2>Prüfen</h2>
   <p class="lead">Jede Datei hat eine Prüfsumme. <a href="${sums}">SHA256SUMS herunterladen</a> und danach im Download-Ordner <code>sha256sum -c SHA256SUMS</code> ausführen.</p>
 
@@ -346,7 +359,7 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
         ),
         _karte(
             "EAM MDG Parser", "Nachschlagen und exportieren",
-            "MDG-XML laden: 318 Stereotype, 203 Regeln, 52 Viewpoints, 27 Tag-Typen und 225 Stereotyp-Tags durchsuchen; sechs Regeldateien exportieren.",
+            "MDG-XML laden: Stereotype, Topologie, Viewpoints, Tag-Typen und Stereotyp-Tags durchsuchen; sechs Regeldateien exportieren. Die Anzahl hängt vom MDG-Stand ab.",
             "EAM-MDG-Parser.html", "EAM-MDG-Parser.html herunterladen",
             ["Datei herunterladen", "Doppelklick", "MDG-XML laden und durchsuchen"],
             groesse=groesse("EAM-MDG-Parser.html"),

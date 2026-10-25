@@ -56,6 +56,7 @@ Eine Zelle ist ein Ordner mit `package.json`. `dependencies` sind Laufzeit-,
 
 | Quelle | Wird zu | Mechanik | Prüfung |
 |---|---|---|---|
+| `packages/rules/CURRENT` | Dateiname der aktuellen MDG | `mdg_source.py` liest die Zeile | `test_parser_einheit.py` |
 | `packages/rules/NAFv4-ADMBw-MDG-2026.05.xml` | `knowledge/admbw-*` | `build_knowledge.py` | `--check --check-provenance` |
 | `packages/rules/mdg_parser.py` + `documents.py` | `knowledge/admbw-*` | Parser → Dokumente | `check_single_source.py` |
 | `knowledge/*` | `apps/admbw-*/` | Symlink, keine Kopie | `verify_graph.py` |

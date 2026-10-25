@@ -1870,14 +1870,15 @@ function pickFiles(multi) {
   input.click();
 }
 
-/* ---------- Experimentell: MASC-Architektur laden ----------
-   Nur für die lokale Abwandlung. Lädt die MASC-Architektur per fetch.
-   Die Datei muss neben der HTML-Datei liegen; optional per
-   Query-Parameter ?testarch=<url> überschreibbar (Proxy/Testserver). */
+/* ---------- Experimentell: Referenzarchitektur laden ----------
+   Nur für die lokale Abwandlung. Lädt eine .qea per fetch.
+   Bewusst OHNE fest verdrahtete Adresse: interne Ablageorte gehören nicht in
+   eine ausgelieferte Datei. Geladen wird nur, was neben der HTML liegt oder
+   ausdrücklich per ?testarch=<url> genannt wird. */
 var TEST_ARCH_NAME = 'MASC_v102026.qea';
 
 /* Kandidaten in dieser Reihenfolge:
-   1. Datei liegt NEBEN der HTML-Datei -> kein CORS
+   1. Datei liegt NEBEN der HTML (gleiche SharePoint-/Teams-Bibliothek) -> kein CORS
    2. ?testarch=<url> als Override (Proxy, Testserver) */
 function testArchCandidates() {
   var list = [];
@@ -1895,10 +1896,10 @@ function testArchHint(show, detail) {
   if (!show) { box.style.display = 'none'; box.innerHTML = ''; return; }
   box.style.display = 'block';
   box.innerHTML = '<b>Direktzugriff blockiert.</b> ' + esc(detail || '')
-    + ' Der Browser darf die Datei nicht laden.<br>'
+    + ' Der Browser darf die Datei nicht direkt aus der Bibliothek lesen (CORS).<br>'
     + '<b>Zwei Wege, die sicher funktionieren:</b><br>'
-    + '1. <b>MASC_v102026.qea</b> neben diese HTML-Datei legen — dann lädt der Button sie ohne Umweg.<br>'
-    + '2. Beim Aufruf <code>?testarch=&lt;url&gt;</code> setzen (Proxy/Testserver).';
+    + '1. Die Datei <b>neben diese HTML-Datei</b> in dieselbe Bibliothek legen — dann lädt der Knopf sie ohne Umweg.<br>'
+    + '2. Die Datei hierher ziehen oder über „Eine Architektur laden" öffnen.';
 }
 
 function loadMASCArchitektur() {
@@ -1947,7 +1948,7 @@ function loadMASCArchitektur() {
       hideLoadOverlay();
       showUpHint('');
       testArchHint(true, e.message);
-      toast('⚠ MASC-Architektur: ' + e.message);
+      toast('⚠ Referenzarchitektur: ' + e.message);
     });
 }
 

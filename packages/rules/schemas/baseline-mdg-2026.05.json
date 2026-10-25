@@ -12,7 +12,9 @@
     "rules_complete": 133,
     "viewpoints": 52,
     "tag_types": 27,
-    "stereotype_tags": 225
+    "stereotype_tags": 225,
+    "abstract": 44,
+    "usable": 293
   },
   "fingerprints": {
     "stereotypes": "8f160452a75e3a0817083643a3cc928283bcd0a9e0f73db4615c320a5743d814",
@@ -20,5 +22,6 @@
     "viewpoints": "b31330c53636bc1e313ab5b91fee3032b3755bf03c3b724d5ebbbe7223798d49",
     "tag_types": "6d59cc14129ea6f4866f52127675a557af6eaa4d9846db321384883dbf20b5d9",
     "stereotype_tags": "a5bf810fb180fe4791513207db2d20cdec6b3a378ae6948d5fe39dee786c4a8f"
-  }
+  },
+  "note": "counts = Erwartungswerte eines vollstaendigen Parserlaufs. abstract und usable sind daraus abgeleitet (Stereotype mit isAbstract bzw. mit nicht-leerem AppliesTo ohne ToolboxPage). Aendert sich die MDG, entsteht eine neue Baseline — die Zahlen im Code werden nicht nachgezogen."
 }

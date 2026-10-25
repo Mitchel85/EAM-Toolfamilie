@@ -172,10 +172,18 @@ def standard_mdg() -> Path:
     Der interne Store ist optional: ohne ihn muss die Pipeline trotzdem
     laufen koennen. Der Auszug ist bewusst klein und synthetisch, damit
     nichts Vertrauliches im Repo landet.
+
+    Der Dateiname steht in ``packages/rules/CURRENT``. Bewusst per Hand
+    gelesen statt importiert: dieses Skript gehoert zum Kern und bleibt
+    standardbibliothek-only (Regel aus ``ci/lint_core.py``).
     """
-    echt = ROOT / "fixtures" / "NAFv4-ADMBw-MDG-2026.05.xml"
-    if echt.is_file():
-        return echt
+    regeln = ROOT.parents[0] / "rules"
+    aktuell = regeln / "CURRENT"
+    if aktuell.is_file():
+        for zeile in aktuell.read_text(encoding="utf-8").splitlines():
+            name = zeile.split("#", 1)[0].strip()
+            if name and (regeln / name).is_file():
+                return regeln / name
     return ROOT / "tests" / "fixtures" / "admbw_auszug.xml"
 
 

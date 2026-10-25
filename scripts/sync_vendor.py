@@ -2,7 +2,13 @@
 """Hält die Vendor-Kopien der HTML-Werkzeuge mit der kanonischen Quelle synchron.
 
     python3 scripts/sync_vendor.py --check
+    python3 scripts/sync_vendor.py --check --allow-missing
     python3 scripts/sync_vendor.py --write
+
+Die Kopien in ``apps/<app>/vendor/`` entstehen beim Bauen und sind darum
+nicht versioniert (siehe ``.gitignore``). Ein frischer Klon hat sie noch
+nicht; ``--allow-missing`` toleriert genau das. Abweichende oder überzählige
+Dateien bleiben auch dort ein Befund.
 
 `vendor/` ist die einzige Quelle für gemeinsam genutzte Browser-Bibliotheken.
 Die drei Altwerkzeuge brauchen lokale Kopien, weil ihre Build-Skripte und die
@@ -99,6 +105,11 @@ def main() -> int:
     ap.add_argument("--check", action="store_true", help="nur prüfen, nichts schreiben")
     ap.add_argument("--write", action="store_true", help="Kopien aktualisieren")
     ap.add_argument("--app", choices=sorted(ZUORDNUNG), help="nur eine App")
+    ap.add_argument(
+        "--allow-missing",
+        action="store_true",
+        help="fehlende Kopien tolerieren (der Klon ist schlank, gebaut wird trotzdem)",
+    )
     args = ap.parse_args()
     if args.check == args.write:
         ap.error("genau eines von --check oder --write angeben")
@@ -110,6 +121,10 @@ def main() -> int:
             befunde.extend(schreibe(app))
         else:
             befunde.extend(unterschiede(app))
+    if args.check and args.allow_missing:
+        # Nur fehlende Zielkopien sind harmlos — fehlende Quellen und
+        # abweichende Bytes bleiben Fehler.
+        befunde = [b for b in befunde if ": fehlt: " not in b]
     for befund in befunde:
         print(f"BEFUND: {befund}")
     if args.check:

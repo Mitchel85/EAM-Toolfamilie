@@ -11,7 +11,9 @@ import repair_loop
 import validator
 
 ROOT = Path(__file__).resolve().parents[2] / 'packages' / 'core'  # Monorepo: Bezugswurzel umgesetzt (Pfade beim Monorepo-Umzug gesetzt)
-MDG = ROOT / "fixtures" / "NAFv4-ADMBw-MDG-2026.05.xml"
+import mdg_source  # noqa: E402
+
+MDG = mdg_source.path()
 
 pytestmark = pytest.mark.skipif(not MDG.is_file(), reason="MDG-Fixture fehlt")
 

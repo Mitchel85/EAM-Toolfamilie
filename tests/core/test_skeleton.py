@@ -25,7 +25,9 @@ from qea_reader import read_qea
 ROOT = Path(__file__).resolve().parents[2] / 'packages' / 'core'  # Monorepo: Bezugswurzel umgesetzt (Pfade beim Monorepo-Umzug gesetzt)
 FIXTURES = Path(__file__).resolve().parents[2] / "packages" / "core" / "fixtures"  # Monorepo
 MDG = FIXTURES / "admbw_auszug.xml"
-REAL_MDG = ROOT / "fixtures" / "NAFv4-ADMBw-MDG-2026.05.xml"
+import mdg_source  # noqa: E402
+
+REAL_MDG = mdg_source.path()
 
 
 def _rules() -> dict:

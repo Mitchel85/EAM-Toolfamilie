@@ -21,7 +21,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RULES = ROOT / "packages" / "rules" / "mdg_parser.py"
 CORE = ROOT / "packages" / "core" / "mdg_parser.py"
-MDG = ROOT / "packages" / "rules" / "NAFv4-ADMBw-MDG-2026.05.xml"
+if str(ROOT / "packages" / "rules") not in sys.path:
+    sys.path.insert(0, str(ROOT / "packages" / "rules"))
+import mdg_source  # noqa: E402  (bewusst nach dem Pfad-Aufbau)
+
+MDG = mdg_source.path()
 FREMD = ROOT / "packages" / "core" / "fixtures" / "fremd_klein.xml"
 
 

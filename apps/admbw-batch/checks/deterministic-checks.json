@@ -46,7 +46,7 @@
   },
   "checks": [
     {
-      "name": "Stereotypes: 318 Tabellenzeilen",
+      "name": "Stereotypes: Tabellenzeilen: 318",
       "ok": true,
       "detail": "ist 318"
     },
@@ -56,7 +56,7 @@
       "detail": "ist 0"
     },
     {
-      "name": "Stereotypes: 44 abstrakte Stereotype (🔒)",
+      "name": "Stereotypes: abstrakte Stereotype (🔒): 44",
       "ok": true,
       "detail": "ist 44"
     },
@@ -66,14 +66,14 @@
       "detail": "ist 0"
     },
     {
-      "name": "Stereotypes: 293 nutzbare",
+      "name": "Stereotypes: nutzbare: 293",
       "ok": true,
       "detail": "ist 293"
     },
     {
-      "name": "Stereotypes: 318 Katalog (ohne ToolboxPage/Artefakt)",
+      "name": "Stereotypes: Katalog = Tabellenzeilen ohne Artefakte",
       "ok": true,
-      "detail": "ist 318"
+      "detail": "318 != 318 - 0 - 0"
     },
     {
       "name": "Stereotypes: Header nennt 318 und 44 abstrakt",
@@ -91,12 +91,12 @@
       "detail": ""
     },
     {
-      "name": "JSON: 318 Einträge",
+      "name": "JSON: Einträge: 318",
       "ok": true,
       "detail": "ist 318"
     },
     {
-      "name": "JSON: 44 abstrakt",
+      "name": "JSON: abstrakt: 44",
       "ok": true,
       "detail": "ist 44"
     },
@@ -116,17 +116,17 @@
       "detail": ""
     },
     {
-      "name": "Topology: 203 Zeilen",
+      "name": "Topology: Zeilen: 203",
       "ok": true,
       "detail": "ist 203"
     },
     {
-      "name": "Topology: 133 Regeln mit beiden Enden",
+      "name": "Topology: Regeln mit beiden Enden: 133",
       "ok": true,
       "detail": "ist 133"
     },
     {
-      "name": "Topology: 70 reine Rollen-Zeilen",
+      "name": "Topology: reine Rollen-Zeilen: 70",
       "ok": true,
       "detail": "ist 70"
     },
@@ -136,7 +136,7 @@
       "detail": ""
     },
     {
-      "name": "Viewpoints: 52 Überschriften",
+      "name": "Viewpoints: Überschriften: 52",
       "ok": true,
       "detail": "ist 52"
     },
@@ -146,7 +146,7 @@
       "detail": ""
     },
     {
-      "name": "TagTypes: 27 Property-Typen",
+      "name": "TagTypes: Property-Typen: 27",
       "ok": true,
       "detail": "ist 27"
     },
@@ -156,27 +156,12 @@
       "detail": ""
     },
     {
-      "name": "Connectors: Dependency (100)",
+      "name": "Connectors: 27 Metatyp-Zeilen in sich stimmig",
       "ok": true,
       "detail": ""
     },
     {
-      "name": "Connectors: Class (68)",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "Connectors: Activity (6)",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "Connectors: Connector (3)",
-      "ok": true,
-      "detail": ""
-    },
-    {
-      "name": "Connectors: 52 Viewpoints",
+      "name": "Connectors: nennt 52 Viewpoints",
       "ok": true,
       "detail": ""
     },

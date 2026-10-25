@@ -28,6 +28,74 @@ def check(name, ok, detail=""):
     print(f"{'PASS' if ok else 'FAIL'}  {name}" + (f"  — {detail}" if detail and not ok else ""))
 
 
+def _baseline_counts():
+    """Erwartete Zählwerte aus der MDG-Baseline (packages/rules/schemas).
+
+    Die Zahlen stehen bewusst NICHT im Code. Die MDG wird fortgeschrieben:
+    Stereotype, Topologie-Regeln, Viewpoints und Tag-Typen kommen hinzu oder
+    fallen weg. Eine eingetippte Zahl macht daraus entweder einen falschen
+    Fehlalarm oder — schlimmer — eine Prüfung, die grün bleibt, obwohl der
+    Parser kaputt ist.
+
+    Quelle ist die Baseline des Release, das ``packages/rules/CURRENT`` nennt.
+    Fehlt sie, wird der Wert nur gemeldet (INFO), nicht geprüft.
+    """
+    for wurzel in Path(__file__).resolve().parents:
+        regeln = wurzel / "packages" / "rules"
+        if (regeln / "CURRENT").is_file():
+            if str(regeln) not in sys.path:
+                sys.path.insert(0, str(regeln))
+            import mdg_source  # noqa: PLC0415
+
+            return mdg_source.counts()
+    return {}
+
+
+ERWARTET = _baseline_counts()
+
+
+def check_zahl(name, wert, schluessel):
+    """Prüft eine Zahl gegen die Baseline; ohne Baseline wird sie nur gemeldet."""
+    erwartung = ERWARTET.get(schluessel)
+    if erwartung is None:
+        print(f"INFO  {name}: {wert} — keine Baseline zu '{schluessel}', nicht geprüft")
+        results.append((f"{name} (ohne Baseline nur gemeldet)", True, ""))
+        return
+    check(f"{name}: {erwartung}", wert == erwartung, f"ist {wert}")
+
+
+def check_metatyp_tabelle(text):
+    """Prüft die Metatyp-Tabellen der Konnektor-KB in sich selbst.
+
+    Die Zahl in der Kopfzelle, die Spalte ``Anzahl`` und die tatsächlich
+    genannten Stereotype (inklusive ``+N weitere``) müssen zusammenpassen.
+    Das ist unabhängig von jedem MDG-Stand und deckt abgeschnittene Listen auf.
+    """
+    zeilen = [z for z in text.splitlines() if z.startswith("| **")]
+    fehler = []
+    for zeile in zeilen:
+        zellen = [c.strip() for c in zeile.split("|")[1:-1]]
+        if len(zellen) < 3:
+            continue
+        kopf = re.match(r"\*\*(.+?)\*\*\s*\((\d+)\)", zellen[0])
+        if not kopf:
+            continue
+        name, klammer = kopf.group(1), int(kopf.group(2))
+        try:
+            anzahl = int(zellen[1])
+        except ValueError:
+            fehler.append(f"{name}: Anzahl unlesbar ({zellen[1]!r})")
+            continue
+        if klammer != anzahl:
+            fehler.append(f"{name}: Klammer {klammer} != Anzahl {anzahl}")
+        genannt = len(re.findall(r"`([^`]+)`", zellen[2]))
+        weitere = re.search(r"\+(\d+) weitere", zellen[2])
+        summe = genannt + (int(weitere.group(1)) if weitere else 0)
+        if summe != anzahl:
+            fehler.append(f"{name}: {summe} Namen (inkl. '+N weitere') != Anzahl {anzahl}")
+    return zeilen, fehler
+
+
 def parse_stereotypes(text):
     """Return (rows, header_note_lines). rows: list of (name, metatype, vererbung, appliesto, desc)."""
     rows = []
@@ -75,13 +143,18 @@ def main():
     usable = [r for r in st if r[3] not in ("", "ToolboxPage")]
     catalog = [r for r in st if r[3] != "ToolboxPage" and r[0] != "L2-Operational Constraints"]
 
-    check("Stereotypes: 318 Tabellenzeilen", len(st) == 318, f"ist {len(st)}")
+    check_zahl("Stereotypes: Tabellenzeilen", len(st), "stereotypes")
     check("Stereotypes: 0 ToolboxPage-Einträge", len(toolbox) == 0, f"ist {len(toolbox)}")
-    check("Stereotypes: 44 abstrakte Stereotype (🔒)", len(abstract) == 44, f"ist {len(abstract)}")
+    check_zahl("Stereotypes: abstrakte Stereotype (🔒)", len(abstract), "abstract")
     check("Stereotypes: 0 Nicht-Stereotype/Artefakte", len(junk) == 0, f"ist {len(junk)}")
-    check("Stereotypes: 293 nutzbare", len(usable) == 293, f"ist {len(usable)}")
-    check("Stereotypes: 318 Katalog (ohne ToolboxPage/Artefakt)", len(catalog) == 318, f"ist {len(catalog)}")
-    check("Stereotypes: Header nennt 318 und 44 abstrakt", "318 Stereotype" in st_text and "44 abstrakt" in st_text)
+    check_zahl("Stereotypes: nutzbare", len(usable), "usable")
+    check("Stereotypes: Katalog = Tabellenzeilen ohne Artefakte",
+          len(catalog) == len(st) - len(toolbox) - len(junk),
+          f"{len(catalog)} != {len(st)} - {len(toolbox)} - {len(junk)}")
+    _st, _ab = ERWARTET.get("stereotypes"), ERWARTET.get("abstract")
+    if _st and _ab:
+        check(f"Stereotypes: Header nennt {_st} und {_ab} abstrakt",
+              f"{_st} Stereotype" in st_text and f"{_ab} abstrakt" in st_text)
 
     # ---------- 1b. Maschinenlesbarer Katalog (Subtyp-Auflösung) ----------
     cat_path = ROOT / "ADMBw-Stereotypes.json"
@@ -92,9 +165,8 @@ def main():
     if cat_path.is_file():
         cat = json.loads(cat_path.read_text(encoding="utf-8"))
         cat_by = {s["name"]: s for s in cat["stereotypes"]}
-        check("JSON: 318 Einträge", len(cat_by) == 318, f"ist {len(cat_by)}")
-        check("JSON: 44 abstrakt", sum(1 for s in cat_by.values() if s["abstract"]) == 44,
-              f"ist {sum(1 for s in cat_by.values() if s['abstract'])}")
+        check_zahl("JSON: Einträge", len(cat_by), "stereotypes")
+        check_zahl("JSON: abstrakt", sum(1 for s in cat_by.values() if s["abstract"]), "abstract")
         desc = {n: set(s.get("concreteDescendants", [])) for n, s in cat_by.items()}
         check("JSON: CapabilityConfiguration ist Subtyp von ResourcePerformer",
               "CapabilityConfiguration" in desc.get("ResourcePerformer", set()))
@@ -109,26 +181,31 @@ def main():
     tp = parse_topology(tp_text)
     complete = [r for r in tp if r[1] and r[2]]
     roles_only = [r for r in tp if not (r[1] and r[2])]
-    check("Topology: 203 Zeilen", len(tp) == 203, f"ist {len(tp)}")
-    check("Topology: 133 Regeln mit beiden Enden", len(complete) == 133, f"ist {len(complete)}")
-    check("Topology: 70 reine Rollen-Zeilen", len(roles_only) == 70, f"ist {len(roles_only)}")
+    check_zahl("Topology: Zeilen", len(tp), "topology")
+    check_zahl("Topology: Regeln mit beiden Enden", len(complete), "rules_complete")
+    if "topology" in ERWARTET and "rules_complete" in ERWARTET:
+        rest = ERWARTET["topology"] - ERWARTET["rules_complete"]
+        check(f"Topology: reine Rollen-Zeilen: {rest}", len(roles_only) == rest, f"ist {len(roles_only)}")
     check("Topology: Lesart 'Quelle = client/source/end[0]/informationSource'",
           "client, source, end[0].role oder informationSource" in tp_text)
 
     vp_headings = [l for l in vp_text.splitlines() if l.startswith("## ")]
-    check("Viewpoints: 52 Überschriften", len(vp_headings) == 52, f"ist {len(vp_headings)}")
+    check_zahl("Viewpoints: Überschriften", len(vp_headings), "viewpoints")
     check("Viewpoints: 'Business Process'-Artefakt entfernt",
           not any("Business Process" in h for h in vp_headings))
 
     tt_rows = [l for l in tt_text.splitlines() if l.startswith("|")][2:]
-    check("TagTypes: 27 Property-Typen", len(tt_rows) == 27, f"ist {len(tt_rows)}")
-    check("TagTypes: Header nennt 27 Property-Typen", "27 Property-Typen" in tt_text)
+    check_zahl("TagTypes: Property-Typen", len(tt_rows), "tag_types")
+    if "tag_types" in ERWARTET:
+        check(f"TagTypes: Header nennt {ERWARTET['tag_types']} Property-Typen",
+              f"{ERWARTET['tag_types']} Property-Typen" in tt_text)
 
-    check("Connectors: Dependency (100)", "**Dependency** (100)" in co_text)
-    check("Connectors: Class (68)", "**Class** (68)" in co_text)
-    check("Connectors: Activity (6)", "**Activity** (6)" in co_text)
-    check("Connectors: Connector (3)", "**Connector** (3)" in co_text)
-    check("Connectors: 52 Viewpoints", "52 Viewpoints" in co_text)
+    _zeilen, _fehler = check_metatyp_tabelle(co_text)
+    check(f"Connectors: {len(_zeilen)} Metatyp-Zeilen in sich stimmig",
+          bool(_zeilen) and not _fehler, "; ".join(_fehler))
+    if "viewpoints" in ERWARTET:
+        check(f"Connectors: nennt {ERWARTET['viewpoints']} Viewpoints",
+              f"{ERWARTET['viewpoints']} Viewpoints" in co_text)
 
     # ---------- 2. Hashes ----------
     hashes = {}

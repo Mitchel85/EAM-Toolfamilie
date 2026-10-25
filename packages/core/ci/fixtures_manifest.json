@@ -1,18 +1,12 @@
 {
   "schema": 1,
-  "note": "Nur Pruefsummen. Die Dateien liegen im internen Fixture-Store, nie im Repo (siehe .gitignore).",
+  "note": "Nur Pruefsummen der grossen Fixtures. Die Dateien liegen im internen Fixture-Store, nie im Repo (siehe .gitignore). Die MDG-XML ist kein Fixture: sie steht in packages/rules und wird ueber CURRENT gefunden.",
   "fixtures": [
     {
       "name": "Musterarchitektur_MASC.qea",
       "target": "fixtures/Musterarchitektur_MASC.qea",
       "sha256": "bf7a7d90ebf54d285541ce621069ea6c0c86a79b45e57ac803b7618a589aa8a0",
       "bytes": 12414976
-    },
-    {
-      "name": "NAFv4-ADMBw-MDG-2026.05.xml",
-      "target": "fixtures/NAFv4-ADMBw-MDG-2026.05.xml",
-      "sha256": "e2e8c69281dcc83ad4382bd1b196c23850a847defb33d0a0ffcb429d747f3643",
-      "bytes": 786164
     }
   ]
 }

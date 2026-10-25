@@ -15,9 +15,11 @@ from pathlib import Path
 
 import pytest
 
+import mdg_source  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
 RULES = ROOT / "packages" / "rules"
-MDG = RULES / "NAFv4-ADMBw-MDG-2026.05.xml"
+MDG = mdg_source.path()
 
 
 @pytest.fixture(scope="module")

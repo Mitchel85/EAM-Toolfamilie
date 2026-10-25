@@ -65,7 +65,7 @@ sind byte-identisch (SHA-256 `43614b24…`). Laufzeit je Aufruf: 1–2 ms.
 ## Wiederholen
 
 ```bash
-cd eam-toolfamilie
+cd <pfad-zum-repo>
 python3 -m pytest tests/apps/test_openwebui_werkzeug.py -v
 ```
 

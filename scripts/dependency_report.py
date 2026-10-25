@@ -21,7 +21,7 @@ if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
 
 from collect_releases import AUSLIEFERUNGEN  # noqa: E402
-from dependency_rules import REGELN  # noqa: E402
+from dependency_rules import MDG, REGELN  # noqa: E402
 from sync_vendor import QUELLE, ZUORDNUNG  # noqa: E402
 from verify_graph import ZELLEN  # noqa: E402
 
@@ -115,7 +115,8 @@ def render() -> str:
         "",
         "| Quelle | Wird zu | Mechanik | Prüfung |",
         "|---|---|---|---|",
-        "| `packages/rules/NAFv4-ADMBw-MDG-2026.05.xml` | `knowledge/admbw-*` | `build_knowledge.py` | `--check --check-provenance` |",
+        "| `packages/rules/CURRENT` | Dateiname der aktuellen MDG | `mdg_source.py` liest die Zeile | `test_parser_einheit.py` |",
+        f"| `{MDG}` | `knowledge/admbw-*` | `build_knowledge.py` | `--check --check-provenance` |",
         "| `packages/rules/mdg_parser.py` + `documents.py` | `knowledge/admbw-*` | Parser → Dokumente | `check_single_source.py` |",
         "| `knowledge/*` | `apps/admbw-*/` | Symlink, keine Kopie | `verify_graph.py` |",
         "| `vendor/*` | `apps/html-*/vendor/` | `sync_vendor.py` | `sync_vendor.py --check` |",
