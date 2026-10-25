@@ -19,6 +19,26 @@ wird von `tests/test_packaging.py` gegeneinander geprueft:
 - **Container-Angaben** kommen aus einer Konstante; Image-Name und Link
   stimmen wieder mit dem ausgelieferten Paket ueberein.
 
+### Behoben
+
+- **`merge` scheiterte an aelteren Modellen.** `t_xref.XrefID` ist dort eine
+  Zahl, in neueren eine GUID. Der Code schrieb immer eine GUID und brach mit
+  `datatype mismatch` mitten im Schreiben ab. Die Form richtet sich jetzt nach
+  dem Zielschema; eine Vorabpruefung nennt Tabelle und Spalte statt der
+  SQLite-Meldung.
+- **Vererbung aus `baseStereotypes` wurde ignoriert.** Die MDG verteilt Eltern
+  auf `generalizes` und `baseStereotypes`. Ohne das zweite Feld listete die
+  Sammelrolle `CapableElement` nur 12 statt 30 Mitglieder; Kanten wie
+  `Exhibits` (Dienst erbringt Faehigkeit) entfielen still, der Validator
+  verwarf sie zusaetzlich. Betroffen waren Extraktion **und** Pruefung. Die
+  Eltern stehen jetzt zusaetzlich an jeder Elementzeile im Prompt.
+  Messbar am MASC-Handbuch: 38 auf 48 Beziehungen, davon 9 neue `Exhibits`.
+- **Speichern im Editor scheiterte an aelteren Modellen.** Das Update schrieb
+  unbedingt in `ModifiedDate`, das diese Schemata in `t_object` und `t_diagram`
+  nicht fuehren — jede Aenderung endete mit "no such column", ohne dass eine
+  Datei entstand. Schreibspalten werden jetzt gegen `PRAGMA table_info`
+  geprueft (Editor, Suite, Analyzer).
+
 ## 2.4.0 - 2026-10-24
 
 ### Hinzugefuegt
