@@ -7,6 +7,39 @@ Die HTML-Werkzeuge laufen per Doppelklick im Browser — ohne Installation, ohne
 > Unabhängiges Werkzeug, ohne Verbindung zum Hersteller der Modellierungssoftware.
 > Produktnamen Dritter beschreiben nur Dateiformate.
 
+## In 30 Sekunden starten
+
+1. **Werkzeug aussuchen** — die Übersicht
+   [START-HIER.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/START-HIER.html)
+   hat für jedes Werkzeug einen Knopf.
+2. **Datei herunterladen** — Klick auf den Namen, der Download startet sofort. Kein Konto.
+3. **Doppelklick.** Die Datei öffnet sich im Browser; die eigene `.qea` oder die MDG-XML
+   hineinziehen.
+
+Nichts zu installieren, nichts zu registrieren, keine Cloud. Das Modell bleibt auf dem
+eigenen Rechner.
+
+> **Windows:** Chrome und Edge fragen beim ersten Mal „Dateien dieses Typs werden
+> normalerweise nicht geöffnet“. Das ist richtig so — die Datei ist eine Web-Anwendung,
+> kein Programm. Auf „Öffnen“ klicken.
+
+## Was ist eine `.qea`?
+
+Eine `.qea` ist die Modelldatenbank eines Enterprise-Architecture-Werkzeugs (SQLite-Format).
+Diese Werkzeuge lesen und schreiben das Format, brauchen aber kein solches Programm und
+keine Lizenz.
+
+Kurzbegriffe, die im Ablauf vorkommen:
+
+- **MDG** — die Technologie-Datei (XML). Sie beschreibt, welche Elementtypen, Regeln,
+  Sichten und Tags erlaubt sind. Sie kommt zuerst.
+- **Startpaket** — eine zweite `.qea` mit Standardelementen, die in ein Modell übernommen
+  werden; die Kennungen bleiben dabei unverändert.
+- **Stereotyp / 🔒** — der Typ eines Elements. Ein gesperrter Typ (🔒) wird nie direkt
+  verwendet; an seine Stelle tritt ein konkreter Untertyp.
+- **GUID** — die unveränderliche Kennung eines Elements. Sie sorgt dafür, dass zwei Modelle
+  mit demselben Standard zusammenfinden.
+
 ## Was die Toolfamilie tut
 
 - **Hinein:** das Regelwerk der Technologie (MDG-XML), bei Bedarf ein Startpaket mit
@@ -143,6 +176,33 @@ eam-ai --help
 - Viewer (`viewer_html.py`) und Handbuch für den Rückweg-Test (`handbuch_generator.py`,
   `prosa_vergleich.py`) liegen als Module im Paket; eigene `eam-ai`-Befehle dafür gibt es
   noch nicht.
+
+## Häufige Fragen
+
+**Muss ich ein Konto anlegen?**
+Nein — weder bei GitHub noch sonst wo.
+
+**Ist das für interne Modelle sicher?**
+Die HTML-Werkzeuge laden nichts nach und senden nichts weg; sie arbeiten ohne Netz.
+Einzige Ausnahme: die AI Suiten dürfen auf Wunsch eine KI anbinden — nur wenn ein Zugang
+eingetragen ist, und nur der ausgewählte Text bzw. Modellausschnitt geht dorthin.
+
+**Warum sehe ich auf GitHub nur Text, wenn ich auf die Datei klicke?**
+Weil GitHub HTML als Quelltext anzeigt. Nimm die Download-Links oben oder die Übersicht
+[START-HIER.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/START-HIER.html).
+
+**Welche Datei ist die richtige: `.html` oder `.aspx`?**
+`.html` für den eigenen Rechner. `.aspx` nur, wenn die Datei auf einem SharePoint-/IIS-Server
+liegt.
+
+**Wie prüfe ich, dass der Download vollständig ist?**
+Prüfsumme in [SHA256SUMS](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/SHA256SUMS)
+vergleichen: unter Linux `sha256sum -c --ignore-missing SHA256SUMS`, unter Windows
+`Get-FileHash .\EAM-AI-Suite.html`. Für den Alltag nicht nötig.
+
+**Darf ich die Dateien weitergeben?**
+Ja, unverändert weitergeben ist erlaubt (MIT-Lizenz). Details in [LICENSE](LICENSE) und
+[NOTICE.md](NOTICE.md).
 
 ## Für Entwickler
 
