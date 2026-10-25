@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EAM-ADMBw-MDG-Parser — Web</title>
+<style>
+  :root {
+    --bw-blue:#004471; --bw-dark:#0A1E33; --bw-mid:#5b7285; --bw-light:#dce8f2;
+    --amber:#E8A23D; --amber-bg:#fdf3e3; --green:#2f9e74; --green-bg:#e6f5ee;
+    --ink:#1c2b36; --bg:#f1f5f9; --card:#ffffff; --border:#d7e0ea;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  [hidden]{display:none !important;}
+  body { font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; }
+  header { background:linear-gradient(135deg,var(--bw-dark) 0%,#0E3A5C 100%); color:#fff; padding:18px 22px; }
+  header .row { max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  header h1 { font-size:21px; font-weight:700; }
+  header .sub { font-size:12.5px; color:#a8c4da; margin-top:3px; }
+  .badge { display:inline-block; background:var(--amber); color:var(--bw-dark); font-weight:700; font-size:11.5px; padding:4px 11px; border-radius:14px; }
+  main { max-width:1100px; margin:0 auto; padding:20px 22px 40px; }
+  .drop { border:2px dashed var(--bw-blue); border-radius:14px; background:var(--card); padding:38px 20px; text-align:center; cursor:pointer; transition:background .15s; }
+  .drop:hover, .drop.over { background:var(--bw-light); }
+  .drop .big { font-size:34px; }
+  .drop h2 { font-size:17px; margin:10px 0 4px; color:var(--bw-blue); }
+  .drop p { font-size:13px; color:var(--bw-mid); }
+  .hint { font-size:12px; color:var(--bw-mid); text-align:center; margin-top:10px; }
+  .stats { display:flex; flex-wrap:wrap; gap:10px; margin:18px 0; }
+  .stat { flex:1; min-width:140px; background:var(--card); border:1px solid var(--border); border-left:4px solid var(--bw-blue); border-radius:10px; padding:10px 14px; }
+  .stat b { font-size:26px; display:block; }
+  .stat span { font-size:11.5px; color:var(--bw-mid); }
+  .stat.amber { border-left-color:var(--amber); }
+  .stat.green { border-left-color:var(--green); }
+  .tabs { display:flex; gap:6px; flex-wrap:wrap; margin:16px 0 10px; }
+  .tab { border:1px solid var(--border); background:var(--card); color:var(--ink); padding:7px 14px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; }
+  .tab.on { background:var(--bw-blue); color:#fff; border-color:var(--bw-blue); }
+  .panel { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px; }
+  .phead { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+  .phead h3 { font-size:15px; color:var(--bw-blue); }
+  .tools { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  input.search { border:1px solid var(--border); border-radius:8px; padding:6px 10px; font-size:13px; background:var(--card); color:var(--ink); min-width:200px; }
+  .btn { border:1px solid var(--bw-blue); background:#fff; color:var(--bw-blue); padding:6px 12px; border-radius:8px; font-size:12.5px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .btn:hover { background:var(--bw-light); }
+  .btn.primary { background:var(--bw-blue); color:#fff; }
+  .btn.primary:hover { background:#0E3A5C; }
+  .btn.small { padding:4px 10px; font-size:12px; }
+  .tblwrap { max-height:420px; overflow:auto; border:1px solid var(--border); border-radius:8px; }
+  table { border-collapse:collapse; width:100%; font-size:12.5px; }
+  th { background:var(--bw-light); color:var(--bw-dark); text-align:left; padding:7px 9px; position:sticky; top:0; z-index:2; white-space:nowrap; }
+  td { padding:6px 9px; border-top:1px solid var(--border); vertical-align:top; }
+  tr:hover td { background:var(--bw-light); }
+  .tag { display:inline-block; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:9px; background:var(--bw-light); color:var(--bw-blue); margin-right:4px; }
+  .tag.amber { background:var(--amber-bg); color:#8a5a10; }
+  .tag.green { background:var(--green-bg); color:#1c6e4e; }
+  .count { font-size:12px; color:var(--bw-mid); }
+  .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--bw-dark); color:#fff; padding:10px 18px; border-radius:20px; font-size:13px; box-shadow:0 6px 20px rgba(0,0,0,.25); z-index:99; }
+  footer { max-width:1100px; margin:0 auto; padding:0 22px 26px; font-size:11.5px; color:var(--bw-mid); }
+  @media (prefers-color-scheme: dark) {
+    :root { --bw-blue:#5AA7DE; --bw-dark:#0A1E33; --bw-mid:#8CA3B5; --bw-light:#22364B; --ink:#DCE4EC; --bg:#0D1622; --card:#16222F; --border:#33465A; --amber-bg:#3B2F1B; --green-bg:#14332B; }
+    .drop:hover, .drop.over { background:#1E3044; }
+    tr:hover td { background:#1B2C3F; }
+    th { color:#C3D0DC; }
+    .btn { background:transparent; }
+    .btn.primary { background:var(--bw-blue); color:#0A1E33; }
+    .toast { background:#E8E8E8; color:#0A1E33; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="row">
+    <div>
+      <h1>🔧 EAM-ADMBw-MDG-Parser <span style="font-weight:400">· Web</span></h1>
+      <div class="sub">Extrahiert aus der offiziellen ADMBw-MDG-Technologie (NAFv4) KI-lesbare Regeldateien — direkt im Browser.</div>
+    </div>
+    <span class="badge">100 % lokal · ohne KI</span>
+  </div>
+</header>
+
+<main>
+  <div class="drop" id="drop">
+    <div class="big">📂</div>
+    <h2>MDG-Datei hier ablegen oder klicken</h2>
+    <p>Die Technologie-Datei im XML-Format, z.&nbsp;B. <code>NAFv4-ADMBw-MDG-2026.05.xml</code><br>(Download: bundeswehr.de → BAAINBw → Vergabe → Methode Architektur)</p>
+  </div>
+  <div class="hint">Die Datei wird ausschließlich lokal im Browser verarbeitet — es wird nichts hochgeladen.</div>
+  <input type="file" id="file" accept=".xml,text/xml,application/xml" hidden>
+
+  <div id="result" hidden>
+    <div class="stats" id="stats"></div>
+
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-p="stereo">Stereotype</button>
+      <button class="tab" data-p="topo">Topologie</button>
+      <button class="tab" data-p="vp">Viewpoints</button>
+      <button class="tab" data-p="tag">Tag-Typen</button>
+      <button class="tab" data-p="stag">Stereotyp-Tags</button>
+    </div>
+
+    <div class="panel" id="p-stereo"></div>
+    <div class="panel" id="p-topo" hidden></div>
+    <div class="panel" id="p-vp" hidden></div>
+    <div class="panel" id="p-tag" hidden></div>
+    <div class="panel" id="p-stag" hidden></div>
+
+    <div class="phead" style="margin-top:16px">
+      <h3>📥 KI-lesbare Regeldateien (Markdown)</h3>
+      <div class="tools" id="dlbtns"></div>
+    </div>
+  </div>
+</main>
+
+<footer>EAM-ADMBw-MDG-Parser · Michael Estel · <span id="srcfile">keine Datei geladen</span></footer>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+'use strict';
+var DATA = { stereo: [], topo: [], vp: [], tag: [], stag: [], src: '' };
+var MD_OUT = {};
+
+function $(id){ return document.getElementById(id); }
+
+function uniq(a){ var u = [], seen = {}; for (var i = 0; i < a.length; i++) if (!seen[a[i]]) { seen[a[i]] = 1; u.push(a[i]); } return u.sort(); }
+function toast(msg){
+  var t = $('toast'); t.textContent = msg; t.hidden = false;
+  clearTimeout(t._tm); t._tm = setTimeout(function(){ t.hidden = true; }, 2600);
+}
+function localName(node){ return (node.nodeName || '').split(':').pop(); }
+function allNS(node, name){
+  var out = [], el = node.getElementsByTagNameNS ? node.getElementsByTagNameNS('*', name) : node.getElementsByTagName(name);
+  for (var i = 0; i < el.length; i++) out.push(el[i]);
+  return out;
+}
+function childrenOf(node, name){
+  var out = [], kids = node.childNodes;
+  for (var i = 0; i < kids.length; i++) {
+    if (kids[i].nodeType === 1 && (!name || localName(kids[i]) === name)) out.push(kids[i]);
+  }
+  return out;
+}
+function clean(s){ return (s || '').replace(/\s+/g, ' ').trim(); }
+function escHtml(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function mdEsc(s){ return String(s == null ? '' : s).replace(/\|/g,'\\|').replace(/[\r\n]+/g,' '); }
+
+/* Encoding aus XML-Deklaration/BOM bestimmen (MDG-Dateien sind standardmäßig windows-1252). */
+function decodeXmlBuffer(buf){
+  var head = new Uint8Array(buf.slice(0, 1024));
+  var enc = null;
+  if (head.length >= 3 && head[0] === 0xEF && head[1] === 0xBB && head[2] === 0xBF) enc = 'utf-8';
+  else if (head.length >= 2 && head[0] === 0xFF && head[1] === 0xFE) enc = 'utf-16le';
+  else if (head.length >= 2 && head[0] === 0xFE && head[1] === 0xFF) enc = 'utf-16be';
+  if (!enc) {
+    var headStr = '';
+    for (var i = 0; i < head.length; i++) headStr += String.fromCharCode(head[i]);
+    var m = headStr.match(/<\?xml[^>]*?encoding\s*=\s*["']([^"']+)["']/i);
+    enc = m ? m[1] : 'windows-1252';
+  }
+  enc = enc.toLowerCase().replace(/_/g, '-');
+  if (enc === 'latin1' || enc === 'latin-1') enc = 'windows-1252';
+  var text;
+  try { text = new TextDecoder(enc).decode(buf); }
+  catch (e) { text = new TextDecoder('windows-1252').decode(buf); }
+  return text.replace(/^\uFEFF/, '');
+}
+
+/* Nur die Modell-Stereotype aus UMLProfiles (keine UIToolboxes, keine DiagramProfile). */
+function modelStereos(root){
+  var ups = allNS(root, 'UMLProfiles'), out = [];
+  if (ups.length) {
+    for (var i = 0; i < ups.length; i++) {
+      var profs = allNS(ups[i], 'UMLProfile');
+      for (var p = 0; p < profs.length; p++) {
+        var contents = childrenOf(profs[p], 'Content');
+        for (var k = 0; k < contents.length; k++) {
+          var sts = allNS(contents[k], 'Stereotype');
+          for (var s = 0; s < sts.length; s++) out.push(sts[s]);
+        }
+      }
+    }
+    return out;
+  }
+  /* Fallback für abweichende MDG-Strukturen: alles außer Viewpoints/Toolboxen. */
+  var excluded = [];
+  var secs = allNS(root, 'DiagramProfile').concat(allNS(root, 'UIToolboxes'));
+  for (var q = 0; q < secs.length; q++) {
+    var sts2 = allNS(secs[q], 'Stereotype');
+    for (var r = 0; r < sts2.length; r++) excluded.push(sts2[r]);
+  }
+  var all = allNS(root, 'Stereotype');
+  for (var z = 0; z < all.length; z++) if (excluded.indexOf(all[z]) === -1) out.push(all[z]);
+  return out;
+}
+
+function parseMdg(text){
+  var doc = new DOMParser().parseFromString(text, 'application/xml');
+  if (doc.getElementsByTagName('parsererror').length) throw new Error('XML konnte nicht gelesen werden');
+  var root = doc.documentElement;
+  if (!root || localName(root) !== 'MDG.Technology') {
+    throw new Error('Keine MDG-Technologie-Datei — Root-Element ist ' +
+      (root ? '<' + localName(root) + '>' : 'nicht vorhanden') + ', erwartet <MDG.Technology>');
+  }
+  var d = { stereo: [], topo: [], vp: [], tag: [], stag: [] };
+
+  /* 1) Stereotyp-Katalog (nur UMLProfiles; generalizes + baseStereotypes) */
+  var sts = modelStereos(root);
+  var seen = {};
+  for (var i = 0; i < sts.length; i++) {
+    var st = sts[i];
+    var name = (st.getAttribute('name') || '').trim();
+    if (!name || seen[name]) continue;
+    seen[name] = true;
+    var gen = (st.getAttribute('generalizes') || '').trim();
+    var base = (st.getAttribute('baseStereotypes') || '').trim();
+    var parents = [];
+    [gen].concat(base.replace(/,/g, ' ').split(/\s+/)).forEach(function(p){
+      if (p && parents.indexOf(p) === -1) parents.push(p);
+    });
+    var applies = [];
+    var ats = allNS(st, 'AppliesTo');
+    for (var a = 0; a < ats.length; a++) {
+      var aps = allNS(ats[a], 'Apply');
+      for (var b = 0; b < aps.length; b++) {
+        var ty = (aps[b].getAttribute('type') || '').trim();
+        if (ty && applies.indexOf(ty) === -1) applies.push(ty);
+      }
+    }
+    applies.sort();
+    d.stereo.push({
+      name: name,
+      meta: (st.getAttribute('metatype') || '').trim(),
+      notes: clean(st.getAttribute('notes')),
+      gen: parents.join(' '),
+      applies: applies,
+      abs: (st.getAttribute('isAbstract') || '').toLowerCase() === 'true'
+    });
+  }
+
+  /* 2) Topologie (Metaconstraints je Modell-Stereotype; alle UML-Endrollen) */
+  var uniq = function(a){ var u = [], seen2 = {}; for (var q = 0; q < a.length; q++) if (!seen2[a[q]]) { seen2[a[q]] = 1; u.push(a[q]); } return u.sort(); };
+  var SRC_ROLES = { client: 1, source: 1, 'end[0].role': 1, informationSource: 1 };
+  var TGT_ROLES = { supplier: 1, target: 1, 'end[1].role': 1, informationTarget: 1 };
+  var seenT = {};
+  for (i = 0; i < sts.length; i++) {
+    var s = sts[i];
+    var nm = (s.getAttribute('name') || '').trim();
+    if (!nm || seenT[nm]) continue;
+    seenT[nm] = true;
+    var mcs = allNS(s, 'metaconstraints');
+    var clients = [], suppliers = [], others = [];
+    for (var m = 0; m < mcs.length; m++) {
+      var mlist = allNS(mcs[m], 'metaconstraint');
+      for (var k = 0; k < mlist.length; k++) {
+        var role = mlist[k].getAttribute('umlRole') || '';
+        var raw = mlist[k].getAttribute('constraint') || '';
+        var parts = raw.split(';');
+        for (var pi = 0; pi < parts.length; pi++) {
+          var con = parts[pi].split('::').pop().trim();
+          if (!con) continue;
+          if (SRC_ROLES[role]) clients.push(con);
+          else if (TGT_ROLES[role]) suppliers.push(con);
+          else others.push(role + ' → ' + con);
+        }
+      }
+    }
+    if (clients.length || suppliers.length || others.length) {
+      d.topo.push({
+        name: nm,
+        clients: uniq(clients),
+        suppliers: uniq(suppliers),
+        others: uniq(others),
+        complete: !!(clients.length && suppliers.length)
+      });
+    }
+  }
+
+  /* 3) Viewpoints (DiagramProfile, ohne Diagramm-Artefakt 'Business Process') */
+  var dpEls = allNS(root, 'DiagramProfile');
+  for (i = 0; i < dpEls.length; i++) {
+    var vpl = allNS(dpEls[i], 'Stereotype');
+    for (var v = 0; v < vpl.length; v++) {
+      var vp = vpl[v];
+      var vname = (vp.getAttribute('name') || '').trim();
+      if (!vname || vname === 'Business Process') continue; /* Diagramm-Typ, kein Viewpoint */
+      /* Fachliche Properties: nur direkte Property-Kinder (Apply-Konfiguration zählt nicht). */
+      var props = [];
+      var pcs = childrenOf(vp, 'Property');
+      for (var pc = 0; pc < pcs.length; pc++) {
+        props.push({ n: pcs[pc].getAttribute('name') || '', d: clean(pcs[pc].getAttribute('notes')) });
+      }
+      d.vp.push({ name: vname, notes: clean(vp.getAttribute('notes')), props: props });
+    }
+  }
+
+  /* 4) Property-Typen (je DataRow einzeln geparst — keine flache Spaltenindex-Logik) */
+  var tvtBlocks = allNS(root, 'TaggedValueTypes');
+  for (i = 0; i < tvtBlocks.length; i++) {
+    var dss = allNS(tvtBlocks[i], 'DataSet');
+    for (var ds = 0; ds < dss.length; ds++) {
+      var dsName = dss[ds].getAttribute('name') || '';
+      var rows = childrenOf(dss[ds], 'DataRow');
+      for (var r2 = 0; r2 < rows.length; r2++) {
+        var cols = {};
+        var ck = childrenOf(rows[r2], 'Column');
+        for (var c2 = 0; c2 < ck.length; c2++) {
+          cols[ck[c2].getAttribute('name')] = ck[c2].getAttribute('value') || '';
+        }
+        var pv = (cols['Property'] || '').trim();
+        if (!pv) continue;
+        d.tag.push({ name: pv, ds: dsName, desc: clean(cols['Description'] || ''), notes: clean(cols['Notes'] || '') });
+      }
+    }
+  }
+  /* 5) Konkrete Tags je Stereotyp (TaggedValues/Tag) */
+  for (i = 0; i < sts.length; i++) {
+    var stg = sts[i];
+    var stgName = (stg.getAttribute('name') || '').trim();
+    if (!stgName) continue;
+    var tvs = childrenOf(stg, 'TaggedValues');
+    for (var tv = 0; tv < tvs.length; tv++) {
+      var tlist = childrenOf(tvs[tv], 'Tag');
+      for (var tg = 0; tg < tlist.length; tg++) {
+        var tn = (tlist[tg].getAttribute('name') || '').trim();
+        if (!tn) continue;
+        d.stag.push({
+          stereo: stgName,
+          tag: tn,
+          type: (tlist[tg].getAttribute('type') || '').trim(),
+          values: (tlist[tg].getAttribute('values') || '').trim(),
+          def: (tlist[tg].getAttribute('default') || '').trim(),
+          desc: clean(tlist[tg].getAttribute('description') || '')
+        });
+      }
+    }
+  }
+  return d;
+}
+
+function buildMarkdown(){
+  var now = new Date().toISOString().slice(0, 16).replace('T', ' ');
+  var src = DATA.src || '(Dateiname)';
+  var usable = DATA.stereo.filter(function(s){ return s.applies.length; }).length;
+  var withMeta = DATA.stereo.filter(function(s){ return s.meta; }).length;
+  var noMeta = DATA.stereo.filter(function(s){ return !s.meta; }).map(function(s){ return s.name; }).sort().join(', ');
+  var complete = DATA.topo.filter(function(t){ return t.complete; }).length;
+  var absCount = DATA.stereo.filter(function(s){ return s.abs; }).length;
+  var children = {};
+  DATA.stereo.forEach(function(s){
+    (s.gen ? s.gen.split(/\s+/) : []).forEach(function(p){ (children[p] = children[p] || []).push(s.name); });
+  });
+  var byName = {}; DATA.stereo.forEach(function(s){ byName[s.name] = s; });
+  function allChildren(name, seen){
+    seen = seen || {};
+    (children[name] || []).forEach(function(c){ if (!seen[c]) { seen[c] = 1; allChildren(c, seen); } });
+    return Object.keys(seen);
+  }
+  var L = [];
+  var out = {};
+
+  L = ['# ADMBw-Stereotype (MDG-extrahiert)', '',
+    '> Quelle: `' + src + '` — automatisch erzeugt am ' + now + ' (Web-Parser)',
+    '> ' + DATA.stereo.length + ' Stereotype · ' + absCount + ' abstrakt (🔒, nicht instanziierbar) · Version: ' + src, '',
+    '| Stereotype | Metatype | Eltern | AppliesTo | Abstrakt | Beschreibung |',
+    '|---|---|---|---|---|---|'];
+  DATA.stereo.forEach(function(s){ L.push('| ' + mdEsc(s.name) + ' | ' + mdEsc(s.meta) + ' | ' + mdEsc((s.gen || '').split(/\s+/).join(', ')) + ' | ' + mdEsc(s.applies.join(', ')) + ' | ' + (s.abs ? '🔒 ja' : '–') + ' | ' + mdEsc(s.notes.slice(0, 160)) + ' |'); });
+  L.push('', '## Hinweis für KI-Werkzeuge', '',
+    '- Ein Stereotyp mit **🔒 ja** ist abstrakt. Es darf **nicht** als Element- oder Beziehungstyp verwendet werden.',
+    '- Abstrakte Typen sind Platzhalter für ihre konkreten Subtypen. Beispiele: `{REQUIREMENT}` wird als `FunctionalRequirement` oder `NonfunctionalRequirement` modelliert; `ResourcePerformer` als `CapabilityConfiguration`, `PhysicalResource`, `OrganizationalResource` oder `Software`.',
+    '- Für jede Regel mit abstraktem Endpunkt gilt: erlaubt sind alle konkreten Subtypen (Feld `concreteDescendants` in `admbw-stereotypes.json`).',
+    '- Vor der Ausgabe eines Modells prüfen: kein Element und keine Beziehung trägt ein abstraktes Stereotyp.');
+  out['admbw-knowledge-stereotypes.md'] = L.join('\n');
+
+  L = ['# ADMBw-Topologie-Regeln (MDG-Metaconstraints)', '',
+    '> Quelle: `' + src + '` — automatisch erzeugt am ' + now + ' (Web-Parser)',
+    '> ' + DATA.topo.length + ' Stereotype mit Beziehungsregeln (Metaconstraints) · ' + complete + ' vollständig (Quelle und Ziel)', '',
+    '## Lesart', '',
+    '- **Quelle:** client, source, end[0].role oder informationSource — je nach UML-Metaklasse.',
+    '- **Ziel:** supplier, target, end[1].role oder informationTarget — je nach UML-Metaklasse.',
+    '- **Weitere Rollen:** zusätzliche Metamodell-Beschränkungen (Rollennamen direkt aus der MDG).',
+    '- **Vollständigkeit:** Nur Regeln mit Quelle **und** Ziel (' + complete + ' von ' + DATA.topo.length + ') sind maschinell prüfbar; Regeln mit ausschließlich „Weiteren Rollen“ dienen als Referenz.', '',
+    '| Stereotype | Erlaubte Quellen (client/source/end[0]) | Erlaubte Ziele (supplier/target/end[1]) | Weitere Rollen |',
+    '|---|---|---|---|'];
+  DATA.topo.forEach(function(t){ L.push('| ' + mdEsc(t.name) + ' | ' + mdEsc(t.clients.join(', ')) + ' | ' + mdEsc(t.suppliers.join(', ')) + ' | ' + mdEsc(t.others.join(', ')) + ' |'); });
+  var eps = {};
+  DATA.topo.forEach(function(t){
+    ['clients', 'suppliers'].forEach(function(k){
+      (t[k] || []).forEach(function(n){
+        if (byName[n] && byName[n].abs) {
+          eps[n] = allChildren(n).filter(function(c){ return byName[c] && !byName[c].abs; }).sort();
+        }
+      });
+    });
+  });
+  L.push('', '## Abstrakte Endpunkte', '',
+    'Diese Typen dürfen **nicht instanziiert** werden. Für die Prüfung eines konkreten Modells sind sie auf die aufgeführten konkreten Subtypen aufzulösen.', '',
+    '| Abstrakter Typ | Konkrete Subtypen |', '|---|---|');
+  Object.keys(eps).sort().forEach(function(n){ L.push('| 🔒 ' + n + ' | ' + (eps[n].length ? eps[n].join(', ') : '–') + ' |'); });
+  out['admbw-knowledge-topology.md'] = L.join('\n');
+
+  L = ['# ADMBw-Viewpoints (MDG-DiagramProfile)', '',
+    '> Quelle: `' + src + '` — automatisch erzeugt am ' + now + ' (Web-Parser)',
+    '> ' + DATA.vp.length + ' Viewpoints', ''];
+  DATA.vp.forEach(function(v){
+    L.push('## ' + mdEsc(v.name));
+    if (v.notes) L.push(mdEsc(v.notes.slice(0, 300)));
+    if (v.props.length) {
+      L.push('', '| Property | Bedeutung |', '|---|---|');
+      v.props.forEach(function(pr){ L.push('| ' + mdEsc(pr.n) + ' | ' + mdEsc((pr.d || '').slice(0, 120)) + ' |'); });
+    }
+    L.push('');
+  });
+  out['admbw-knowledge-viewpoints.md'] = L.join('\n');
+
+  L = ['# ADMBw-Tagged-Value-Definitionen (MDG-Property-Typen)', '',
+    '> Quelle: `' + src + '` — automatisch erzeugt am ' + now + ' (Web-Parser)',
+    '> ' + DATA.tag.length + ' Property-Typen', '',
+    '| Property | Datensatz | Beschreibung | Einschränkungen (aus MDG) |',
+    '|---|---|---|---|'];
+  DATA.tag.forEach(function(e){ L.push('| ' + mdEsc(e.name) + ' | ' + mdEsc(e.ds) + ' | ' + mdEsc(e.desc.slice(0, 100)) + ' | ' + mdEsc(e.notes.slice(0, 160)) + ' |'); });
+  out['admbw-knowledge-tagtypes.md'] = L.join('\n');
+
+  L = ['# ADMBw-Stereotyp-Tags (MDG-TaggedValues)', '',
+    '> Quelle: `' + src + '` — automatisch erzeugt am ' + now + ' (Web-Parser)',
+    '> ' + DATA.stag.length + ' Tags an ' + uniq(DATA.stag.map(function(t){ return t.stereo; })).length + ' Stereotypen', '',
+    '| Stereotype | Tag | Typ | Erlaubte Werte | Default | Beschreibung |',
+    '|---|---|---|---|---|---|'];
+  DATA.stag.forEach(function(t){ L.push('| ' + mdEsc(t.stereo) + ' | ' + mdEsc(t.tag) + ' | ' + mdEsc(t.type) + ' | ' + mdEsc(t.values) + ' | ' + mdEsc(t.def) + ' | ' + mdEsc(t.desc.slice(0, 120)) + ' |'); });
+  out['admbw-knowledge-stereotype-tags.md'] = L.join('\n');
+
+  L = ['# ADMBw-MDG-Extraktion — Metadaten', '',
+    '- **MDG-Datei:** `' + src + '`',
+    '- **MDG-Version (aus Dateiname):** ' + src,
+    '- **Extrahiert am:** ' + now + ' (Web-Parser, lokal im Browser)',
+    '- **Stereotype im Katalog:** ' + DATA.stereo.length + ' (nur UMLProfiles)',
+    '- **Davon im Modell nutzbar (mit AppliesTo):** ' + usable,
+    '- **Davon mit Metatype:** ' + withMeta + (noMeta ? ' (' + DATA.stereo.filter(function(s){ return !s.meta; }).length + ' ohne: ' + noMeta + ')' : ''),
+    '- **Abstrakte Stereotype (🔒, nicht instanziierbar):** ' + absCount,
+    '  - davon ohne AppliesTo (reine Platzhalter): ' + DATA.stereo.filter(function(s){ return s.abs && (!s.applies || !s.applies.length); }).length,
+    '  - davon mit AppliesTo (fachlich zu spezialisieren): ' + DATA.stereo.filter(function(s){ return s.abs && s.applies && s.applies.length; }).length,
+    '- **Stereotype mit Topologie-Regeln:** ' + DATA.topo.length + ' (davon ' + complete + ' vollständig mit Quelle und Ziel)',
+    '- **Viewpoints:** ' + DATA.vp.length + ' (DiagramProfile ohne Diagramm-Artefakt „Business Process“)',
+    '- **Property-Typen:** ' + DATA.tag.length,
+    '- **Stereotyp-Tags:** ' + DATA.stag.length + ' an ' + uniq(DATA.stag.map(function(t){ return t.stereo; })).length + ' Stereotypen', '',
+    'Zählweise: Die MDG enthält die Stereotype in drei getrennten Bereichen —',
+    DATA.stereo.length + ' Deklarationen in UMLProfiles (das Modellprofil, der eigentliche Katalog),',
+    '271 Elemente in UIToolboxes (125 UI-Toolbox-Seiten, keine Modell-Stereotype) und',
+    '53 Einträge in DiagramProfile (' + DATA.vp.length + ' Viewpoints + 1 Diagramm-Artefakt „Business Process“).',
+    'Der Katalog zählt ausschließlich die UMLProfiles-Stereotype; Toolbox-Seiten',
+    'und Viewpoints werden nicht (bzw. separat) extrahiert.', '',
+    'Diese Dateien wurden automatisch aus der offiziellen ADMBw-MDG-Technologie erzeugt',
+    '(https://www.bundeswehr.de/de/organisation/ausruestung-baainbw/vergabe/methode-architektur).',
+    'Bei einem MDG-Update einfach den Parser erneut ausführen.'];
+  out['admbw-meta.md'] = L.join('\n');
+
+  MD_OUT = out;
+}
+
+function renderStats(){
+  var complete = DATA.topo.filter(function(t){ return t.complete; }).length;
+  var items = [
+    ['Stereotype', DATA.stereo.length, ''],
+    ['Topologie-Regeln · ' + complete + ' vollständig', DATA.topo.length, 'amber'],
+    ['Viewpoints', DATA.vp.length, 'green'],
+    ['Tag-Typen', DATA.tag.length, ''],
+    ['Stereotyp-Tags', DATA.stag.length, '']
+  ];
+  $('stats').innerHTML = items.map(function(it){
+    return '<div class="stat ' + it[2] + '"><b>' + it[1] + '</b><span>' + escHtml(it[0]) + '</span></div>';
+  }).join('');
+}
+
+function mkTable(heads, rows){
+  return '<div class="tblwrap"><table><thead><tr>' + heads.map(function(h){ return '<th>' + h + '</th>'; }).join('') +
+    '</tr></thead><tbody>' + rows.map(function(r){
+      return '<tr>' + r.map(function(c){ return '<td>' + c + '</td>'; }).join('') + '</tr>';
+    }).join('') + '</tbody></table></div>';
+}
+
+function renderPanels(){
+  $('p-stereo').innerHTML =
+    '<div class="phead"><h3>Stereotype <span class="count">(' + DATA.stereo.length + ')</span></h3>' +
+    '<div class="tools"><input class="search" placeholder="Suchen …" oninput="filterTable(this.value, \'stbody\')"></div></div>' +
+    mkTable(['Stereotype','Metatype','Eltern','AppliesTo','Abstrakt','Beschreibung'],
+      DATA.stereo.map(function(s){ return [escHtml(s.name), '<span class="tag">' + escHtml(s.meta) + '</span>', escHtml((s.gen || '').split(/\s+/).join(', ')), s.applies.map(function(a){ return '<span class="tag amber">' + escHtml(a) + '</span>'; }).join(''), (s.abs ? '🔒' : '–'), escHtml(s.notes.slice(0, 140))]; })).replace('<tbody>', '<tbody id="stbody">');
+
+  $('p-topo').innerHTML =
+    '<div class="phead"><h3>Topologie-Regeln <span class="count">(' + DATA.topo.length + ')</span></h3>' +
+    '<div class="tools"><input class="search" placeholder="Suchen …" oninput="filterTable(this.value, \'tobody\')"></div></div>' +
+    mkTable(['Stereotype','Quelle (client)','Ziel (supplier)','Weitere Rollen'],
+      DATA.topo.map(function(t){ return [escHtml(t.name), t.clients.map(function(c){ return '<span class="tag green">' + escHtml(c) + '</span>'; }).join(''), t.suppliers.map(function(c){ return '<span class="tag amber">' + escHtml(c) + '</span>'; }).join(''), escHtml(t.others.join(', '))]; })).replace('<tbody>', '<tbody id="tobody">');
+
+  $('p-vp').innerHTML =
+    '<div class="phead"><h3>Viewpoints <span class="count">(' + DATA.vp.length + ')</span></h3></div>' +
+    '<div class="tblwrap"><table><thead><tr><th>Viewpoint</th><th>Beschreibung</th></tr></thead><tbody>' +
+    DATA.vp.map(function(v){ return '<tr><td><b>' + escHtml(v.name) + '</b></td><td>' + escHtml(v.notes.slice(0, 160)) + '</td></tr>'; }).join('') +
+    '</tbody></table></div>';
+
+  $('p-tag').innerHTML =
+    '<div class="phead"><h3>Tagged-Value-Typen <span class="count">(' + DATA.tag.length + ')</span></h3></div>' +
+    mkTable(['Property','Datensatz','Einschränkungen (aus MDG)'],
+      DATA.tag.map(function(e){ return [escHtml(e.name), escHtml(e.ds), escHtml(e.notes.slice(0, 140))]; }));
+
+  $('p-stag').innerHTML =
+    '<div class="phead"><h3>Stereotyp-Tags <span class="count">(' + DATA.stag.length + ')</span></h3>' +
+    '<div class="tools"><input class="search" placeholder="Suchen …" oninput="filterTable(this.value, \'stagbody\')"></div></div>' +
+    mkTable(['Stereotype','Tag','Typ','Erlaubte Werte','Default'],
+      DATA.stag.map(function(t){ return [escHtml(t.stereo), escHtml(t.tag), escHtml(t.type), escHtml(t.values), escHtml(t.def)]; })).replace('<tbody>', '<tbody id="stagbody">');
+}
+
+function renderDl(){
+  var names = ['admbw-knowledge-stereotypes.md','admbw-knowledge-topology.md','admbw-knowledge-viewpoints.md','admbw-knowledge-tagtypes.md','admbw-knowledge-stereotype-tags.md','admbw-meta.md'];
+  $('dlbtns').innerHTML = names.map(function(n){
+    return '<button class="btn small" onclick="downloadMd(\'' + n + '\')">⬇ ' + n + '</button>';
+  }).join('') + '<button class="btn small primary" onclick="downloadAll()">⬇ Alle 6</button>';
+}
+
+function download(name, content){
+  var blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 400);
+}
+function downloadMd(n){ download(n, MD_OUT[n]); toast('⬇ ' + n); }
+function downloadAll(){ Object.keys(MD_OUT).forEach(function(n){ download(n, MD_OUT[n]); }); toast('⬇ 5 Regeldateien'); }
+
+function filterTable(q, tbodyId){
+  var rows = document.querySelectorAll('#' + tbodyId + ' tr');
+  var needle = q.toLowerCase();
+  for (var i = 0; i < rows.length; i++) rows[i].style.display = rows[i].textContent.toLowerCase().indexOf(needle) === -1 ? 'none' : '';
+}
+
+/* Bei Fehler: alte Ergebnisse verwerfen und ausblenden. */
+function resetResults(){
+  DATA = { stereo: [], topo: [], vp: [], tag: [], stag: [], src: '' };
+  MD_OUT = {};
+  $('result').hidden = true;
+  $('srcfile').textContent = 'keine Datei geladen';
+}
+
+function handleFile(file){
+  var reader = new FileReader();
+  $('drop').classList.add('over');
+  reader.onload = function(){
+    try {
+      var text = decodeXmlBuffer(reader.result);
+      DATA = parseMdg(text);
+      DATA.src = file.name;
+      $('srcfile').textContent = file.name + ' · ' + file.size + ' Bytes';
+      buildMarkdown();
+      renderStats();
+      renderPanels();
+      renderDl();
+      $('result').hidden = false;
+      toast('✅ ' + file.name + ' gelesen: ' + DATA.stereo.length + ' Stereotype, ' + DATA.topo.length + ' Topologie-Regeln, ' + DATA.vp.length + ' Viewpoints, ' + DATA.tag.length + ' Tag-Typen');
+    } catch (e) {
+      resetResults();
+      toast('⚠ Fehler: ' + e.message);
+    }
+    $('drop').classList.remove('over');
+  };
+  reader.onerror = function(){ resetResults(); toast('⚠ Datei konnte nicht gelesen werden'); $('drop').classList.remove('over'); };
+  reader.readAsArrayBuffer(file);
+}
+
+// Events
+$('drop').addEventListener('click', function(ev){
+  if (ev.target.closest('input,button,a')) return;
+  $('file').click();
+});
+$('file').addEventListener('change', function(){ if (this.files[0]) handleFile(this.files[0]); });
+['dragover','dragenter'].forEach(function(evt){
+  $('drop').addEventListener(evt, function(e){ e.preventDefault(); this.classList.add('over'); });
+});
+['dragleave','drop'].forEach(function(evt){
+  $('drop').addEventListener(evt, function(e){ e.preventDefault(); this.classList.remove('over'); });
+});
+$('drop').addEventListener('drop', function(e){
+  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+$('tabs').addEventListener('click', function(ev){
+  var b = ev.target.closest('.tab'); if (!b) return;
+  var tabs = document.querySelectorAll('.tab');
+  for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('on');
+  b.classList.add('on');
+  var p = b.getAttribute('data-p');
+  ['stereo','topo','vp','tag'].forEach(function(k){ $('p-' + k).hidden = (k !== p); });
+});
+</script>
+</body>
+</html>

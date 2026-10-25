@@ -1,0 +1,14 @@
+{
+  "name": "eam-qea-analyzer",
+  "version": "4.0.0",
+  "private": true,
+  "description": "EAM QEA Analyzer — eigenständige HTML-Auslieferung aus dem Altwerkzeug",
+  "main": "dist/EAM-QEA-Analyzer.html",
+  "files": [
+    "**/*"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@mitchel85/eam-vendor": "*"
+  }
+}

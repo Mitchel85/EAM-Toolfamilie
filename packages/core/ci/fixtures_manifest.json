@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "note": "Nur Pruefsummen. Die Dateien liegen im internen Fixture-Store, nie im Repo (siehe .gitignore).",
+  "fixtures": [
+    {
+      "name": "Musterarchitektur_MASC.qea",
+      "target": "fixtures/Musterarchitektur_MASC.qea",
+      "sha256": "bf7a7d90ebf54d285541ce621069ea6c0c86a79b45e57ac803b7618a589aa8a0",
+      "bytes": 12414976
+    },
+    {
+      "name": "NAFv4-ADMBw-MDG-2026.05.xml",
+      "target": "fixtures/NAFv4-ADMBw-MDG-2026.05.xml",
+      "sha256": "c014ceda600b5bb9e42c2a8e58f02bf9655e8fe9b6a5e8df6a28693b3b701c84",
+      "bytes": 786172
+    }
+  ]
+}

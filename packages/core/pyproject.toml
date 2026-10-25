@@ -1,0 +1,70 @@
+# EAM AI Suite Python -- Metadaten und Build-Vertrag.
+#
+# Gebaut wird ohne Netz und ohne Fremdpakete: das in-tree Backend
+# ``build_backend.py`` erzeugt ein deterministisches Wheel (feste
+# Zeitstempel, sortierte Eintraege, keine Build-IDs). ``python -m pip wheel .``
+# und ``python tools/build_bundle.py`` liefern deshalb byte-identische Wheels.
+#
+# Mindeststand: Python 3.11. Laufzeit haengt nur an der Standardbibliothek
+# (inklusive sqlite3). Kein Docker.
+
+[build-system]
+requires = []
+build-backend = "build_backend"
+backend-path = ["."]
+
+[project]
+name = "eam-ai"
+version = "2.4.0"
+description = "Technologie + Prosa zu .qea: Extraktion, Pruefung, Export (offline-faehig)."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+keywords = ["eam", "architektur", "qea", "admbw", "offline"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+]
+
+[project.scripts]
+eam-ai = "eam_ai:main"
+
+# Einzige Quelle fuer den Paketinhalt. Das Build-Backend liest diese Liste;
+# tests/test_packaging.py prueft, dass kein Modul des Kerns fehlt.
+[tool.eam-ai]
+modules = [
+    "eam_ai",
+    "eam_suite",
+    "emit",
+    "extract",
+    "handbuch_generator",
+    "mdg_parser",
+    "pdf_text",
+    "prosa_import",
+    "prosa_vergleich",
+    "repair_loop",
+    "roundtrip_export",
+    "roundtrip_metrics",
+    "kantenausbeute",
+    "relation_fill",
+    "toolbox_merge",
+    "qea_reader",
+    "qea_writer",
+    "rules_schema",
+    "table_import",
+    "validator",
+    "viewer_html",
+    "webui",
+    "image_input",
+    "model_edit",
+    "model_merge",
+    "nl_edit",
+    "qea_chat",
+    "skeleton",
+]
+resources = [
+    "rules.schema.json",
+]

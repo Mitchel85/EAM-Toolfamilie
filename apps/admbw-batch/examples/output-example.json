@@ -1,0 +1,137 @@
+{
+  "metadata": {
+    "generator": "ADMBw-Batch-Generator v2.1",
+    "standard": "ADMBw v2026.05",
+    "source_document": "einsatzfuehrung.txt",
+    "description": "Capability- und Servicestruktur Einsatzführung",
+    "node_count": 7,
+    "edge_count": 5
+  },
+  "nodes": [
+    {
+      "id": "n1",
+      "name": "Einsatzführung",
+      "stereotype": "Capability",
+      "metaclass": "Class",
+      "labels": [
+        "Capability"
+      ],
+      "properties": {
+        "AbstractionLevel": "Operational"
+      }
+    },
+    {
+      "id": "n2",
+      "name": "Vernetzte Operationsführung",
+      "stereotype": "Capability",
+      "metaclass": "Class",
+      "labels": [
+        "Capability"
+      ],
+      "properties": {
+        "AbstractionLevel": "Operational"
+      }
+    },
+    {
+      "id": "n3",
+      "name": "Lagebild erstellen",
+      "stereotype": "OperationalActivity",
+      "metaclass": "Activity",
+      "labels": [
+        "OperationalActivity"
+      ],
+      "properties": {
+        "AbstractionLevel": "Operational"
+      }
+    },
+    {
+      "id": "n4",
+      "name": "FüInfoSys",
+      "stereotype": "ServiceSpecification",
+      "metaclass": "Class",
+      "labels": [
+        "ServiceSpecification"
+      ],
+      "properties": {
+        "SecurityClassification": "VS-NfD"
+      }
+    },
+    {
+      "id": "n5",
+      "name": "Lagefusion durchführen",
+      "stereotype": "ServiceFunctionAction",
+      "metaclass": "Action",
+      "labels": [
+        "ServiceFunctionAction"
+      ],
+      "properties": {}
+    },
+    {
+      "id": "n6",
+      "name": "FüInfoSys Kern",
+      "stereotype": "ServiceSpecification",
+      "metaclass": "Class",
+      "labels": [
+        "ServiceSpecification"
+      ],
+      "properties": {}
+    },
+    {
+      "id": "n7",
+      "name": "Rechenzentrum Ost",
+      "stereotype": "CapabilityConfiguration",
+      "metaclass": "Class",
+      "labels": [
+        "CapabilityConfiguration"
+      ],
+      "properties": {}
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source_id": "n1",
+      "target_id": "n2",
+      "connector": "CapabilityDependency",
+      "type": "CAPABILITY_DEPENDENCY",
+      "metaclass": "Dependency",
+      "properties": {}
+    },
+    {
+      "id": "e2",
+      "source_id": "n3",
+      "target_id": "n4",
+      "connector": "ActivitySupportsService",
+      "type": "ACTIVITY_SUPPORTS_SERVICE",
+      "metaclass": "Realisation",
+      "properties": {}
+    },
+    {
+      "id": "e3",
+      "source_id": "n4",
+      "target_id": "n5",
+      "connector": "IsCapableToPerform",
+      "type": "IS_CAPABLE_TO_PERFORM",
+      "metaclass": "Abstraction",
+      "properties": {}
+    },
+    {
+      "id": "e4",
+      "source_id": "n4",
+      "target_id": "n6",
+      "connector": "ServiceDependency",
+      "type": "SERVICE_DEPENDENCY",
+      "metaclass": "Dependency",
+      "properties": {}
+    },
+    {
+      "id": "e5",
+      "source_id": "n7",
+      "target_id": "n4",
+      "connector": "ServiceProvision",
+      "type": "SERVICE_PROVISION",
+      "metaclass": "Abstraction",
+      "properties": {}
+    }
+  ]
+}

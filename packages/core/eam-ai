@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+"""Kurzeinstieg fuer die Kommandozeile: ``eam-ai build ...``.
+
+Die Implementierung liegt in ``eam_ai.py``; dieser Einstieg macht den Aufruf
+ohne ``python3 -m`` moeglich, wenn das Verzeichnis im PATH liegt.
+"""
+
+from eam_ai import main
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,114 @@
+# EAM AI Suite Python -- GitHub Actions, gleiche Struktur wie .gitlab-ci.yml.
+#
+# Stages: lint -> test -> build -> release (als Job-Kette ueber needs).
+# Die Befehlsfolge ist identisch mit der GitLab-Pipeline; ci/validate_pipeline.py
+# prueft die Paritaet. Fixtures kommen aus dem internen Store
+# (Repository-Variable EAM_FIXTURE_STORE oder EAM_FIXTURE_STORE_URL), nie aus
+# dem Repo. Ohne Store bricht der Testlauf laut ab -- kein stilles Ueberspringen.
+#
+# Release: nur auf Tags vX.Y.Z, legt die Freigabe ueber die Releases-API an
+# (GITHUB_TOKEN). Es wird nichts committet und nichts gepusht.
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  lint:
+    runs-on: ${{ vars.EAM_RUNNER || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Kern und Pipeline pruefen
+        run: python -m ci.lint_core
+      - name: Pipeline-Struktur und Paritaet pruefen
+        run: python -m ci.validate_pipeline
+
+  test:
+    needs:
+      - lint
+    runs-on: ${{ vars.EAM_RUNNER || 'ubuntu-latest' }}
+    env:
+      EAM_FIXTURE_STORE: ${{ vars.EAM_FIXTURE_STORE }}
+      EAM_FIXTURE_STORE_URL: ${{ vars.EAM_FIXTURE_STORE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Testwerkzeuge installieren
+        run: python -m pip install --disable-pip-version-check --requirement ci/requirements-ci.txt
+      - name: Fixtures bereitstellen (Store oder synthetische Repo-Fixtures)
+        run: python -m ci.stage_fixtures --optional
+      - name: Fixtures pruefen
+        run: python -m ci.stage_fixtures --check --optional
+      - name: Tests ohne Netz
+        run: python -m ci.run_tests
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: testbericht
+          path: reports/
+          if-no-files-found: error
+
+  build:
+    needs:
+      - test
+    runs-on: ${{ vars.EAM_RUNNER || 'ubuntu-latest' }}
+    env:
+      EAM_FIXTURE_STORE: ${{ vars.EAM_FIXTURE_STORE }}
+      EAM_FIXTURE_STORE_URL: ${{ vars.EAM_FIXTURE_STORE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Fixtures bereitstellen (Store oder synthetische Repo-Fixtures)
+        run: python -m ci.stage_fixtures --optional
+      - name: Referenzmodell bauen und Determinismus belegen
+        run: python -m ci.build_reference
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: referenzbau
+          path: dist/reference/
+          if-no-files-found: error
+
+  release:
+    needs:
+      - build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ${{ vars.EAM_RUNNER || 'ubuntu-latest' }}
+    env:
+      EAM_RELEASE_PROVIDER: github
+      EAM_RELEASE_TAG: ${{ github.ref_name }}
+      EAM_RELEASE_COMMIT: ${{ github.sha }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: referenzbau
+          path: dist/reference
+      - name: Freigabe anlegen
+        run: python -m ci.release
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: freigabe
+          path: release/
+          if-no-files-found: error

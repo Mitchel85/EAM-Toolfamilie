@@ -1,0 +1,16 @@
+{
+  "name": "eam-admbw-script-maker",
+  "version": "2.4.0",
+  "private": true,
+  "description": "EAM AI ADMBw Script-Maker — Modellbehelf zu EA-JScript",
+  "main": "index.html",
+  "files": [
+    "**/*"
+  ],
+  "dependencies": {
+    "@mitchel85/eam-rules": "*"
+  },
+  "overrides": {
+    "mdg_parser.py": "./packages/rules/mdg_parser.py"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "modelName": "Lieferkette-Demo",
+  "packages": [
+    {
+      "name": "Logistik",
+      "stereo": "ArchitecturalDescription",
+      "elements": [
+        { "name": "Verteilzentrum Hamburg", "type": "Class", "stereo": "Node", "tags": { "role": "Hub" } },
+        { "name": "Kühlbereich Hannover", "type": "Class", "stereo": "Node" },
+        { "name": "Temperaturgeführte Lieferung", "type": "Class", "stereo": "ServiceSpecification" }
+      ],
+      "connectors": [
+        { "from": "Verteilzentrum Hamburg", "to": "Kühlbereich Hannover", "meta": "Dependency", "stereo": "IsCapableOfPerforming" },
+        { "from": "Kühlbereich Hannover", "to": "Temperaturgeführte Lieferung", "meta": "Dependency", "stereo": "Provides" }
+      ]
+    }
+  ]
+}

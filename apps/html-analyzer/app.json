@@ -1,0 +1,14 @@
+{
+  "productName": "EAM QEA Analyzer",
+  "version": "4.0",
+  "sourceRepo": "Mitchel85/EAM-QEA-Analyzer",
+  "sourceCommit": "9967a89",
+  "sourceNote": "Titel/H1 auf EAM QEA Analyzer; Analyse-Fassung wird aus dem Edit-Master durch Entfernen der Edit-Teile gebaut",
+  "sourceTreeSha256": "dc68083176fcc3b1949ca14cb5748713ba3ce30df216a3d0f056387979e8040d",
+  "buildScript": "src/build_release.py",
+  "sourceOutput": "ADMBw_QEA_Analyzer.html",
+  "sourceAspx": "ADMBw_QEA_Analyzer.aspx",
+  "output": "EAM-QEA-Analyzer.html",
+  "aspx": "EAM-QEA-Analyzer.aspx",
+  "kind": "standalone"
+}

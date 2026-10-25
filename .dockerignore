@@ -1,0 +1,12 @@
+.git
+.gitignore
+dist
+**/dist
+**/__pycache__
+**/.pytest_cache
+tests
+apps/html-*/src
+apps/admbw-*
+apps/mcp
+vendor
+docs

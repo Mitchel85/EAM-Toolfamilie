@@ -1,0 +1,5 @@
+Der Ablauf A steuert die Faehigkeit B.
+
+Die Faehigkeit B wird durch den Dienst C erbracht.
+
+Der Dienst C ist ein Service.

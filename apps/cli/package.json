@@ -1,0 +1,17 @@
+{
+  "name": "eam-ai-cli",
+  "version": "2.4.0",
+  "private": true,
+  "description": "EAM AI Suite Python — Kommandozeile und Webdienst",
+  "main": "eam-ai",
+  "files": [
+    "**/*"
+  ],
+  "dependencies": {
+    "@mitchel85/eam-core": "*",
+    "@mitchel85/eam-rules": "*"
+  },
+  "overrides": {
+    "eam_ai.py": "./packages/core/eam_ai.py"
+  }
+}

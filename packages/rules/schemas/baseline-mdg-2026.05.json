@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "release": "2026.05",
+  "created_at": "2026-10-20T04:04:19Z",
+  "source": {
+    "mdg_file": "NAFv4-ADMBw-MDG-2026.05.xml",
+    "extracted_at": "2026-10-19 05:45:34 UTC"
+  },
+  "counts": {
+    "stereotypes": 318,
+    "topology": 203,
+    "rules_complete": 133,
+    "viewpoints": 52,
+    "tag_types": 27,
+    "stereotype_tags": 225
+  },
+  "fingerprints": {
+    "stereotypes": "8f160452a75e3a0817083643a3cc928283bcd0a9e0f73db4615c320a5743d814",
+    "topology": "63ec2782f8157bda5a20858ea7e54f00a3260cd7803f5789f0a1314e4566f372",
+    "viewpoints": "b31330c53636bc1e313ab5b91fee3032b3755bf03c3b724d5ebbbe7223798d49",
+    "tag_types": "6d59cc14129ea6f4866f52127675a557af6eaa4d9846db321384883dbf20b5d9",
+    "stereotype_tags": "a5bf810fb180fe4791513207db2d20cdec6b3a378ae6948d5fe39dee786c4a8f"
+  }
+}

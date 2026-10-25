@@ -1,0 +1,11 @@
+{
+  "name": "eam-mdg-web",
+  "version": "2.0.0",
+  "private": true,
+  "description": "EAM-ADMBw-MDG-Parser — Browser-Auslieferung des Regelwerks",
+  "main": "index.html",
+  "files": [
+    "**/*"
+  ],
+  "dependencies": {}
+}

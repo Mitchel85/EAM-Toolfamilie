@@ -1,0 +1,18 @@
+{
+  "mdg": "NAFv4-ADMBw-MDG-2026.05.xml",
+  "mdg_sha256": "c014ceda600b5bb9e42c2a8e58f02bf9655e8fe9b6a5e8df6a28693b3b701c84",
+  "parser": "packages/rules/mdg_parser.py",
+  "parser_sha256": "e99130534379817fe59b7198db73b02956372b9e55d88038190a4bf9c53fc8bc",
+  "files": {
+    "admbw-aliases.json": "296cdb6cd2682878946c225b983992e0ab3eab3b9d76d3c2ba0abfdc01234470",
+    "admbw-knowledge-connectors.md": "8174ba95cf48a920804f411e8fed535b6e71f27db59601db403e2c0fdabded45",
+    "admbw-knowledge-stereotype-tags.md": "1f730fb746a17bcb23757e31e04f59f66aecd87eeb97ab128fd1579659f2afc4",
+    "admbw-knowledge-stereotypes.md": "33b41b18e7669718e45f7a7f33ff53cc783321a74f0fae64dedd6f8ec53b9202",
+    "admbw-knowledge-tagtypes.md": "2cc3ca33b9babfb1e8b85539e6795f84e29cb8a655586b13a971b4c9a704c914",
+    "admbw-knowledge-topology.md": "33df48cd9b7c27f3bebfec212933df347ba95492b4512607b718113c5761c99b",
+    "admbw-knowledge-viewpoints.md": "d56fe2387ca02549c1e2ea88dccfdad0d86f09690f22d3778d977b68b15e9c43",
+    "admbw-meta.md": "ce210f536bf401d5ad62f12cc9704ce37bd87fdc1547f9e16746c71ce30bd619",
+    "admbw-prompt.md": "1b77140073b346d061927d45ebfbd746ff1814c04bb316371737f43c703b201c",
+    "admbw-stereotypes.json": "f03851ff9daa21360a236a44ed5fd40577d7dcc76fabfb3bbf301a73b1c0d325"
+  }
+}

@@ -1,0 +1,250 @@
+{
+  "kb": {
+    "stereotypes": {
+      "rows": 318,
+      "toolbox": 0,
+      "abstract": 44,
+      "usable": 293,
+      "catalog": 318,
+      "junk": 0
+    },
+    "topology": {
+      "rows": 203,
+      "complete_rules": 133,
+      "roles_only": 70
+    },
+    "viewpoints": 52,
+    "hashes": {
+      "ADMBw-Knowledge-Stereotypes.md": {
+        "sha256": "33b41b18e7669718e45f7a7f33ff53cc783321a74f0fae64dedd6f8ec53b9202",
+        "bytes": 58033
+      },
+      "ADMBw-Knowledge-Topology.md": {
+        "sha256": "33df48cd9b7c27f3bebfec212933df347ba95492b4512607b718113c5761c99b",
+        "bytes": 34575
+      },
+      "ADMBw-Knowledge-Viewpoints.md": {
+        "sha256": "d56fe2387ca02549c1e2ea88dccfdad0d86f09690f22d3778d977b68b15e9c43",
+        "bytes": 14963
+      },
+      "ADMBw-Knowledge-TagTypes.md": {
+        "sha256": "2cc3ca33b9babfb1e8b85539e6795f84e29cb8a655586b13a971b4c9a704c914",
+        "bytes": 2494
+      }
+    }
+  },
+  "schema": {
+    "prompt_matches_file": true,
+    "example_errors": []
+  },
+  "example": {
+    "nodes": 7,
+    "edges": 5,
+    "edges_kb_pass": 5,
+    "metadata_node_count": 7,
+    "metadata_edge_count": 5
+  },
+  "checks": [
+    {
+      "name": "Stereotypes: 318 Tabellenzeilen",
+      "ok": true,
+      "detail": "ist 318"
+    },
+    {
+      "name": "Stereotypes: 0 ToolboxPage-Einträge",
+      "ok": true,
+      "detail": "ist 0"
+    },
+    {
+      "name": "Stereotypes: 44 abstrakte Stereotype (🔒)",
+      "ok": true,
+      "detail": "ist 44"
+    },
+    {
+      "name": "Stereotypes: 0 Nicht-Stereotype/Artefakte",
+      "ok": true,
+      "detail": "ist 0"
+    },
+    {
+      "name": "Stereotypes: 293 nutzbare",
+      "ok": true,
+      "detail": "ist 293"
+    },
+    {
+      "name": "Stereotypes: 318 Katalog (ohne ToolboxPage/Artefakt)",
+      "ok": true,
+      "detail": "ist 318"
+    },
+    {
+      "name": "Stereotypes: Header nennt 318 und 44 abstrakt",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "JSON: Stereotypes-Datei vorhanden",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "JSON: Aliases-Datei vorhanden",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "JSON: 318 Einträge",
+      "ok": true,
+      "detail": "ist 318"
+    },
+    {
+      "name": "JSON: 44 abstrakt",
+      "ok": true,
+      "detail": "ist 44"
+    },
+    {
+      "name": "JSON: CapabilityConfiguration ist Subtyp von ResourcePerformer",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "JSON: BWRequirement → Functional/NonfunctionalRequirement",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Aliases: beide Schreibvarianten abgebildet",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Topology: 203 Zeilen",
+      "ok": true,
+      "detail": "ist 203"
+    },
+    {
+      "name": "Topology: 133 Regeln mit beiden Enden",
+      "ok": true,
+      "detail": "ist 133"
+    },
+    {
+      "name": "Topology: 70 reine Rollen-Zeilen",
+      "ok": true,
+      "detail": "ist 70"
+    },
+    {
+      "name": "Topology: Lesart 'Quelle = client/source/end[0]/informationSource'",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Viewpoints: 52 Überschriften",
+      "ok": true,
+      "detail": "ist 52"
+    },
+    {
+      "name": "Viewpoints: 'Business Process'-Artefakt entfernt",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "TagTypes: 27 Property-Typen",
+      "ok": true,
+      "detail": "ist 27"
+    },
+    {
+      "name": "TagTypes: Header nennt 27 Property-Typen",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Connectors: Dependency (100)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Connectors: Class (68)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Connectors: Activity (6)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Connectors: Connector (3)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Connectors: 52 Viewpoints",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Hashes: vier MDG-KB-Dateien berechnet",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Schema: erstes ```json-Block im Prompt gefunden",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Schema: Prompt-Block == examples/batch-schema.json",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Beispiel: 0 jsonschema-Fehler",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "metadata.node_count == len(nodes)",
+      "ok": true,
+      "detail": "7 != 7"
+    },
+    {
+      "name": "metadata.edge_count == len(edges)",
+      "ok": true,
+      "detail": "5 != 5"
+    },
+    {
+      "name": "Node-IDs eindeutig",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Edge-IDs eindeutig",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Alle source_id/target_id referenzieren Nodes",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "metadata.generator korrekt",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "metadata.standard korrekt",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Beispiel: alle Nodes KB-konform (nutzbar, AppliesTo==metaclass, label)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Beispiel: alle 5 Kanten Topologie-PASS (exakt oder Subtyp)",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "all_pass": true
+}

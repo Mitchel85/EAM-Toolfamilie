@@ -1,0 +1,14 @@
+{
+  "productName": "EAM AI Suite",
+  "version": "9.1",
+  "sourceRepo": "Mitchel85/EAM-AI-Suite",
+  "sourceCommit": "897058d",
+  "sourceNote": "unveränderter Quellstand",
+  "sourceTreeSha256": "c51ba69a4924dbf800934a67cf23d4a7113417bd1016a9fdd9afee3de8f7a80d",
+  "buildScript": "src/build_release.py",
+  "sourceOutput": "EAM-AI-Suite.html",
+  "sourceAspx": "EAM-AI-Suite.aspx",
+  "output": "EAM-AI-Suite.html",
+  "aspx": "EAM-AI-Suite.aspx",
+  "kind": "standalone"
+}

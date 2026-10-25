@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+dist/
+*.qea.edit-tmp
+/scratch/
+
+# Altwerkzeug-Build schreibt GitHub-Pages-Spiegel; nicht Teil der Auslieferung.
+apps/*/docs/

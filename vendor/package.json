@@ -1,0 +1,9 @@
+{
+  "name": "@mitchel85/eam-vendor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Kanonische Browser-Bibliotheken für die HTML-Werkzeuge (sql.js, PDF.js, JSZip)",
+  "files": [
+    "**/*"
+  ]
+}

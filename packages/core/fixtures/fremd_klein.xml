@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MDG.Technology xmlns="urn:beispiel:mdg" version="1.0">
+	<Documentation id="Acme" name="Acme Bausteine" version="1.0"
+		notes="Fremde Testtechnologie (synthetisch): andere Namen, andere Metaklassen, andere Rollen-Schreibweise." />
+	<UMLProfiles>
+		<UMLProfile profiletype="uml2">
+			<Documentation id="Acme" name="Acme Bausteine" />
+			<Content>
+				<Stereotypes>
+					<Stereotype name="Baustein" metatype="Baustein"
+						notes="Wiederverwendbarer Baustein." isAbstract="false">
+						<AppliesTo>
+							<Apply type="Class" />
+						</AppliesTo>
+						<TaggedValues>
+							<Tag name="reifegrad" type="Enum" description="Reifegrad"
+								unit="" values="A;B;C" default="B" />
+						</TaggedValues>
+					</Stereotype>
+					<Stereotype name="Schnittstelle" metatype="Schnittstelle"
+						notes="Vertrag zwischen Bausteinen.">
+						<AppliesTo>
+							<Apply type="Interface" />
+						</AppliesTo>
+					</Stereotype>
+					<Stereotype name="nutzt" metatype="nutzt"
+						notes="Baustein nutzt eine Schnittstelle (Assoziation).">
+						<AppliesTo>
+							<Apply type="Association" />
+						</AppliesTo>
+						<metaconstraints>
+							<metaconstraint umlRole="source" constraint="Acme::Baustein" />
+							<metaconstraint umlRole="target" constraint="Acme::Schnittstelle" />
+						</metaconstraints>
+					</Stereotype>
+					<Stereotype name="verbindet" metatype="verbindet"
+						notes="Zwei Bausteine sind verbunden (Konnektor).">
+						<AppliesTo>
+							<Apply type="Connector" />
+						</AppliesTo>
+						<metaconstraints>
+							<metaconstraint umlRole="source" constraint="Acme::Baustein" />
+							<metaconstraint umlRole="target" constraint="Acme::Baustein" />
+						</metaconstraints>
+					</Stereotype>
+					<Stereotype name="meldung" metatype="meldung"
+						notes="Meldung ohne Endpunkt-Restriktion (Message).">
+						<AppliesTo>
+							<Apply type="Message" />
+						</AppliesTo>
+					</Stereotype>
+				</Stereotypes>
+				<ViewDefinitions>
+					<ViewDefinition name="Bausteinlandkarte" alias="BLK"
+						notes="Uebersicht aller Bausteine." diagramID="BLK" category="Acme" />
+				</ViewDefinitions>
+			</Content>
+		</UMLProfile>
+		<UMLProfile profiletype="uml2">
+			<Documentation id="Acme-Erw" name="Acme Erweiterung" />
+			<Content>
+				<Stereotypes>
+					<Stereotype name="Dienst" metatype="Dienst"
+						notes="Betrieblicher Dienst, der einen Baustein bereitstellt.">
+						<AppliesTo>
+							<Apply type="Class" />
+						</AppliesTo>
+						<metaconstraints>
+							<metaconstraint umlRole="classifier" constraint="Acme::Baustein" />
+						</metaconstraints>
+					</Stereotype>
+				</Stereotypes>
+			</Content>
+		</UMLProfile>
+	</UMLProfiles>
+</MDG.Technology>

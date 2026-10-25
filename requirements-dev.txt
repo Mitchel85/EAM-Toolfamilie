@@ -1,0 +1,5 @@
+pytest
+jsonschema
+networkx>=3.0
+pandas>=2.0
+requests>=2.31

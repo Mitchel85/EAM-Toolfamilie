@@ -1,0 +1,7 @@
+Die Aktivitaet A unterstuetzt die Faehigkeit B.
+
+Der Dienst C erbringt die Faehigkeit B.
+
+Die Faehigkeit B haengt von der Faehigkeit D ab.
+
+Der Dienst C ist eine Servicespezifikation.

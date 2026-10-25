@@ -1,0 +1,16 @@
+{
+  "name": "@mitchel85/eam-core",
+  "version": "2.4.0",
+  "private": true,
+  "description": "Python-Kern: Lesen, Schreiben, Prüfen von Modelldateien (Wrapper — Wahrheit ist pyproject.toml)",
+  "dependencies": {
+    "@mitchel85/eam-rules": "*"
+  },
+  "main": "index.html",
+  "files": [
+    "**/*"
+  ],
+  "overrides": {
+    "mdg_parser.py": "./packages/rules/mdg_parser.py"
+  }
+}

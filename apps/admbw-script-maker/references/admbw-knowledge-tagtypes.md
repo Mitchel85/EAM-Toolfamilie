@@ -1,0 +1,1 @@
+../../../knowledge/admbw-knowledge-tagtypes.md

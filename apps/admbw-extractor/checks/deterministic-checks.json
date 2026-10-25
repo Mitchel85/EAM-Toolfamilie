@@ -1,0 +1,303 @@
+{
+  "kb": {
+    "stereotypes": {
+      "rows": 318,
+      "toolbox": 0,
+      "abstract": 44,
+      "usable": 293,
+      "junk": 0
+    },
+    "topology": {
+      "rows": 203,
+      "complete_rules": 133,
+      "roles_only": 70
+    },
+    "viewpoints": 52,
+    "hashes": {
+      "ADMBw-Knowledge-Stereotypes.md": {
+        "sha256": "33b41b18e7669718e45f7a7f33ff53cc783321a74f0fae64dedd6f8ec53b9202",
+        "bytes": 58033
+      },
+      "ADMBw-Knowledge-Topology.md": {
+        "sha256": "33df48cd9b7c27f3bebfec212933df347ba95492b4512607b718113c5761c99b",
+        "bytes": 34575
+      },
+      "ADMBw-Knowledge-Viewpoints.md": {
+        "sha256": "d56fe2387ca02549c1e2ea88dccfdad0d86f09690f22d3778d977b68b15e9c43",
+        "bytes": 14963
+      },
+      "ADMBw-Knowledge-TagTypes.md": {
+        "sha256": "2cc3ca33b9babfb1e8b85539e6795f84e29cb8a655586b13a971b4c9a704c914",
+        "bytes": 2494
+      }
+    }
+  },
+  "checks": [
+    {
+      "name": "Stereotypes: 318 Tabellenzeilen",
+      "ok": true,
+      "detail": "ist 318"
+    },
+    {
+      "name": "Stereotypes: 0 ToolboxPage-Einträge",
+      "ok": true,
+      "detail": "ist 0"
+    },
+    {
+      "name": "Stereotypes: 44 abstrakte Stereotype (🔒)",
+      "ok": true,
+      "detail": "ist 44"
+    },
+    {
+      "name": "Stereotypes: 0 Nicht-Stereotype/Artefakte",
+      "ok": true,
+      "detail": "ist 0"
+    },
+    {
+      "name": "Stereotypes: 293 nutzbare",
+      "ok": true,
+      "detail": "ist 293"
+    },
+    {
+      "name": "Stereotypes: Header nennt 318 und 44 abstrakt",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Stereotypes: KI-Hinweis zu abstrakten Typen vorhanden",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Stereotypes: Eltern-Spalte vorhanden",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "JSON: Stereotypes-Datei vorhanden",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "JSON: Aliases-Datei vorhanden",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "JSON: 318 Einträge",
+      "ok": true,
+      "detail": "ist 318"
+    },
+    {
+      "name": "JSON: 44 abstrakt",
+      "ok": true,
+      "detail": "ist 44"
+    },
+    {
+      "name": "JSON: ResourcePerformer abstrakt mit konkreten Subtypen",
+      "ok": true,
+      "detail": "subtypen=18"
+    },
+    {
+      "name": "JSON: BWRequirement → FunctionalRequirement/NonfunctionalRequirement",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "JSON: CapabilityConfiguration ist Subtyp von ResourcePerformer",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Aliases: PropertySetGeneralisation abgebildet",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Aliases: ServiceSpecificationGeneralization abgebildet",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Topology: 203 Zeilen",
+      "ok": true,
+      "detail": "ist 203"
+    },
+    {
+      "name": "Topology: 133 Regeln mit beiden Enden",
+      "ok": true,
+      "detail": "ist 133"
+    },
+    {
+      "name": "Topology: 70 reine Rollen-Zeilen",
+      "ok": true,
+      "detail": "ist 70"
+    },
+    {
+      "name": "Topology: Lesart 'Quelle = client/source/end[0]/informationSource'",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Topology: Spaltenköpfe Quelle/Ziel normalisiert",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Topology: Abschnitt 'Abstrakte Endpunkte' vorhanden",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Topology: ResourcePerformer-Auflösung dokumentiert",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Viewpoints: 52 Überschriften",
+      "ok": true,
+      "detail": "ist 52"
+    },
+    {
+      "name": "Viewpoints: 'Business Process'-Artefakt entfernt",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "TagTypes: 27 Property-Typen",
+      "ok": true,
+      "detail": "ist 27"
+    },
+    {
+      "name": "TagTypes: Header nennt 27 Property-Typen",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Connectors: Dependency (100)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Connectors: Class (68)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Connectors: Activity (6)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Connectors: Connector (3)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Hashes: vier MDG-KB-Dateien berechnet",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Doku: keine Alt-Behauptung '443 eindeutige'",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Doku: keine Alt-Behauptung '203 Beziehungsregeln'",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Doku: keine Alt-Behauptung '53 Viewpoints'",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Doku: '8/8 ✓' entfernt",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Prompt: Topologie-Lesart dokumentiert",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Prompt: Kanten-Validierungstabelle (source_stereotype/connector/target_stereotype/PASS/FAIL)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Prompt: Zählung 'X/Y Kanten PASS' statt Pauschal-Claim",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Prompt: Few-Shot enthalten",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Prompt: Leerinput-Regel enthalten",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Prompt: abstrakte Typen mit 44 und Subtyp-Auflösung",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Prompt: Auflösungsspalte in der Validierungstabelle",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Prompt: alte Fehlregel 'abstraktes Regel-Ende = FAIL' entfernt",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Prompt: Alias-Normalisierung dokumentiert",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "README: korrigierte Zahlen (318/293/133/52)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "ANLEITUNG: korrigierte Zahlen",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Keine Bw-PDF im Repository",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "README: keine PDF-Referenz mehr",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "README: Quelle der Wahrheit benannt",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "README: KB-Sync auf Parserstand 2026-10-19",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "README: keine PENDING-Formulierung",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "all_pass": true
+}

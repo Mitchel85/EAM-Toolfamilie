@@ -1,0 +1,351 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://eam-suite.invalid/rules.schema.json",
+  "title": "EAM AI Suite Python - Technologie-Regelwerk (rules.json)",
+  "description": "Kanonisches Regelwerk, das mdg_parser.py aus einer MDG-/Technologie-XML erzeugt. Alle Listen sind sortiert, alle Objekte tragen stabile Schluessel; gleicher Input erzeugt gleiche Bytes.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "source",
+    "elementStereotypes",
+    "connectorRules",
+    "viewpoints",
+    "taggedValueTypes",
+    "metaclasses",
+    "warnings",
+    "stats"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1,
+      "description": "Version dieses Ausgabeformats."
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Herkunft der Technologie. sha256 bezieht sich auf die Rohbytes der MDG-Datei.",
+      "required": [
+        "technologyId",
+        "technologyName",
+        "technologyVersion",
+        "technologyNotes",
+        "file",
+        "sha256"
+      ],
+      "properties": {
+        "technologyId": { "type": "string", "minLength": 1 },
+        "technologyName": { "type": "string", "minLength": 1 },
+        "technologyVersion": { "type": "string" },
+        "technologyNotes": { "type": "string" },
+        "file": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "elementStereotypes": {
+      "type": "array",
+      "description": "Stereotypen fuer Knoten (Class, Object, Part, Port, Requirement, ...). Enthaelt auch abstrakte Eltern-Stereotypen ohne eigene Metaklasse (metaclasses = []).",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/elementStereotype" }
+    },
+    "connectorRules": {
+      "type": "array",
+      "description": "Erlaubte Kanten: Stereotyp plus zulaessige Quell- und Ziel-Stereotypen. Referenzen ohne '::' sind lokal, Referenzen mit '::' zeigen in ein Fremdprofil (z. B. 'BPMN2.0::Lane').",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/connectorRule" }
+    },
+    "taggedValueTypes": {
+      "type": "array",
+      "description": "Definitionen der Tagged-Value-Typen aus <TaggedValueTypes>. Sie beschreiben, welche Eigenschaften die Technologie kennt (Name, Typ, Wertebereich) - unabhaengig davon, an welchem Stereotyp sie verwendet werden.",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/propertyType" }
+    },
+    "viewpoints": {
+      "type": "array",
+      "description": "Viewpoint-Definitionen der Technologie. Projektiert wird nicht (keine Sichten, kein Layout) - die Liste dient der Vollstaendigkeit und Auswertung.",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/viewpoint" }
+    },
+    "metaclasses": {
+      "type": "array",
+      "description": "Verwendete UML-Metaklassen mit Nutzungszahl. kind ist 'element', 'connector' oder 'mixed'.",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/metaclass" }
+    },
+    "warnings": {
+      "type": "array",
+      "description": "Strukturelle Auffaelligkeiten der Technologie. Sie verhindern das Parsen nicht, werden aber auch nicht verschwiegen.",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/warning" }
+    },
+    "stats": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "elementStereotypes",
+        "connectorRules",
+        "viewpoints",
+        "metaclasses",
+        "warnings"
+      ],
+      "properties": {
+        "elementStereotypes": { "type": "integer", "minimum": 0 },
+        "connectorRules": { "type": "integer", "minimum": 0 },
+        "viewpoints": { "type": "integer", "minimum": 0 },
+        "metaclasses": { "type": "integer", "minimum": 0 },
+        "warnings": { "type": "integer", "minimum": 0 }
+      }
+    }
+  },
+  "$defs": {
+    "stringList": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "apply": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metaclass", "properties"],
+      "properties": {
+        "metaclass": { "type": "string", "minLength": 1 },
+        "properties": {
+          "type": "object",
+          "description": "Property-Eintraege aus <Apply>, z. B. direction, toolbox, diagramID.",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "propertyType": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Definition einer Eigenschaft aus dem Technologie-Kopf (<TaggedValueTypes>, Datensatz 'Property Types').",
+      "required": ["name", "description", "notes"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "notes": { "type": "string" }
+      }
+    },
+    "taggedValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type", "description", "unit", "values", "default"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "type": { "type": "string" },
+        "description": { "type": "string" },
+        "unit": { "type": "string" },
+        "values": { "type": "string" },
+        "default": { "type": "string" }
+      }
+    },
+    "metaconstraint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "constraints"],
+      "properties": {
+        "role": { "type": "string", "minLength": 1 },
+        "constraints": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      }
+    },
+    "metarelationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metaclass", "targets"],
+      "properties": {
+        "metaclass": { "type": "string", "minLength": 1 },
+        "targets": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      }
+    },
+    "elementStereotype": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "alias",
+        "notes",
+        "metatype",
+        "abstract",
+        "metaclasses",
+        "appliesTo",
+        "generalizes",
+        "baseStereotypes",
+        "taggedValues",
+        "metaconstraints",
+        "metarelationships"
+      ],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "alias": { "type": ["string", "null"] },
+        "notes": { "type": "string" },
+        "metatype": { "type": ["string", "null"] },
+        "abstract": { "type": "boolean" },
+        "metaclasses": {
+          "type": "array",
+          "description": "Eindeutige Apply-Metaklassen, sortiert. Leer bei reinen Eltern-Stereotypen.",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "appliesTo": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/apply" }
+        },
+        "generalizes": { "$ref": "#/$defs/stringList" },
+        "baseStereotypes": { "$ref": "#/$defs/stringList" },
+        "taggedValues": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/taggedValue" }
+        },
+        "metaconstraints": {
+          "type": "array",
+          "description": "Rohdaten der Metaconstraints (auch nicht ausgewertete Rollen wie 'class', 'type', 'owner').",
+          "items": { "$ref": "#/$defs/metaconstraint" }
+        },
+        "metarelationships": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/metarelationship" }
+        }
+      }
+    },
+    "connectorRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "stereotype",
+        "alias",
+        "notes",
+        "metatype",
+        "metaclasses",
+        "appliesTo",
+        "generalizes",
+        "baseStereotypes",
+        "taggedValues",
+        "source",
+        "target",
+        "direction",
+        "roles",
+        "metaconstraints"
+      ],
+      "properties": {
+        "abstract": { "type": "boolean" },
+        "id": {
+          "type": "string",
+          "pattern": "^cr:.+$",
+          "description": "Stabile Regel-ID, abgeleitet aus dem Stereotyp-Namen: 'cr:<stereotype>'."
+        },
+        "stereotype": { "type": "string", "minLength": 1 },
+        "alias": { "type": ["string", "null"] },
+        "notes": { "type": "string" },
+        "metatype": { "type": ["string", "null"] },
+        "metaclasses": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Nur die Konnektor-Metaklassen des Stereotyps (Apply-Typen).",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "appliesTo": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/apply" }
+        },
+        "generalizes": { "$ref": "#/$defs/stringList" },
+        "baseStereotypes": { "$ref": "#/$defs/stringList" },
+        "taggedValues": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/taggedValue" }
+        },
+        "source": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Erlaubte Quell-Stereotypen. '::' kennzeichnet Fremdprofile. Der Einzelwert '*' bedeutet: keine Einschraenkung (Stereotyp deklariert keine Endpunkt-Constraints).",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "target": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Erlaubte Ziel-Stereotypen. '::' kennzeichnet Fremdprofile. Der Einzelwert '*' bedeutet: keine Einschraenkung.",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "direction": { "type": ["string", "null"] },
+        "roles": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source", "target"],
+          "properties": {
+            "source": { "$ref": "#/$defs/stringList" },
+            "target": { "$ref": "#/$defs/stringList" }
+          }
+        },
+        "notes": { "type": "string" },
+        "metaconstraints": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/metaconstraint" }
+        }
+      }
+    },
+    "viewpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["group", "name", "alias", "notes", "kind", "properties"],
+      "properties": {
+        "group": {
+          "type": ["string", "null"],
+          "description": "Name des UMLProfils, in dem der Viewpoint definiert ist."
+        },
+        "name": { "type": "string", "minLength": 1 },
+        "alias": { "type": ["string", "null"] },
+        "notes": { "type": "string" },
+        "kind": {
+          "type": "string",
+          "enum": ["diagramProfile", "viewDefinition"]
+        },
+        "properties": {
+          "type": "object",
+          "description": "Diagramm-Properties (z. B. diagramID, toolbox) bzw. Attribute der ViewDefinition.",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "metaclass": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "kind", "stereotypeCount", "ruleCount"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "kind": {
+          "type": "string",
+          "enum": ["element", "connector", "mixed"]
+        },
+        "stereotypeCount": { "type": "integer", "minimum": 0 },
+        "ruleCount": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "warning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "subject", "detail"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["unresolvedReference", "stereotypeWithoutMetaclass"]
+        },
+        "subject": { "type": "string", "minLength": 1 },
+        "detail": { "type": "string" }
+      }
+    }
+  }
+}

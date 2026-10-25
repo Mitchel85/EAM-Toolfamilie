@@ -1,0 +1,35 @@
+{
+  "elements": [
+    {
+      "name": "Ablauf A",
+      "stereotype": "Process",
+      "notes": "Beispiel, synthetisch",
+      "source_ref": "D1-S1",
+      "confidence": 0.9
+    },
+    {
+      "name": "Faehigkeit B",
+      "stereotype": "Capability",
+      "notes": "Beispiel, synthetisch",
+      "source_ref": "D1-S2",
+      "confidence": 0.85
+    },
+    {
+      "name": "Dienst C",
+      "stereotype": "ServiceSpecification",
+      "notes": "Beispiel, synthetisch",
+      "source_ref": "D1-S3",
+      "confidence": 0.8
+    }
+  ],
+  "connectors": [
+    {
+      "source": "Faehigkeit B",
+      "target": "Dienst C",
+      "stereotype": "Exhibits",
+      "notes": "Beispiel, synthetisch",
+      "source_ref": "D1-S2",
+      "confidence": 0.8
+    }
+  ]
+}
