@@ -247,6 +247,7 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
     <p>Alle Einzeltools an einer Stelle. Die HTML-Dateien laufen per Doppelklick im Browser — ohne Installation und ohne Netz. Die Apps selbst brauchen kein Konto.</p>
     <div class="steps"><span><b>1</b> Werkzeug wählen</span><span><b>2</b> Herunterladen</span><span><b>3</b> Datei öffnen</span></div>
     <a class="btn light" href="${releases}">Alle Dateien im Release ansehen</a>
+    <a class="btn light" href="${repo}">Quelltext und README</a>
   </div>
 </header>
 <main class="wrap">
@@ -399,6 +400,7 @@ docker run --rm -p 8080:8080 \\
             cards="\n".join(karten),
             version=html.escape(version),
             releases=f"{REPO_URL}/releases",
+            repo=REPO_URL,
             sums=_dl("SHA256SUMS"),
         ),
         encoding="utf-8",

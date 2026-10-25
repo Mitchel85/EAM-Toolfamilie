@@ -1,0 +1,66 @@
+name: seite
+
+# Veröffentlicht die Übersichtsseite als GitHub Pages.
+#
+# Warum ein eigener Ablauf: Pages braucht `pages: write` und `id-token: write`.
+# Diese Rechte sollen nicht am Bau- und Prüfablauf hängen, denn der läuft auch
+# beim Setzen eines Tags. Darum: erst `_build.yml` (bauen und prüfen), dann
+# nur das fertige `dist/` veröffentlichen. Schlägt eine Prüfung fehl, bleibt
+# die zuletzt veröffentlichte Seite stehen.
+#
+# Ergebnis: https://mitchel85.github.io/EAM-Toolfamilie/
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seite
+  cancel-in-progress: true
+
+jobs:
+  bauen:
+    uses: ./.github/workflows/_build.yml
+
+  veroeffentlichen:
+    needs: bauen
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Auslieferungen holen
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      # Nur die Startseite wird veröffentlicht — keine Werkzeuge, keine
+      # Modelldateien, keine Prüfsummen, keine Repository-Dateien.
+      - name: Seitengerüst legen
+        run: |
+          set -eu
+          mkdir -p seite
+          cp dist/START-HIER.html seite/index.html
+          # Damit die Adresse /START-HIER.html ebenfalls antwortet (alte Links).
+          cp dist/START-HIER.html seite/START-HIER.html
+          # Kein Jekyll: reines HTML, keine Verarbeitung nötig.
+          touch seite/.nojekyll
+          ls -la seite
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: seite
+
+      - name: Veröffentlichen
+        id: deploy
+        uses: actions/deploy-pages@v4
