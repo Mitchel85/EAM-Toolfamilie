@@ -101,6 +101,7 @@ _ELEMENT_KEYS = {
     "status",
     "tags",
     "guid",
+    "origin",
     "xref_tags",
 }
 _CONNECTOR_KEYS = {
@@ -133,6 +134,26 @@ def guid_for(package_path: str, stereotype: str, name: str) -> str:
     "#2", "#3", ... angehaengt -- siehe _assign_guids().
     """
     return _format_guid(f"{package_path}|{stereotype}|{name}")
+
+
+_ORIGIN_PREFIX = "katalog:"
+
+
+def _origin_key(value: Any, what: str) -> str:
+    """Herkunftsschluessel eines Katalogelements, z. B. ``katalog:D-001/Kampfpanzer``.
+
+    Die Kennung leitet sich daraus ab (GUID und Kabelbaum bleiben stabil, auch
+    wenn das Element seine Rolle, sein Paket oder seine Beschriftung wechselt).
+    Ohne Herkunft rechnet der Writer wie bisher aus dem Inhalt.
+    """
+    text = _text(value, what, default="")
+    if not text:
+        return ""
+    if len(text) > 200:
+        _fail(f"{what}: Herkunftsschluessel laenger als 200 Zeichen")
+    if "|" in text:
+        _fail(f"{what}: Herkunftsschluessel darf kein '|' enthalten")
+    return _ORIGIN_PREFIX + text
 
 
 def _format_guid(seed: str) -> str:
@@ -308,6 +329,10 @@ class Element:
     status: str
     tags: tuple[tuple[str, str], ...]
     guid: str = ""
+    #: Herkunftsschluessel aus dem Katalog (``origin``). Ist er gesetzt, leitet
+    #: sich die GUID daraus ab -- das Element behaelt seine Kennung, auch wenn
+    #: es seine Rolle oder sein Paket wechselt.
+    origin: str = ""
     #: Tags, die EA in ``t_xref`` (Name='CustomProperties') haelt.
     xref_tags: tuple[tuple[str, str], ...] = ()
     object_id: int = 0
@@ -435,6 +460,7 @@ def _read_elements(ir: Mapping[str, Any], packages: Mapping[str, Package]) -> li
                 status=_text(obj.get("status"), f"{what}.status", default=""),
                 tags=_tags(obj.get("tags"), f"{what}.tags"),
                 guid=_optional_guid(obj.get("guid"), f"{what}.guid"),
+                origin=_origin_key(obj.get("origin"), f"{what}.origin"),
                 xref_tags=_tags(obj.get("xref_tags"), f"{what}.xref_tags"),
             )
         )
@@ -609,11 +635,26 @@ def _assign_guids(
     for item in items:
         if getattr(item, "guid", ""):
             continue
+        origin = getattr(item, "origin", "")
+        if origin:
+            # Katalogelement: die Kennung folgt der Herkunft -- nicht dem Ort,
+            # dem Namen oder der Rolle im Modell. Gleiche Herkunft, gleiche
+            # Kennung; eine etwaige Zufallskennung des Katalogs tritt zurueck.
+            set_guid(item, _format_guid(origin))
+            continue
         groups.setdefault(base_key(item), []).append(item)
     for key in sorted(groups):
         group = sorted(groups[key], key=content_key)
+        # Schon vorhandene Kennungen (etwa die des Katalogs) bleiben reserviert.
+        belegt = {getattr(item, "guid", "").upper() for item in items if getattr(item, "guid", "")}
         for offset, item in enumerate(group):
-            set_guid(item, _format_guid(key if offset == 0 else f"{key}#{offset + 1}"))
+            kandidat = _format_guid(key if offset == 0 else f"{key}#{offset + 1}")
+            stufe = offset + 1
+            while kandidat.upper() in belegt:
+                stufe += 1
+                kandidat = _format_guid(f"{key}#{stufe}")
+            belegt.add(kandidat.upper())
+            set_guid(item, kandidat)
 
 
 def plan_model(ir: Any, *, allow_empty: bool = False) -> ModelPlan:
@@ -725,9 +766,14 @@ def plan_model(ir: Any, *, allow_empty: bool = False) -> ModelPlan:
     # Tagged Values: eigene GUIDs, IDs in (Owner-ID, Property)-Sortierung
     object_tags: list[tuple[int, str, str, str]] = []
     for element in sorted(elements, key=lambda e: e.object_id):
-        for prop, value in sorted(element.tags):
+        # Herkunft mitschreiben: aus ihr leitet der naechste Lauf die GUID ab,
+        # ohne dass sich etwas aendert, wenn das Element umzieht oder umbenannt wird.
+        paare = dict(element.tags)
+        if element.origin:
+            paare["Herkunft"] = "katalog:" + element.origin
+        for prop, wert in sorted(paare.items()):
             object_tags.append(
-                (element.object_id, prop, value, _format_guid(f"tag|{element.guid}|{prop}"))
+                (element.object_id, prop, wert, _format_guid(f"tag|{element.guid}|{prop}"))
             )
     for package in sorted(packages, key=lambda p: p.package_id):
         owner_guid = package.guid

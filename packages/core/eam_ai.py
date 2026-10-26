@@ -367,6 +367,7 @@ def build(
     batch_chars: int | None = None,
     batch_threshold: int | None = None,
     startpaket: str | Path | None = None,
+    katalog: str | Path | None = None,
     modell: str | Path | None = None,
     ai_backend: object | None = None,
     repair_bericht: str | Path | None = None,
@@ -443,6 +444,7 @@ def build(
         # einen UnboundLocalError beim Export.
         bestand: list[tuple[str, str]] = []
         bestand_qea: Path | None = None
+        katalog_obj = None
 
         if skeleton_mode:
             say("[3/6] Kein Text, kein Bild: Geruest aus dem Regelwerk (kein Modellaufruf)")
@@ -517,6 +519,20 @@ def build(
                 except (OSError, sqlite3.Error) as exc:
                     raise BuildError(f"Modell {bestand_qea}: {exc}") from exc
                 say(f"        Bestand: {len(bestand)} vorhandene Element(e) im Prompt")
+            katalog_obj = None
+            katalog_bekannte: list[tuple[str, str]] = []
+            if katalog is not None:
+                try:
+                    import catalog_index
+
+                    katalog_obj = catalog_index.Catalog.from_qea(katalog)
+                except Exception as exc:  # noqa: BLE001 - Meldung reicht dem Nutzer
+                    raise BuildError(f"Katalog {katalog}: {exc}") from exc
+                katalog_bekannte = [
+                    (eintrag.name, eintrag.stereotype)
+                    for eintrag in sorted(katalog_obj.entries, key=lambda e: (e.stereotype, e.name))[:400]
+                ]
+                say(f"        Katalog: {len(katalog_obj)} Standardelement(e) im Prompt")
             standard: list[tuple[str, str]] = []
             if startpaket is not None:
                 try:
@@ -531,7 +547,7 @@ def build(
                 say(f"        Startpaket: {len(standard)} Standardelement(e) im Prompt")
             # Bestand zuerst: Vorhandenes vor Standardelementen. Beides zusammen
             # ist der Wiederverwendungs-Block im Prompt.
-            bekannte = bestand + [item for item in standard if item not in set(bestand)]
+            bekannte = list(dict.fromkeys(katalog_bekannte + bestand + standard))
             try:
                 result = extract_module.extract_batched(
                     [document],
@@ -647,6 +663,16 @@ def build(
                 technique, result, findings, target_findings, out_path,
                 qea=None, quellen=None, digest="", provenance_tags=0, exported=False,
                 dry_run=True, strict=strict,
+            )
+
+        # Standardelemente: Namen aus dem Katalog bekommen dessen Kennung und
+        # Heimatpaket. Das geschieht vor dem Schreiben, damit die Datei von
+        # Anfang an die Katalog-GUIDs traegt (und nicht erst ein Merge sie biegt).
+        if katalog_obj is not None:
+            zaehler = katalog_obj.apply(result.ir)
+            say(
+                f"        Katalog: {zaehler['katalog']} Element(e) wiedererkannt, "
+                f"{zaehler['neu']} neu"
             )
 
         emit_target = out_path
@@ -942,6 +968,15 @@ def build_parser() -> argparse.ArgumentParser:
             "unveraenderten Kennungen ins Ergebnis"
         ),
     )
+    p_build.add_argument(
+        "--katalog",
+        type=Path,
+        default=None,
+        help=(
+            "Standard-Elementekatalog (.qea, z. B. Modellelementekatalog der MASC): "
+            "genannte Elemente uebernehmen Kennung und Heimatpaket des Katalogs"
+        ),
+    )
     p_build.add_argument("--quellen", type=Path, default=None, help="Pfad der quellen.json")
     p_build.add_argument(
         "--no-quellen", action="store_true", help="keine quellen.json schreiben"
@@ -1187,6 +1222,7 @@ def cmd_build(args: argparse.Namespace) -> int:
             batch_chars=args.chargen_zeichen,
             batch_threshold=args.chargen_schwelle,
             startpaket=args.startpaket,
+            katalog=args.katalog,
             modell=args.modell,
             sidecar=not args.no_quellen,
             quellen_path=args.quellen,

@@ -38,6 +38,25 @@ Kurzbegriffe, die im Ablauf vorkommen:
 - **Daten:** ohne KI arbeiten die HTML-Werkzeuge lokal im Browser. Mit KI gehen der Text
   bzw. der gewählte Modellausschnitt an den KI-Zugang, den man selbst einträgt.
 
+## Standardelemente (StEKa)
+
+Der Standard-Elementekatalog liegt als `.qea` vor — in der Musterarchitektur das Paket
+`Modellelementekatalog`, je Stereotyp ein Unterpaket. Ein Element, das dort steht, wird
+nicht neu gebaut:
+
+- **Übernahme.** Nennt die Prosa ein Element mit Katalog-Namen (und passendem Stereotyp),
+  übernimmt das Ergebnis dessen `ea_guid` und dessen Heimatpaket. Die Kennung wird
+  nachgeschlagen, nie berechnet.
+- **Neue Elemente.** Nur was im Katalog fehlt, bekommt eine eigene Kennung, abgeleitet aus
+  Inhalt und Herkunft. Sie bleibt über Wiederholungsläufe gleich und kann später beim
+  Abgleich (Labeled Tree) in den Katalog wandern.
+- **Aufruf.** Python: `--katalog katalog.qea`. HTML: „⬆ Katalog laden" neben der
+  Modellauswahl; der Katalog erscheint zusätzlich im Prompt, damit keine Fantasienamen
+  entstehen.
+
+Der Weg `.qea → Bearbeitung → .qea` führt geführte Kennungen wörtlich mit. Auch ein
+Element, das im Modell umzieht oder umbenannt wird, behält seine Identität.
+
 ## Wiederverwendung und Größe
 
 Beides entscheidet, ob ein Modell über viele Texte hinweg zusammenwächst, statt in

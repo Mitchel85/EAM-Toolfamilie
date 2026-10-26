@@ -23,7 +23,7 @@ APPS = {
         "product": "EAM AI Suite",
         "version": "v9.1",
         "title": "EAM AI Suite — QEA-Architekturen analysieren, erkunden, bearbeiten &amp; exportieren",
-        "bytes": 3_541_760,
+        "bytes": 3_551_885,
         "min_size": 3_000_000,
         "max_size": 4_000_000,
         "markers": ("window.KI", "var EDIT =", "var MERGE"),
@@ -184,3 +184,13 @@ def test_app_dist_enthaelt_nur_das_manifest(gebaut: dict[str, dict]) -> None:
         erlaubt = {dateien["html"].name, dateien["aspx"].name}
         vorhanden = {p.name for p in (ROOT / "apps" / app / "dist").iterdir()}
         assert vorhanden == erlaubt, f"{app}: {sorted(vorhanden - erlaubt)}"
+
+
+def test_suite_laedt_standardelemente(gebaut: dict[str, dict]) -> None:
+    """Katalog laden und zuordnen: die Kennung kommt aus dem Katalog, nie berechnet."""
+    html = gebaut["html-suite"]["html"].read_text(encoding="utf-8")
+    assert "function loadCatalogBytes(" in html
+    assert "loadCatalogBytes: loadCatalogBytes" in html
+    assert 'id="ki-katalog-file"' in html
+    assert "Katalog laden" in html
+    assert "STANDARDELEMENTE AUS DEM KATALOG" in html

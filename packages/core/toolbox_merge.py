@@ -488,6 +488,8 @@ class _Target:
     next_attribute_id: int
     next_tpos: dict[int, int]
     next_object_tpos: dict[int, int]
+    #: GUIDs, an denen die Herkunft (Tag ``Herkunft``) schon gesetzt ist.
+    herkunft: set[str] = field(default_factory=set)
 
 
 def _max_int(table: _Table, column: str) -> int:
@@ -580,6 +582,13 @@ def _read_target(path: Path, warnings: list[str]) -> _Target:
             for row in snapshot["t_xref"].rows
             if _guid_key(_Table.get(row, "XrefID"))
         },
+        herkunft={
+            _guid_key(_Table.get(row, "Object_ID"))
+            for row in (
+                snapshot["t_objectproperties"].rows if "t_objectproperties" in snapshot else []
+            )
+            if _as_text(_Table.get(row, "Property")).strip().casefold() == "herkunft"
+        },
         attribute_constraints={
             (
                 _as_text(_Table.get(row, "Constraint")),
@@ -622,11 +631,51 @@ def _copy_row(row: Mapping[str, Any]) -> dict[str, Any]:
     return {key: value for key, value in row.items() if key.lower() not in _NEVER_COPY}
 
 
+def _merke_herkunft(target: _Target, plan: _MergePlan, guid: str, name: str, stereotype: str) -> None:
+    """Vermerkt die Herkunft eines uebernommenen Katalogelements als Tag.
+
+    Wert: ``katalog:<Stereotyp>/<Name>`` -- unabhaengig davon, wo das Element im
+    Modell haengt. Daraus berechnet :mod:`qea_writer` die GUID, wenn das Modell
+    spaeter aus einem IR neu geschrieben wird; die Kennung ueberlebt damit auch
+    ein Verschieben in ein anderes Paket. Deshalb bekommt das Element zugleich
+    eine feste Object_ID, damit der Tag zugeordnet werden kann.
+    """
+    kennung = _guid_key(guid)
+    wert = f"katalog:{stereotype}/{name}"
+    if kennung in target.herkunft:
+        return
+    target.herkunft.add(kennung)
+    object_id = target.object_guids.get(kennung, 0)
+    if not object_id:
+        return
+    plan.add(
+        "t_objectproperties",
+        {
+            "propertyid": target.next_property_id,
+            "object_id": object_id,
+            "property": "Herkunft",
+            "value": wert,
+            "notes": "",
+            "ea_guid": _stable_guid(f"toolbox_merge|herkunft|{kennung}"),
+        },
+    )
+    target.next_property_id += 1
+
+
 def _build_plan(target: _Target, box: _Source, paketname: str) -> _MergePlan:
     """Baut den Einfuegeplan: Paketbaum, Elemente, Tags, Attribute, Kanten."""
     warnings = list(box.warnings)
     plan = _MergePlan()
     counts = {"pakete": 0, "elemente": 0, "kanten": 0, "tags": 0, "bereits_vorhanden": 0}
+
+    herkunft_vorhanden: dict[str, int] = {}
+    for row in (target.tables["t_objectproperties"].rows
+                if "t_objectproperties" in target.tables else []):
+        if _as_text(_Table.get(row, "Property")).strip().casefold() != "herkunft":
+            continue
+        wert = _as_text(_Table.get(row, "Value")).strip().casefold()
+        if wert:
+            herkunft_vorhanden.setdefault(wert, _as_int(_Table.get(row, "Object_ID")))
 
     # ---- t_xref (Stereotype/Tagged Values am Objekt) ---------------------
     xrefs_by_client: dict[str, list[dict[str, Any]]] = defaultdict(list)
@@ -852,6 +901,24 @@ def _build_plan(target: _Target, box: _Source, paketname: str) -> _MergePlan:
                 counts["bereits_vorhanden"] += 1
                 continue
 
+            # Katalogelement, das im Modell schon unter anderem Namen oder in
+            # einem anderen Paket steht: keine zweite Zeile, sondern die
+            # vorhandene gewinnt (ihre Kennung, ihr Platz).
+            herkunft_wert = f"katalog:{_as_text(_Table.get(source_row, 'Stereotype'))}/{name}".casefold()
+            if herkunft_wert in herkunft_vorhanden:
+                vorhandene_id = herkunft_vorhanden[herkunft_wert]
+                element_map[object_id] = vorhandene_id
+                element_guid[object_id] = guid
+                if guid:
+                    target.object_guids.setdefault(_guid_key(guid), vorhandene_id)
+                counts["bereits_vorhanden"] += 1
+                _warn(
+                    warnings,
+                    f"Element {name!r} steht schon im Modell (Herkunft {herkunft_wert}) -- "
+                    "die vorhandene Zeile bleibt",
+                )
+                continue
+
             new_id = target.next_object_id
             target.next_object_id += 1
             row = _copy_row(source_row)
@@ -869,13 +936,20 @@ def _build_plan(target: _Target, box: _Source, paketname: str) -> _MergePlan:
                     f"deterministische GUID vergeben ({guid})",
                 )
             row["ea_guid"] = guid
+            target.object_guids[_guid_key(guid)] = new_id
+            element_map[object_id] = new_id
+            element_guid[object_id] = guid
+            # Herkunft im Katalog vermerken: daraus leitet der Writer die GUID
+            # ab, wenn das Modell spaeter ueber IR neu geschrieben wird. So
+            # bleibt die Kennung auch dann, wenn das Element sein Paket wechselt.
+            _merke_herkunft(target, plan, guid, name, _as_text(_Table.get(source_row, "Stereotype")))
+            herkunft_vorhanden.setdefault(
+                f"katalog:{_as_text(_Table.get(source_row, 'Stereotype'))}/{name}".casefold(), new_id
+            )
             position = object_position[package_map[source_id]]
             object_position[package_map[source_id]] = position + 1
             row["tpos"] = position
             plan.add("t_object", row)
-            element_map[object_id] = new_id
-            element_guid[object_id] = guid
-            target.object_guids[_guid_key(guid)] = new_id
             counts["elemente"] += 1
 
     if diagram_bound:

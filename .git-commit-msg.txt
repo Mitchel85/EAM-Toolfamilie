@@ -1,0 +1,7 @@
+Standardelemente aus dem Katalog, Kennungen bleiben erhalten
+
+- catalog_index: Katalog (.qea) lesen und Elemente ueber Name/Stereotyp nachschlagen
+- eam-ai build --katalog: Katalog-GUID und Heimatpaket uebernehmen, neue Elemente ableiten
+- qea_reader/qea_writer: gefuehrte Kennungen woertlich durchreichen (.qea -> IR -> .qea byte-gleich)
+- HTML-Suite: Katalog laden, zuordnen, im Prompt nennen; Export nutzt die Katalog-GUID
+- Tests: test_catalog, test_guid_stabilitaet, test_origin, HTML-Marker

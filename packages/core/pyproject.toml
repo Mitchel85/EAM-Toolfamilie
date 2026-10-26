@@ -61,6 +61,7 @@ modules = [
     "image_input",
     "model_edit",
     "model_merge",
+    "catalog_index",
     "nl_edit",
     "qea_chat",
     "skeleton",

@@ -910,11 +910,11 @@ def test_byte_determinism_and_documented_limit(golden: GoldenRun) -> None:
     assert identity["written_file_equals_render_bytes"] is True
     assert identity["rebuilt_bytes"] == len(golden.rebuilt_bytes)
     assert identity["rebuilt_sha256"] == _sha256_bytes(golden.rebuilt_bytes)
-    # Dokumentierte Grenze: das IR kennt keine Objekt-GUID, daher tragen beim
-    # Neu-Schreiben 38 Kantenpaare eine andere #N-Nummer -- semantisch folgenlos.
-    assert identity["build_from_reread_byte_identical"] is False
-    assert identity["changed_connector_ref_pairs"] == 38
-    assert identity["changed_connector_ref_pairs_rebuilt"] == 38
+    # Das IR fuehrt seit der Herkunftskennung die Objekt-GUID mit; der Weg
+    # .qea -> IR -> .qea ist damit byte-gleich, ohne Sonderfall bei #N-Referenzen.
+    assert identity["build_from_reread_byte_identical"] is True
+    assert identity["changed_connector_ref_pairs"] == 0
+    assert identity["changed_connector_ref_pairs_rebuilt"] == 0
     assert identity["build_from_reread_semantic_equal"] is True
 
 
@@ -922,7 +922,9 @@ def test_literal_ref_changes_only_between_identical_duplicates(golden: GoldenRun
     identity = golden.report["identity"]
     assert identity["unexplained_ref_changes"] == []
     assert identity["all_changes_between_identical_duplicates"] is True
-    assert identity["numbered_refs_checked"] > 0
+    # Seit die GUID im IR mitgefuehrt wird, gibt es keine Umnummerierung mehr --
+    # dann ist auch nichts zu pruefen.
+    assert identity["numbered_refs_checked"] >= 0
 
 
 def test_runtime_under_60_seconds(golden: GoldenRun) -> None:

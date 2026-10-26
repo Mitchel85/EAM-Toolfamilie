@@ -302,7 +302,9 @@ def test_tags_aus_objectproperties_und_xref(ziel: Path, kasten: Path, tmp_path: 
             "SELECT Property, Value FROM t_objectproperties WHERE Object_ID = ? ORDER BY PropertyID",
             (neue_id,),
         ).fetchall()
-        assert tags == [("ID", "1"), ("Leer", None)]  # leere Werte bleiben leer
+        # Kasten-Tags wie im Kasten, dazu die Herkunft (Grundlage der stabilen GUID)
+        assert [t for t in tags if t[0] != "Herkunft"] == [("ID", "1"), ("Leer", None)]
+        assert ("Herkunft", "katalog:Classification/Std Eins") in tags
         xref = con.execute("SELECT XrefID, Client FROM t_xref").fetchall()
         assert len(xref) == 1
         assert xref[0][0] != GUID_XREF  # neue XrefID (PK), Inhalt uebernommen

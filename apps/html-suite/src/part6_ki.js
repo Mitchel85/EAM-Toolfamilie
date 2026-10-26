@@ -763,7 +763,7 @@
     var voc = mdgVocab();
     var ruleText = mdgRuleText();
     var inv = (S.templateInv && !el('ki-clearmodel').checked) ? S.templateInv : '';
-    var sysMsg = systemPrompt(voc, ruleText) + (inv ? '\n' + inv : '');
+    var sysMsg = systemPrompt(voc, ruleText) + (inv ? '\n' + inv : '') + catalogInventory(300);
     var userParts = [{ type: 'text', text: promptText || 'Bitte extrahiere das Architekturmodell aus den beigefügten Dokumenten/Bildern.' }];
     collectParts(files).then(function (parts) {
       var images = parts.filter(function (p) { return p.type === 'image'; });
@@ -801,6 +801,7 @@
       });
     }).then(function (content) {
       var ir = parseAndNormalize(content, voc);
+      var katalogBericht = applyCatalog(ir);
       var bericht = null;
       var anknuepfen = el('ki-continue') ? el('ki-continue').checked : true;
       if (anknuepfen && S.model && (S.model.elements || []).length) {
@@ -815,6 +816,7 @@
       renderResult(ir, voc);
       var vn = (ir.validation && ir.validation.viol) ? ir.validation.viol.length : 0;
       statusMsg('✔ Modell: ' + ir.elements.length + ' Elemente, ' + ir.connectors.length + ' Beziehungen' +
+        (katalogBericht.katalog ? ' — ' + katalogBericht.katalog + ' aus dem Katalog übernommen' : '') +
         (bericht ? ' — ' + bericht.neu + ' neu, ' + bericht.zusammengefuehrt + ' zusammengeführt, ' +
           bericht.kanten_neu + ' neue Kanten' + (bericht.kanten_doppelt ? ', ' + bericht.kanten_doppelt + ' doppelte verworfen' : '') : '') + '.' +
         (vn ? ' ⛔ ' + vn + ' MDG-Verstoß/Verstöße — Export gesperrt (korrigieren oder „Trotzdem exportieren“).' : ' ✅ Alle Beziehungen MDG-konform — Export frei.'));
@@ -856,7 +858,7 @@
       if (st && allowed.indexOf(st) < 0) { ir.warnings.push('„' + n + '“: Stereotyp „' + st + '“ ist nicht im ADMBw-Katalog — wird trotzdem übernommen.'); }
       var pkg = String(e.package || '').trim() || ir.packages[0].name;
       nameIdx[n] = ir.elements.length;
-      ir.elements.push({ name: n, stereotype: st || 'Class', type: stereotypeType(st || 'Class'), package: pkg, note: String(e.note || '').substring(0, 2000) });
+      ir.elements.push({ name: n, stereotype: st || 'Class', type: stereotypeType(st || 'Class'), package: pkg, note: String(e.note || '').substring(0, 2000), origin: String(e.origin || '').trim() });
     });
     if (!ir.elements.length) throw new Error('Die KI hat keine Elemente extrahiert — bitte Beschreibung präzisieren.');
 
@@ -953,6 +955,110 @@
     el('ki-report-out').innerHTML = '';
   }
 
+  /* ---------- Standard-Elementekatalog (StEKa/Modellelementekatalog) ----------
+     Der Katalog liegt als .qea vor. Gelesen werden nur Paketnamen und die
+     Elemente (Name, Stereotyp, ea_guid). Getroffene Elemente uebernehmen die
+     Katalog-Kennung und das Katalog-Paket; nur neue Elemente werden abgeleitet.
+     Damit gilt im Browser derselbe Grundsatz wie im Python-Weg: eine
+     Katalog-GUID wird nachgeschlagen, nie berechnet. */
+  function catalogKey(name, stereotype) {
+    return String(name || '').trim().toLowerCase() + '\u0000' + String(stereotype || '').trim().toLowerCase();
+  }
+
+  function applyCatalog(ir) {
+    var katalog = S.katalog;
+    if (!katalog || !katalog.length) return { katalog: 0, neu: 0 };
+    var idx = {}, namen = {}, i, e, treffer;
+    for (i = 0; i < katalog.length; i++) {
+      e = katalog[i];
+      var k = catalogKey(e.name, e.stereotype);
+      if (idx[k] == null) idx[k] = e;
+      if (namen[e.name.toLowerCase()] == null) namen[e.name.toLowerCase()] = [];
+      namen[e.name.toLowerCase()].push(e);
+    }
+    var vorhandenePakete = {}, zaehler = { katalog: 0, neu: 0 };
+    (ir.packages || []).forEach(function (p) { vorhandenePakete[String(p.name || '')] = true; });
+    function paketkette(pfad) {
+      var teile = String(pfad || '').split('/'), aktuell = '';
+      for (var j = 0; j < teile.length; j++) {
+        aktuell = aktuell ? aktuell + '/' + teile[j] : teile[j];
+        if (aktuell && !vorhandenePakete[aktuell]) {
+          ir.packages.push({ name: aktuell, parent: j ? teile.slice(0, j).join('/') : null });
+          vorhandenePakete[aktuell] = true;
+        }
+      }
+    }
+    (ir.elements || []).forEach(function (el) {
+      treffer = idx[catalogKey(el.name, el.stereotype)];
+      if (!treffer) {
+        var liste = namen[String(el.name || '').toLowerCase()] || [];
+        treffer = liste.length === 1 ? liste[0] : null;
+      }
+      if (!treffer) { zaehler.neu++; return; }
+      el.guid = treffer.guid;
+      if (treffer.stereotype) el.stereotype = treffer.stereotype;
+      if (treffer.package) {
+        el.package = treffer.package;
+        paketkette(treffer.package);
+      }
+      zaehler.katalog++;
+    });
+    return zaehler;
+  }
+
+  function catalogInventory(limit) {
+    if (!S.katalog || !S.katalog.length) return '';
+    var grenze = limit || 300, zeilen = [];
+    for (var i = 0; i < Math.min(S.katalog.length, grenze); i++) {
+      var e = S.katalog[i];
+      zeilen.push('- ' + e.name + ' «' + e.stereotype + '»');
+    }
+    return '\nSTANDARDELEMENTE AUS DEM KATALOG (Namen unveraendert verwenden):\n' + zeilen.join('\n');
+  }
+
+  function loadCatalogBytes(buffer) {
+    return ensureSql().then(function (SQL) {
+      var db = new SQL.Database(new Uint8Array(buffer));
+      var pfade = {}, eltern = {};
+      var st = db.prepare('SELECT Package_ID, Name, Parent_ID FROM t_package');
+      while (st.step()) {
+        var r = st.getAsObject();
+        pfade[r.Package_ID] = String(r.Name || '');
+        eltern[r.Package_ID] = Number(r.Parent_ID || 0);
+      }
+      st.free();
+      function pfad(pid) {
+        var teile = [], seen = {};
+        while (pid && !seen[pid]) { seen[pid] = true; if (pfade[pid]) teile.push(pfade[pid]); pid = eltern[pid] || 0; }
+        return teile.reverse().join('/');
+      }
+      var eintraege = [];
+      var so = db.prepare("SELECT Name, Stereotype, ea_guid, Package_ID FROM t_object WHERE Object_Type <> 'Package' AND Name IS NOT NULL AND Name <> ''");
+      while (so.step()) {
+        var o = so.getAsObject();
+        var guid = String(o.ea_guid || '').trim();
+        if (!guid) continue;
+        eintraege.push({ name: String(o.Name).trim(), stereotype: String(o.Stereotype || '').trim(),
+                         guid: guid.toUpperCase(), package: pfad(Number(o.Package_ID || 0)) });
+      }
+      so.free();
+      db.close();
+      if (!eintraege.length) throw new Error('keine Elemente im Katalog');
+      eintraege.sort(function (a, b) {
+        return (a.stereotype + '|' + a.name).localeCompare(b.stereotype + '|' + b.name);
+      });
+      S.katalog = eintraege;
+      return { anzahl: eintraege.length };
+    });
+  }
+
+  function pickCatalog() {
+    var inp = el('ki-katalog-file');
+    if (!inp) return;
+    inp.value = '';
+    inp.click();
+  }
+
   /* ---------- Modelle zusammenlegen (Wiederverwendung ueber Laeufe) ----------
      Gegenstueck zu --modell in der Python-Fassung: gleicher Name und gleicher
      Stereotyp bleiben eine Zeile, auch wenn das Element im neuen Lauf unter
@@ -998,7 +1104,7 @@
     (ziel.elements || []).forEach(function (e2) {
       var kopie = {
         name: e2.name, stereotype: e2.stereotype, type: e2.type,
-        package: e2.package, note: e2.note || ''
+        package: e2.package, note: e2.note || '', origin: e2.origin || ''
       };
       merke(kopie, ir.elements.length);
       ir.elements.push(kopie);
@@ -1013,7 +1119,7 @@
       }
       var kopie = {
         name: e2.name, stereotype: e2.stereotype, type: e2.type,
-        package: e2.package, note: e2.note || ''
+        package: e2.package, note: e2.note || '', origin: e2.origin || ''
       };
       merke(kopie, ir.elements.length);
       ir.elements.push(kopie);
@@ -1091,6 +1197,74 @@
     });
     return S.sqlP;
   }
+  /* Kennung aus dem Inhalt: gleiches Element, gleiche GUID -- ueber Exporte
+     und Sitzungen hinweg. Grundlage ist der Schluessel (Paketpfad | Stereotyp |
+     Name), wie ihn das Python-Werkzeug bildet. Faellt SHA-256 aus, wird
+     gewuerfelt; das Ergebnis bleibt dann wenigstens innerhalb des Laufs stabil. */
+  function stableGuid(seed) {
+    try {
+      var bytes = new TextEncoder().encode(seed);
+      var K = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+        0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+        0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+        0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+        0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+        0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+        0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+        0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2];
+      var H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+      var bitLen = bytes.length * 8;
+      var withPad = new Uint8Array(((bytes.length + 9 + 63) >> 6) << 6);
+      withPad.set(bytes);
+      withPad[bytes.length] = 0x80;
+      var dl = withPad.length;
+      withPad[dl - 1] = bitLen & 0xff; withPad[dl - 2] = (bitLen >> 8) & 0xff;
+      withPad[dl - 3] = (bitLen >> 16) & 0xff; withPad[dl - 4] = (bitLen >> 24) & 0xff;
+      var w = new Array(64);
+      for (var off = 0; off < dl; off += 64) {
+        for (var i = 0; i < 16; i++) {
+          w[i] = (withPad[off + i * 4] << 24) | (withPad[off + i * 4 + 1] << 16) |
+                 (withPad[off + i * 4 + 2] << 8) | withPad[off + i * 4 + 3];
+        }
+        for (i = 16; i < 64; i++) {
+          var s0 = (rotr(w[i - 15], 7) ^ rotr(w[i - 15], 18) ^ (w[i - 15] >>> 3)) | 0;
+          var s1 = (rotr(w[i - 2], 17) ^ rotr(w[i - 2], 19) ^ (w[i - 2] >>> 10)) | 0;
+          w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;
+        }
+        var a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], hh = H[7];
+        for (i = 0; i < 64; i++) {
+          var S1 = (rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25)) | 0;
+          var ch = ((e & f) ^ (~e & g)) | 0;
+          var t1 = (hh + S1 + ch + K[i] + w[i]) | 0;
+          var S0 = (rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22)) | 0;
+          var maj = ((a & b) ^ (a & c) ^ (b & c)) | 0;
+          var t2 = (S0 + maj) | 0;
+          hh = g; g = f; f = e; e = (d + t1) | 0;
+          d = c; c = b; b = a; a = (t1 + t2) | 0;
+        }
+        H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
+        H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + hh) | 0;
+      }
+      var hex = '';
+      for (i = 0; i < 8; i++) hex += ('00000000' + (H[i] >>> 0).toString(16)).slice(-8);
+      hex = hex.substring(0, 32).toUpperCase();
+      return '{' + hex.substring(0, 8) + '-' + hex.substring(8, 12) + '-' + hex.substring(12, 16) +
+        '-' + hex.substring(16, 20) + '-' + hex.substring(20) + '}';
+    } catch (err) {
+      return newGuid();
+    }
+  }
+  function rotr(x, n) { return (x >>> n) | (x << (32 - n)); }
+
+  /* Kennung eines Elements: aus der Herkunft (Katalogeintrag), sonst aus dem
+     Inhalt. Katalogelemente behalten damit ihre Kennung, auch wenn sie in ein
+     anderes Paket wandern (Labeled-Tree-Abgleich). */
+  function elementGuid(ir, e) {
+    if (e && e.guid) return String(e.guid).toUpperCase();
+    if (e && e.origin) return stableGuid('katalog:' + e.origin);
+    return stableGuid(String(e.package || '') + '|' + String(e.stereotype || '') + '|' + String(e.name || ''));
+  }
+
   function newGuid() {
     var h = '0123456789ABCDEF', g = '';
     for (var i = 0; i < 32; i++) g += h[Math.floor(Math.random() * 16)];
@@ -1142,7 +1316,7 @@
       /* 1) Root-Modell + Pakete */
       var rootPkg = ++pid;
       ins('t_package', ['Package_ID', 'Name', 'Parent_ID', 'CreatedDate', 'ModifiedDate', 'ea_guid'],
-        [rootPkg, ir.name, 0, ts, ts, newGuid()]);
+        [rootPkg, ir.name, 0, ts, ts, stableGuid('|Package|' + String(ir.name || ''))]);
       var pkgId = {}, pkgIds = {};
       pkgIds[ir.packages[0].name] = rootPkg;
       ir.packages.forEach(function (p) {
@@ -1151,7 +1325,7 @@
         var id = ++pid;
         pkgIds[p.name] = id;
         ins('t_package', ['Package_ID', 'Name', 'Parent_ID', 'CreatedDate', 'ModifiedDate', 'ea_guid'],
-          [id, p.name, parent, ts, ts, newGuid()]);
+          [id, p.name, parent, ts, ts, stableGuid(String(p.parent || '') + '|Package|' + String(p.name || ''))]);
         /* Package-Objekt (EA-Konvention: sitzt im Elternpaket, PDATA1 = eigene Paket-ID) */
         var o = ++oid;
         ins('t_object', ['Object_ID', 'Object_Type', 'Name', 'Package_ID', 'PDATA1', 'NType', 'ea_guid', 'Author', 'Version', 'CreatedDate', 'ModifiedDate'],
@@ -1159,13 +1333,14 @@
       });
 
       /* 2) Elemente */
-      var objId = {};
+      var objId = {}, guidOf = {};
       ir.elements.forEach(function (e) {
         var o = ++oid;
         objId[e.name] = o;
+        guidOf[e.name] = elementGuid(ir, e);
         var pkg = pkgIds[e.package] != null ? pkgIds[e.package] : rootPkg;
         ins('t_object', ['Object_ID', 'Object_Type', 'Name', 'Note', 'Package_ID', 'ea_guid', 'Author', 'Version', 'Stereotype', 'CreatedDate', 'ModifiedDate', 'Status', 'Abstract'],
-          [o, e.type || 'Class', e.name, e.note || '', pkg, newGuid(), 'EAM AI Suite KI', '1.0', e.stereotype || '', ts, ts, 'Proposed', 0]);
+          [o, e.type || 'Class', e.name, e.note || '', pkg, elementGuid(ir, e), 'EAM AI Suite KI', '1.0', e.stereotype || '', ts, ts, 'Proposed', 0]);
       });
 
       /* 3) Beziehungen */
@@ -1175,7 +1350,8 @@
         var id = ++cid;
         c.__cid = id;
         ins('t_connector', ['Connector_ID', 'Connector_Type', 'Name', 'Direction', 'Start_Object_ID', 'End_Object_ID', 'ea_guid', 'Stereotype', 'SourceAccess', 'DestAccess', 'RouteStyle'],
-          [id, c.type || 'Association', c.name || '', 'Source -> Destination', a, b, newGuid(), c.stereotype || '', 'Public', 'Public', 3]);
+          [id, c.type || 'Association', c.name || '', 'Source -> Destination', a, b,
+            stableGuid(String(guidOf[c.from] || '') + '|' + String(guidOf[c.to] || '') + '|' + String(c.stereotype || '') + '|' + String(c.type || '') + '|' + String(c.name || '')), c.stereotype || '', 'Public', 'Public', 3]);
       });
 
       /* 4) Sichten (fehlen sie -> automatisch je Viewpoint-Code gruppieren) */
@@ -1340,6 +1516,19 @@
       var e = el(id);
       if (e) e.addEventListener('change', saveSettings);
     });
+    if (el('ki-katalog-file')) el('ki-katalog-file').addEventListener('change', function () {
+      var f = el('ki-katalog-file').files && el('ki-katalog-file').files[0];
+      if (!f) return;
+      var rd = new FileReader();
+      rd.onload = function () {
+        statusMsg('⏳ Katalog wird gelesen …');
+        loadCatalogBytes(rd.result).then(function (r) {
+          el('ki-katalog-info').textContent = '✓ ' + r.anzahl + ' Standardelemente geladen';
+          statusMsg('✔ Katalog: ' + r.anzahl + ' Elemente.');
+        }).catch(function (e) { el('ki-katalog-info').textContent = '⚠ ' + e.message; });
+      };
+      rd.readAsArrayBuffer(f);
+    });
     if (el('ki-files')) el('ki-files').addEventListener('change', function () {
       var n = (el('ki-files').files || []).length;
       el('ki-files-info').textContent = n ? n + ' Anhang/Anhänge' : '';
@@ -1459,7 +1648,7 @@
       'Die Anforderung Sturmalarm setzt die Anforderung Schnelle Warnausgabe voraus.';
   }
 
-  window.KI = { init: init, pickTemplate: pickTemplate, setTemplate: setTemplate, pickMdg: pickMdg, setMdgFromBytes: setMdgFromBytes, loadMdg: loadMdg, validateModel: validateModel, getModel: function () { return S.model; }, newArchitecture: newArchitecture, requireMdg: requireMdg, fillExample: fillExample, generate: generate, exportQea: exportQea, analyzeInApp: analyzeInApp, report: report, chatSend: chatSend, chatAdd: chatAdd, modelToText: modelToText, modelInventory: modelInventory, mergeModels: mergeModels, runOps: runOps, Op: Op, buildBytes: function () { return buildQea(); },
+  window.KI = { init: init, pickTemplate: pickTemplate, setTemplate: setTemplate, pickMdg: pickMdg, setMdgFromBytes: setMdgFromBytes, loadMdg: loadMdg, validateModel: validateModel, getModel: function () { return S.model; }, newArchitecture: newArchitecture, requireMdg: requireMdg, fillExample: fillExample, generate: generate, exportQea: exportQea, analyzeInApp: analyzeInApp, report: report, chatSend: chatSend, chatAdd: chatAdd, modelToText: modelToText, modelInventory: modelInventory, mergeModels: mergeModels, stableGuid: stableGuid, elementGuid: elementGuid, loadCatalogBytes: loadCatalogBytes, pickCatalog: pickCatalog, applyCatalog: applyCatalog, getCatalog: function () { return S.katalog || []; }, runOps: runOps, Op: Op, buildBytes: function () { return buildQea(); },
     /* Nur LESENDER Zugriff auf die bestehende KI-Konfiguration (Felder des KI-Tabs,
        Fallback: zuletzt gespeicherte Einstellungen). Wird vom Rückweg (Teil 7)
        genutzt, damit es KEINE zweite Konfiguration gibt. Kein Schreiben. */

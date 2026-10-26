@@ -37,6 +37,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import hashlib
 import sqlite3
 import sys
 from dataclasses import dataclass, field
@@ -131,6 +132,8 @@ class _Element:
     alias: str
     status: str
     tags: dict[str, str]
+    origin: str = ""
+    guid: str = ""
     ref: str = ""
 
     def content_key(self) -> tuple[Any, ...]:
@@ -141,6 +144,7 @@ class _Element:
             self.alias,
             self.status,
             tuple(sorted(self.tags.items())),
+            self.origin,
         )
 
     def order_key(self) -> tuple[Any, ...]:
@@ -165,6 +169,15 @@ class _Element:
 
 def _quote_identifier(name: str) -> str:
     return '"' + name.replace('"', '""') + '"'
+
+
+def _kanonische_guid(package: str, stereotype: str, name: str) -> str:
+    """Dieselbe Ableitung wie ``qea_writer.guid_for`` -- ohne Importzyklus."""
+    digest = hashlib.sha256(f"{package}|{stereotype}|{name}".encode("utf-8")).hexdigest()[:32].upper()
+    return (
+        "{" + digest[0:8] + "-" + digest[8:12] + "-" + digest[12:16] + "-"
+        + digest[16:20] + "-" + digest[20:32] + "}"
+    )
 
 
 def _open_readonly(path: Path) -> sqlite3.Connection:
@@ -665,6 +678,11 @@ def _build_elements(
         ea_type = obj.object_type.strip() or DEFAULT_OBJECT_TYPE
         tags = dict(object_tags.get(obj.object_id, {}))
         tag_count += len(tags)
+        # Herkunft aus dem Katalog (Tag ``Herkunft``) wird zur IR-Spalte
+        # ``origin``: daraus leitet der Writer die GUID ab, unabhaengig vom Ort
+        # des Elements im Modell. Der Tag selbst bleibt erhalten.
+        herkunft = str(tags.get("Herkunft", "") or "").strip()
+        origin = herkunft[len("katalog:"):] if herkunft.startswith("katalog:") else ""
         elements.append(
             _Element(
                 object_id=obj.object_id,
@@ -676,6 +694,8 @@ def _build_elements(
                 alias=obj.alias,
                 status=obj.status,
                 tags=tags,
+                origin=origin,
+                guid=obj.guid,
             )
         )
     _assign_element_refs(elements)
@@ -932,6 +952,19 @@ def read_qea_ex(
                 item["status"] = element.status
             if element.tags:
                 item["tags"] = dict(sorted(element.tags.items()))
+            if element.origin:
+                item["origin"] = element.origin
+            # Weicht die Kennung von der Ableitung ab, ist sie gefuehrt (etwa aus
+            # dem Katalog) und muss woertlich zurueckgeschrieben werden.
+            # Katalogelemente (mit Herkunft) und fremde Kennungen werden
+            # woertlich zurueckgegeben -- ihre Identitaet darf sich nicht aus
+            # dem Ort im Modell ergeben.
+            if element.guid and (
+                element.origin
+                or element.guid.upper()
+                != _kanonische_guid(element.package_path, element.stereotype, element.name)
+            ):
+                item["guid"] = element.guid.upper()
             element_items.append(item)
 
         ir: dict[str, Any] = {"ir_version": IR_VERSION}

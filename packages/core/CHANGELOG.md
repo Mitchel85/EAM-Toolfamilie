@@ -8,6 +8,17 @@ wird von `tests/test_packaging.py` gegeneinander geprueft:
 
 ### Neu
 
+- **Standardelemente aus dem Katalog.** `eam-ai build --katalog katalog.qea`
+  liest den Standard-Elementekatalog (z. B. `Modellelementekatalog` der MASC,
+  1.162 Elemente) und uebernimmt fuer genannte Elemente Kennung, Stereotyp und
+  Heimatpaket. Neue Elemente behalten ihre abgeleitete Kennung. Die HTML-Fassung
+  laedt denselben Katalog ueber die Schaltflaeche „Katalog laden" und wendet ihn
+  vor der Pruefung an.
+- **Kennungen ueberleben den Weg durch das IR.** Der Leser gibt gefuehrte
+  Kennungen (`ea_guid`) woertlich zurueck, der Schreiber verwendet sie
+  unveraendert. Der Weg `.qea -> IR -> .qea` ist damit byte-gleich; auch
+  Umziehen oder Umbenennen aendert die Identitaet eines Katalogelements nicht.
+
 - **Chargen fuer grosse Quellen.** `eam-ai build` teilt den Quelltext ab einer
   Promptlaenge von 200.000 Zeichen in Abschnitte von 120.000 Zeichen
   (`--chargen-zeichen`, `--chargen-schwelle`) und setzt sie vor der Pruefung
