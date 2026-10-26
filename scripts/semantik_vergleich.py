@@ -39,10 +39,14 @@ Abschnitt:
 {text}
 """
 
-PROMPT_URTEIL = """Pruefe fuer jede nummerierte Aussage, ob der darunter stehende Auszug aus einem zweiten Dokument dieselbe Aussage trifft.
-- "ja": der Auszug sagt dasselbe aus (gleiche Gegenstaende, gleiche Eigenschaft oder Beziehung; andere Worte sind egal).
-- "teilweise": der Kern stimmt, ein Detail fehlt oder weicht ab.
-- "nein": nicht enthalten oder widersprochen. Gleiche Namen allein genuegen nicht.
+PROMPT_URTEIL = """Pruefe fuer jede nummerierte Aussage, ob der darunter stehende Auszug aus einem zweiten Dokument denselben Sachverhalt belegt.
+Massstab ist der Inhalt, nicht der Wortlaut:
+- Andere Sprache ist kein Unterschied: steht der Sachverhalt auf Englisch, gilt er als belegt.
+- Andere Grammatik, andere Satzform, Zusammenfassung statt Zitat: ebenfalls belegt.
+- Eine Aussage gilt als belegt, wenn der Auszug den Gegenstand nennt und das, was ueber ihn gesagt wird, zutrifft.
+- Ein Verzeichnis- oder Glossareintrag, der den Gegenstand und seine Art nennt, belegt die Aussage, dass der Gegenstand diese Art hat.
+- "teilweise": der Gegenstand ist genannt, aber die Aussage darueber fehlt oder weicht ab.
+- "nein": Gegenstand fehlt oder es steht etwas anderes darueber da als behauptet.
 Antworte ausschliesslich mit JSON: {{"urteile": [{{"nr": 1, "urteil": "ja"}}]}}
 
 {block}
@@ -91,6 +95,21 @@ def json_liste(antwort: str, schluessel: str) -> list:
     return daten if isinstance(daten, list) else []
 
 
+#: Aussagen ueber die Ablage der Datei, nicht ueber die Sache. Sie sind von
+#: einem neu aufgebauten Modell nicht zu erfuellen (andere Paketstruktur) und
+#: sagen nichts darueber, ob der Inhalt uebernommen wurde.
+ABLAGE = (
+    ".qea", "umfasst", "sichten", "pakete auf der", "unterpaket", "hauptbereich",
+    "paketverzeichnis", "wurzelpaket", "datei", "gleichnamigen paketen",
+    "reine kürzel",
+)
+
+
+def nur_ablage(aussage: str) -> bool:
+    text = aussage.casefold()
+    return any(marker in text for marker in ABLAGE)
+
+
 def woerter(text: str) -> set[str]:
     return set(re.findall(r"[0-9a-zäöüß][0-9a-zäöüß\-]{2,}", text.casefold()))
 
@@ -111,6 +130,11 @@ class Index:
             zeilen = block.splitlines()
             if sum(z.startswith("|") for z in zeilen) >= 3:
                 einheiten += [f"{kopf}: {z}" for z in zeilen if z.startswith("|") and not set(z) <= set("|-: ")]
+            elif all(z.lstrip().startswith("- ") for z in zeilen if z.strip()):
+                # Aufzaehlungen (Verzeichnisse) Zeile fuer Zeile: eine Zeile ist
+                # ein Beleg. Ein ganzer Verzeichnisblock als eine Einheit wuerde
+                # jedes Stichwort enthalten und jede Suche an sich ziehen.
+                einheiten += [f"{kopf}: {z.strip().lstrip('- ').strip()}" for z in zeilen if z.strip()]
             elif len(block) > 20:
                 einheiten.append(block)
         self.einheiten = einheiten
@@ -163,6 +187,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--fakten", type=Path, default=None, help="Aussagen zwischenspeichern/wiederverwenden")
     parser.add_argument("--bericht", type=Path, default=None)
     parser.add_argument("--parallel", type=int, default=6)
+    parser.add_argument(
+        "--mit-ablage",
+        action="store_true",
+        help="auch Aussagen ueber Dateiname, Paketbaum und Sichten mitzaehlen",
+    )
     args = parser.parse_args(argv)
 
     backend = extract.make_backend(args.backend, model=args.model, timeout=240)
@@ -176,6 +205,11 @@ def main(argv: list[str] | None = None) -> int:
         fakten = list(dict.fromkeys(str(f).strip() for liste in listen for f in liste if str(f).strip()))
         if args.fakten:
             args.fakten.write_text(json.dumps(fakten, ensure_ascii=False, indent=1), encoding="utf-8")
+    if not args.mit_ablage:
+        vorher = len(fakten)
+        fakten = [f for f in fakten if not nur_ablage(f)]
+        if vorher != len(fakten):
+            print(f"Aussagen ueber die Ablage der Datei (nicht pruefbar, zaehlen nicht): {vorher - len(fakten)}")
     print(f"Aussagen im Original: {len(fakten)}" + (f" (ohne: {', '.join(args.ohne)})" if args.ohne else ""))
 
     bericht = {"original": str(args.original), "aussagen": len(fakten), "dokumente": {}}
