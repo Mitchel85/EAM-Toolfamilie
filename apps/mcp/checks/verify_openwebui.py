@@ -50,19 +50,12 @@ async def _pruefe(qea: Path) -> list[str]:
     namen = [t.get("Name") for t in treffer]
     if not namen:
         befund.append("Suche nach ServiceSpecification liefert nichts")
-    if any(n not in namen for n in ("Geospatial Services", "Health Service")):
-        befund.append(f"erwartete Dienste fehlen in {namen}")
-
-    # Suchbegriff aus dem Bestand selbst ableiten (erstes benanntes Element).
-    # Ein fest eingetragener Begriff waere modellspezifisch.
-    roh = await tools.search_qea_elements(str(qea), query="", limit=1)
-    kandidaten = json.loads(roh) if isinstance(roh, str) else (roh or [])
-    begriff = ""
-    if isinstance(kandidaten, list) and kandidaten and isinstance(kandidaten[0], dict):
-        begriff = str(kandidaten[0].get("Name") or "")
-    if not begriff:
-        befund.append("Volltextsuche: kein benanntes Element im Modell gefunden")
+        begriff = ""
     else:
+        # Suchbegriff aus dem Bestand selbst ableiten. Ein fest eingetragener
+        # Name waere modellspezifisch und wuerde bei jedem anderen Modell
+        # fehlschlagen.
+        begriff = str(namen[0])
         gesucht = json.loads(await tools.search_qea_elements(str(qea), query=begriff, limit=10))
         if not any(e.get("Name") == begriff for e in gesucht):
             befund.append(
