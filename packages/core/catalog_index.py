@@ -182,6 +182,8 @@ class Catalog:
                     vorhanden.add(pfad_teil)
                     zaehler["pakete"] += 1
 
+        #: Name -> neuer Paketpfad; Grundlage fuer die Kantenreparatur.
+        umgehaengt: dict[str, str] = {}
         for element in elemente:
             if not isinstance(element, dict):
                 continue
@@ -189,10 +191,34 @@ class Catalog:
             if treffer is None:
                 zaehler["neu"] += 1
                 continue
+            alt = str(element.get("package") or "")
             element["guid"] = treffer.guid
             element["stereotype"] = treffer.stereotype or element.get("stereotype") or ""
             if treffer.package:
                 element["package"] = treffer.package
                 paket_ergaenzen(treffer.package)
+                if alt and alt != treffer.package:
+                    umgehaengt[str(element.get("name") or "")] = treffer.package
             zaehler["katalog"] += 1
+
+        # Kanten haengen an (Paket, Name). Aendert die Uebernahme das Paket
+        # eines Elements, zeigt die Kante sonst auf einen Pfad, an dem das
+        # Element nicht mehr liegt -- der Export bricht dann mit "zeigt auf
+        # kein deklariertes Element" ab. Deshalb werden die Referenzen hier
+        # mitgezogen: das Paket stammt immer vom Element, nie vom Lauf.
+        if umgehaengt:
+            zaehler["kanten"] = 0
+            for kante in ir.get("connectors") or ():
+                if not isinstance(kante, dict):
+                    continue
+                for seite in ("source", "target"):
+                    ref = str(kante.get(seite) or "")
+                    paket, trenner, name = ref.partition("::")
+                    if not trenner:
+                        continue
+                    neu = umgehaengt.get(name)
+                    if neu is not None and neu != paket:
+                        kante[seite] = f"{neu}::{name}"
+                        zaehler["kanten"] += 1
+        zaehler.setdefault("kanten", 0)
         return zaehler

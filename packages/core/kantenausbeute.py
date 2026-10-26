@@ -60,10 +60,6 @@ import validator
 MIN_NAME = 3
 MIN_WOERTER = 2
 
-#: Kapitelueberschriften, die wie Elemente aussehen, aber keine konkreten
-#: Endpunkte sind. Sie wuerden sonst Saetze wie "Die Baugruppen tragen das
-#: Fahrzeug" als Handlung zaehlen.
-GATTUNGEN = frozenset({"Baugruppen", "Dienste", "Vorgaben", "Antriebsmodule"})
 LISTEN_LIMIT = 20
 
 # Grundformen der Handlungsverben. Der Stamm wird gebildet, indem die Endung
@@ -155,7 +151,7 @@ def elementnamen(ir: Mapping[str, Any]) -> list[str]:
         if not isinstance(element, Mapping):
             continue
         name = str(element.get("name") or "").strip()
-        if len(name) >= MIN_NAME and name not in GATTUNGEN:
+        if len(name) >= MIN_NAME:
             namen.add(name)
     return sorted(namen)
 

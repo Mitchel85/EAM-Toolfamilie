@@ -213,6 +213,20 @@ class Posten:
     stereotype: str
     id: int
     nachbarn: tuple[str, ...] = ()
+    #: Objektkennung aus der Ablage -- bleibt ueber Export und Rueckbau gleich.
+    schluessel: str = ""
+    #: Paketpfad; dient als Ersatz, wenn keine Kennung vorliegt.
+    paket: str = ""
+
+    def sortierwert(self) -> tuple[str, str, str]:
+        """Reihenfolge der Nennung: nach Kennung, nicht nach Datenbankzeile.
+
+        Die ``Object_ID`` haengt davon ab, in welcher Reihenfolge Elemente
+        angelegt wurden. Aendert sich der Rueckbau, aendert sich auch, welche
+        Baugruppen die Einleitung nennt -- das Handbuch waere dann nicht mehr
+        wiederholbar. Die Kennung bleibt gleich.
+        """
+        return (self.schluessel.casefold(), self.paket.casefold(), self.name.casefold())
 
 
 @dataclass(frozen=True)
@@ -284,6 +298,23 @@ def lade_quelle(pfad: str | Path) -> Quelle:
             if a and b and a != b:
                 nachbar_map.setdefault(a, []).append(b)
 
+    pakete = tuple(_name(p.name) for p in sorted(modell.pakete.values(), key=lambda p: p.id))
+    # Pfad je Paket-ID, damit jeder Posten sein Paket kennt
+    pfade: dict[object, str] = {}
+
+    def pfad_von(pid: object) -> str:
+        if pid in pfade:
+            return pfade[pid]
+        paket = modell.pakete.get(pid) if hasattr(modell.pakete, "get") else None
+        if paket is None:
+            pfade[pid] = ""
+        elif getattr(paket, "path", ""):
+            pfade[pid] = str(paket.path)
+        else:
+            oben = pfad_von(getattr(paket, "parent_id", 0))
+            name_paket = _name(getattr(paket, "name", ""))
+            pfade[pid] = f"{oben}/{name_paket}" if oben else name_paket
+        return pfade[pid]
     posten: list[Posten] = []
     for e in elemente:
         name = namen.get(e.id, "")
@@ -297,10 +328,11 @@ def lade_quelle(pfad: str | Path) -> Quelle:
                 stereotype=_flach(getattr(e, "stereotype", "")),
                 id=e.id,
                 nachbarn=tuple(dict.fromkeys(nachbar_map.get(name, ()))),
+                schluessel=_flach(getattr(e, "guid", "")),
+                paket=pfad_von(getattr(e, "paket_id", 0)),
             )
         )
 
-    pakete = tuple(_name(p.name) for p in sorted(modell.pakete.values(), key=lambda p: p.id))
     untertitel = pakete[0] if pakete else ""
     if untertitel.casefold().startswith("model") and len(pakete) > 1:
         untertitel = pakete[1]
@@ -319,7 +351,7 @@ def lade_quelle(pfad: str | Path) -> Quelle:
     return Quelle(
         titel=TITEL,
         untertitel=untertitel,
-        posten=tuple(posten),
+        posten=tuple(sorted(posten, key=Posten.sortierwert)),
         kennzahlen=kennzahlen,
         alle_namen=tuple(sorted({p.name for p in posten})),
         kanten=tuple(kanten),

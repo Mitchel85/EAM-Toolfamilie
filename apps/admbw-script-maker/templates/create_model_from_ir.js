@@ -18,11 +18,11 @@ var IR = {
             name: "C1 - Capability Taxonomy",
             stereo: "ArchitecturalDescription",
             elements: [
-                { name: "Weltraumaufklärung",   type: "Class", stereo: "Capability", tags: { MoE: "bewertet" } },
+                { name: "Fähigkeitsbeispiel",  type: "Class", stereo: "Capability", tags: { MoE: "bewertet" } },
                 { name: "Sensornetz",           type: "Class", stereo: "Capability" }
             ],
             connectors: [
-                { from: "Sensornetz", to: "Weltraumaufklärung", meta: "Generalization", stereo: "CapabilityGeneralization" }
+                { from: "Sensornetz", to: "Fähigkeitsbeispiel", meta: "Generalization", stereo: "CapabilityGeneralization" }
             ]
         }
     ]

@@ -370,11 +370,53 @@ class _Source:
     #: Connector_ID -> Constraint-Zeilen.
     connector_constraints: dict[int, list[dict[str, Any]]]
     diagram_objects: int
+    #: Object_ID -> (Paketpfad, Name, Stereotyp) fuer den Rueckgriff ohne ea_guid.
+    identities: dict[int, tuple[str, str, str]] = field(default_factory=dict)
     warnings: list[str] = field(default_factory=list)
 
     @property
     def label(self) -> str:
         return self.path.name
+
+
+def _identity_key(pfad: str, name: str, stereotyp: str) -> tuple[str, str, str]:
+    """Vergleichsschluessel fuer Elemente ohne gemeinsame ``ea_guid``."""
+    return (pfad.strip().casefold(), name.strip().casefold(), (stereotyp or "").strip().casefold())
+
+
+def _identity_index(
+    objects: _Table, package_paths: Mapping[int, str]
+) -> dict[tuple[str, str, str], int]:
+    """Kennung je (Pfad, Name, Stereotyp) -- aeltestes Element gewinnt."""
+    gefunden: dict[tuple[str, str, str], int] = {}
+    for object_id, schluessel in sorted(_element_identities(objects, package_paths).items()):
+        gefunden.setdefault(_identity_key(*schluessel), object_id)
+    return gefunden
+
+
+def _element_identities(
+    objects: _Table, package_paths: Mapping[int, str]
+) -> dict[int, tuple[str, str, str]]:
+    """Je Element (Package_ID, Name, Stereotyp) -- Grundlage des Pfad-Rueckgriffs.
+
+    Nur benannte Elemente: unbenannte Notizen und Texte haben keinen
+    fachlichen Namen und koennen nicht sinnvoll verglichen werden.
+    """
+    gefunden: dict[int, tuple[str, str, str]] = {}
+    for row in objects.rows:
+        typ = _as_text(_Table.get(row, "Object_Type")).strip().casefold()
+        if typ == "package":
+            continue
+        name = _as_text(_Table.get(row, "Name")).strip()
+        if not name:
+            continue
+        pfad = package_paths.get(_as_int(_Table.get(row, "Package_ID")), "")
+        gefunden[_as_int(_Table.get(row, "Object_ID"))] = (
+            pfad,
+            name,
+            _as_text(_Table.get(row, "Stereotype")).strip(),
+        )
+    return gefunden
 
 
 def _package_paths(packages: _Table) -> tuple[dict[int, str], dict[int, dict[str, Any]]]:
@@ -537,6 +579,7 @@ def _read_source(path: Path, index: int) -> _Source:
         connector_tags=dict(connector_tag_rows),
         connector_constraints=dict(connector_constraint_rows),
         diagram_objects=diagram_objects,
+        identities=_element_identities(objects, paths),
         warnings=warnings,
     )
 
@@ -578,6 +621,8 @@ class _Target:
     int_columns: dict[str, frozenset[str]]
     #: Naechste freie ``t_xref.XrefID``, wenn das Ziel sie als Zahl fuehrt.
     next_xref_id: int
+    #: (Paketpfad, Name, Stereotyp) -> Object_ID; wird bei Bedarf gebaut.
+    identities: dict[tuple[str, str, str], int] = field(default_factory=dict)
 
 
 def _read_target(path: Path, warnings: list[str]) -> _Target:
@@ -707,6 +752,7 @@ def _read_target(path: Path, warnings: list[str]) -> _Target:
         next_object_tpos=_next_tpos_map(snapshot["t_object"], "Package_ID"),
         int_columns=int_columns,
         next_xref_id=_max_int(snapshot["t_xref"], "XrefID") + 1,
+        identities=_identity_index(snapshot["t_object"], paths),
     )
 
 
@@ -1262,15 +1308,35 @@ class _Merger:
         return inserted
 
     def _resolve(self, source: _Source, object_id: int, object_map: Mapping[int, int]) -> int | None:
-        """Ziel-Object_ID eines Quell-Endpunkts -- ueber die ea_guid, nie ueber IDs."""
+        """Ziel-Object_ID eines Quell-Endpunkts -- ueber die ea_guid, nie ueber IDs.
+
+        Zusaetzlich wird auf den Pfad zurueckgegriffen, wenn zwei Modelle
+        dasselbe Element unabhaengig angelegt haben: dann tragen beide
+        verschiedene ``ea_guid``, meinen aber dieselbe Sache (gleicher Pfad,
+        gleicher Name, gleicher Stereotyp). Ohne diesen Rueckgriff verliert
+        eine Kante ihren Endpunkt und faellt stumm weg.
+        """
         target = self.target
         mapped = object_map.get(object_id)
         if mapped is not None:
             return mapped
         guid = source.object_guids.get(object_id)
-        if not guid:
+        if guid:
+            treffer = target.object_guids.get(_guid_key(guid))
+            if treffer is not None:
+                return treffer
+        return self._resolve_by_path(source, object_id)
+
+    def _resolve_by_path(self, source: _Source, object_id: int) -> int | None:
+        """Ziel-Endpunkt ueber (Paketpfad, Name, Stereotyp) suchen.
+
+        Der Index im Ziel waechst weiter, sobald Elemente eingefuegt werden --
+        die Indizes sind Paketpfade und Namen, keine temporaeren IDs.
+        """
+        schluessel = source.identities.get(object_id) if source.identities else None
+        if schluessel is None:
             return None
-        return target.object_guids.get(_guid_key(guid))
+        return self.target.identities.get(_identity_key(*schluessel))
 
 
 # --------------------------------------------------------------------------

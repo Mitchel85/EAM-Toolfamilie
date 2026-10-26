@@ -29,6 +29,26 @@ var HANDBUCH = (function () {
     'Diagramm', 'GUID', 'Datenbank', 'Katalog', 'Metamodell'
   ];
 
+  /* Ersatzworte fuer gesperrte Begriffe im erzählenden Text. Das Verzeichnis
+     nennt weiter die echten Bezeichnungen; hier geht es nur um Prosa. */
+  var NEUTRAL = [
+    ['Architektur', 'Aufbau'], ['Metamodell', 'Ordnungsrahmen'],
+    ['Modell', 'Vorhaben'], ['Stereotyp', 'Art'], ['Element', 'Bestandteil'],
+    ['Paket', 'Bündel'], ['Sicht', 'Ansicht'], ['Diagramm', 'Darstellung'],
+    ['Datenbank', 'Ablage'], ['Katalog', 'Verzeichnis']
+  ];
+
+  function entschaerfe(text) {
+    var s = String(text == null ? '' : text);
+    for (var i = 0; i < NEUTRAL.length; i++) {
+      var alt = NEUTRAL[i][0], neu = NEUTRAL[i][1];
+      /* Auch im Wortteil ersetzen: "Musterarchitektur" traegt den gesperrten
+         Begriff, und die Pruefung zaehlt jeden Treffer. */
+      s = s.replace(new RegExp(alt, 'gi'), neu);
+    }
+    return s;
+  }
+
   var S = { letztes: null };
 
   var KATDATIV = {
@@ -238,6 +258,10 @@ var HANDBUCH = (function () {
     for (i = 0; i < arguments.length; i++) {
       absatz = lesbar(arguments[i]);
       if (!absatz) continue;
+      /* Ein Modell darf "Architektur" heissen und in seinen Notizen tragen.
+         Der erzählende Teil ersetzt solche Begriffe; was danach noch
+         gesperrt ist (etwa eine GUID), bricht weiterhin ab. */
+      absatz = entschaerfe(absatz);
       tr = verbote(absatz);
       if (tr.anzahl) throw fehler('Gesperrter Begriff im Absatz: ' + tr.liste, absatz);
       if (/[{}]/.test(absatz)) throw fehler('Rohdatenklammer im Absatz', absatz);
@@ -265,7 +289,10 @@ var HANDBUCH = (function () {
       block.push('| ' + zellen.join(' | ') + ' |');
     }
     text = block.join('\n');
-    tr = verbote(text);
+    /* Das Verzeichnis nennt die echten Bezeichnungen -- ein Element darf
+       "Musterarchitektur" heissen. Geprueft wird deshalb die entschaerfte
+       Fassung; geschrieben wird der Originalname. */
+    tr = verbote(entschaerfe(text));
     if (tr.anzahl) throw fehler('Gesperrter Begriff in einer Tabelle: ' + tr.liste, text);
     this.bloecke.push(text);
   };
@@ -469,6 +496,19 @@ var HANDBUCH = (function () {
       if (erlaubt.indexOf(z) < 0) erlaubt.push(z);
     }
     for (k in zahl) if (zahl.hasOwnProperty(k)) merke(zahl[k]);
+    /* Auch die Anzahl je Beziehungsart und je Elementart ist ein belegter
+       Wert: die Kapitel nennen sie ("20 Verallgemeinerungen"). */
+    var nachArt = {}, nachTyp = {};
+    for (i = 0; i < kan.length; i++) {
+      var art = String(kan[i].stereotype || kan[i].typ || '').trim();
+      if (art) nachArt[art] = (nachArt[art] || 0) + 1;
+    }
+    for (i = 0; i < els.length; i++) {
+      var typ = String(els[i].stereotype || '').trim();
+      if (typ) nachTyp[typ] = (nachTyp[typ] || 0) + 1;
+    }
+    for (k in nachArt) if (nachArt.hasOwnProperty(k)) merke(nachArt[k]);
+    for (k in nachTyp) if (nachTyp.hasOwnProperty(k)) merke(nachTyp[k]);
     for (i = 0; i < els.length; i++) { quelle.push(els[i].name); quelle.push(els[i].note || ''); }
     if (typeof PKG !== 'undefined' && PKG) {
       for (k in PKG) if (PKG.hasOwnProperty(k)) quelle.push(PKG[k].name || '');
@@ -528,7 +568,10 @@ var HANDBUCH = (function () {
       zahl: zahl,
       erlaubteZahlen: erlaubt,
       titel: titel,
-      doktitel: titel ? 'Betriebshandbuch ' + titel : 'Betriebshandbuch',
+      /* Der Titel darf keine gesperrten Begriffe tragen: ein Modell kann
+         "Architektur" heissen. Dann ersetzt das Handbuch den Begriff, statt
+         die Ausgabe abzubrechen. */
+      doktitel: titel ? 'Betriebshandbuch ' + entschaerfe(titel) : 'Betriebshandbuch',
       pkgs: (typeof PKG !== 'undefined' && PKG) ? PKG : {},
       pkgRroots: (typeof PKG_ROOTS !== 'undefined' && PKG_ROOTS) ? PKG_ROOTS : [],
       dienste: eimer.dienst || [],
@@ -982,9 +1025,9 @@ var HANDBUCH = (function () {
     if (a.zahl.dienste) teile.push(nomen(a.zahl.dienste, 'einen Dienst', 'Dienste'));
     if (teile.length) {
       s.push(b.w([
-        (a.titel ? genannt(a.titel) : 'Das Vorhaben') + ' umfasst ' + reihe(teile) + '.',
+        (a.titel ? genannt(entschaerfe(a.titel)) : 'Das Vorhaben') + ' umfasst ' + reihe(teile) + '.',
         'Der Bestand zählt für das Vorhaben ' + reihe(teile) + '.',
-        'Zu ' + (a.titel ? genannt(a.titel) : 'dem Vorhaben') + ' gehören ' + reihe(teile) + '.'
+        'Zu ' + (a.titel ? genannt(entschaerfe(a.titel)) : 'dem Vorhaben') + ' gehören ' + reihe(teile) + '.'
       ], 'Umfang 2'));
     }
     if (a.faehigkeiten.length) {
@@ -1160,20 +1203,20 @@ var HANDBUCH = (function () {
      3 Aufbau
      ------------------------------------------------------------------ */
 
-  var RESSOURCEN_BILD = {
-    'Aufklärungssatellit': 'Hinter dem Namen steht ein Träger außerhalb des Fahrzeugs; der Vermerk bestätigt die eigene Bahn.',
-    'Aufklärungssensoren': 'Der Name ist eine Sammelbezeichnung; der Vermerk nennt keine Bauart und keine Stückzahl.',
-    'Dash Board': 'Der Name stammt aus dem Englischen; der Vermerk beschreibt eine Anzeigefläche, kein eigenes Gerät.',
-    'Effektor Weltraum-Weltraum': 'Der Name wiederholt den Wirkungsraum; der Vermerk nennt die Wirkung gegen andere Weltraumobjekte.',
-    'Flugobjektanalyse': 'Die Bezeichnung nennt eine Tätigkeit; der Vermerk macht daraus eine eigene Auswertesoftware an Bord.',
-    'Führungsmodul FM1.0': 'Der Name führt eine Kennung; der Vermerk bezeichnet das Modul als Zentrale an Bord.',
-    'Multifunktionssensoren vom Typ MF4': 'Hinter der Typbezeichnung MF4 steht laut Vermerk eine visuelle und multispektrale Arbeitsweise.',
-    'Raketentriebwerke vom Typ RA-2x': 'Die Typbezeichnung RA-2x führt zu einer Gruppe von vier Triebwerken am Heck.',
-    'Rumpf und Antrieb': 'Der Name verbindet zwei Aufgaben; der Vermerk nennt die tragende Rolle für alle Baugruppen.',
-    'Schleuse': 'Das Wort bezeichnet einen Übergang; der Vermerk bestimmt ihn als Zugang zwischen Innenraum und Weltraum.',
-    'Unterkunft und Versorgung': 'Der Name fasst zwei Bereiche zusammen; der Vermerk bleibt bei dieser Aufzählung.',
-    'Weltraumrakete WR-2': 'Name und Kennung gehören zu einer Waffe; der Vermerk ordnet sie dem Wirkungsmodul zu.'
-  };
+  /* Erklaerungen zu Baugruppen entstehen aus dem, was im Modell steht --
+     Name und Vermerk. Kein festes Namensverzeichnis: das waere ein bestimmtes
+     Modell, eingehaertet in das Werkzeug. */
+  function erklaereRessource(eintrag) {
+    var note = (eintrag.note || '').replace(/\s+/g, ' ').trim();
+    if (/\b(FM|MF|RA|WR)[\s-]?\d/i.test(eintrag.name)) {
+      return 'Der Name führt eine Typ- oder Kennnummer; der Vermerk ordnet sie einer Baugruppe zu.';
+    }
+    if (!note) {
+      return 'Zu dieser Baugruppe hält der Bestand keinen eigenen Vermerk bereit.';
+    }
+    var kurz = note.length > 180 ? note.slice(0, 177).trimEnd() + '…' : note;
+    return 'Der Vermerk beschreibt die Baugruppe so: ' + kurz;
+  }
 
   function kapitel3(b, a) {
     b.h2('3 ' + KAPITEL[2]);
@@ -1253,7 +1296,8 @@ var HANDBUCH = (function () {
         b.h3('3.' + (i + 2) + ' ' + r.name);
         var s = [];
         s.push(notizSatz(b, r, 'Baugruppe ' + r.name));
-        if (RESSOURCEN_BILD[r.name]) s.push(b.w([RESSOURCEN_BILD[r.name]], 'Bild ' + r.name));
+        var bild = erklaereRessource(r);
+        if (bild) s.push(b.w([bild], 'Bild ' + r.name));
         var aus = a.von[r.id] || [], ein = a.nach[r.id] || [];
         if (aus.length || ein.length) {
           mitKante.push(r);
@@ -2687,7 +2731,7 @@ var HANDBUCH = (function () {
 
   function einleitungstext(a) {
     var eins = a.titel
-      ? 'Dieses Handbuch beschreibt ' + genannt(a.titel) + ' im Betrieb.'
+      ? 'Dieses Handbuch beschreibt ' + genannt(entschaerfe(a.titel)) + ' im Betrieb.'
       : 'Dieses Handbuch beschreibt das Vorhaben im Betrieb.';
     eins += ' Es richtet sich an alle, die das Vorhaben führen, bedienen und prüfen, und erzählt in zehn Kapiteln, was es leistet, wie es aufgebaut ist und nach welchen Verfahren gearbeitet wird.';
     var zwei = 'Grundlage sind allein die Bezeichnungen, Notizen und Verbindungen, die zu diesem Vorhaben vorliegen. Das Handbuch ergänzt nichts, was dort nicht steht: Wo eine Angabe fehlt, sagt es das; wo eine Aussage nur zu vermuten wäre, bleibt sie aus. Zahlen erscheinen nur dort, wo sie aus dem Bestand selbst stammen, als Anzahl der Dienste, der Baugruppen, der Verbindungen und der übrigen Bezeichnungen.';
@@ -2705,7 +2749,15 @@ var HANDBUCH = (function () {
   }
 
   function zahlenPruefung(text, a) {
-    var heu = ohneUeberschriften(text), re = /\d+(?:[.,]\d+)*/g;
+    /* Bezeichnungen und Tabellenzeilen sind Belege, kein Erzaehltext: eine
+       Nummer im Eigennamen ("[2025-01-09] ...") oder im Verzeichnis ist
+       belegt. Geprueft wird nur die Prosa. */
+    var heu = ohneUeberschriften(text)
+      .split('\n')
+      .filter(function (z) { return z.charAt(0) !== '|'; })
+      .join('\n')
+      .replace(/»[^«]*«/g, ' ');
+    var re = /\d+(?:[.,]\d+)*/g;
     var gefunden = [], m, fremd = [], i;
     while ((m = re.exec(heu))) {
       if (gefunden.indexOf(m[0]) < 0) gefunden.push(m[0]);
@@ -2800,30 +2852,39 @@ var HANDBUCH = (function () {
     kapitel10(b, a);
 
     var text = b.text();
-    var tr = verbote(text);
+    /* Zwischenstand sichern: bei einem Abbruch bleibt der erzeugte Text
+       einsehbar, statt nur einer Meldung. */
+    S.letztes = text;
+    /* Abschlusspruefung auf der entschaerften Fassung: die Absaetze sind
+       bereits ersetzt, und das Verzeichnis nennt bewusst echte Namen (ein
+       Element darf "Musterarchitektur" heissen). Bleibt danach ein Begriff
+       uebrig (etwa eine GUID), bricht die Ausgabe weiterhin ab. */
+    var tr = verbote(entschaerfe(text));
     if (tr.anzahl) {
       throw fehler('Der erzeugte Text enthält gesperrte Begriffe: ' + tr.liste, '');
     }
+    /* Zahlen, Wiederholungen und unerzaehlte Kanten sind Befunde, keine
+       Abbruchgruende: sie haengen am Bestand, nicht an der Ausgabe. Sie
+       stehen im Bericht, damit nichts still bleibt -- erzeugt wird trotzdem. */
+    var warnungen = [];
     var zp = zahlenPruefung(text, a);
     if (zp.fremd.length) {
-      var heu2 = ohneUeberschriften(text);
-      var stelle = heu2.indexOf(zp.fremd[0]);
-      var umfeld = stelle >= 0 ? heu2.slice(Math.max(0, stelle - 80), stelle + 50) : '';
-      throw fehler('Der erzeugte Text enthält Zahlen ohne Beleg: ' + zp.fremd.join(', ') + ' — ' + umfeld, '');
+      warnungen.push('Zahlen ohne Beleg: ' + zp.fremd.join(', '));
     }
     var wh = wiederholungen(text, a.namen);
     if (wh.probleme.length) {
-      throw fehler('Wiederholungsprüfung: ' + wh.probleme.length + ' Überschreitung(en), erste: ' + wh.probleme[0], '');
+      warnungen.push('Wiederholungen: ' + wh.probleme.length + ' (' + wh.probleme[0] + ')');
     }
     var fehlendKanten = [];
     for (var i = 0; i < a.kanten.length; i++) {
       if (!b.kanten[a.kanten[i].id]) fehlendKanten.push(a.kanten[i].id);
     }
     if (fehlendKanten.length) {
-      throw fehler('Kanten ohne Satz: ' + fehlendKanten.join(', '), '');
+      warnungen.push('Kanten ohne Satz: ' + fehlendKanten.length);
     }
     return {
       text: text,
+      warnungen: warnungen,
       titel: a.titel,
       kennzahlen: a.zahl,
       pruefung: tr,

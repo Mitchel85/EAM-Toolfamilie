@@ -865,6 +865,14 @@ class ExtractionResult:
         return "\n".join(lines)
 
 
+def _paket_von(elements: Sequence[Mapping[str, Any]], name: str) -> str:
+    """Paket, in dem ein bereits angelegtes Element tatsaechlich liegt."""
+    for element in elements:
+        if str(element.get("name") or "").strip() == name:
+            return str(element.get("package") or "").strip()
+    return ""
+
+
 def _normalize_package(path: str) -> str:
     """Zielpaket wie IR_SPEC: '/' als Trenner, kein '::', keine Leersegmente."""
     if not isinstance(path, str) or not path.strip():
@@ -1085,10 +1093,17 @@ def answer_to_ir(
         else:
             notizen_ersetzt += 1
         note = beleg.text
+        # Die Kante haengt am Paket ihres Elements, nicht am Zielpaket des
+        # ganzen Laufs: eine Nachbearbeitung (z. B. Kataloguebernahme) kann
+        # ein Element in ein anderes Paket umhaengen. Eine Referenz auf das
+        # eingestellte Zielpaket zeigt danach ins Leere und der Export bricht
+        # mit "zeigt auf kein deklariertes Element" ab.
+        quell_paket = _paket_von(elements, source) or target_package
+        ziel_paket = _paket_von(elements, target) or target_package
         connectors.append(
             {
-                "source": f"{target_package}::{source}",
-                "target": f"{target_package}::{target}",
+                "source": f"{quell_paket}::{source}",
+                "target": f"{ziel_paket}::{target}",
                 "stereotype": stereotype,
                 "ea_type": rules.connector_ea_type(stereotype),
                 "name": str(entry.get("name", "") or ""),

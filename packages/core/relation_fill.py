@@ -53,10 +53,6 @@ KANDIDATEN: tuple[str, ...] = (
     "Dependency",
 )
 
-#: Woerter, die im Quelltext als Kapitelueberschrift stehen und deshalb keine
-#: konkreten Endpunkte sind. Sie werden bei der Satzauswertung ignoriert.
-GATTUNGEN = frozenset({"Baugruppen", "Dienste", "Vorgaben", "Antriebsmodule"})
-
 _WORTANFANG = r"(?<![A-Za-zÄÖÜäöüß])"
 
 
@@ -93,20 +89,29 @@ def _saetze(text: str) -> list[str]:
 
 
 def _namen(ir: Mapping[str, Any]) -> dict[str, Mapping[str, Any]]:
-    """Elementnamen auf ihr IR-Objekt, ohne Gattungsbegriffe und Dubletten."""
+    """Elementnamen auf ihr IR-Objekt, ohne Dubletten.
+
+    Elemente *sind* die Endpunkte der Kante. Deshalb wird hier nichts
+    weggefiltert: nur Namen, die im Modell stehen, koennen Endpunkt sein.
+    """
     namen: dict[str, Mapping[str, Any]] = {}
     for element in ir.get("elements") or ():
         if not isinstance(element, Mapping):
             continue
         name = str(element.get("name") or "").strip()
-        if len(name) < 3 or name in GATTUNGEN:
+        if len(name) < 3:
             continue
         namen.setdefault(name, element)
     return namen
 
 
 def _genannt(satz: str, namen: Mapping[str, Mapping[str, Any]]) -> list[str]:
-    """Elementnamen in der Reihenfolge ihres Auftretens im Satz."""
+    """Elementnamen in der Reihenfolge ihres Auftretens im Satz.
+
+    Nur Namen aus dem Modell zaehlen. Ein Sammelbegriff wie "die Baugruppen"
+    ist kein Endpunkt und steht folglich nicht im IR -- ein frueherer
+    Filterkatalog dafuer war modellspezifisch und ist entfallen.
+    """
     treffer: list[tuple[int, str]] = []
     for name in namen:
         m = re.search(_WORTANFANG + re.escape(name) + r"\b", satz, flags=re.IGNORECASE)

@@ -4,6 +4,39 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.2.0 - 2026-10-26
+
+### Lange Beschreibungen im Browser
+Die HTML-Suite schickte die ganze Quelle in einem Aufruf und schnitt bei
+12.000 Ausgabetokens ab -- ein Handbuch passt dort nie hinein. Jetzt teilt sie
+an Kapitelgrenzen, ueberspringt reine Verzeichnisse (Namenslisten ohne Satz),
+fuehrt die Teile ueber Name und Stereotyp zusammen und halbiert einen Abschnitt
+erneut, wenn die Antwort trotzdem zu lang ist.
+
+### Kanten folgen ihren Elementen
+Uebernimmt der Katalog ein Element in sein Heimatpaket, zeigten dessen Kanten
+weiter auf das alte Paket; der Export brach mit "zeigt auf kein deklariertes
+Element" ab. Die Referenzen werden jetzt mitgezogen. Zusaetzlich haengt eine
+Kante am Paket ihres Elements, nicht am Zielpaket des Laufs.
+
+### Zusammenfuehren ohne Kennungsgleichheit
+`merge_models` loeste Endpunkte nur ueber die `ea_guid`. Zwei Laeufe, die
+dasselbe Element unabhaengig anlegen, verloren die Kante still. Jetzt greift
+ein Rueckgriff ueber Paketpfad, Name und Stereotyp.
+
+### Keine Modellbesonderheiten im Anwendungscode
+Ein fest eingetragenes Baugruppenverzeichnis, ein Beispielszenario in
+Platzhalter und Slider, ein Beispielname in Vorlage und Rezept sowie ein
+Pruefskript mit eingehaerteten Modellnamen sind entfernt. Das Handbuch
+erklaert Baugruppen jetzt aus Name und Vermerk. `scripts/check_no_model_leak.py`
+prueft den Anwendungscode gegen die Namen eines beliebigen Modells.
+
+### Handbuch vertraegt beliebige Modelle
+Ein Modell darf "Architektur" heissen und gesperrte Begriffe in Notizen
+tragen: der erzählende Teil ersetzt sie, das Verzeichnis nennt weiter die
+echten Namen. Zahlen ohne Beleg, Wiederholungen und unerzaehlte Kanten sind
+Befunde im Bericht statt Abbruchgruende.
+
 ## 3.1.1 - 2026-10-26
 
 ### Dokumentation

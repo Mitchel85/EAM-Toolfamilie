@@ -53,7 +53,7 @@ function addElement(pkg, name, type, stereo, tags) {
     return el;   // ElementID + ElementGUID für spätere Verknüpfung merken
 }
 
-var cap = addElement(view, "Weltraumaufklärung", "Class", "Capability", {MoE: "bewertet"});
+var cap = addElement(view, "Fähigkeitsbeispiel", "Class", "Capability", {MoE: "bewertet"});
 var sub = addElement(view, "Sensornetz", "Class", "Capability");
 ```
 

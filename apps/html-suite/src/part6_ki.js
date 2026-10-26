@@ -599,6 +599,120 @@
       { role: 'assistant', content: JSON.stringify({ name: ir.name, elements: ir.elements, connectors: ir.connectors, packages: ir.packages, diagrams: ir.diagrams }) }
     ];
   }
+  /* ---------- Lange Beschreibungen: in Teilen extrahieren ---------- */
+  /* Ein Handbuch sprengt jedes Antwortlimit. Statt die Eingabe zu kuerzen
+     (dann fehlt der halbe Bestand) wird sie an Kapitelgrenzen geteilt; die
+     Teilmodelle werden ueber Name + Stereotyp zusammengefuehrt. */
+  var TEIL_GRENZE = 8000;
+
+  function zerlegeInTeile(text, grenze) {
+    if (text.length <= grenze) return [text];
+    var absaetze = text.split(/\n(?=##\s)/);
+    var teile = [], aktuell = '';
+    for (var i = 0; i < absaetze.length; i++) {
+      var stueck = absaetze[i];
+      if (aktuell && (aktuell.length + stueck.length + 1) > grenze) {
+        teile.push(aktuell);
+        aktuell = stueck;
+      } else {
+        aktuell = aktuell ? aktuell + '\n' + stueck : stueck;
+      }
+      /* Einzelnes Kapitel groesser als die Grenze: weiter teilen. Zuerst an
+         Absaetzen, dann an Zeilen -- ein Anhang ist eine lange Namensliste
+         ohne Leerzeilen und muss trotzdem in Portionen passen. */
+      while (aktuell.length > grenze) {
+        var schnitt = aktuell.lastIndexOf('\n\n', grenze);
+        var versatz = 2;
+        if (schnitt < grenze * 0.4) {
+          schnitt = aktuell.lastIndexOf('\n', grenze);
+          versatz = 1;
+        }
+        if (schnitt < grenze * 0.2) {
+          schnitt = grenze;
+          versatz = 0;
+        }
+        teile.push(aktuell.slice(0, schnitt));
+        aktuell = aktuell.slice(schnitt + versatz);
+      }
+    }
+    if (aktuell.trim()) teile.push(aktuell);
+    /* Verzeichnisse (Anhang, Namenslisten) sind kein Fliesstext: dort steht
+       kein Satz, aus dem sich ein Element mit Beleg ableiten liesse. Sie
+       wuerden das Antwortlimit sprengen, ohne Inhalt beizutragen. */
+    var erzaehlend = teile.filter(function (teil) {
+      var zeilen = teil.split('\n').filter(function (z) { return z.trim(); });
+      if (zeilen.length < 12) return true;
+      var listen = zeilen.filter(function (z) { return /^\s*[-*|]/.test(z); }).length;
+      return (listen / zeilen.length) < 0.6;
+    });
+    return erzaehlend.length ? erzaehlend : [text];
+  }
+
+  function verschmelzeAntworten(antworten) {
+    var ganz = { name: '', beschreibung: '', packages: [], elements: [], connectors: [], diagrams: [] };
+    var pakete = {}, elemente = {}, kanten = {}, sichten = {};
+    antworten.forEach(function (roh) {
+      var teil;
+      try { teil = JSON.parse(roh); } catch (e) { return; }
+      if (!ganz.name && teil.name) ganz.name = teil.name;
+      if (!ganz.beschreibung && teil.beschreibung) ganz.beschreibung = teil.beschreibung;
+      (teil.packages || []).forEach(function (p) {
+        var schluessel = (p.parent ? p.parent + '/' : '') + p.name;
+        if (!pakete[schluessel]) { pakete[schluessel] = true; ganz.packages.push(p); }
+      });
+      (teil.elements || []).forEach(function (e) {
+        var schluessel = (e.name || '') + '|' + (e.stereotype || '');
+        if (!elemente[schluessel]) { elemente[schluessel] = true; ganz.elements.push(e); }
+      });
+      (teil.connectors || []).forEach(function (c) {
+        var schluessel = (c.from || '') + '|' + (c.to || '') + '|' + (c.stereotype || '');
+        if (!kanten[schluessel]) { kanten[schluessel] = true; ganz.connectors.push(c); }
+      });
+      (teil.diagrams || []).forEach(function (d) {
+        if (!sichten[d.name]) { sichten[d.name] = true; ganz.diagrams.push(d); }
+      });
+    });
+    return ganz;
+  }
+
+  /* Ein Abschnitt, dessen Antwort nicht ins Limit passt, wird halbiert und
+     erneut versucht. So passt sich der Lauf der tatsaechlichen Ausgabemenge
+     an, statt an einer festen Groesse zu scheitern. */
+  function holeAbschnitt(set, sysMsg, teil, nummer, gesamt, antworten) {
+    statusMsg('⏳ Abschnitt ' + nummer + ' von ' + gesamt + ' wird ausgewertet …');
+    var hinweis = 'Dies ist Abschnitt ' + nummer + ' von ' + gesamt +
+      ' derselben Beschreibung. Extrahiere die darin genannten Elemente und Beziehungen. ' +
+      'Weitere Abschnitte liefern weitere Elemente desselben Modells.\n\n';
+    return chatComplete(set, [{ role: 'system', content: sysMsg }, { role: 'user', content: hinweis + teil }], { maxTokens: 8000 })
+      .then(function (c) { antworten.push(c); })
+      .catch(function (e) {
+        var zuLang = /Tokenlimit|finish_reason=length/.test(e && e.message ? e.message : '');
+        if (!zuLang || teil.length < 1500) throw e;
+        var mitte = teil.lastIndexOf('\n\n', Math.floor(teil.length / 2));
+        if (mitte < teil.length * 0.2) mitte = teil.lastIndexOf('\n', Math.floor(teil.length / 2));
+        if (mitte < teil.length * 0.2) mitte = Math.floor(teil.length / 2);
+        var links = teil.slice(0, mitte);
+        var rechts = teil.slice(mitte);
+        return holeAbschnitt(set, sysMsg, links, nummer + 'a', gesamt, antworten)
+          .then(function () { return holeAbschnitt(set, sysMsg, rechts, nummer + 'b', gesamt, antworten); });
+      });
+  }
+
+  function inTeilenHolen(set, sysMsg, text) {
+    var teile = zerlegeInTeile(text, TEIL_GRENZE);
+    var antworten = [];
+    var kette = Promise.resolve();
+    teile.forEach(function (teil, i) {
+      kette = kette.then(function () {
+        return holeAbschnitt(set, sysMsg, teil, i + 1, teile.length, antworten);
+      });
+    });
+    return kette.then(function () {
+      if (!antworten.length) throw new Error('Kein Abschnitt lieferte ein Ergebnis.');
+      return JSON.stringify(verschmelzeAntworten(antworten));
+    });
+  }
+
   function chatComplete(set, messages, opts) {
     opts = opts || {};
     var url = set.base.replace(/\/+$/, '') + '/chat/completions';
@@ -797,7 +911,13 @@
           images.forEach(function (im) { userParts.push({ type: 'image_url', image_url: { url: 'data:' + im.mime + ';base64,' + im.b64 } }); });
           return chatComplete(set, [{ role: 'system', content: sysMsg }, { role: 'user', content: userParts }], { model: set.vision || set.model });
         }
-        return chatComplete(set, [{ role: 'system', content: sysMsg }, { role: 'user', content: userParts.join ? userParts.map(function (p) { return p.text; }).join('\n\n') : userParts }]);
+        /* Lange Beschreibungen in Abschnitten auswerten -- sonst schneidet
+           das Antwortlimit das Modell ab, und der Rest fehlt still. */
+        var gesamt = userParts.map(function (p) { return p.text; }).join('\n\n');
+        if (gesamt.length > TEIL_GRENZE) {
+          return inTeilenHolen(set, sysMsg, gesamt);
+        }
+        return chatComplete(set, [{ role: 'system', content: sysMsg }, { role: 'user', content: gesamt }]);
       });
     }).then(function (content) {
       var ir = parseAndNormalize(content, voc);
@@ -1637,8 +1757,8 @@
      Anforderung -> Fähigkeit ist NICHT modellierbar (keine MDG-Regel) —
      Anforderungen verbinden sich per Requires (BWRequirement -> BWRequirement). */
   function fillExample() {
-    el('ki-prompt').value = 'Wir entwickeln die mobile Lagebild-Anwendung "Führungsunterstützung Mobil" (FuUMobil).\n' +
-      'Die Organisation Kommando Aufklärung ist verantwortlich für den Dienst Lagedienst.\n' +
+    el('ki-prompt').value = 'Wir entwickeln die Anwendung "Beispielportal" (BSP).\n' +
+      'Die Organisation Stabsstelle Steuerung ist verantwortlich für den Dienst Auskunftsdienst.\n' +
       'Die Fähigkeit Kartendarstellung ist eine Unterfähigkeit der Fähigkeit Lagebildbereitstellung.\n' +
       'Das System Lagebild-Server erfüllt die strategische Vorgabe Ausfallsicherheit gewährleisten.\n' +
       'Das System Endgerät Tablet weist die Fähigkeit Kartendarstellung nach.\n' +

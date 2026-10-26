@@ -25,7 +25,7 @@ Ergebnis:
 
 ```text
 dist/offline/
-  eam-ai-3.1.1-offline/          # entpacktes Bundle
+  eam-ai-3.2.0-offline/          # entpacktes Bundle
   eam-ai-2.4.0-offline.zip        # universell, auch Windows
   eam-ai-2.4.0-offline.tar.gz     # Linux, mit Ausfuehrungsrechten
   eam-ai-2.4.0-offline.zip.sha256
@@ -48,7 +48,7 @@ Zweimal bauen ergibt byte-identische Archive. Auch ein Neubau aus dem
 mitgelieferten `source/`-Ordner ist byte-identisch:
 
 ```bash
-python3 eam-ai-3.1.1-offline/source/tools/build_bundle.py --out /tmp/neubau
+python3 eam-ai-3.2.0-offline/source/tools/build_bundle.py --out /tmp/neubau
 sha256sum eam-ai-2.4.0-offline.zip /tmp/neubau/eam-ai-2.4.0-offline.zip
 ```
 
