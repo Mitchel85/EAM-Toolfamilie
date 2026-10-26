@@ -47,9 +47,11 @@ Teilmodelle zu zerfallen:
   verwendet sie wieder, statt Dubletten anzulegen. Danach werden sie übernommen — im
   Python-Weg mit `--startpaket`, in der HTML-Fassung über das geladene Grundgerüst (bis
   300 Elemente). Die `ea_guid` bleibt unverändert.
-- **Mehrere Texte.** Jeder weitere Lauf knüpft mit `--modell bestand.qea` an das Modell an:
-  seine Elemente gehen als bekannter Bestand in den Prompt, das Ergebnis enthält Bestand
-  und Neues. Elemente, die im zweiten Text erneut vorkommen, bleiben eine Zeile.
+- **Mehrere Texte.** Jeder weitere Lauf knüpft an das vorhandene Modell an — in der
+  Python-Fassung über `--modell bestand.qea`, in der HTML-Fassung über „An vorhandenes
+  Modell anknüpfen". Gleicher Name und gleicher Stereotyp bleiben eine Zeile, auch wenn
+  das Element im nächsten Text unter einem anderen Paket steht; Beziehungen werden auf
+  die vorhandenen Elemente umgeschrieben.
 - **Große Quellen.** Ab 200.000 Zeichen Promptlänge baut die Python-Fassung in Abschnitten
   (`--chargen-zeichen`, Standard 120.000). Jeder Abschnitt sieht die bereits erfassten
   Elemente; die Antworten werden vor der Prüfung zusammengeführt.

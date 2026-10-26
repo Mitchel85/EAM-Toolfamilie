@@ -801,13 +801,22 @@
       });
     }).then(function (content) {
       var ir = parseAndNormalize(content, voc);
+      var bericht = null;
+      var anknuepfen = el('ki-continue') ? el('ki-continue').checked : true;
+      if (anknuepfen && S.model && (S.model.elements || []).length) {
+        var zusammen = mergeModels(S.model, ir);
+        ir = zusammen.ir;
+        bericht = zusammen.bericht;
+      }
       ir.validation = validateModel(ir);
       ir.mdgCoverage = mdgCoverage(ir);
       S.model = ir;
       startChat(ir, voc);
       renderResult(ir, voc);
       var vn = (ir.validation && ir.validation.viol) ? ir.validation.viol.length : 0;
-      statusMsg('✔ Modell erstellt: ' + ir.elements.length + ' Elemente, ' + ir.connectors.length + ' Beziehungen.' +
+      statusMsg('✔ Modell: ' + ir.elements.length + ' Elemente, ' + ir.connectors.length + ' Beziehungen' +
+        (bericht ? ' — ' + bericht.neu + ' neu, ' + bericht.zusammengefuehrt + ' zusammengeführt, ' +
+          bericht.kanten_neu + ' neue Kanten' + (bericht.kanten_doppelt ? ', ' + bericht.kanten_doppelt + ' doppelte verworfen' : '') : '') + '.' +
         (vn ? ' ⛔ ' + vn + ' MDG-Verstoß/Verstöße — Export gesperrt (korrigieren oder „Trotzdem exportieren“).' : ' ✅ Alle Beziehungen MDG-konform — Export frei.'));
     }).catch(function (e) {
       if (e.message !== 'vision-needed') statusMsg('⚠ ' + e.message);
@@ -942,6 +951,129 @@
     el('ki-list').innerHTML = list.join('');
     el('ki-report-out').style.display = 'none';
     el('ki-report-out').innerHTML = '';
+  }
+
+  /* ---------- Modelle zusammenlegen (Wiederverwendung ueber Laeufe) ----------
+     Gegenstueck zu --modell in der Python-Fassung: gleicher Name und gleicher
+     Stereotyp bleiben eine Zeile, auch wenn das Element im neuen Lauf unter
+     einem anderen Paket steht. Kanten werden auf die vorhandenen Endpunkte
+     umgeschluesselt, doppelte Kanten verworfen. */
+  function mergeKey(name, stereotype) {
+    return String(name || '').trim().toLowerCase() + '\u0000' + String(stereotype || '').trim().toLowerCase();
+  }
+
+  function mergeModels(ziel, neu) {
+    var bericht = { neu: 0, zusammengefuehrt: 0, kanten_neu: 0, kanten_doppelt: 0, pakete_neu: 0, sichten_neu: 0 };
+    if (!ziel) return { ir: neu, bericht: bericht };
+    var ir = {
+      name: ziel.name || neu.name,
+      beschreibung: ziel.beschreibung || neu.beschreibung || '',
+      packages: [], elements: [], connectors: [], diagrams: [], warnings: []
+    };
+    var i, e, key, treffer;
+
+    /* Pakete: gleicher Name = gleiches Paket */
+    var pkgIdx = {};
+    (ziel.packages || []).forEach(function (p) {
+      var k = String(p.name || '').trim().toLowerCase();
+      if (!k || pkgIdx[k] != null) return;
+      pkgIdx[k] = ir.packages.length;
+      ir.packages.push({ name: p.name, parent: p.parent || null });
+    });
+    (neu.packages || []).forEach(function (p) {
+      var k = String(p.name || '').trim().toLowerCase();
+      if (!k || pkgIdx[k] != null) return;
+      pkgIdx[k] = ir.packages.length;
+      ir.packages.push({ name: p.name, parent: p.parent || null });
+      bericht.pakete_neu++;
+    });
+
+    /* Elemente: Schluessel Name + Stereotyp, ueber alle Pakete */
+    var elIdx = {}, namen = {};
+    function merke(e2, idx) {
+      var k = mergeKey(e2.name, e2.stereotype);
+      if (elIdx[k] == null) elIdx[k] = idx;
+      if (namen[e2.name] == null) namen[e2.name] = e2.stereotype;
+    }
+    (ziel.elements || []).forEach(function (e2) {
+      var kopie = {
+        name: e2.name, stereotype: e2.stereotype, type: e2.type,
+        package: e2.package, note: e2.note || ''
+      };
+      merke(kopie, ir.elements.length);
+      ir.elements.push(kopie);
+    });
+    (neu.elements || []).forEach(function (e2) {
+      key = mergeKey(e2.name, e2.stereotype);
+      if (elIdx[key] != null) {
+        treffer = ir.elements[elIdx[key]];
+        if (!treffer.note && e2.note) treffer.note = e2.note;
+        bericht.zusammengefuehrt++;
+        return;
+      }
+      var kopie = {
+        name: e2.name, stereotype: e2.stereotype, type: e2.type,
+        package: e2.package, note: e2.note || ''
+      };
+      merke(kopie, ir.elements.length);
+      ir.elements.push(kopie);
+      bericht.neu++;
+    });
+
+    /* Kanten: Endpunkte ueber den Namen, Doppelungen verwerfen */
+    var kantenIdx = {};
+    function kantenSchluessel(c2) {
+      return [String(c2.from || '').trim().toLowerCase(), String(c2.to || '').trim().toLowerCase(),
+        String(c2.stereotype || '').trim().toLowerCase()].join('\u0000');
+    }
+    function kanteUebernehmen(c2) {
+      if (namen[c2.from] == null || namen[c2.to] == null) {
+        ir.warnings.push('Beziehung „' + c2.from + ' → ' + c2.to + '“: Element nicht gefunden — übersprungen.');
+        return;
+      }
+      var k = kantenSchluessel(c2);
+      if (kantenIdx[k] != null) { bericht.kanten_doppelt++; return; }
+      kantenIdx[k] = ir.connectors.length;
+      ir.connectors.push({
+        from: c2.from, to: c2.to, stereotype: c2.stereotype,
+        type: c2.type, name: c2.name || ''
+      });
+    }
+    (ziel.connectors || []).forEach(kanteUebernehmen);
+    bericht.kanten_neu = ir.connectors.length;
+    (neu.connectors || []).forEach(kanteUebernehmen);
+    bericht.kanten_neu = ir.connectors.length - bericht.kanten_neu;
+
+    /* Sichten: gleicher Name wird ergaenzt, nicht doppelt angelegt */
+    var sichtIdx = {};
+    (ziel.diagrams || []).forEach(function (d2) {
+      var k = String(d2.name || '').trim().toLowerCase();
+      if (!k || sichtIdx[k] != null) return;
+      sichtIdx[k] = ir.diagrams.length;
+      ir.diagrams.push({ name: d2.name, package: d2.package, elements: (d2.elements || []).slice(), code: d2.code || null });
+    });
+    (neu.diagrams || []).forEach(function (d2) {
+      var k = String(d2.name || '').trim().toLowerCase();
+      if (!k) return;
+      if (sichtIdx[k] != null) {
+        var da = ir.diagrams[sichtIdx[k]], gesehen = {};
+        da.elements.forEach(function (n2) { gesehen[n2] = true; });
+        (d2.elements || []).forEach(function (n2) { if (!gesehen[n2]) { gesehen[n2] = true; da.elements.push(n2); } });
+        return;
+      }
+      sichtIdx[k] = ir.diagrams.length;
+      ir.diagrams.push({ name: d2.name, package: d2.package, elements: (d2.elements || []).slice(), code: d2.code || null });
+      bericht.sichten_neu++;
+    });
+
+    /* Warnungen: ohne Doppelungen */
+    var warnungIdx = {};
+    (ziel.warnings || []).concat(neu.warnings || []).forEach(function (w) {
+      if (warnungIdx[w]) return;
+      warnungIdx[w] = true;
+      ir.warnings.push(w);
+    });
+    return { ir: ir, bericht: bericht };
   }
 
   /* ---------- Export: .qea bauen (sql.js) ---------- */
@@ -1327,7 +1459,7 @@
       'Die Anforderung Sturmalarm setzt die Anforderung Schnelle Warnausgabe voraus.';
   }
 
-  window.KI = { init: init, pickTemplate: pickTemplate, setTemplate: setTemplate, pickMdg: pickMdg, setMdgFromBytes: setMdgFromBytes, loadMdg: loadMdg, validateModel: validateModel, getModel: function () { return S.model; }, newArchitecture: newArchitecture, requireMdg: requireMdg, fillExample: fillExample, generate: generate, exportQea: exportQea, analyzeInApp: analyzeInApp, report: report, chatSend: chatSend, chatAdd: chatAdd, modelToText: modelToText, modelInventory: modelInventory, runOps: runOps, Op: Op, buildBytes: function () { return buildQea(); },
+  window.KI = { init: init, pickTemplate: pickTemplate, setTemplate: setTemplate, pickMdg: pickMdg, setMdgFromBytes: setMdgFromBytes, loadMdg: loadMdg, validateModel: validateModel, getModel: function () { return S.model; }, newArchitecture: newArchitecture, requireMdg: requireMdg, fillExample: fillExample, generate: generate, exportQea: exportQea, analyzeInApp: analyzeInApp, report: report, chatSend: chatSend, chatAdd: chatAdd, modelToText: modelToText, modelInventory: modelInventory, mergeModels: mergeModels, runOps: runOps, Op: Op, buildBytes: function () { return buildQea(); },
     /* Nur LESENDER Zugriff auf die bestehende KI-Konfiguration (Felder des KI-Tabs,
        Fallback: zuletzt gespeicherte Einstellungen). Wird vom Rückweg (Teil 7)
        genutzt, damit es KEINE zweite Konfiguration gibt. Kein Schreiben. */

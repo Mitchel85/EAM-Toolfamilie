@@ -4,7 +4,7 @@
   "sourceRepo": "Mitchel85/EAM-AI-Suite",
   "sourceCommit": "897058d",
   "sourceNote": "unveränderter Quellstand",
-  "sourceTreeSha256": "52e7a314c51858ea3c14e4b7eecdb16c88654f8409d2f9a980e58bc8a96c0cb6",
+  "sourceTreeSha256": "249c0e5edd7e1bf4793de231cc11c17f0598ae56e99da4ec7737c03803356243",
   "buildScript": "src/build_release.py",
   "sourceOutput": "EAM-AI-Suite.html",
   "sourceAspx": "EAM-AI-Suite.aspx",

@@ -23,7 +23,7 @@ APPS = {
         "product": "EAM AI Suite",
         "version": "v9.1",
         "title": "EAM AI Suite — QEA-Architekturen analysieren, erkunden, bearbeiten &amp; exportieren",
-        "bytes": 3_535_847,
+        "bytes": 3_541_760,
         "min_size": 3_000_000,
         "max_size": 4_000_000,
         "markers": ("window.KI", "var EDIT =", "var MERGE"),
@@ -121,6 +121,15 @@ def test_funktionsmarker_sind_getrennt(gebaut: dict[str, dict]) -> None:
             assert marker in text, f"{app}: Marker fehlt: {marker}"
         for marker in regeln["forbidden"]:
             assert marker not in text, f"{app}: verbotener Marker vorhanden: {marker}"
+
+
+def test_suite_legt_modelle_zusammen(gebaut: dict[str, dict]) -> None:
+    """Die Suite kann an ein vorhandenes Modell anknuepfen (Name + Stereotyp)."""
+    text = gebaut["html-suite"]["html"].read_text(encoding="utf-8")
+    assert "function mergeModels(" in text
+    assert "mergeModels: mergeModels" in text
+    assert 'id="ki-continue"' in text
+    assert "An vorhandenes Modell anknüpfen" in text
 
 
 def test_aspx_hat_bom_und_gleichen_inhalt(gebaut: dict[str, dict]) -> None:
