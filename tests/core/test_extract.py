@@ -929,3 +929,180 @@ def test_cli_extraction_error_returns_1(tmp_path, capsys):
     assert code == 1
     assert "elements ist leer" in capsys.readouterr().err
     assert not out.exists()
+
+
+# --------------------------------------------------------------------------
+# Chargen (grosse Quellen)
+# --------------------------------------------------------------------------
+
+CHARGEN_TEXT = (
+    "# Lagebild\n"
+    "\n"
+    "Das Lagebildsystem ist ein System der Lagebearbeitung.\n"
+    "\n"
+    "# Dienst\n"
+    "\n"
+    "Der Dienst Lagebild ist ein ServicePort des Lagebildsystems.\n"
+    "\n"
+    "Der Dienst Lagebild stellt die Lage dar.\n"
+)
+
+
+def _answer(element, ref, stereotype="System", connectors=()):
+    return {
+        "elements": [
+            {
+                "name": element,
+                "stereotype": stereotype,
+                "notes": "Beleg",
+                "source_ref": ref,
+                "confidence": 0.9,
+            }
+        ],
+        "connectors": list(connectors),
+    }
+
+
+def test_plan_batches_breaks_before_headings_and_keeps_order(rules):
+    segments = ex.split_documents([CHARGEN_TEXT])
+    batches = ex.plan_batches(segments, 90)
+    assert len(batches) >= 2
+    assert [s.ref for batch in batches for s in batch] == [s.ref for s in segments]
+    assert all(batch for batch in batches)
+    assert batches[1][0].text.startswith("#"), "Umbruch liegt vor der Ueberschrift"
+
+
+def test_plan_batches_rejects_empty_budget():
+    with pytest.raises(ex.ExtractionError):
+        ex.plan_batches((), 100)
+    segments = ex.split_documents(["Ein Absatz."])
+    with pytest.raises(ex.ExtractionError):
+        ex.plan_batches(segments, 0)
+
+
+def test_merge_answers_dedupes_elements_and_connectors():
+    a = _answer("Lagebildsystem", "D1-S1")
+    b = _answer("Lagebildsystem", "D1-S3", connectors=[
+        {"source": "Lagebildsystem", "target": "Dienst Lagebild",
+         "stereotype": "Provides", "source_ref": "D1-S3", "confidence": 0.7},
+    ])
+    c = _answer("Dienst Lagebild", "D1-S3", stereotype="ServicePort", connectors=[
+        {"source": "Lagebildsystem", "target": "Dienst Lagebild",
+         "stereotype": "Provides", "source_ref": "D1-S3", "confidence": 0.7},
+    ])
+    merged = ex.merge_answers([a, b, c])
+    assert [entry["name"] for entry in merged["elements"]] == [
+        "Lagebildsystem",
+        "Dienst Lagebild",
+    ]
+    assert len(merged["connectors"]) == 1
+
+
+def test_build_prompt_lists_known_elements(rules):
+    segments = ex.split_documents(["Der Dienst Lagebild ist ein ServicePort."])
+    prompt = ex.build_prompt(
+        segments, rules, known=(("Lagebildsystem", "System"),)
+    )
+    assert "Bereits erfasste Elemente" in prompt
+    assert "- Lagebildsystem «System»" in prompt
+    assert "Bereits erfasste Elemente" not in ex.build_prompt(segments, rules)
+
+
+def _batch_count(text: str, budget: int) -> int:
+    return len(ex.plan_batches(ex.split_documents([text]), budget))
+
+
+def _answers_for(batches: int, first: dict, second: dict | None = None) -> list[str]:
+    """Antworten passend zur Chargenzahl; leere Chargen liefern nichts."""
+    empty = json.dumps({"elements": [], "connectors": []})
+    answers = [json.dumps(first)]
+    answers.append(json.dumps(second) if second is not None else empty)
+    answers.extend([empty] * (batches - 2))
+    return answers
+
+
+def test_extract_batched_resolves_connector_across_batches(rules):
+    """Eine spaetere Charge verweist auf ein Element aus der ersten."""
+    batches = _batch_count(CHARGEN_TEXT, 90)
+    assert batches >= 2
+    backend = FakeBackend(
+        *_answers_for(
+            batches,
+            _answer("Lagebildsystem", "D1-S1"),
+            _answer(
+                "Dienst Lagebild",
+                "D1-S4",
+                stereotype="ServicePort",
+                connectors=[
+                    {
+                        "source": "Lagebildsystem",
+                        "target": "Dienst Lagebild",
+                        "stereotype": "Provides",
+                        "source_ref": "D1-S4",
+                        "confidence": 0.7,
+                    }
+                ],
+            ),
+        )
+    )
+    result = ex.extract_batched(
+        [CHARGEN_TEXT],
+        rules=rules,
+        backend=backend,
+        budget_chars=90,
+        threshold_chars=1,
+    )
+    assert len(backend.prompts) == batches
+    assert "Bereits erfasste Elemente" in backend.prompts[1]
+    assert "- Lagebildsystem «System»" in backend.prompts[1]
+    assert [element["name"] for element in result.elements] == [
+        "Lagebildsystem",
+        "Dienst Lagebild",
+    ]
+    assert len(result.connectors) == 1
+    assert result.connectors[0]["source"].endswith("::Lagebildsystem")
+    assert result.connectors[0]["target"].endswith("::Dienst Lagebild")
+    chargen = result.ir["meta"]["extraction"]["chargen"]
+    assert [entry["charge"] for entry in chargen] == list(range(1, batches + 1))
+    assert chargen[0]["bis"] < chargen[1]["von"]
+
+
+def test_extract_batched_allows_empty_batch(rules):
+    batches = _batch_count(CHARGEN_TEXT, 90)
+    backend = FakeBackend(
+        json.dumps({"elements": [], "connectors": []}),
+        json.dumps(_answer("Lagebildsystem", "D1-S1")),
+        *([json.dumps({"elements": [], "connectors": []})] * (batches - 2)),
+    )
+    result = ex.extract_batched(
+        [CHARGEN_TEXT],
+        rules=rules,
+        backend=backend,
+        budget_chars=90,
+        threshold_chars=1,
+    )
+    assert len(result.elements) == 1
+    assert result.ir["meta"]["extraction"]["chargen"][0]["elemente"] == 0
+
+
+def test_extract_batched_aborts_when_no_batch_finds_an_element(rules):
+    batches = _batch_count(CHARGEN_TEXT, 90)
+    empty = json.dumps({"elements": [], "connectors": []})
+    backend = FakeBackend(*([empty] * batches))
+    with pytest.raises(ex.ExtractionError, match="kein Element mit Beleg"):
+        ex.extract_batched(
+            [CHARGEN_TEXT],
+            rules=rules,
+            backend=backend,
+            budget_chars=90,
+            threshold_chars=1,
+        )
+
+
+def test_extract_batched_stays_single_call_below_threshold(rules):
+    backend = FakeBackend(json.dumps(make_answer()))
+    result = ex.extract_batched(
+        [PROSE], rules=rules, backend=backend, budget_chars=90, threshold_chars=10**6
+    )
+    assert len(backend.prompts) == 1
+    assert "chargen" not in result.ir["meta"]["extraction"]

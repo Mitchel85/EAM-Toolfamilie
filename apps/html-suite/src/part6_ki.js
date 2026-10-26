@@ -65,7 +65,7 @@
     Abstraction: 'Abstraction', InformationFlow: 'InformationFlow'
   };
 
-  var S = { template: null, templateName: null, templateInfo: null, model: null, bytes: null, modelName: null, busy: false, mdg: null, chat: [] };
+  var S = { template: null, templateName: null, templateInv: '', templateInfo: null, model: null, bytes: null, modelName: null, busy: false, mdg: null, chat: [] };
 
   /* ---------- MDG-Regelbasis (ersetzt hartkodierte ADMBW_DATA) ---------- */
   function loadMdg(buffer, name) {
@@ -762,7 +762,8 @@
     statusMsg('⏳ Modell wird generiert …');
     var voc = mdgVocab();
     var ruleText = mdgRuleText();
-    var sysMsg = systemPrompt(voc, ruleText);
+    var inv = (S.templateInv && !el('ki-clearmodel').checked) ? S.templateInv : '';
+    var sysMsg = systemPrompt(voc, ruleText) + (inv ? '\n' + inv : '');
     var userParts = [{ type: 'text', text: promptText || 'Bitte extrahiere das Architekturmodell aus den beigefügten Dokumenten/Bildern.' }];
     collectParts(files).then(function (parts) {
       var images = parts.filter(function (p) { return p.type === 'image'; });
@@ -1253,10 +1254,40 @@
   }
 
   /* ---------- Template wählen ---------- */
+  /* Elemente des Grundgerüsts (Name, Stereotyp) für den Prompt. Ohne diese
+     Liste erfindet das Modell Elemente, die im Startpaket schon stehen --
+     gleicher Name, andere Kennung, und der Merge findet sie nicht zusammen. */
+  function templateInventory(buffer) {
+    return ensureSql().then(function (SQL) {
+      var lines = [];
+      try {
+        var db = new SQL.Database(new Uint8Array(buffer));
+        var st = db.prepare(
+          "SELECT Name, IFNULL(Stereotype,'') AS ST FROM t_object " +
+          "WHERE Object_Type='Class' AND Name IS NOT NULL AND Name<>'' " +
+          "ORDER BY Name LIMIT 300"
+        );
+        while (st.step()) {
+          var row = st.getAsObject();
+          lines.push('- ' + row.Name + ' «' + row.ST + '»');
+        }
+        st.free();
+        db.close();
+      } catch (e) { lines = []; }
+      return lines.length
+        ? 'Bereits im Grundgerüst vorhanden (exakt diese Namen verwenden, keine Dubletten):\n' + lines.join('\n') + '\n\n'
+        : '';
+    }).catch(function () { return ''; });
+  }
   function setTemplate(buffer, name) {
     S.template = buffer;
     S.templateName = name || 'EABase.qea';
+    S.templateInv = '';
     el('ki-template-info').textContent = S.templateName + ' (' + Math.round((buffer.byteLength || 0) / 1024) + ' KB) ✓';
+    templateInventory(buffer).then(function (inv) {
+      S.templateInv = inv;
+      if (inv) el('ki-template-info').textContent += ' · ' + (inv.split('\n').length - 3) + ' Standardelemente im Prompt';
+    });
   }
   function pickTemplate() {
     var inp = el('ki-template-file');
@@ -1271,11 +1302,7 @@
         var f = inp.files && inp.files[0];
         if (!f) return;
         var rd = new FileReader();
-        rd.onload = function () {
-          S.template = rd.result;
-          S.templateName = f.name;
-          el('ki-template-info').textContent = f.name + ' (' + Math.round(f.size / 1024) + ' KB) ✓';
-        };        rd.onerror = function () { el('ki-template-info').textContent = 'Lesefehler.'; };
+        rd.onload = function () { setTemplate(rd.result, f.name); };        rd.onerror = function () { el('ki-template-info').textContent = 'Lesefehler.'; };
         rd.readAsArrayBuffer(f);
       });
     }

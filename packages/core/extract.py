@@ -81,6 +81,12 @@ ANY_ENDPOINT = "*"
 # Genau ein Retry mit Fehlertext (Auftrag), danach laut abbrechen.
 MAX_ATTEMPTS = 2
 
+# Chargen: Ab dieser Promptlaenge wird der Quelltext geteilt. Das Budget gilt
+# fuer den Quelltextanteil einer Charge, nicht fuer den ganzen Prompt -- das
+# Regelwerk (rund 35.000 Zeichen) kommt in jeder Charge hinzu.
+DEFAULT_BATCH_CHARS = 120_000
+DEFAULT_BATCH_THRESHOLD = 200_000
+
 TAG_SOURCE_REF = "source_ref"
 TAG_SOURCE_DOC = "source_doc"
 TAG_CONFIDENCE = "source_confidence"
@@ -557,8 +563,15 @@ def build_prompt(
     segments: Sequence[Segment],
     rules: RuleBook,
     package: str = DEFAULT_PACKAGE,
+    *,
+    known: Sequence[tuple[str, str]] = (),
 ) -> str:
-    """Baut den Extraktions-Prompt; deterministisch und ohne Zeitbezug."""
+    """Baut den Extraktions-Prompt; deterministisch und ohne Zeitbezug.
+
+    ``known`` sind bereits erfasste Elemente (Name, Stereotyp) aus vorherigen
+    Chargen. Sie stehen im Prompt, damit ein Kapitel Querverweise auf frueher
+    Gelesenes bilden kann, statt ein zweites Element gleichen Namens zu erfinden.
+    """
     if not segments:
         raise ExtractionError("Prompt: keine Absaetze uebergeben")
 
@@ -573,6 +586,14 @@ def build_prompt(
     role_block = "\n".join(_role_lines(rules)) or "(keine Sammelrollen im Regelwerk)"
 
     source_block = "\n".join(f"[{segment.ref}] {segment.text}" for segment in segments)
+    known_block = ""
+    if known:
+        lines = "\n".join(f"- {name} «{stereotype}»" for name, stereotype in known)
+        known_block = (
+            "Bereits erfasste Elemente aus frueheren Abschnitten (exakt diesen Namen\n"
+            "verwenden, nicht neu anlegen, kein zweites Element gleichen Namens):\n"
+            f"{lines}\n\n"
+        )
 
     return (
         f"{header}\n\n"
@@ -580,6 +601,7 @@ def build_prompt(
         "Beziehungen. Erfinde nichts, ergaenze kein Vorwissen.\n\n"
         f"Technologieprofil: {rules.profile or '(ohne Profil)'}\n"
         f"Zielpaket im Modell: {package}\n\n"
+        f"{known_block}"
         "Erlaubte Element-Stereotype (Name [Metaklasse]):\n"
         f"{element_block}\n\n"
         "Sammelrollen (nur Endpunkte in Beziehungen, keine eigenen Elemente):\n"
@@ -710,8 +732,13 @@ def _confidence_problems(label: str, entry: Mapping[str, Any]) -> list[str]:
     return []
 
 
-def validate_answer(answer: Any, rules: RuleBook) -> None:
-    """Schema- und Fachpruefung; sammelt Meldungen statt beim ersten Fehler abzubrechen."""
+def validate_answer(answer: Any, rules: RuleBook, *, allow_empty: bool = False) -> None:
+    """Schema- und Fachpruefung; sammelt Meldungen statt beim ersten Fehler abzubrechen.
+
+    ``allow_empty`` gilt nur fuer Chargen: Ein Abschnitt ohne Architekturinhalt
+    liefert keine Elemente und ist dann kein Fehler -- der Gesamtlauf prueft am
+    Ende, ob ueberhaupt etwas entstanden ist.
+    """
     try:
         rules_schema.validate(answer, ANSWER_SCHEMA)
     except rules_schema.SchemaError as exc:
@@ -721,7 +748,7 @@ def validate_answer(answer: Any, rules: RuleBook) -> None:
     elements = answer.get("elements", [])
     connectors = answer.get("connectors", [])
 
-    if not elements:
+    if not elements and not allow_empty:
         problems.append("elements ist leer -- ohne Element ist die Extraktion kein Ergebnis")
 
     for index, entry in enumerate(elements):
@@ -1398,7 +1425,9 @@ def make_backend(
 # --------------------------------------------------------------------------
 
 
-def _request_answer(backend: Backend, prompt: str, rules: RuleBook) -> tuple[Mapping[str, Any], int]:
+def _request_answer(
+    backend: Backend, prompt: str, rules: RuleBook, *, allow_empty: bool = False
+) -> tuple[Mapping[str, Any], int]:
     """Antwort holen, pruefen; bei ungueltiger Antwort genau ein Retry."""
     current = prompt
     last_error: AnswerError | None = None
@@ -1410,7 +1439,7 @@ def _request_answer(backend: Backend, prompt: str, rules: RuleBook) -> tuple[Map
             )
         try:
             answer = parse_answer(raw)
-            validate_answer(answer, rules)
+            validate_answer(answer, rules, allow_empty=allow_empty)
         except AnswerError as exc:
             last_error = exc
             if attempt >= MAX_ATTEMPTS:
@@ -1445,6 +1474,153 @@ def extract(
         backend=backend.name,
         attempts=attempts,
     )
+
+
+def plan_batches(
+    segments: Sequence[Segment], budget_chars: int
+) -> tuple[tuple[Segment, ...], ...]:
+    """Teilt Absaetze in Chargen, ohne einen Absatz zu zerreissen.
+
+    Ein Umbruch liegt bevorzugt vor einer Ueberschrift: Sie eroeffnet ein
+    Kapitel, und ein Kapitel beginnt besser eine neue Charge als mittendrin.
+    """
+    if budget_chars <= 0:
+        raise ExtractionError("Chargen: Budget muss groesser als 0 sein")
+    if not segments:
+        raise ExtractionError("Chargen: keine Absaetze uebergeben")
+
+    batches: list[tuple[Segment, ...]] = []
+    current: list[Segment] = []
+    size = 0
+    for segment in segments:
+        length = len(segment.text) + len(segment.ref) + 4
+        is_heading = _ist_ueberschrift(segment.text)
+        over_budget = current and size + length > budget_chars
+        chapter_break = current and is_heading and size >= budget_chars * 3 // 5
+        if over_budget or chapter_break:
+            batches.append(tuple(current))
+            current = []
+            size = 0
+        current.append(segment)
+        size += length
+    if current:
+        batches.append(tuple(current))
+    return tuple(batches)
+
+
+def merge_answers(answers: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    """Fuehrt die Antworten mehrerer Chargen zusammen.
+
+    Elemente gelten ueber den Namen als identisch (der erste Beleg gewinnt,
+    weil die Chargen in Textreihenfolge laufen). Beziehungen werden ueber
+    Quelle, Ziel, Stereotyp und Namen entdoppelt. Endpunkte, die in einer
+    frueheren Charge lagen, loest erst ``answer_to_ir`` gegen die Gesamtliste
+    auf -- genau deshalb wird hier auf Rohantwort-Ebene zusammengefuehrt.
+    """
+    elements: list[dict[str, Any]] = []
+    seen_elements: set[str] = set()
+    for answer in answers:
+        for entry in answer.get("elements", ()):
+            name = str(entry.get("name", "")).strip()
+            if not name or name in seen_elements:
+                continue
+            seen_elements.add(name)
+            elements.append(dict(entry))
+
+    connectors: list[dict[str, Any]] = []
+    seen_connectors: set[tuple[str, str, str, str]] = set()
+    for answer in answers:
+        for entry in answer.get("connectors", ()):
+            key = (
+                str(entry.get("source", "")).strip(),
+                str(entry.get("target", "")).strip(),
+                str(entry.get("stereotype", "")).strip(),
+                str(entry.get("name", "") or ""),
+            )
+            if not key[0] or not key[1] or key in seen_connectors:
+                continue
+            seen_connectors.add(key)
+            connectors.append(dict(entry))
+    return {"elements": elements, "connectors": connectors}
+
+
+def extract_batched(
+    texts: str | Sequence[str],
+    *,
+    rules: RuleBook,
+    backend: Backend,
+    package: str = DEFAULT_PACKAGE,
+    budget_chars: int = DEFAULT_BATCH_CHARS,
+    threshold_chars: int = DEFAULT_BATCH_THRESHOLD,
+    known_limit: int = 200,
+    known: Sequence[tuple[str, str]] = (),
+) -> ExtractionResult:
+    """Prosa -> IR, bei grossen Quellen kapitelweise.
+
+    Bis ``threshold_chars`` Promptlaenge bleibt es bei einem Aufruf: gleiches
+    Ergebnis wie ``extract``, nur ohne Chargenverwaltung. Darueber wird der
+    Text in Chargen von ``budget_chars`` Zeichen geteilt. Jede Charge sieht die
+    bereits erfassten Elementnamen, damit Querverweise nicht zu Doppeln werden.
+    Die Antworten werden vor der IR-Bildung zusammengefuehrt; Belege, Notizen
+    und die Pruefung laufen danach ueber das Gesamtmodell.
+    """
+    segments = split_documents(texts)
+    seed = list(known)
+    full_prompt = build_prompt(segments, rules, package, known=tuple(seed))
+    if budget_chars <= 0 or len(full_prompt) <= threshold_chars:
+        answer, attempts = _request_answer(backend, full_prompt, rules)
+        return answer_to_ir(
+            answer,
+            segments,
+            rules,
+            package=package,
+            backend=backend.name,
+            attempts=attempts,
+        )
+
+    batches = plan_batches(segments, budget_chars)
+    answers: list[Mapping[str, Any]] = []
+    known = list(seed)
+    bericht: list[dict[str, Any]] = []
+    attempts_total = 0
+    for number, batch in enumerate(batches, start=1):
+        prompt = build_prompt(batch, rules, package, known=tuple(known[-known_limit:]))
+        answer, attempts = _request_answer(backend, prompt, rules, allow_empty=True)
+        attempts_total += attempts
+        answers.append(answer)
+        for entry in answer.get("elements", ()):
+            name = str(entry.get("name", "")).strip()
+            if name:
+                known.append((name, str(entry.get("stereotype", "")).strip()))
+        bericht.append(
+            {
+                "charge": number,
+                "von": batch[0].ref,
+                "bis": batch[-1].ref,
+                "absaetze": len(batch),
+                "elemente": len(answer.get("elements", ())),
+                "beziehungen": len(answer.get("connectors", ())),
+                "versuche": attempts,
+                "prompt_zeichen": len(prompt),
+            }
+        )
+
+    merged = merge_answers(answers)
+    if not merged["elements"]:
+        raise ExtractionError(
+            f"Chargen: {len(batches)} Aufrufe, aber kein Element mit Beleg -- "
+            "Abbruch statt leerem Erfolg"
+        )
+    result = answer_to_ir(
+        merged,
+        segments,
+        rules,
+        package=package,
+        backend=backend.name,
+        attempts=attempts_total,
+    )
+    result.ir["meta"]["extraction"]["chargen"] = bericht
+    return result
 
 
 # --------------------------------------------------------------------------

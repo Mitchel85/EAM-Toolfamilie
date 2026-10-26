@@ -4,6 +4,24 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.1.0 - 2026-10-26
+
+### Neu
+
+- **Chargen fuer grosse Quellen.** `eam-ai build` teilt den Quelltext ab einer
+  Promptlaenge von 200.000 Zeichen in Abschnitte von 120.000 Zeichen
+  (`--chargen-zeichen`, `--chargen-schwelle`) und setzt sie vor der Pruefung
+  wieder zusammen. Jede Charge sieht die bereits erfassten Elemente, damit
+  Querverweise keine Dubletten erzeugen. Der Bericht nennt die Chargen in
+  `meta.extraction.chargen`.
+  Messung am MASC-Handbuch (106 Absaetze, vier Chargen): 114 Elemente und
+  50 Beziehungen gegenueber 109 und 48 im Einzelaufruf, 0 Findings.
+- **Startpaket im Bau.** `--startpaket` liest die Standardelemente (StEKa) und
+  legt sie in den Prompt; nach dem Export werden sie uebernommen, mit
+  woertlich unveraenderter `ea_guid`. Die HTML-Fassung liest das geladene
+  Grundgeruest und nennt bis zu 300 Elemente im Prompt.
+  Damit entstehen keine Dubletten mehr zu Elementen, die im Startpaket stehen.
+
 ## 3.0.4 - 2026-10-25
 
 ### Geaendert

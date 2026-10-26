@@ -525,3 +525,81 @@ def test_no_quellen_writes_only_qea(tmp_path: Path) -> None:
     assert report.quellen is None
     assert (tmp_path / "modell.qea").is_file()
     assert (tmp_path / "quellen.json").exists() is False
+
+
+# --------------------------------------------------------------------------
+# Startpaket und Chargen
+# --------------------------------------------------------------------------
+
+
+def _write_katalog(path: Path) -> Path:
+    import qea_writer
+
+    return qea_writer.write_qea(
+        {
+            "ir_version": 1,
+            "technology": {"profile": ""},
+            "packages": [{"path": "Standards"}],
+            "elements": [
+                {"package": "Standards", "name": "Standard A", "stereotype": "System"},
+                {"package": "Standards", "name": "Standard B", "stereotype": "ServiceSpecification"},
+            ],
+            "connectors": [],
+            "diagrams": [],
+        },
+        path,
+    )
+
+
+def test_startpaket_inventar_lists_classes(tmp_path: Path) -> None:
+    katalog = _write_katalog(tmp_path / "katalog.qea")
+    inventar = eam_ai._startpaket_inventar(katalog)
+    assert [name for name, _ in inventar] == ["Standard A", "Standard B"]
+    assert dict(inventar)["Standard B"] == "ServiceSpecification"
+
+
+def test_build_merges_startpaket_with_unchanged_ids(tmp_path: Path) -> None:
+    source = tmp_path / "text.txt"
+    source.write_text(TEXT, encoding="utf-8")
+    katalog = _write_katalog(tmp_path / "katalog.qea")
+    vorher = {e["name"]: e.get("guid") for e in read_qea(katalog)["elements"]}
+    report = eam_ai.build(
+        mdg=MDG,
+        text=source,
+        out=tmp_path / "modell.qea",
+        backend=make_backend(),
+        findings_path=tmp_path / "findings.json",
+        startpaket=katalog,
+        sidecar=False,
+    )
+    assert report.exported is True
+    nachher = read_qea(tmp_path / "modell.qea")
+    nachher_namen = {e["name"]: e.get("guid") for e in nachher["elements"]}
+    assert set(vorher) <= set(nachher_namen), "Standardelemente fehlen im Ergebnis"
+    for name, guid in vorher.items():
+        if guid:
+            assert nachher_namen[name] == guid, f"{name}: Kennung wurde geaendert"
+    assert report.elements == len(nachher["elements"])
+    assert report.elements >= 2
+
+
+def test_build_rejects_empty_startpaket(tmp_path: Path) -> None:
+    source = tmp_path / "text.txt"
+    source.write_text(TEXT, encoding="utf-8")
+    leer = _write_katalog(tmp_path / "leer.qea")
+    import sqlite3
+
+    con = sqlite3.connect(leer)
+    con.execute("delete from t_object")
+    con.commit()
+    con.close()
+    with pytest.raises(eam_ai.BuildError, match="keine Elemente"):
+        eam_ai.build(
+            mdg=MDG,
+            text=source,
+            out=tmp_path / "modell.qea",
+            backend=make_backend(),
+            findings_path=tmp_path / "findings.json",
+            startpaket=leer,
+            sidecar=False,
+        )

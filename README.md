@@ -59,9 +59,14 @@ Kurzbegriffe, die im Ablauf vorkommen:
 ![Workflow-Abdeckung: welche der fünf Werkzeuge welchen Schritt können](docs/workflow-abdeckung.png)
 
 - Die MDG kommt zuerst. Ohne Regelwerk wird nichts gebaut.
-- Das Startpaket übernehmen beide AI Suiten technisch als Zusammenführung in ein Modell
-  (HTML: Bereich „Standardelemente“, Python: `eam-ai toolbox`). Es lässt sich deshalb auch
-  nach dem Bauen nachziehen.
+- Das Startpaket geht beim Bauen in den Prompt: Seine Elemente stehen mit Namen und
+  Stereotyp im Modell, die KI verwendet sie wieder, statt Dubletten anzulegen. In der
+  Python-Fassung übernimmt `--startpaket` den Katalog mit unveränderten `ea_guid`; in der
+  HTML-Fassung wird das geladene Grundgerüst gelesen (bis 300 Elemente im Prompt).
+  Nachziehen geht weiterhin mit `eam-ai toolbox`.
+- Große Quellen werden geteilt: Ab 200.000 Zeichen Promptlänge baut die Python-Fassung
+  in Abschnitten (`--chargen-zeichen`, Standard 120.000 Zeichen). Jeder Abschnitt sieht
+  die bereits erfassten Elemente; die Antworten werden vor der Prüfung zusammengeführt.
 
 ## Welches Werkzeug wofür
 

@@ -50,6 +50,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sqlite3
 import sys
 import warnings
 import zipfile
@@ -86,7 +87,7 @@ FINDINGS_NAME = "findings.json"
 
 # Eine Quelle fuer die Version: hier. pyproject.toml und CHANGELOG.md muessen
 # dazu passen; tests/test_packaging.py prueft die drei Stellen gegeneinander.
-__version__ = "3.0.4"
+__version__ = "3.1.0"
 
 # DOCX ist eine ZIP-Datei mit genau diesem Pfad fuer den sichtbaren Text.
 _DOCX_MAIN = "word/document.xml"
@@ -120,6 +121,7 @@ class BuildReport:
     exported: bool
     dry_run: bool
     strict: bool
+    batches: int = 0
 
     @property
     def summary(self) -> dict[str, int]:
@@ -361,6 +363,9 @@ def build(
     quellen_path: str | Path | None = None,
     repair: bool = False,
     repair_rounds: int = 6,
+    batch_chars: int | None = None,
+    batch_threshold: int | None = None,
+    startpaket: str | Path | None = None,
     ai_backend: object | None = None,
     repair_bericht: str | Path | None = None,
     repair_ir_path: str | Path | None = None,
@@ -491,10 +496,39 @@ def build(
                 quellen_text = f"{text_label}: {len(documents)} Absaetze"
             say(f"[3/6] Quelle: {quellen_text} (D1-S1..{documents[-1].ref})")
 
-            # 4/6 Extrahieren
+            # 4/6 Extrahieren. Ein Startpaket (StEKa) wird vorab gelesen und in
+            # den Prompt gelegt: Seine Elemente sind bereits im Modell, die
+            # Extraktion soll sie mit exaktem Namen wiederverwenden statt
+            # Dubletten zu erfinden. Die Kennungen bleiben beim Export erhalten.
+            standard: list[tuple[str, str]] = []
+            if startpaket is not None:
+                try:
+                    standard = _startpaket_inventar(Path(startpaket))
+                except (OSError, sqlite3.Error) as exc:
+                    raise BuildError(f"Startpaket {startpaket}: {exc}") from exc
+                if not standard:
+                    raise BuildError(
+                        f"Startpaket {startpaket}: keine Elemente gefunden -- "
+                        "das ist kein Startpaket"
+                    )
+                say(f"        Startpaket: {len(standard)} Standardelement(e) im Prompt")
             try:
-                result = extract_module.extract(
-                    [document], rules=rulebook, backend=chosen, package=package
+                result = extract_module.extract_batched(
+                    [document],
+                    rules=rulebook,
+                    backend=chosen,
+                    package=package,
+                    known=tuple(standard),
+                    **(
+                        {"budget_chars": batch_chars}
+                        if batch_chars is not None
+                        else {}
+                    ),
+                    **(
+                        {"threshold_chars": batch_threshold}
+                        if batch_threshold is not None
+                        else {}
+                    ),
                 )
             except ExtractionError as exc:
                 raise BuildError(f"Extraktion: {exc}") from exc
@@ -507,10 +541,12 @@ def build(
                 nachtraege = relation_module.ergaenze(result.ir, documents, kantenregeln)
             except validator.ValidatorError:
                 nachtraege = []
+            chargen = result.ir.get("meta", {}).get("extraction", {}).get("chargen", [])
             say(
                 f"[4/6] Extraktion: {result.backend}: {len(result.elements)} Element(e), "
                 f"{len(result.connectors)} Beziehung(en), {result.attempts} Versuch(e), "
                 f"{len(result.dropped)} verworfen"
+                + (f", {len(chargen)} Chargen" if chargen else "")
             )
             if nachtraege:
                 say(f"        Kanten nachgetragen: {len(nachtraege)}")
@@ -593,16 +629,63 @@ def build(
                 dry_run=True, strict=strict,
             )
 
+        emit_target = out_path
+        zwischen: Path | None = None
+        if startpaket is not None:
+            # Erst in eine Zwischendatei schreiben, dann den Katalog mit
+            # unveraenderten ea_guid uebernehmen (toolbox_merge ist der
+            # geprüfte Weg dafuer). So bleibt der Export atomar.
+            zwischen = out_path.with_name(out_path.stem + ".ohne-startpaket.qea")
+            emit_target = zwischen
         try:
             emitted: EmitReport = emit_module.emit(
                 result.ir,
-                out_path,
+                emit_target,
                 quellen_path=quellen_path,
                 sidecar=sidecar,
                 verify=True,
             )
         except (EmitError, QeaWriterError, QeaReaderError, OSError) as exc:
             raise BuildError(f"Export: {exc}") from exc
+        standard_report: dict[str, Any] | None = None
+        if startpaket is not None and zwischen is not None:
+            try:
+                import toolbox_merge
+
+                standard_report = toolbox_merge.merge_toolbox(
+                    zwischen, Path(startpaket), out_path
+                )
+            except Exception as exc:  # noqa: BLE001 - Fehlerabbildung unten
+                zwischen.unlink(missing_ok=True)
+                raise BuildError(f"Startpaket: {exc}") from exc
+            zwischen.unlink(missing_ok=True)
+            # Bericht auf die tatsaechliche Zieldatei ziehen: Zahlen und
+            # Pruefsumme stammen sonst von der Zwischendatei ohne Katalog.
+            import hashlib
+            from dataclasses import replace as _replace
+
+            con = sqlite3.connect(str(out_path))
+            try:
+                elements_final = con.execute(
+                    "select count(*) from t_object where Object_Type = 'Class'"
+                ).fetchone()[0]
+                connectors_final = con.execute(
+                    "select count(*) from t_connector"
+                ).fetchone()[0]
+            finally:
+                con.close()
+            emitted = _replace(
+                emitted,
+                qea=out_path,
+                elements=int(elements_final),
+                connectors=int(connectors_final),
+                digest=hashlib.sha256(out_path.read_bytes()).hexdigest(),
+            )
+            say(
+                f"        Startpaket uebernommen: {standard_report['elemente']} Element(e), "
+                f"{standard_report['kanten']} Kante(n), "
+                f"{standard_report['bereits_vorhanden']} bereits vorhanden"
+            )
         say(
             f"[6/6] Export: {emitted.qea}: {emitted.elements} Elemente, "
             f"{emitted.connectors} Beziehungen, {emitted.provenance_tags} Herkunfts-Tags, "
@@ -613,6 +696,7 @@ def build(
             qea=emitted.qea, quellen=emitted.quellen, digest=emitted.digest,
             provenance_tags=emitted.provenance_tags,
             exported=True, dry_run=False, strict=strict,
+            elements=emitted.elements, connectors=emitted.connectors,
         )
     except BuildError as exc:
         # Auch ein technischer Abbruch hinterlaesst eine belastbare Spur.
@@ -638,13 +722,17 @@ def _report(
     exported: bool,
     dry_run: bool,
     strict: bool,
+    elements: int | None = None,
+    connectors: int | None = None,
 ) -> BuildReport:
+    chargen = result.ir.get("meta", {}).get("extraction", {}).get("chargen", [])
     return BuildReport(
         technology=dict(technique),
         backend=result.backend,
+        batches=len(chargen),
         segments=len(result.segments),
-        elements=len(result.elements),
-        connectors=len(result.connectors),
+        elements=len(result.elements) if elements is None else elements,
+        connectors=len(result.connectors) if connectors is None else connectors,
         dropped=tuple(drop.as_json() for drop in result.dropped),
         attempts=result.attempts,
         findings=tuple(dict(finding) for finding in findings),
@@ -751,6 +839,30 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=None,
         help="Bericht der Reparatur als JSON",
+    )
+    p_build.add_argument(
+        "--chargen-zeichen",
+        type=int,
+        default=None,
+        help=(
+            "Quelltext je Charge in Zeichen (Default: 120000). Gilt nur, wenn der "
+            "Prompt die Schwelle ueberschreitet"
+        ),
+    )
+    p_build.add_argument(
+        "--chargen-schwelle",
+        type=int,
+        default=None,
+        help="ab dieser Promptlaenge wird geteilt (Default: 200000 Zeichen)",
+    )
+    p_build.add_argument(
+        "--startpaket",
+        type=Path,
+        default=None,
+        help=(
+            "Startpaket (StEKa) als .qea: Elemente kommen in den Prompt und mit "
+            "unveraenderten Kennungen ins Ergebnis"
+        ),
     )
     p_build.add_argument("--quellen", type=Path, default=None, help="Pfad der quellen.json")
     p_build.add_argument(
@@ -986,6 +1098,9 @@ def cmd_build(args: argparse.Namespace) -> int:
             repair_rounds=args.repair_runden,
             repair_bericht=args.repair_bericht,
             repair_ir_path=args.repair_ir,
+            batch_chars=args.chargen_zeichen,
+            batch_threshold=args.chargen_schwelle,
+            startpaket=args.startpaket,
             sidecar=not args.no_quellen,
             quellen_path=args.quellen,
             log=say,
@@ -1191,6 +1306,27 @@ def _drop_element(path: Path, guid: str) -> None:
         con.commit()
     finally:
         con.close()
+
+
+def _startpaket_inventar(path: Path, limit: int = 400) -> list[tuple[str, str]]:
+    """Elemente eines Startpakets (Name, Stereotyp) fuer den Prompt lesen.
+
+    Lesend und ohne Schreiben: Das Startpaket bleibt unangetastet. Nur
+    Klassen zaehlen; Pakete und Diagramme sind keine Standardelemente.
+    """
+    if not path.exists():
+        raise OSError(f"{path}: Datei nicht gefunden")
+    con = sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+    try:
+        rows = con.execute(
+            "select Name, ifnull(Stereotype, '') from t_object "
+            "where Object_Type = 'Class' and Name is not null and Name <> '' "
+            "order by Name limit ?",
+            (limit,),
+        ).fetchall()
+    finally:
+        con.close()
+    return [(str(name), str(stereotype)) for name, stereotype in rows]
 
 
 def cmd_toolbox(args: argparse.Namespace) -> int:
