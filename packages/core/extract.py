@@ -953,6 +953,20 @@ def _flach(text: str) -> str:
     return re.sub(r"\s+", " ", text.replace("**", "")).strip().casefold()
 
 
+def _name_key(name: str) -> str:
+    """Vergleichsschluessel fuer Bezeichnungen.
+
+    Gross-/Kleinschreibung, ein Klammerzusatz am Ende und die Pluralform
+    machen aus einem Element kein zweites. "Monitoring Service Bw" und
+    "monitoring services bw" sind derselbe Gegenstand.
+    """
+    text = _flach(name)
+    text = re.sub(r"\s*\([^)]*\)\s*$", "", text)
+    text = text.rstrip(" .")
+    text = re.sub(r"\b(dienste|services|elemente|module|systeme)$", "", text).strip()
+    return text
+
+
 def _note_wortgleich(note: str, absatz: str) -> bool:
     """Steht die Notiz woertlich im Absatz? (Markdown-Fettung zaehlt nicht.)"""
     flach = _flach(note)
@@ -1041,6 +1055,12 @@ def answer_to_ir(
             f"Kein Element mit gueltigem Beleg -- Abbruch statt leerem Erfolg ({reasons})"
         )
 
+    # Schreibvarianten der bereits belegten Elemente. Ein Endpunkt, der nur
+    # anders geschrieben ist, gilt als derselbe -- sonst faellt die Beziehung.
+    aliases: dict[str, str] = {}
+    for bekannt in seen_names:
+        aliases.setdefault(_name_key(bekannt), bekannt)
+
     connectors: list[dict[str, Any]] = []
     seen_connectors: set[tuple[str, str, str, str]] = set()
     candidates = sorted(
@@ -1066,8 +1086,35 @@ def answer_to_ir(
         if segment is None:
             dropped.append(Dropped("connector", label, f"Beleg {raw_ref!r} ist keine Absatznummer"))
             continue
-        if source not in seen_names or target not in seen_names:
-            missing = [name for name in (source, target) if name not in seen_names]
+        def _aufloesen(name: str) -> list[str]:
+            """Endpunkt auf belegte Elemente zurueckfuehren.
+
+            Reihenfolge: wortgleich, dann Schreibvariante, dann Aufzaehlung.
+            Eine Aufzaehlung wird nur zerlegt, wenn jeder Teil belegt ist --
+            geraten wird nichts.
+            """
+            if name in seen_names:
+                return [name]
+            treffer = aliases.get(_name_key(name))
+            if treffer:
+                return [treffer]
+            teile = [teil.strip() for teil in name.split(",") if teil.strip()]
+            if len(teile) > 1:
+                geloest: list[str] = []
+                for teil in teile:
+                    if teil in seen_names:
+                        geloest.append(teil)
+                    elif aliases.get(_name_key(teil)):
+                        geloest.append(aliases[_name_key(teil)])
+                    else:
+                        return []
+                return geloest
+            return []
+
+        quellen = _aufloesen(source)
+        ziele = _aufloesen(target)
+        if not quellen or not ziele:
+            missing = [name for name, treffer in ((source, quellen), (target, ziele)) if not treffer]
             dropped.append(
                 Dropped(
                     "connector",
@@ -1076,11 +1123,8 @@ def answer_to_ir(
                 )
             )
             continue
-        key = (source, target, stereotype, str(entry.get("name", "") or ""))
-        if key in seen_connectors:
-            dropped.append(Dropped("connector", label, f"doppelte Beziehung ({stereotype})"))
-            continue
-        seen_connectors.add(key)
+        # Jede Kombination ist eine eigene Beziehung; der Schluessel
+        # entscheidet ueber Doppelungen.
         beleg = _beleg_segment(segment, segments)
         if beleg.ref != segment.ref:
             belege_verschoben += 1
@@ -1093,25 +1137,33 @@ def answer_to_ir(
         else:
             notizen_ersetzt += 1
         note = beleg.text
-        # Die Kante haengt am Paket ihres Elements, nicht am Zielpaket des
-        # ganzen Laufs: eine Nachbearbeitung (z. B. Kataloguebernahme) kann
-        # ein Element in ein anderes Paket umhaengen. Eine Referenz auf das
-        # eingestellte Zielpaket zeigt danach ins Leere und der Export bricht
-        # mit "zeigt auf kein deklariertes Element" ab.
-        quell_paket = _paket_von(elements, source) or target_package
-        ziel_paket = _paket_von(elements, target) or target_package
-        connectors.append(
-            {
-                "source": f"{quell_paket}::{source}",
-                "target": f"{ziel_paket}::{target}",
-                "stereotype": stereotype,
-                "ea_type": rules.connector_ea_type(stereotype),
-                "name": str(entry.get("name", "") or ""),
-                "direction": rules.connector_direction(stereotype),
-                "notes": note,
-                "tags": _provenance_tags(beleg, entry.get("confidence", 0.0)),
-            }
-        )
+        # Jede Kombination einer Aufzaehlung ist eine eigene Beziehung;
+        # der Schluessel entscheidet ueber Doppelungen.
+        for source, target in [(q, z) for q in quellen for z in ziele]:
+            key = (source, target, stereotype, str(entry.get("name", "") or ""))
+            if key in seen_connectors:
+                dropped.append(Dropped("connector", f"{source} -> {target}", f"doppelte Beziehung ({stereotype})"))
+                continue
+            seen_connectors.add(key)
+            # Die Kante haengt am Paket ihres Elements, nicht am Zielpaket des
+            # ganzen Laufs: eine Nachbearbeitung (z. B. Kataloguebernahme) kann
+            # ein Element in ein anderes Paket umhaengen. Eine Referenz auf das
+            # eingestellte Zielpaket zeigt danach ins Leere und der Export bricht
+            # mit "zeigt auf kein deklariertes Element" ab.
+            quell_paket = _paket_von(elements, source) or target_package
+            ziel_paket = _paket_von(elements, target) or target_package
+            connectors.append(
+                {
+                    "source": f"{quell_paket}::{source}",
+                    "target": f"{ziel_paket}::{target}",
+                    "stereotype": stereotype,
+                    "ea_type": rules.connector_ea_type(stereotype),
+                    "name": str(entry.get("name", "") or ""),
+                    "direction": rules.connector_direction(stereotype),
+                    "notes": note,
+                    "tags": _provenance_tags(beleg, entry.get("confidence", 0.0)),
+                }
+            )
 
     text_absaetze = [segment for segment in segments if not _ist_ueberschrift(segment.text)]
     belegte_refs = {
