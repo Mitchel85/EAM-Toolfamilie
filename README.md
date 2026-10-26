@@ -1,8 +1,7 @@
-# EAM Toolfamilie
+# EAM Tool-Familie
 
 Werkzeuge für Architekturmodelle im Format `.qea`: aus Regelwerk und Beschreibung ein
 geprüftes Modell bauen, vorhandene Modelle ansehen, zusammenführen und bearbeiten.
-Die HTML-Werkzeuge laufen im Browser.
 
 ## Einstieg
 
@@ -19,7 +18,7 @@ Kurzbegriffe, die im Ablauf vorkommen:
 
 - **MDG** — die Technologie-Datei (XML). Sie beschreibt, welche Elementtypen, Regeln,
   Sichten und Tags erlaubt sind. Sie kommt zuerst.
-- **Startpaket** — eine zweite `.qea` mit Standardelementen, die in ein Modell übernommen
+- **Startpaket** — eine `.qea` mit Standardelementen, die in ein Modell übernommen
   werden; die Kennungen bleiben dabei unverändert.
 - **Stereotyp / 🔒** — der Typ eines Elements. Ein gesperrter Typ (🔒) wird nie direkt
   verwendet; an seine Stelle tritt ein konkreter Untertyp.
@@ -39,12 +38,31 @@ Kurzbegriffe, die im Ablauf vorkommen:
 - **Daten:** ohne KI arbeiten die HTML-Werkzeuge lokal im Browser. Mit KI gehen der Text
   bzw. der gewählte Modellausschnitt an den KI-Zugang, den man selbst einträgt.
 
+## Wiederverwendung und Größe
+
+Beides entscheidet, ob ein Modell über viele Texte hinweg zusammenwächst, statt in
+Teilmodelle zu zerfallen:
+
+- **Startpaket.** Die Standardelemente stehen mit Namen und Stereotyp im Prompt; die KI
+  verwendet sie wieder, statt Dubletten anzulegen. Danach werden sie übernommen — im
+  Python-Weg mit `--startpaket`, in der HTML-Fassung über das geladene Grundgerüst (bis
+  300 Elemente). Die `ea_guid` bleibt unverändert.
+- **Mehrere Texte.** Jeder weitere Lauf knüpft mit `--modell bestand.qea` an das Modell an:
+  seine Elemente gehen als bekannter Bestand in den Prompt, das Ergebnis enthält Bestand
+  und Neues. Elemente, die im zweiten Text erneut vorkommen, bleiben eine Zeile.
+- **Große Quellen.** Ab 200.000 Zeichen Promptlänge baut die Python-Fassung in Abschnitten
+  (`--chargen-zeichen`, Standard 120.000). Jeder Abschnitt sieht die bereits erfassten
+  Elemente; die Antworten werden vor der Prüfung zusammengeführt.
+- **Grenze der HTML-Fassung.** Sie hält die `.qea` vollständig im Browserspeicher und ruft
+  die KI je Lauf einmal auf. Für Modelle im dreistelligen MB-Bereich und für sehr lange
+  Texte ist die Python-Fassung der Weg.
+
 ## Der Ablauf in sieben Schritten
 
 1. **MDG einlesen** — die Technologie-XML laden. Daraus entsteht das Regelwerk: Stereotype
    (auch die abstrakten 🔒), Topologie-Regeln, Viewpoints, Tag-Typen. Wie viele es sind,
    bestimmt der MDG-Stand; die Regeldatei wird laufend fortgeschrieben.
-2. **ggf. Startpaket übernehmen** — Standardelemente kommen als zweite `.qea`. Ihre `ea_guid`
+2. **ggf. Startpaket übernehmen** — Standardelemente kommen als `.qea`. Ihre `ea_guid`
    bleibt wörtlich erhalten, damit Modelle mit demselben Standard zusammenfinden.
 3. **Prosa einlesen** — Handbuch, Text, PDF oder Bild. Daraus werden Elemente und Beziehungen,
    jede mit Angabe ihrer Herkunft.
@@ -74,14 +92,16 @@ Kurzbegriffe, die im Ablauf vorkommen:
   Standardelemente übernehmen, Prosa mit KI in ein Modell übersetzen, prüfen, ansehen,
   bearbeiten, Handbuch erzeugen.
 - **EAM AI Suite Python** (Kommandozeile `eam-ai` und Webdienst) — dieselbe Kette ohne
-  Browser, für Serienläufe, Server und Läufe ohne KI.
+  Browser, für Serienläufe und Server. Für das Bauen aus Prosa braucht sie ein KI-Backend;
+  ohne KI geht nur das Gerüst aus dem Regelwerk.
 - **EAM Suite** (eine HTML-Datei, Fassung 8.4) — vorhandene Modelle öffnen, mehrere
   verschmelzen, von Hand bearbeiten und als neue `.qea` speichern; ohne MDG-Prüfung, ohne
   KI, ohne Prosa.
 - **EAM QEA Analyzer** (eine HTML-Datei, Fassung 4.0) — vorhandene `.qea` nur lesen und
   verstehen: Explorer, Sichten, Graph, Pfade, Export als Bild oder Tabelle; schreibt nichts.
 - **EAM MDG Parser** (eine HTML-Datei) — MDG-XML im Browser durchsuchen und als
-  Regeldateien exportieren; baut kein Modell.
+  Regeldateien exportieren; baut kein Modell. Zusätzlich lässt sich der Master-Prompt des
+  ehemaligen ADMBw-Extraktors als optionales Artefakt ausgeben.
 
 Schnellwahl
 - Neues Modell aus Text → EAM AI Suite (für Serien und Server: EAM AI Suite Python)
@@ -96,15 +116,17 @@ Abgrenzung
   eigenem Quellstand. Es gibt keinen gemeinsamen UI-Kern.
 - Änderungen wandern nicht automatisch mit: ein Fix in der EAM Suite ist kein Fix in der
   EAM AI Suite — und umgekehrt.
-- EAM Suite und EAM QEA Analyzer zeigen ein fest eingebautes ADMBw-Referenzraster. Es folgt
-  einer neuen MDG nicht; gegen die aktuelle MDG prüfen nur die beiden AI Suiten.
+- Die EAM Suite zeigt ein fest eingebautes ADMBw-Referenzraster. Es folgt einer neuen MDG
+  nicht; gegen die aktuelle MDG prüfen nur die beiden AI Suiten.
+- Der Open WebUI QEA Analyzer arbeitet nur auf der Tabellenstruktur der `.qea`; ein
+  ADMBw-Schema bringt er nicht mit.
 - Die KI-Schritte der EAM AI Suite brauchen einen KI-Zugang (Endpunkt, Schlüssel). Laden,
   Sehen und Bearbeiten gehen ohne.
-- Fragen an ein Modell, nur lesend, beantworten die EAM AI Suite, `eam-ai frage` und das
-  Open-WebUI-Werkzeug.
-- Weitere Werkzeuge der Familie: EAM-AI-QEA-Analyzer (das Open-WebUI-Werkzeug) und die
-  Prompt-Werkzeuge EAM-AI-ADMBw-Extractor, -Batch und -Script-Maker. Sie arbeiten mit der
-  Wissensbasis aus der MDG; Quellen unter `apps/`.
+- Fragen an ein Modell, nur lesend, beantworten die EAM AI Suite, `eam-ai frage` und der
+  Open WebUI QEA Analyzer.
+- Weitere Werkzeuge der Familie: die Prompt-Werkzeuge EAM-AI-ADMBw-Extractor, -Batch und
+  -Script-Maker. Sie arbeiten mit der Wissensbasis aus der MDG; Quellen unter `apps/`.
+  Der ADMBw-Extractor wird nicht ausgeliefert; sein Master-Prompt liegt beim EAM MDG Parser.
 
 ## Herunterladen
 
@@ -121,17 +143,15 @@ Alle Dateien liegen im öffentlichen Release.
   [EAM-Suite.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.html)
   · für SharePoint:
   [EAM-Suite.aspx](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.aspx)
-- EAM QEA Analyzer:
+- Open WebUI QEA Analyzer:
   [EAM-QEA-Analyzer.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-QEA-Analyzer.html)
   · für SharePoint:
   [EAM-QEA-Analyzer.aspx](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-QEA-Analyzer.aspx)
 - EAM MDG Parser:
   [EAM-MDG-Parser.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-MDG-Parser.html)
-- Open-WebUI-Werkzeug (fragt eine `.qea` ab, statt zu raten):
+- Open WebUI QEA Analyzer für Open WebUI (fragt eine `.qea` ab, statt zu raten):
   [eam_qea_analyzer_openwebui.py](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam_qea_analyzer_openwebui.py)
-- Prüfsummen:
-  [SHA256SUMS](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/SHA256SUMS)
-  · Inhalt des Release:
+- Inhalt des Release:
   [RELEASES.md](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/RELEASES.md)
 
 So geht's
@@ -140,7 +160,6 @@ So geht's
 3. Die eigene `.qea` bzw. die MDG-XML hineinziehen.
 
 - Die `.aspx`-Dateien sind dieselben Anwendungen für SharePoint/IIS (UTF-8 mit BOM).
-- Prüfsummen kontrollieren, im Download-Ordner: `sha256sum -c --ignore-missing SHA256SUMS`
 
 ### EAM AI Suite Python
 
@@ -152,6 +171,8 @@ eam-ai --help
 
 - `eam-ai build --mdg technologie.xml --text beschreibung.pdf --out modell.qea` — Schritte 1,
   3 und 4; braucht ein KI-Backend (`--backend openai` oder `ollama`, offline `--backend datei`).
+- `eam-ai build … --modell bestand.qea` — an ein vorhandenes Modell anknüpfen: seine
+  Elemente gehen in den Prompt, das Ergebnis enthält Bestand und Neues.
 - `eam-ai build --mdg technologie.xml --out geruest.qea` — Gerüst nur aus dem Regelwerk,
   ohne Text, ohne KI.
 - `eam-ai toolbox` — Standardelemente aus einem Startpaket übernehmen, GUID-erhaltend.
@@ -165,9 +186,6 @@ eam-ai --help
 
 ## Häufige Fragen
 
-**Muss ich ein Konto anlegen?**
-Nein — weder bei GitHub noch sonst wo.
-
 **Ist das für interne Modelle sicher?**
 Die HTML-Werkzeuge laden nichts nach und senden nichts weg; sie arbeiten ohne Netz.
 Einzige Ausnahme: die AI Suiten dürfen auf Wunsch eine KI anbinden — nur wenn ein Zugang
@@ -180,11 +198,6 @@ Weil GitHub HTML als Quelltext anzeigt. Nimm die Download-Links oben oder die
 **Welche Datei ist die richtige: `.html` oder `.aspx`?**
 `.html` für den eigenen Rechner. `.aspx` nur, wenn die Datei auf einem SharePoint-/IIS-Server
 liegt.
-
-**Wie prüfe ich, dass der Download vollständig ist?**
-Prüfsumme in [SHA256SUMS](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/SHA256SUMS)
-vergleichen: unter Linux `sha256sum -c --ignore-missing SHA256SUMS`, unter Windows
-`Get-FileHash .\EAM-AI-Suite.html`. Für den Alltag nicht nötig.
 
 **Darf ich die Dateien weitergeben?**
 Ja, unverändert weitergeben ist erlaubt (MIT-Lizenz). Details in [LICENSE](LICENSE) und

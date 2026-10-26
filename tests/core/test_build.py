@@ -9,6 +9,7 @@ gleicher Input byte-identische Ausgaben liefert.
 from __future__ import annotations
 
 import json
+import sqlite3
 import os
 import subprocess
 import sys
@@ -720,3 +721,89 @@ def test_build_counts_all_object_types(tmp_path: Path) -> None:
     gelesen = read_qea(tmp_path / "gesamt.qea")["elements"]
     assert len(gelesen) == 5, "2 aus der Basis + 3 aus dem Text"
     assert report.elements == 5, "Bericht zaehlt wie der Reader, nicht nur Class"
+
+
+def test_drei_prosa_laeufe_bleiben_ein_modell(tmp_path: Path) -> None:
+    """Drei Texte, ein Startpaket: ein Modell ohne Dubletten.
+
+    Prueft die Zusage der Wiederverwendung: Standardelemente behalten ihre
+    Kennung, erneut genannte Elemente bleiben eine Zeile, und jeder Lauf
+    ergaenzt nur, was wirklich neu ist.
+    """
+    import qea_writer
+
+    start = qea_writer.write_qea(
+        {
+            "ir_version": 1,
+            "technology": {"profile": ""},
+            "packages": [{"path": "Standard"}],
+            "elements": [
+                {"package": "Standard", "name": "Dienst Lagebild",
+                 "stereotype": "ServiceSpecification"},
+                {"package": "Standard", "name": "System Lagezentrum",
+                 "stereotype": "Process"},
+            ],
+            "connectors": [],
+            "diagrams": [],
+        },
+        tmp_path / "start.qea",
+    )
+    def guids(datei: Path) -> dict[str, str]:
+        con = sqlite3.connect(str(datei))
+        try:
+            return dict(
+                con.execute(
+                    "select Name, ea_guid from t_object where Object_Type <> 'Package'"
+                ).fetchall()
+            )
+        finally:
+            con.close()
+
+    start_guids = guids(start)
+
+    texte = {
+        "a.md": "Der Dienst Lagebild liefert Lageinformationen.\n"
+                "Das System Lagezentrum verarbeitet sie.\n",
+        "b.md": "Der Dienst Lagebild meldet an das System Fuehrungsinformationssystem.\n",
+        "c.md": "Der Dienst Lagebild speist das System Archiv.\n",
+    }
+    antworten = [
+        [("Dienst Lagebild", "ServiceSpecification"), ("System Lagezentrum", "Process")],
+        [("Dienst Lagebild", "ServiceSpecification"),
+         ("System Fuehrungsinformationssystem", "Process")],
+        [("Dienst Lagebild", "ServiceSpecification"), ("System Archiv", "Process")],
+    ]
+
+    bestand = None
+    erwartet = [2, 3, 4]
+    for nummer, ((name, text), elemente) in enumerate(zip(texte.items(), antworten), start=1):
+        quelle = tmp_path / name
+        quelle.write_text(text, encoding="utf-8")
+        ziel = tmp_path / f"lauf{nummer}.qea"
+        backend = ex.StaticBackend(
+            [
+                json.dumps({"elements": [
+                    {"name": element_name, "stereotype": stereotype, "notes": name,
+                     "source_ref": "D1-S1", "confidence": 0.9}
+                    for element_name, stereotype in elemente
+                ]})
+            ] * 3,
+            name="test",
+        )
+        kwargs = {"startpaket": start}
+        if bestand is not None:
+            kwargs["modell"] = bestand
+        eam_ai.build(
+            mdg=MDG, text=quelle, out=ziel, backend=backend,
+            findings_path=tmp_path / f"f{nummer}.json", sidecar=False, **kwargs,
+        )
+        gelesen = read_qea(ziel)["elements"]
+        namen = [e["name"] for e in gelesen]
+        assert len(namen) == erwartet[nummer - 1], f"Lauf {nummer}: {namen}"
+        assert len(set(namen)) == len(namen), f"Lauf {nummer} hat Dubletten: {namen}"
+        lauf_guids = guids(ziel)
+        for element_name, guid in start_guids.items():
+            assert lauf_guids.get(element_name) == guid, (
+                f"Lauf {nummer}: Kennung von {element_name!r} veraendert"
+            )
+        bestand = ziel

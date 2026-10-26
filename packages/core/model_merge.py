@@ -561,6 +561,8 @@ class _Target:
     xref_ids: set[str]
     #: (Paketpfad, Name) -> [(Stereotyp, Object_ID)] vorhandener Elemente.
     elements: dict[tuple[str, str], list[tuple[str, int]]]
+    #: (Name, Stereotyp) -> [(Paketpfad, Object_ID)]; Grundlage des paketuebergreifenden Abgleichs.
+    elements_by_name: dict[tuple[str, str], list[tuple[str, int]]]
     #: Object_ID -> {Tag-Name: Wert} vorhandener Tags.
     tag_index: dict[int, dict[str, str]]
     #: (Client-GUID, Tag-Name) -> Wert vorhandener ``@PROP``-Zeilen.
@@ -637,6 +639,8 @@ def _read_target(path: Path, warnings: list[str]) -> _Target:
             package_guids.setdefault(key, package_id)
     object_guids: dict[str, int] = {}
     elements: dict[tuple[str, str], list[tuple[str, int]]] = defaultdict(list)
+    #: (Name, Stereotyp) -> [(Paketpfad, Object_ID)] ueber alle Pakete.
+    elements_by_name: dict[tuple[str, str], list[tuple[str, int]]] = defaultdict(list)
     tag_index: dict[int, dict[str, str]] = defaultdict(dict)
     for object_id in sorted(object_ids):
         row = object_ids[object_id]
@@ -647,9 +651,11 @@ def _read_target(path: Path, warnings: list[str]) -> _Target:
             continue
         package_id = _as_int(_Table.get(row, "Package_ID"))
         path = paths.get(package_id, "")
-        elements[(path, _as_text(_Table.get(row, "Name")))].append(
-            (_as_text(_Table.get(row, "Stereotype")), object_id)
-        )
+        name = _as_text(_Table.get(row, "Name"))
+        stereotype = _as_text(_Table.get(row, "Stereotype"))
+        elements[(path, name)].append((stereotype, object_id))
+        # Zusaetzlich ueber Name + Stereotyp, ueber Paketgrenzen hinweg.
+        elements_by_name[(name, stereotype)].append((path, object_id))
     for row in snapshot["t_objectproperties"].rows:
         owner = _as_int(_Table.get(row, "Object_ID"))
         name = _as_text(_Table.get(row, "Property", "Name")).strip()
@@ -684,6 +690,7 @@ def _read_target(path: Path, warnings: list[str]) -> _Target:
             if _guid_key(_Table.get(row, "XrefID"))
         },
         elements=dict(elements),
+        elements_by_name=dict(elements_by_name),
         tag_index=dict(tag_index),
         xref_props=xref_props,
         next_package_id=_max_int(snapshot["t_package"], "Package_ID") + 1,
@@ -973,6 +980,12 @@ class _Merger:
                 stereotype = _as_text(_Table.get(row, "Stereotype"))
                 guid = _as_text(_Table.get(row, "ea_guid")).strip()
                 key = (path, name)
+                # Paketuebergreifend: dasselbe Element (Name + Stereotyp) kann
+                # im Lauf unter dem Arbeitspaket stehen und im Bestand unter dem
+                # Standardpaket des Startkastens. Ueber den Pfad allein blieben
+                # es zwei Zeilen -- genau der Fall, den die Wiederverwendung
+                # verhindern soll.
+                cross_key = (name, stereotype)
 
                 if guid and _guid_key(guid) in target.object_guids:
                     existing_id = target.object_guids[_guid_key(guid)]
@@ -1017,6 +1030,11 @@ class _Merger:
                     if self.per_name
                     else None
                 )
+                if match is None and self.per_name:
+                    # Treffer ueber Name + Stereotyp, erster nach Object_ID
+                    # (der aelteste Eintrag bleibt stehen).
+                    cross = sorted(target.elements_by_name.get(cross_key, []), key=lambda i: i[1])
+                    match = (stereotype, cross[0][1]) if cross else None
                 if match is not None:
                     # Dasselbe Element liegt schon vor: nicht duplizieren, aber
                     # die Tags der Quelle gegen den Zielwert pruefen.

@@ -107,11 +107,24 @@
       <h3>📥 KI-lesbare Regeldateien (Markdown)</h3>
       <div class="tools" id="dlbtns"></div>
     </div>
+
+    <div class="phead" style="margin-top:16px" id="promptblock" hidden>
+      <h3>🧭 Optional: Master-Prompt für ein Sprachmodell</h3>
+      <div class="tools" id="dlprompt">
+        <button class="btn small" onclick="downloadPrompt()">⬇ ADMBw-Prompt.md</button>
+      </div>
+      <p class="hint">Arbeitsanweisung für ein Sprachmodell, das aus Prosa ein Modell bauen soll.
+      Wird nicht gebraucht, wenn mit der EAM Suite gebaut wird.</p>
+    </div>
   </div>
 </main>
 
 <footer>EAM-ADMBw-MDG-Parser · Michael Estel · <span id="srcfile">keine Datei geladen</span></footer>
 <div class="toast" id="toast" hidden></div>
+
+<script type="text/plain" id="prompt-vorlage">
+{{MASTER_PROMPT}}
+</script>
 
 <script>
 'use strict';
@@ -524,6 +537,13 @@ function download(name, content){
 }
 function downloadMd(n){ download(n, MD_OUT[n]); toast('⬇ ' + n); }
 function downloadAll(){ Object.keys(MD_OUT).forEach(function(n){ download(n, MD_OUT[n]); }); toast('⬇ 5 Regeldateien'); }
+function downloadPrompt(){
+  var el = document.getElementById('prompt-vorlage');
+  var text = el ? el.textContent.replace(/^\n/, '') : '';
+  if (!text.trim()) { toast('Master-Prompt fehlt in dieser Fassung'); return; }
+  download('ADMBw-Prompt.md', text);
+  toast('⬇ ADMBw-Prompt.md');
+}
 
 function filterTable(q, tbodyId){
   var rows = document.querySelectorAll('#' + tbodyId + ' tr');
@@ -553,6 +573,7 @@ function handleFile(file){
       renderPanels();
       renderDl();
       $('result').hidden = false;
+      var pb = $('promptblock'); if (pb) pb.hidden = false;
       toast('✅ ' + file.name + ' gelesen: ' + DATA.stereo.length + ' Stereotype, ' + DATA.topo.length + ' Topologie-Regeln, ' + DATA.vp.length + ' Viewpoints, ' + DATA.tag.length + ' Tag-Typen');
     } catch (e) {
       resetResults();

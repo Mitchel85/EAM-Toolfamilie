@@ -16,6 +16,12 @@ wird von `tests/test_packaging.py` gegeneinander geprueft:
   `meta.extraction.chargen`.
   Messung am MASC-Handbuch (106 Absaetze, vier Chargen): 114 Elemente und
   50 Beziehungen gegenueber 109 und 48 im Einzelaufruf, 0 Findings.
+- **Wiederverwendung ueber Paketgrenzen.** Das Startpaket ist beim Bauen die
+  Basis: seine Kennungen bleiben woertlich erhalten, gleiche Elemente aus dem
+  Lauf werden ueber Name und Stereotyp auf die vorhandene Zeile gebogen -- auch
+  dann, wenn sie im Arbeitspaket statt im Standardpaket stehen. Ein Kasten, der
+  seine Wurzel wie das Dach nennt, legt kein zweites Dach mehr an
+  (`Standard/Standard`).
 - **Fortsetzen statt neu bauen.** `--modell bestand.qea` liest die Elemente des
   vorhandenen Modells und legt sie als bekannten Bestand in den Prompt. Das
   Ergebnis enthaelt Bestand und Neues; die Kennungen des Bestands bleiben

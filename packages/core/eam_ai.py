@@ -50,6 +50,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import sqlite3
 import sys
 import warnings
@@ -678,20 +679,38 @@ def build(
                 import model_merge
                 import toolbox_merge
 
+                # Reihenfolge: erst das Startpaket, dann der vorhandene Bestand.
+                # Umgekehrt zoege der Bestand seine eigenen (umgehaengten)
+                # Katalogkopien mit herein, und dieselbe Sache stuende zweimal
+                # in der Datei -- sowie unter zwei verschiedenen Elternpaketen.
+                # model_merge legt danach ueber ea_guid UND Name zusammen.
                 schritt = zwischen
+                if startpaket is not None:
+                    # Das Startpaket ist die Basis, nicht der Zusatz: so bleiben
+                    # seine ea_guid woertlich erhalten, und gleiche Elemente aus
+                    # dem Lauf werden ueber Name + Stereotyp auf die vorhandene
+                    # Zeile gebogen -- auch ueber Paketgrenzen hinweg.
+                    mit_start = out_path.with_name(out_path.stem + ".mit-startpaket.qea")
+                    startbasis = out_path.with_name(out_path.stem + ".startbasis.qea")
+                    shutil.copyfile(Path(startpaket), startbasis)
+                    rep = model_merge.merge_models(
+                        [startbasis, schritt], mit_start, per_name=True
+                    )
+                    standard_report = {
+                        "elemente": rep.elements,
+                        "kanten": rep.connections,
+                        "bereits_vorhanden": rep.merged,
+                        "warnungen": list(rep.warnings),
+                    }
+                    startbasis.unlink(missing_ok=True)
+                    schritt.unlink(missing_ok=True)
+                    schritt = mit_start
                 if basis is not None:
                     mit_bestand = out_path.with_name(out_path.stem + ".mit-bestand.qea")
-                    model_merge.merge_models([basis, zwischen], mit_bestand, per_name=True)
+                    model_merge.merge_models([schritt, basis], mit_bestand, per_name=True)
                     schritt.unlink(missing_ok=True)
                     schritt = mit_bestand
-                if startpaket is not None:
-                    standard_report = toolbox_merge.merge_toolbox(
-                        schritt, Path(startpaket), out_path
-                    )
-                    if schritt != zwischen:
-                        schritt.unlink(missing_ok=True)
-                else:
-                    schritt.replace(out_path)
+                schritt.replace(out_path)
             except Exception as exc:  # noqa: BLE001 - Fehlerabbildung unten
                 zwischen.unlink(missing_ok=True)
                 raise BuildError(f"Zusammenfuehrung: {exc}") from exc

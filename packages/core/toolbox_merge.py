@@ -654,51 +654,145 @@ def _build_plan(target: _Target, box: _Source, paketname: str) -> _MergePlan:
             counts["tags"] += 1
 
     # ---- Dachpaket -------------------------------------------------------
+    # Liegt der Kasten selbst schon auf Wurzelebene, wird er als Ganzes
+    # uebernommen: seine Wurzel tritt an die Stelle des Dachs. Sonst entstuende
+    # ein zweites Dach "Standard/Standard", und die vorhandenen Elemente eines
+    # weiteren Laufs laegen unter einem anderen Elternpaket als die neuen --
+    # nach zwei Laeufen zwei Zeilen je Element.
     wanted = paketname.strip()
     if not wanted:
         raise ToolboxMergeError("paketname: darf nicht leer sein")
-    candidates = [
+
+    source_root_id: int | None = None
+    sync_mirror = False
+    source_roots = [
         (package_id, row)
-        for package_id, row in sorted(target.package_ids.items())
-        if _as_text(_Table.get(row, "Name")).strip().casefold() == wanted.casefold()
+        for package_id, row in sorted(box.by_id.items())
+        if package_id in set(box.selected) and _as_int(_Table.get(row, "Parent_ID")) == 0
     ]
-    roots = [(package_id, row) for package_id, row in candidates if _as_int(_Table.get(row, "Parent_ID")) == 0]
-    if roots:
-        container_id, container_row = roots[0]
-    elif candidates:
-        container_id, container_row = candidates[0]
-        _warn(
-            warnings,
-            f"Dachpaket {wanted!r} liegt im Ziel nicht auf Wurzelebene -- "
-            f"verwendet wird Package_ID {container_id}",
-        )
+    source_roots = [item for item in source_roots if item[0] in box.selected]
+    # Nur wenn der Kasten seine Wurzel so nennt wie das gewuenschte Dach, tritt
+    # sie an dessen Stelle. Heisst sie anders (etwa "Werkzeug" unter "Standard"),
+    # bleibt das bisherige Verhalten: der Kasten haengt unter dem Dach.
+    if (
+        len(source_roots) == 1
+        and _as_text(_Table.get(source_roots[0][1], "Name")).strip().casefold()
+        == wanted.casefold()
+    ):
+        source_root_id, source_row = source_roots[0]
+        source_guid = _as_text(_Table.get(source_row, "ea_guid")).strip()
+        if source_guid and _guid_key(source_guid) in target.package_guids:
+            # Schon vorhanden: an dieselbe Wurzel anhaengen.
+            container_id = target.package_guids[_guid_key(source_guid)]
+            container_row = target.package_ids.get(container_id, {
+                "package_id": container_id,
+                "name": _as_text(_Table.get(source_row, "Name")),
+                "parent_id": 0,
+            })
+        else:
+            container_id = target.next_package_id
+            target.next_package_id += 1
+            container_row = _copy_row(source_row)
+            container_row["package_id"] = container_id
+            container_row["parent_id"] = 0
+            container_row["tpos"] = target.next_tpos.get(0, 0)
+            target.next_tpos[0] = target.next_tpos.get(0, 0) + 1
+            if not source_guid:
+                container_row["ea_guid"] = _stable_guid(
+                    f"toolbox_merge|package|{wanted.casefold()}"
+                )
+            plan.add("t_package", container_row)
+            target.package_guids[_guid_key(container_row["ea_guid"])] = container_id
+            counts["pakete"] += 1
+        sync_mirror = True
     else:
-        container_id = target.next_package_id
-        target.next_package_id += 1
-        container_row = {
-            "package_id": container_id,
-            "name": wanted,
-            "parent_id": 0,
-            "notes": "",
-            "ea_guid": _stable_guid(f"toolbox_merge|package|{wanted.casefold()}"),
-            "createddate": "",
-            "modifieddate": "",
-            "version": "1.0",
-            "tpos": target.next_tpos.get(0, 0),
-        }
-        target.next_tpos[0] = target.next_tpos.get(0, 0) + 1
-        plan.add("t_package", container_row)
-        counts["pakete"] = 0  # Dach zaehlt nicht als Kasten-Paket
-    container_id = _as_int(_Table.get(container_row, "Package_ID"), default=container_id)
+        sync_mirror = False
+        candidates = [
+            (package_id, row)
+            for package_id, row in sorted(target.package_ids.items())
+            if _as_text(_Table.get(row, "Name")).strip().casefold() == wanted.casefold()
+        ]
+        roots = [
+            (package_id, row)
+            for package_id, row in candidates
+            if _as_int(_Table.get(row, "Parent_ID")) == 0
+        ]
+        if roots:
+            container_id, container_row = roots[0]
+        elif candidates:
+            container_id, container_row = candidates[0]
+            _warn(
+                warnings,
+                f"Dachpaket {wanted!r} liegt im Ziel nicht auf Wurzelebene -- "
+                f"verwendet wird Package_ID {container_id}",
+            )
+        else:
+            container_id = target.next_package_id
+            target.next_package_id += 1
+            container_row = {
+                "package_id": container_id,
+                "name": wanted,
+                "parent_id": 0,
+                "notes": "",
+                "ea_guid": _stable_guid(f"toolbox_merge|package|{wanted.casefold()}"),
+                "createddate": "",
+                "modifieddate": "",
+                "version": "1.0",
+                "tpos": target.next_tpos.get(0, 0),
+            }
+            target.next_tpos[0] = target.next_tpos.get(0, 0) + 1
+            plan.add("t_package", container_row)
+            counts["pakete"] = 0  # Dach zaehlt nicht als Kasten-Paket
 
     # ---- Paketbaum -------------------------------------------------------
     package_map: dict[int, int] = {container_id: container_id}
+    if source_root_id is not None:
+        # Die Quellwurzel IST das Dach; ihr Spiegel entfaellt, weil das Dach
+        # bereits steht (neu angelegt oder schon vorhanden).
+        package_map[source_root_id] = container_id
     #: Quell-Object_ID eines Paketspiegels -> neue Object_ID des Spiegels.
     package_object_map: dict[int, int] = {}
     # Naechste freie Position je Zieleltern; unbekannte Eltern starten bei 0.
     package_positions: dict[int, int] = dict(target.next_tpos)
 
+    def _add_mirror(
+        package_id: int, guid: str, name: str, parent_target: int, position: int
+    ) -> None:
+        """Paketspiegel in t_object anlegen (EA-Konvention fuer Nicht-Wurzelpakete)."""
+        mirror_id = target.next_object_id
+        target.next_object_id += 1
+        source_mirror = box.package_objects.get(_guid_key(guid))
+        mirror: dict[str, Any]
+        if source_mirror is not None:
+            mirror = _copy_row(source_mirror)
+        else:
+            mirror = {
+                "object_type": _PACKAGE_OBJECT_TYPE,
+                "name": name,
+                "alias": "",
+                "note": "",
+                "stereotype": _PACKAGE_OBJECT_TYPE,
+                "status": "",
+                "version": "1.0",
+                "createddate": "",
+                "modifieddate": "",
+            }
+        mirror["object_id"] = mirror_id
+        mirror["package_id"] = parent_target
+        if "diagram_id" in mirror:
+            mirror["diagram_id"] = 0  # Sichten werden nicht uebernommen
+        mirror["ea_guid"] = guid
+        mirror["tpos"] = position
+        plan.add("t_object", mirror)
+        target.object_guids[_guid_key(guid)] = mirror_id
+        if source_mirror is not None:
+            package_object_map[_as_int(_Table.get(source_mirror, "Object_ID"))] = mirror_id
+
     for source_id in box.selected:
+        if source_root_id is not None and source_id == source_root_id:
+            # Die Wurzel ist bereits als Dach uebernommen (Zeile oder Kopie);
+            # ein zweiter Eintrag mit derselben ea_guid verletzt die Eindeutigkeit.
+            continue
         source_row = box.by_id[source_id]
         parent_source = _as_int(_Table.get(source_row, "Parent_ID"))
         parent_target = package_map.get(parent_source, container_id)
@@ -734,38 +828,7 @@ def _build_plan(target: _Target, box: _Source, paketname: str) -> _MergePlan:
         target.package_guids[_guid_key(guid)] = new_id
         counts["pakete"] += 1
 
-        # Paketspiegel in t_object (EA-Konvention: jedes Nicht-Wurzelpaket hat
-        # eine Package-Zeile im Elternpaket). Gibt es im Kasten einen Spiegel
-        # mit derselben GUID, wird dessen Zeile uebernommen (Stereotyp, Style,
-        # PDATA bleiben so erhalten), sonst eine minimale Zeile erzeugt.
-        mirror_id = target.next_object_id
-        target.next_object_id += 1
-        source_mirror = box.package_objects.get(_guid_key(guid))
-        mirror: dict[str, Any]
-        if source_mirror is not None:
-            mirror = _copy_row(source_mirror)
-        else:
-            mirror = {
-                "object_type": _PACKAGE_OBJECT_TYPE,
-                "name": name,
-                "alias": "",
-                "note": "",
-                "stereotype": _PACKAGE_OBJECT_TYPE,
-                "status": "",
-                "version": "1.0",
-                "createddate": "",
-                "modifieddate": "",
-            }
-        mirror["object_id"] = mirror_id
-        mirror["package_id"] = parent_target
-        if "diagram_id" in mirror:
-            mirror["diagram_id"] = 0  # Sichten werden nicht uebernommen
-        mirror["ea_guid"] = guid
-        mirror["tpos"] = position
-        plan.add("t_object", mirror)
-        target.object_guids[_guid_key(guid)] = mirror_id
-        if source_mirror is not None:
-            package_object_map[_as_int(_Table.get(source_mirror, "Object_ID"))] = mirror_id
+        _add_mirror(new_id, guid, name, parent_target, position)
 
         # Paket-Stereotype liegen in t_xref am Paket-GUID.
         add_xrefs(guid)
