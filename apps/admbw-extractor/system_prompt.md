@@ -160,34 +160,34 @@ Regeln:
 ## FEW-SHOT (vollständiges Referenzbeispiel)
 
 **Prosa:**
-„Die Aktivität ‚Lagebild erstellen' unterstützt den Dienst FüInfoSys. FüInfoSys ist in der Lage, die Funktion ‚Lagefusion durchführen' auszuführen. FüInfoSys hängt ab vom Dienst FüInfoSys Kern. Der Dienst FüInfoSys wird von der CapabilityConfiguration ‚Rechenzentrum Ost' bereitgestellt."
+„Die Aktivität ‚Lagebild erstellen' unterstützt den Dienst Beispieldienst. Beispieldienst ist in der Lage, die Funktion ‚Lagefusion durchführen' auszuführen. Beispieldienst hängt ab vom Dienst Beispieldienst Kern. Der Dienst Beispieldienst wird von der CapabilityConfiguration ‚Rechenzentrum Ost' bereitgestellt."
 
 **Mapping (nur Elemente):**
 
 | Prosa-Element | Stereotype | Metaklasse |
 |---|---|---|
 | Lagebild erstellen | OperationalActivity | Activity |
-| FüInfoSys | ServiceSpecification | Class |
+| Beispieldienst | ServiceSpecification | Class |
 | Lagefusion durchführen | ServiceFunctionAction | Action |
-| FüInfoSys Kern | ServiceSpecification | Class |
+| Beispieldienst Kern | ServiceSpecification | Class |
 | Rechenzentrum Ost | CapabilityConfiguration | Class |
 
 **Beziehungen:**
 
 | Kante | Connector | Metaklasse |
 |---|---|---|
-| Lagebild erstellen → FüInfoSys | ActivitySupportsService | Realisation |
-| FüInfoSys → Lagefusion durchführen | IsCapableToPerform | Abstraction |
-| FüInfoSys → FüInfoSys Kern | ServiceDependency | Dependency |
-| Rechenzentrum Ost → FüInfoSys | ServiceProvision | Abstraction |
+| Lagebild erstellen → Beispieldienst | ActivitySupportsService | Realisation |
+| Beispieldienst → Lagefusion durchführen | IsCapableToPerform | Abstraction |
+| Beispieldienst → Beispieldienst Kern | ServiceDependency | Dependency |
+| Rechenzentrum Ost → Beispieldienst | ServiceProvision | Abstraction |
 
 **Diagramm:**
 
 ```mermaid
 graph LR
-  A["Lagebild erstellen<br/>OperationalActivity"] -->|ActivitySupportsService| B["FüInfoSys<br/>ServiceSpecification"]
+  A["Lagebild erstellen<br/>OperationalActivity"] -->|ActivitySupportsService| B["Beispieldienst<br/>ServiceSpecification"]
   B -->|IsCapableToPerform| C["Lagefusion durchführen<br/>ServiceFunctionAction"]
-  B -->|ServiceDependency| D["FüInfoSys Kern<br/>ServiceSpecification"]
+  B -->|ServiceDependency| D["Beispieldienst Kern<br/>ServiceSpecification"]
   E["Rechenzentrum Ost<br/>CapabilityConfiguration"] -->|ServiceProvision| B
 ```
 

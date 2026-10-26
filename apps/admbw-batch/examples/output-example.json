@@ -46,7 +46,7 @@
     },
     {
       "id": "n4",
-      "name": "FüInfoSys",
+      "name": "Beispieldienst",
       "stereotype": "ServiceSpecification",
       "metaclass": "Class",
       "labels": [
@@ -68,7 +68,7 @@
     },
     {
       "id": "n6",
-      "name": "FüInfoSys Kern",
+      "name": "Beispieldienst Kern",
       "stereotype": "ServiceSpecification",
       "metaclass": "Class",
       "labels": [

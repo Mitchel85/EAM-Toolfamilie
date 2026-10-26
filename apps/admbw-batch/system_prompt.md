@@ -206,7 +206,7 @@ Bei Chunks: Schritt 2 und 3 je Datei (`batch-1.json`, `batch-2.json`, …) wiede
 ## FEW-SHOT (Referenzbeispiel — jede Kante ist KB-belegt)
 
 **Prosa:**
-„Die Fähigkeit Einsatzführung ist abhängig von der Fähigkeit Vernetzte Operationsführung. Die Aktivität ‚Lagebild erstellen' unterstützt den Dienst FüInfoSys. FüInfoSys ist in der Lage, die Funktion ‚Lagefusion durchführen' auszuführen. FüInfoSys hängt ab vom Dienst FüInfoSys Kern. Der Dienst FüInfoSys wird von der CapabilityConfiguration ‚Rechenzentrum Ost' bereitgestellt."
+„Die Fähigkeit Einsatzführung ist abhängig von der Fähigkeit Vernetzte Operationsführung. Die Aktivität ‚Lagebild erstellen' unterstützt den Dienst Beispieldienst. Beispieldienst ist in der Lage, die Funktion ‚Lagefusion durchführen' auszuführen. Beispieldienst hängt ab vom Dienst Beispieldienst Kern. Der Dienst Beispieldienst wird von der CapabilityConfiguration ‚Rechenzentrum Ost' bereitgestellt."
 
 **Topologie-Prüfung:**
 
@@ -226,9 +226,9 @@ Bei Chunks: Schritt 2 und 3 je Datei (`batch-1.json`, `batch-2.json`, …) wiede
     {"id": "n1", "name": "Einsatzführung", "stereotype": "Capability", "metaclass": "Class", "labels": ["Capability"], "properties": {"AbstractionLevel": "Operational"}},
     {"id": "n2", "name": "Vernetzte Operationsführung", "stereotype": "Capability", "metaclass": "Class", "labels": ["Capability"], "properties": {"AbstractionLevel": "Operational"}},
     {"id": "n3", "name": "Lagebild erstellen", "stereotype": "OperationalActivity", "metaclass": "Activity", "labels": ["OperationalActivity"], "properties": {"AbstractionLevel": "Operational"}},
-    {"id": "n4", "name": "FüInfoSys", "stereotype": "ServiceSpecification", "metaclass": "Class", "labels": ["ServiceSpecification"], "properties": {"SecurityClassification": "VS-NfD"}},
+    {"id": "n4", "name": "Beispieldienst", "stereotype": "ServiceSpecification", "metaclass": "Class", "labels": ["ServiceSpecification"], "properties": {"SecurityClassification": "VS-NfD"}},
     {"id": "n5", "name": "Lagefusion durchführen", "stereotype": "ServiceFunctionAction", "metaclass": "Action", "labels": ["ServiceFunctionAction"], "properties": {}},
-    {"id": "n6", "name": "FüInfoSys Kern", "stereotype": "ServiceSpecification", "metaclass": "Class", "labels": ["ServiceSpecification"], "properties": {}},
+    {"id": "n6", "name": "Beispieldienst Kern", "stereotype": "ServiceSpecification", "metaclass": "Class", "labels": ["ServiceSpecification"], "properties": {}},
     {"id": "n7", "name": "Rechenzentrum Ost", "stereotype": "CapabilityConfiguration", "metaclass": "Class", "labels": ["CapabilityConfiguration"], "properties": {}}
   ],
   "edges": [
