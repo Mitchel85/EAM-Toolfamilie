@@ -1,0 +1,84 @@
+name: nightly
+
+# Nächtlicher Stand von main als bewegliches Vorab-Release.
+#
+# Zweck: das Quell-Archiv und die HTML-Fassungen sollen ohne Taggen aktuell
+# bleiben. Das Release trägt den festen Tag `nightly`, wird jede Nacht
+# gelöscht und neu angelegt; die Dateien behalten ihre Namen, damit Links
+# gültig bleiben. Es ist als Vorab-Release markiert und wird von
+# /releases/latest/ deshalb nicht getroffen -- die öffentlichen Verweise
+# zeigen weiterhin auf die letzte getaggte Fassung.
+#
+# Gebaut wird über denselben Ablauf wie CI und Release (`_build.yml`), damit
+# ein Nachtlauf nicht an einer Prüfung vorbeikommt.
+
+on:
+  schedule:
+    - cron: "17 2 * * *"   # 02:17 UTC, täglich
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: nightly
+  cancel-in-progress: false
+
+jobs:
+  bauen:
+    uses: ./.github/workflows/_build.yml
+
+  veroeffentlichen:
+    runs-on: ubuntu-latest
+    needs: bauen
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Auslieferungen aus dem Baujob
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+      - name: Vorheriges Nacht-Release entfernen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete nightly --yes --cleanup-tag --repo "$GITHUB_REPOSITORY" || true
+
+      - name: Nacht-Release anlegen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(python -c "import tomllib,pathlib;print(tomllib.loads(pathlib.Path('packages/core/pyproject.toml').read_text())['project']['version'])")
+          short=$(git rev-parse --short HEAD)
+          {
+            echo "Nächtlicher Stand von \`main\`."
+            echo ""
+            echo "- Version laut pyproject: \`$version\`"
+            echo "- Commit: \`$short\`"
+            echo "- Gebaut: $(date -u '+%Y-%m-%d %H:%M UTC')"
+            echo ""
+            echo "Dieses Release wird jede Nacht ersetzt. Feste Fassungen stehen"
+            echo "unter den Tag-Releases."
+          } > /tmp/notes.md
+          gh release create nightly \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --prerelease \
+            --title "Nightly $version ($short)" \
+            --notes-file /tmp/notes.md \
+            dist/EAM-AI-Suite.html \
+            dist/EAM-AI-Suite.aspx \
+            dist/EAM-QEA-Analyzer.html \
+            dist/EAM-QEA-Analyzer.aspx \
+            dist/EAM-Suite.html \
+            dist/EAM-Suite.aspx \
+            dist/EAM-MDG-Parser.html \
+            dist/eam_qea_analyzer_openwebui.py \
+            dist/eam-ai-suite-python-*.zip \
+            dist/eam-ai-suite-python.zip \
+            dist/START-HIER.html \
+            dist/README.md \
+            dist/RELEASES.md \
+            dist/SHA256SUMS
