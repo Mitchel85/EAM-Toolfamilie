@@ -71,12 +71,12 @@ Teilmodelle zu zerfallen:
   Modell anknüpfen". Gleicher Name und gleicher Stereotyp bleiben eine Zeile, auch wenn
   das Element im nächsten Text unter einem anderen Paket steht; Beziehungen werden auf
   die vorhandenen Elemente umgeschrieben.
-- **Große Quellen.** Ab 200.000 Zeichen Promptlänge baut die Python-Fassung in Abschnitten
-  (`--chargen-zeichen`, Standard 120.000). Jeder Abschnitt sieht die bereits erfassten
-  Elemente; die Antworten werden vor der Prüfung zusammengeführt.
-- **Grenze der HTML-Fassung.** Sie hält die `.qea` vollständig im Browserspeicher und ruft
-  die KI je Lauf einmal auf. Für Modelle im dreistelligen MB-Bereich und für sehr lange
-  Texte ist die Python-Fassung der Weg.
+- **Große Quellen.** Ab 16.000 Zeichen Quelltextlänge baut die Python-Fassung in Abschnitten
+  (`--chargen-zeichen`, Standard 12.000 Zeichen Quelltext je Charge). Jeder Abschnitt sieht
+  die bereits erfassten Elemente; die Antworten werden vor der Prüfung zusammengeführt.
+- **Grenze der HTML-Fassung.** Sie hält die `.qea` vollständig im Browserspeicher; längere
+  Texte verarbeitet sie in Abschnitten von rund 8.000 Zeichen (ein KI-Aufruf je Abschnitt).
+  Für Modelle im dreistelligen MB-Bereich ist die Python-Fassung der Weg.
 
 ## Der Ablauf in sieben Schritten
 
@@ -103,9 +103,9 @@ Teilmodelle zu zerfallen:
   Python-Fassung übernimmt `--startpaket` den Katalog mit unveränderten `ea_guid`; in der
   HTML-Fassung wird das geladene Grundgerüst gelesen (bis 300 Elemente im Prompt).
   Nachziehen geht weiterhin mit `eam-ai toolbox`.
-- Große Quellen werden geteilt: Ab 200.000 Zeichen Promptlänge baut die Python-Fassung
-  in Abschnitten (`--chargen-zeichen`, Standard 120.000 Zeichen). Jeder Abschnitt sieht
-  die bereits erfassten Elemente; die Antworten werden vor der Prüfung zusammengeführt.
+- Große Quellen werden geteilt: Ab 16.000 Zeichen Quelltextlänge baut die Python-Fassung
+  in Abschnitten (`--chargen-zeichen`, Standard 12.000 Zeichen je Charge). Jeder Abschnitt
+  sieht die bereits erfassten Elemente; die Antworten werden vor der Prüfung zusammengeführt.
 
 ## Welches Werkzeug wofür
 

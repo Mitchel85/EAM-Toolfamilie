@@ -945,15 +945,15 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=None,
         help=(
-            "Quelltext je Charge in Zeichen (Default: 120000). Gilt nur, wenn der "
-            "Prompt die Schwelle ueberschreitet"
+            "Quelltext je Charge in Zeichen (Default: 12000). Gilt nur, wenn der "
+            "Quelltext die Schwelle ueberschreitet"
         ),
     )
     p_build.add_argument(
         "--chargen-schwelle",
         type=int,
         default=None,
-        help="ab dieser Promptlaenge wird geteilt (Default: 200000 Zeichen)",
+        help="ab dieser Quelltextlaenge wird geteilt (Default: 16000 Zeichen)",
     )
     p_build.add_argument(
         "--modell",
