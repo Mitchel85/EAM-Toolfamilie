@@ -40,6 +40,17 @@ harmonisiert werden. Der Katalog ist eine zweite `.qea` (z. B. `StEKa Bw`);
 übernommen werden Elemente, Kanten und Tags **mit ihren `ea_guid`**, damit
 beide Modelle denselben Standard teilen.
 
+Beim Bauen aus Prosa entscheidet `--katalog`, ob ein genanntes Element als
+Standardelement gilt: Es übernimmt `ea_guid` und Heimatpaket des Katalogs, statt
+neu erzeugt zu werden. Nur Elemente, die im Katalog fehlen, bekommen eine eigene
+Kennung.
+
+```bash
+# Bauen und dabei Standardelemente wiederverwenden
+eam-ai build --mdg mdg.xml --text prosa.md --out modell.qea \
+    --katalog Musterarchitektur_MASC.qea --startpaket startpaket.qea
+```
+
 ```bash
 # Neues Modell aus dem Katalog (ohne Bestand)
 python3 eam_ai.py toolbox --kasten katalog.qea --nur "StEKa Bw" \

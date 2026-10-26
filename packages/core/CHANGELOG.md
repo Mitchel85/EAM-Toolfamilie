@@ -4,6 +4,14 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.1.1 - 2026-10-26
+
+### Dokumentation
+
+- Bauanleitung nennt `--katalog`: Standardelemente werden beim Bauen aus Prosa
+  uebernommen (Kennung und Heimatpaket aus dem Katalog), neue Elemente bleiben
+  abgeleitet.
+
 ## 3.1.0 - 2026-10-26
 
 ### Neu
