@@ -59,6 +59,32 @@ und `warnungen`. Ein zweiter Lauf ist idempotent: vorhandene GUIDs werden
 übersprungen, bestehende Elemente nie überschrieben. Das Original bleibt
 unberührt; `--out` ist das Ergebnis.
 
+### Mehrere Prosa-Läufe zu einem Modell
+
+Zwei Modelle, die getrennt gebaut wurden, werden über `ea_guid` zusammengeführt:
+Ein Element, das in beiden Läufen vorkommt, bleibt **eine** Zeile. Das ist der
+Weg, wenn Prosa in Raten kommt:
+
+```bash
+eam-ai merge --qea erstes.qea --qea zweites.qea --out gesamt.qea              # über ea_guid
+eam-ai merge --qea erstes.qea --qea zweites.qea --out gesamt.qea --per-name   # zusätzlich über den Namen
+eam-ai build --mdg MDG.xml --text neu.md --modell bestand.qea --out gesamt.qea
+```
+
+Grenze, die bleiben muss: Die Zusammenführung erkennt Gleichheit an der
+`ea_guid`. Zwei **verschiedene** Läufe erzeugen für dasselbe Element zwei
+GUIDs; zusammengeführt würde es dann doppelt stehen. Es gibt deshalb zwei
+saubere Wege:
+
+1. **Fortsetzen statt neu bauen** — `eam-ai build --modell bestand.qea`.
+   Der Lauf liest das vorhandene Modell, gibt seine Elemente als bekannten
+   Bestand in den Prompt (Wiederverwendung statt Dublette) und schreibt die
+   neuen Elemente dazu. Das ist der Regelweg für „noch eine Prosa“.
+2. **Zusammenführen mit Namensabgleich** — `merge` mit ausdrücklichem
+   Namensschlüssel (Option `--per-name`), wenn zwei Läufe schon getrennt
+   gelaufen sind. Die GUID des älteren Elements bleibt erhalten; der Bericht
+   nennt jedes zusammengelegte Element.
+
 ## Technologie laden (MDG → Regelwerk)
 
 `mdg_parser.py` liest beliebige MDG-/Technologie-XML (Sparx-EA-Format) und

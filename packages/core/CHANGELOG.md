@@ -16,6 +16,15 @@ wird von `tests/test_packaging.py` gegeneinander geprueft:
   `meta.extraction.chargen`.
   Messung am MASC-Handbuch (106 Absaetze, vier Chargen): 114 Elemente und
   50 Beziehungen gegenueber 109 und 48 im Einzelaufruf, 0 Findings.
+- **Fortsetzen statt neu bauen.** `--modell bestand.qea` liest die Elemente des
+  vorhandenen Modells und legt sie als bekannten Bestand in den Prompt. Das
+  Ergebnis enthaelt Bestand und Neues; die Kennungen des Bestands bleiben
+  unveraendert, der Bericht nennt den Gesamtstand und den Zuwachs des Laufs.
+- **Namensabgleich beim Zusammenfuehren.** `merge --per-name` legt Elemente
+  zusaetzlich ueber Name und Stereotyp zusammen. Ohne den Schalter entscheidet
+  allein die `ea_guid`; der Writer vergibt fuer gleiche Pakete, Namen und
+  Stereotypen dieselbe Kennung, sodass getrennte Laeufe aus demselben Haus
+  ohnehin zusammenfinden. Der Schalter ist fuer Modelle aus fremder Quelle.
 - **Startpaket im Bau.** `--startpaket` liest die Standardelemente (StEKa) und
   legt sie in den Prompt; nach dem Export werden sie uebernommen, mit
   woertlich unveraenderter `ea_guid`. Die HTML-Fassung liest das geladene

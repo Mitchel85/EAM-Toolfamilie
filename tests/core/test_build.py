@@ -123,8 +123,11 @@ def write_answer(path: Path, answer: dict) -> Path:
     return path
 
 
-def make_backend(answer: dict = ANSWER) -> ex.StaticBackend:
-    return ex.StaticBackend([json.dumps(answer, ensure_ascii=False)], name="test")
+def make_backend(answer: dict = ANSWER, *weitere: str) -> ex.StaticBackend:
+    """Statische Antworten in Reihenfolge; ``weitere`` sind fertige JSON-Texte."""
+    return ex.StaticBackend(
+        [json.dumps(answer, ensure_ascii=False), *weitere], name="test"
+    )
 
 
 def run_cli(capsys, *arguments: str) -> tuple[int, str, str]:
@@ -603,3 +606,117 @@ def test_build_rejects_empty_startpaket(tmp_path: Path) -> None:
             startpaket=leer,
             sidecar=False,
         )
+
+
+def test_build_continues_existing_model(tmp_path: Path) -> None:
+    """Zweiter Lauf knuepft an ein Modell an: Bestand bleibt, Neues kommt dazu."""
+    erst = tmp_path / "erst.txt"
+    erst.write_text("Der Dienst Lagebild ist ein ServicePort.\n", encoding="utf-8")
+    erstes = eam_ai.build(
+        mdg=MDG, text=erst, out=tmp_path / "teil1.qea",
+        backend=make_backend({"elements": [
+            {"name": "Dienst Lagebild", "stereotype": "ServiceSpecification",
+             "notes": "A", "source_ref": "D1-S1", "confidence": 0.9}]}),
+        findings_path=tmp_path / "f1.json", sidecar=False,
+    )
+    assert erstes.elements == 1
+
+    zweit = tmp_path / "zweit.txt"
+    zweit.write_text("Der Dienst Wetterbild ist ein ServicePort.\n", encoding="utf-8")
+    zweites = eam_ai.build(
+        mdg=MDG, text=zweit, out=tmp_path / "gesamt.qea",
+        backend=make_backend({"elements": [
+            {"name": "Dienst Wetterbild", "stereotype": "ServiceSpecification",
+             "notes": "B", "source_ref": "D1-S1", "confidence": 0.9}]}),
+        findings_path=tmp_path / "f2.json",
+        modell=tmp_path / "teil1.qea",
+        sidecar=False,
+    )
+    daten = read_qea(tmp_path / "gesamt.qea")
+    namen = sorted(e["name"] for e in daten["elements"])
+    assert namen == ["Dienst Lagebild", "Dienst Wetterbild"]
+    assert zweites.elements == 2, "Bericht nennt den Gesamtstand"
+
+
+def test_build_reuses_names_of_existing_model_in_prompt(tmp_path: Path) -> None:
+    """Das Modell kennt den Bestand: der Prompt nennt die vorhandenen Namen."""
+    erst = tmp_path / "erst.txt"
+    erst.write_text(TEXT, encoding="utf-8")
+    eam_ai.build(
+        mdg=MDG, text=erst, out=tmp_path / "teil.qea",
+        backend=make_backend(), findings_path=tmp_path / "f1.json", sidecar=False,
+    )
+    backend = make_backend()
+    eam_ai.build(
+        mdg=MDG, text=erst, out=tmp_path / "gesamt.qea", backend=backend,
+        findings_path=tmp_path / "f2.json", modell=tmp_path / "teil.qea", sidecar=False,
+    )
+    prompt = backend.prompts[0]
+    assert "Bereits erfasste Elemente" in prompt
+    for name in ("Ablauf A", "Faehigkeit B", "Dienst C"):
+        assert name in prompt
+
+
+def test_build_rejects_missing_model(tmp_path: Path) -> None:
+    source = tmp_path / "text.txt"
+    source.write_text(TEXT, encoding="utf-8")
+    with pytest.raises(eam_ai.BuildError, match="nicht gefunden"):
+        eam_ai.build(
+            mdg=MDG, text=source, out=tmp_path / "x.qea", backend=make_backend(),
+            findings_path=tmp_path / "f.json",
+            modell=tmp_path / "gibtsnicht.qea", sidecar=False,
+        )
+
+
+def test_build_keeps_ids_when_continuing(tmp_path: Path) -> None:
+    """Fortsetzen aendert keine Kennung des Bestands."""
+    erst = tmp_path / "erst.txt"
+    erst.write_text(TEXT, encoding="utf-8")
+    eam_ai.build(
+        mdg=MDG, text=erst, out=tmp_path / "teil.qea",
+        backend=make_backend(), findings_path=tmp_path / "f1.json", sidecar=False,
+    )
+    vorher = {e["name"]: e.get("guid") for e in read_qea(tmp_path / "teil.qea")["elements"]}
+    eam_ai.build(
+        mdg=MDG, text=erst, out=tmp_path / "gesamt.qea",
+        backend=make_backend({"elements": [
+            {"name": "Neues Element", "stereotype": "ServiceSpecification",
+             "notes": "neu", "source_ref": "D1-S1", "confidence": 0.8}]}),
+        findings_path=tmp_path / "f2.json", modell=tmp_path / "teil.qea", sidecar=False,
+    )
+    nachher = {e["name"]: e.get("guid") for e in read_qea(tmp_path / "gesamt.qea")["elements"]}
+    for name, guid in vorher.items():
+        if guid:
+            assert nachher.get(name) == guid, f"{name}: Kennung geaendert"
+    assert "Neues Element" in nachher
+
+
+def test_build_counts_all_object_types(tmp_path: Path) -> None:
+    """Ports und Objects zaehlen als Elemente -- nur Paketspiegel nicht."""
+    import qea_writer
+
+    basis = qea_writer.write_qea(
+        {
+            "ir_version": 1,
+            "technology": {"profile": ""},
+            "packages": [{"path": "Architektur"}],
+            "elements": [
+                {"package": "Architektur", "name": "Hafen", "stereotype": "Hafen",
+                 "ea_type": "Port"},
+                {"package": "Architektur", "name": "Behoerde", "stereotype": "Behoerde",
+                 "ea_type": "Object"},
+            ],
+            "connectors": [],
+            "diagrams": [],
+        },
+        tmp_path / "basis.qea",
+    )
+    quelle = tmp_path / "text.txt"
+    quelle.write_text(TEXT, encoding="utf-8")
+    report = eam_ai.build(
+        mdg=MDG, text=quelle, out=tmp_path / "gesamt.qea", backend=make_backend(),
+        findings_path=tmp_path / "f.json", modell=basis, sidecar=False,
+    )
+    gelesen = read_qea(tmp_path / "gesamt.qea")["elements"]
+    assert len(gelesen) == 5, "2 aus der Basis + 3 aus dem Text"
+    assert report.elements == 5, "Bericht zaehlt wie der Reader, nicht nur Class"

@@ -756,9 +756,10 @@ class _Plan:
 class _Merger:
     """Fuehrt ein Quellmodell in den Zielzustand ein (nur Zeilen anhaengen)."""
 
-    def __init__(self, target: _Target, plan: _Plan):
+    def __init__(self, target: _Target, plan: _Plan, *, per_name: bool = False):
         self.target = target
         self.plan = plan
+        self.per_name = per_name
 
     # -- Pakete ---------------------------------------------------------
     def packages(self, source: _Source, prefix: str, container_id: int) -> dict[int, int]:
@@ -1004,8 +1005,18 @@ class _Merger:
                     )
                     continue
 
+                # Standard: Gleichheit ueber die ea_guid. Damit bleibt ein
+                # Element aus einem frueheren Lauf mit derselben Kennung eine
+                # Zeile, und zwei wirklich verschiedene Elemente gleichen
+                # Namens bleiben getrennt. ``per_name`` legt zusaetzlich ueber
+                # Name+Stereotyp zusammen -- noetig, wenn zwei getrennte Laeufe
+                # dasselbe Element unabhaengig angelegt haben.
                 same = target.elements.get(key, [])
-                match = next((item for item in same if item[0] == stereotype), None)
+                match = (
+                    next((item for item in same if item[0] == stereotype), None)
+                    if self.per_name
+                    else None
+                )
                 if match is not None:
                     # Dasselbe Element liegt schon vor: nicht duplizieren, aber
                     # die Tags der Quelle gegen den Zielwert pruefen.
@@ -1404,6 +1415,8 @@ def merge_models(
     paths: Sequence[str | os.PathLike[str]],
     out: str | os.PathLike[str],
     package: str | None = None,
+    *,
+    per_name: bool = False,
 ) -> MergeResult:
     """Fuehrt mehrere .qea zu einem Modell zusammen und schreibt ``out``.
 
@@ -1411,6 +1424,11 @@ def merge_models(
         ``out`` wird eine byte-genaue Kopie davon.
     :param out: Ergebnisdatei. Wird ueberschrieben (atomar ueber eine
         Nebendatei); die Eingabedateien werden nie veraendert.
+    :param per_name: Elemente zusaetzlich ueber Name und Stereotyp zusammenlegen.
+        Ohne den Schalter entscheidet allein die ``ea_guid``; zwei getrennte
+        Laeufe erzeugen fuer dasselbe Element zwei Kennungen und damit zwei
+        Zeilen. Mit dem Schalter bleibt die aeltere Zeile stehen, die
+        Beziehungen des zweiten Laufs werden auf sie umgebogen.
     :param package: optionaler Name eines Sammelpakets. Sind mehrere Modelle
         mit gleichem Wurzelnamen unterwegs, verhindert es, dass deren
         Wurzelpakete schon beim Pfadvergleich verschmelzen: die Wurzelpakete
@@ -1448,7 +1466,7 @@ def merge_models(
         container_id = _container(target, package, plan)
         prefix = package.strip()
 
-    merger = _Merger(target, plan)
+    merger = _Merger(target, plan, per_name=per_name)
     for source in others:
         package_map = merger.packages(source, prefix, container_id)
         object_map = merger.elements(source, package_map)
@@ -1501,6 +1519,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("qea", nargs="+", help="Modelle in Einfuegereihenfolge (erstes = Basis)")
     parser.add_argument("--out", required=True, help="Ergebnisdatei (.qea)")
     parser.add_argument(
+        "--per-name",
+        action="store_true",
+        help="Elemente zusaetzlich ueber Name und Stereotyp zusammenlegen",
+    )
+    parser.add_argument(
         "--paket",
         default=None,
         metavar="NAME",
@@ -1509,7 +1532,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
-        result = merge_models(args.qea, args.out, package=args.paket)
+        result = merge_models(args.qea, args.out, package=args.paket, per_name=args.per_name)
     except (MergeError, OSError, sqlite3.Error) as error:
         print(f"model_merge: {error}", file=sys.stderr)
         return 2

@@ -648,3 +648,65 @@ def test_beleglauf_masc_mit_sich_selbst(tmp_path: Path) -> None:
     assert result.elements == 0
     assert result.connections == 0
     assert result.merged == 1430
+
+
+def _modell(pfad, elemente, kanten=(), praefix="A"):
+    import qea_writer
+
+    return qea_writer.write_qea(
+        {
+            "ir_version": 1,
+            "technology": {"profile": ""},
+            "packages": [{"path": "Architektur"}],
+            "elements": [
+                {
+                    "package": "Architektur",
+                    "name": name,
+                    "stereotype": stereotype,
+                    # Bewusst verschiedene Kennungen: so sieht der Test den
+                    # Unterschied zwischen GUID-Gleichheit und Namensgleichheit.
+                    "guid": "{CCCC%s-0000-0000-0000-%012d}" % (praefix, index),
+                }
+                for index, (name, stereotype) in enumerate(elemente)
+            ],
+            "connectors": [
+                {
+                    "source": f"Architektur::{a}",
+                    "target": f"Architektur::{b}",
+                    "stereotype": stereotype,
+                    "ea_type": "Dependency",
+                }
+                for a, b, stereotype in kanten
+            ],
+            "diagrams": [],
+        },
+        pfad,
+    )
+
+
+def test_merge_per_name_fuehrt_gleiche_namen_zusammen(tmp_path):
+    """Zwei Laeufe mit verschiedenen Kennungen fuer dasselbe Element."""
+    eins = _modell(
+        tmp_path / "eins.qea",
+        [("Lagebild", "System"), ("Dienst A", "Service")],
+        [("Lagebild", "Dienst A", "Provides")],
+        praefix="1",
+    )
+    zwei = _modell(
+        tmp_path / "zwei.qea",
+        [("Lagebild", "System"), ("Dienst B", "Service")],
+        [("Lagebild", "Dienst B", "Provides")],
+        praefix="2",
+    )
+    ohne = mm.merge_models([eins, zwei], tmp_path / "ohne.qea")
+    mit = mm.merge_models([eins, zwei], tmp_path / "mit.qea", per_name=True)
+
+    ohne_namen = [e["name"] for e in qea_reader.read_qea(tmp_path / "ohne.qea")["elements"]]
+    mit_namen = [e["name"] for e in qea_reader.read_qea(tmp_path / "mit.qea")["elements"]]
+    assert ohne_namen.count("Lagebild") == 2, "ohne Schalter bleibt es doppelt"
+    assert mit_namen.count("Lagebild") == 1, "mit Schalter eine Zeile"
+    assert sorted(mit_namen) == ["Dienst A", "Dienst B", "Lagebild"]
+    assert mit.merged >= 1
+    kanten = qea_reader.read_qea(tmp_path / "mit.qea")["connectors"]
+    assert len(kanten) == 2
+    assert {k["target"] for k in kanten} == {"Architektur::Dienst A", "Architektur::Dienst B"}

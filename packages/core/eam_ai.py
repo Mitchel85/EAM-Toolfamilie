@@ -366,6 +366,7 @@ def build(
     batch_chars: int | None = None,
     batch_threshold: int | None = None,
     startpaket: str | Path | None = None,
+    modell: str | Path | None = None,
     ai_backend: object | None = None,
     repair_bericht: str | Path | None = None,
     repair_ir_path: str | Path | None = None,
@@ -436,6 +437,12 @@ def build(
                 "aber keine Quelle -- Abbruch statt leerem Lauf"
             )
 
+        # Bestand und Startpaket gelten fuer Extraktion UND Export. Hier
+        # initialisieren: der Geruestpfad (ohne Modellaufruf) laeuft sonst in
+        # einen UnboundLocalError beim Export.
+        bestand: list[tuple[str, str]] = []
+        bestand_qea: Path | None = None
+
         if skeleton_mode:
             say("[3/6] Kein Text, kein Bild: Geruest aus dem Regelwerk (kein Modellaufruf)")
             try:
@@ -500,6 +507,15 @@ def build(
             # den Prompt gelegt: Seine Elemente sind bereits im Modell, die
             # Extraktion soll sie mit exaktem Namen wiederverwenden statt
             # Dubletten zu erfinden. Die Kennungen bleiben beim Export erhalten.
+            if modell is not None:
+                bestand_qea = Path(modell)
+                if not bestand_qea.exists():
+                    raise BuildError(f"Modell {bestand_qea}: Datei nicht gefunden")
+                try:
+                    bestand = _modell_inventar(bestand_qea)
+                except (OSError, sqlite3.Error) as exc:
+                    raise BuildError(f"Modell {bestand_qea}: {exc}") from exc
+                say(f"        Bestand: {len(bestand)} vorhandene Element(e) im Prompt")
             standard: list[tuple[str, str]] = []
             if startpaket is not None:
                 try:
@@ -512,13 +528,16 @@ def build(
                         "das ist kein Startpaket"
                     )
                 say(f"        Startpaket: {len(standard)} Standardelement(e) im Prompt")
+            # Bestand zuerst: Vorhandenes vor Standardelementen. Beides zusammen
+            # ist der Wiederverwendungs-Block im Prompt.
+            bekannte = bestand + [item for item in standard if item not in set(bestand)]
             try:
                 result = extract_module.extract_batched(
                     [document],
                     rules=rulebook,
                     backend=chosen,
                     package=package,
-                    known=tuple(standard),
+                    known=tuple(bekannte),
                     **(
                         {"budget_chars": batch_chars}
                         if batch_chars is not None
@@ -631,11 +650,17 @@ def build(
 
         emit_target = out_path
         zwischen: Path | None = None
-        if startpaket is not None:
+        basis = bestand_qea
+        if basis is not None and startpaket is None:
+            # Fortsetzen: der Bestand ist die Basis, das neue Teilmodell kommt
+            # dazu. Kollidierende Kennungen bleiben eine Zeile (merge_models).
+            zwischen = out_path.with_name(out_path.stem + ".neu.qea")
+            emit_target = zwischen
+        if startpaket is not None or basis is not None:
             # Erst in eine Zwischendatei schreiben, dann den Katalog mit
             # unveraenderten ea_guid uebernehmen (toolbox_merge ist der
             # geprüfte Weg dafuer). So bleibt der Export atomar.
-            zwischen = out_path.with_name(out_path.stem + ".ohne-startpaket.qea")
+            zwischen = zwischen or out_path.with_name(out_path.stem + ".ohne-startpaket.qea")
             emit_target = zwischen
         try:
             emitted: EmitReport = emit_module.emit(
@@ -648,16 +673,28 @@ def build(
         except (EmitError, QeaWriterError, QeaReaderError, OSError) as exc:
             raise BuildError(f"Export: {exc}") from exc
         standard_report: dict[str, Any] | None = None
-        if startpaket is not None and zwischen is not None:
+        if zwischen is not None and (startpaket is not None or basis is not None):
             try:
+                import model_merge
                 import toolbox_merge
 
-                standard_report = toolbox_merge.merge_toolbox(
-                    zwischen, Path(startpaket), out_path
-                )
+                schritt = zwischen
+                if basis is not None:
+                    mit_bestand = out_path.with_name(out_path.stem + ".mit-bestand.qea")
+                    model_merge.merge_models([basis, zwischen], mit_bestand, per_name=True)
+                    schritt.unlink(missing_ok=True)
+                    schritt = mit_bestand
+                if startpaket is not None:
+                    standard_report = toolbox_merge.merge_toolbox(
+                        schritt, Path(startpaket), out_path
+                    )
+                    if schritt != zwischen:
+                        schritt.unlink(missing_ok=True)
+                else:
+                    schritt.replace(out_path)
             except Exception as exc:  # noqa: BLE001 - Fehlerabbildung unten
                 zwischen.unlink(missing_ok=True)
-                raise BuildError(f"Startpaket: {exc}") from exc
+                raise BuildError(f"Zusammenfuehrung: {exc}") from exc
             zwischen.unlink(missing_ok=True)
             # Bericht auf die tatsaechliche Zieldatei ziehen: Zahlen und
             # Pruefsumme stammen sonst von der Zwischendatei ohne Katalog.
@@ -666,8 +703,11 @@ def build(
 
             con = sqlite3.connect(str(out_path))
             try:
+                # Elemente sind alle Objekte ausser Paketspiegeln -- der
+                # Reader zaehlt genauso. Ein Filter auf 'Class' unterschlaegt
+                # Ports und Objects und meldet zu kleine Zahlen.
                 elements_final = con.execute(
-                    "select count(*) from t_object where Object_Type = 'Class'"
+                    "select count(*) from t_object where Object_Type <> 'Package'"
                 ).fetchone()[0]
                 connectors_final = con.execute(
                     "select count(*) from t_connector"
@@ -681,16 +721,26 @@ def build(
                 connectors=int(connectors_final),
                 digest=hashlib.sha256(out_path.read_bytes()).hexdigest(),
             )
-            say(
-                f"        Startpaket uebernommen: {standard_report['elemente']} Element(e), "
-                f"{standard_report['kanten']} Kante(n), "
-                f"{standard_report['bereits_vorhanden']} bereits vorhanden"
-            )
+            if standard_report is not None:
+                say(
+                    f"        Startpaket uebernommen: {standard_report['elemente']} Element(e), "
+                    f"{standard_report['kanten']} Kante(n), "
+                    f"{standard_report['bereits_vorhanden']} bereits vorhanden"
+                )
+            if basis is not None:
+                say(f"        Bestand zusammengefuehrt: {basis}")
         say(
             f"[6/6] Export: {emitted.qea}: {emitted.elements} Elemente, "
             f"{emitted.connectors} Beziehungen, {emitted.provenance_tags} Herkunfts-Tags, "
             f"sha256 {emitted.digest[:16]}"
         )
+        if basis is not None:
+            # Der Bericht nennt den Gesamtstand (Datei), die Extraktion den
+            # Zuwachs dieses Laufs. Zwei Zahlen, zwei Aussagen.
+            say(
+                f"        Neu in diesem Lauf: {len(result.elements)} Element(e), "
+                f"{len(result.connectors)} Beziehung(en)"
+            )
         return _report(
             technique, result, findings, target_findings, out_path,
             qea=emitted.qea, quellen=emitted.quellen, digest=emitted.digest,
@@ -856,6 +906,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="ab dieser Promptlaenge wird geteilt (Default: 200000 Zeichen)",
     )
     p_build.add_argument(
+        "--modell",
+        type=Path,
+        default=None,
+        help=(
+            "bestehendes Modell (.qea), an das dieser Lauf anknuepft: seine "
+            "Elemente kommen in den Prompt, das Ergebnis enthaelt Bestand und Neues"
+        ),
+    )
+    p_build.add_argument(
         "--startpaket",
         type=Path,
         default=None,
@@ -958,6 +1017,14 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=None,
         help="Bericht (JSON) zusaetzlich in diese Datei schreiben",
+    )
+    p_merge.add_argument(
+        "--per-name",
+        action="store_true",
+        help=(
+            "Elemente zusaetzlich ueber Name und Stereotyp zusammenlegen: noetig, "
+            "wenn zwei getrennte Laeufe dasselbe Element neu angelegt haben"
+        ),
     )
     p_merge.set_defaults(func=cmd_merge)
 
@@ -1101,6 +1168,7 @@ def cmd_build(args: argparse.Namespace) -> int:
             batch_chars=args.chargen_zeichen,
             batch_threshold=args.chargen_schwelle,
             startpaket=args.startpaket,
+            modell=args.modell,
             sidecar=not args.no_quellen,
             quellen_path=args.quellen,
             log=say,
@@ -1308,6 +1376,11 @@ def _drop_element(path: Path, guid: str) -> None:
         con.close()
 
 
+def _modell_inventar(path: Path, limit: int = 400) -> list[tuple[str, str]]:
+    """Elemente eines bestehenden Modells (Name, Stereotyp) fuer den Prompt."""
+    return _startpaket_inventar(path, limit=limit)
+
+
 def _startpaket_inventar(path: Path, limit: int = 400) -> list[tuple[str, str]]:
     """Elemente eines Startpakets (Name, Stereotyp) fuer den Prompt lesen.
 
@@ -1411,7 +1484,9 @@ def cmd_merge(args: argparse.Namespace) -> int:
 
     paths = [str(item) for group in args.qea for item in group]
     try:
-        result = model_merge.merge_models(paths, args.out, package=args.paket)
+        result = model_merge.merge_models(
+            paths, args.out, package=args.paket, per_name=args.per_name
+        )
     except (model_merge.MergeError, OSError, sqlite3.Error) as exc:
         print(f"FEHLER: {exc}", file=sys.stderr)
         return 1
