@@ -787,6 +787,7 @@ class _Plan:
     """Alle einzufuegenden Zeilen plus Berichtszahlen."""
 
     rows: dict[str, list[dict[str, Any]]] = field(default_factory=dict)
+    note_updates: dict[int, str] = field(default_factory=dict)
     conflicts: list[dict[str, Any]] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     counts: dict[str, int] = field(
@@ -803,7 +804,7 @@ class _Plan:
         self.rows.setdefault(table, []).append(row)
 
     def total(self) -> int:
-        return sum(len(rows) for rows in self.rows.values())
+        return sum(len(rows) for rows in self.rows.values()) + len(self.note_updates)
 
 
 class _Merger:
@@ -1054,6 +1055,7 @@ class _Merger:
                         _as_int(_Table.get(existing_row, "Package_ID")), path
                     )
                     target_name = _as_text(_Table.get(existing_row, "Name")) or name
+                    self._merge_note(row, existing_id)
                     self._merge_tags(source, object_id, existing_id, target_path, target_name, guid)
                     self._add_xrefs(
                         source,
@@ -1086,6 +1088,7 @@ class _Merger:
                     # die Tags der Quelle gegen den Zielwert pruefen.
                     element_map[object_id] = match[1]
                     plan.counts["merged"] += 1
+                    self._merge_note(row, match[1])
                     self._merge_tags(source, object_id, match[1], path, name, guid)
                     if guid:
                         self._add_xrefs(
@@ -1162,6 +1165,19 @@ class _Merger:
             plan.counts["tags"] += 1
             if name:
                 index.setdefault(name, _as_text(_Table.get(tag, "Value")))
+
+    def _merge_note(self, source_row: Mapping[str, Any], target_id: int) -> None:
+        """Fuellt eine leere Notiz am Zielobjekt aus der Quelle (ueberschreibt nichts)."""
+        source_note = _as_text(_Table.get(source_row, "Note")).strip()
+        if not source_note:
+            return
+        existing_row = self.target.object_ids.get(target_id)
+        if existing_row is None:
+            return
+        existing_note = _as_text(_Table.get(existing_row, "Note")).strip()
+        if not existing_note:
+            existing_row["note"] = source_note
+            self.plan.note_updates[target_id] = source_note
 
     def _merge_tags(
         self,
@@ -1426,6 +1442,11 @@ def _write(plan: _Plan, base_path: Path, out_path: Path, target: _Target) -> Non
         try:
             con.execute("PRAGMA foreign_keys = OFF")
             with con:
+                if plan.note_updates and target.tables["t_object"].has("note"):
+                    con.executemany(
+                        'UPDATE "t_object" SET "Note" = ? WHERE "Object_ID" = ?',
+                        [(note, oid) for oid, note in sorted(plan.note_updates.items())],
+                    )
                 for name in _WRITE_ORDER:
                     _, unknown = _insert_rows(con, target.tables[name], plan.rows.get(name, []))
                     if unknown:

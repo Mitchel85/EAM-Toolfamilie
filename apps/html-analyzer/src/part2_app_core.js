@@ -88,7 +88,7 @@ function archCategory(st) {
 }
 /* Farben gemäß ADMBw/NAFv4: color = Schichtfarbe (Header/Rand), fill = heller Elementton.
    Quellen: NAFv4.1 Fig. 18; Bw „Grundlagen Methode Architektur nach NAFv4“ Abb. 36 (S. 58);
-   Bw „Verwendung des ADMBw im Sparx EA“ Abb. 35 (S. 42) — siehe docs/ADMBw-Farben.md */
+   Bw-Leitfaden zur ADMBw-Verwendung, Abb. 35 (S. 42) — siehe docs/ADMBw-Farben.md */
 var CAT_META = {
   concept:  { label: 'Konzepte & Fähigkeiten', color: '#C8D300', fill: '#F6FF5D', rank: 0 },
   service:  { label: 'Dienste (Services)',     color: '#CE8ABB', fill: '#E7C7DE', rank: 1 },
@@ -647,14 +647,14 @@ function loadQea(buffer, name) {
   try {
     DB = qeaOpen(buffer);
   } catch (e) {
-    alert('Datei konnte nicht gelesen werden:\n\n' + e.message + '\n\nUnterstützt werden QEA-/EAPX-Dateien im SQLite-Format (Sparx Enterprise Architect).');
+    alert('Datei konnte nicht gelesen werden:\n\n' + e.message + '\n\nUnterstützt werden QEA-/EAPX-Dateien im SQLite-Format.');
     return;
   }
   MODELLNAME = name;
   G.built = false;
   buildModel();
   if (!Object.keys(OBJS).length && !DIAGS.length && !Object.keys(PKG).length) {
-    alert('In der Datei wurde keine Sparx-EA-Struktur gefunden (Kern-Tabelle t_object fehlt oder ist leer).');
+    alert('In der Datei wurde keine QEA-Modellstruktur gefunden (Kern-Tabelle t_object fehlt oder ist leer).');
     return;
   }
   if (typeof EDIT !== 'undefined' && EDIT.setSource) EDIT.setSource(buffer, name);
@@ -1224,7 +1224,7 @@ function openPackage(pid, stayInExplorer) {
       var ch = pkg.children[i];
       h.push('<div class="pkg-card" onclick="openPackage(' + ch.id + ')">');
       h.push('<div class="pkg-card-title">📁 ' + esc(ch.name) + '</div>');
-      h.push('<div class="pkg-card-meta"><b>' + ch.allDiagsCount + '</b> Sichten &nbsp;·&nbsp; <b>' + ch.allObjsCount + '</b> Elemente' + (ch.children.length ? ' &nbsp;·&nbsp; ' + ch.children.length + ' Unterordner' : '') + '</div>');
+      h.push('<div class="pkg-card-meta"><b>' + ch.allDiagsCount + '</b> Sichten &nbsp;·&nbsp; <b>' + ch.allObjsCount + '</b> <span title="ohne technische Hilfsobjekte (Proxy-Konnektoren, Rahmen)">Elemente</span>' + (ch.children.length ? ' &nbsp;·&nbsp; ' + ch.children.length + ' Unterordner' : '') + '</div>');
       h.push('</div>');
     }
     h.push('</div>');
@@ -1482,7 +1482,7 @@ function openDiagramView(diagId, mode) {
   h.push('<div class="vp-list" id="vp-list">');
   h.push('<div class="diagbox">' +
     '<div class="diagbox-hdr">' +
-      '<div><span class="diagtitle">Original-Schaubild aus Sparx EA</span><span class="diagsub">💡 Tipp: Klicken Sie direkt auf ein Kästchen im Schaubild, um dessen Steckbrief &amp; Umfeld zu öffnen!</span></div>' +
+      '<div><span class="diagtitle">Original-Schaubild aus dem Modell</span><span class="diagsub">💡 Tipp: Klicken Sie direkt auf ein Kästchen im Schaubild, um dessen Steckbrief &amp; Umfeld zu öffnen!</span></div>' +
       '<div class="diagtools">' +
         '<button class="btn-sm" onclick="zoomDiagSvg(' + diag.id + ', 0.85)">🔍－</button>' +
         '<button class="btn-sm" onclick="zoomDiagSvg(' + diag.id + ', 1.0, true)">100%</button>' +

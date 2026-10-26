@@ -81,7 +81,7 @@
   <div class="drop" id="drop">
     <div class="big">📂</div>
     <h2>MDG-Datei hier ablegen oder klicken</h2>
-    <p>Die Technologie-Datei im XML-Format, z.&nbsp;B. <code>NAFv4-ADMBw-MDG-2026.05.xml</code><br>(Download: bundeswehr.de → BAAINBw → Vergabe → Methode Architektur)</p>
+    <p>Die Technologie-Datei im XML-Format, z.&nbsp;B. <code>NAFv4-ADMBw-MDG-2026.05.xml</code><br>(Bezug: BAAINBw, Rubrik „Methode Architektur“)</p>
   </div>
   <div class="hint">Die Datei wird ausschließlich lokal im Browser verarbeitet — es wird nichts hochgeladen.</div>
   <input type="file" id="file" accept=".xml,text/xml,application/xml" hidden>
@@ -449,6 +449,7 @@ function buildMarkdown(){
     '- **Abstrakte Stereotype (🔒, nicht instanziierbar):** ' + absCount,
     '  - davon ohne AppliesTo (reine Platzhalter): ' + DATA.stereo.filter(function(s){ return s.abs && (!s.applies || !s.applies.length); }).length,
     '  - davon mit AppliesTo (fachlich zu spezialisieren): ' + DATA.stereo.filter(function(s){ return s.abs && s.applies && s.applies.length; }).length,
+    '- **Beziehungs-Stereotype (Kanten):** ' + beziehungsStereotype() + ' (Zählweise wie Python-Parser und AI-Suite)',
     '- **Stereotype mit Topologie-Regeln:** ' + DATA.topo.length + ' (davon ' + complete + ' vollständig mit Quelle und Ziel)',
     '- **Viewpoints:** ' + DATA.vp.length + ' (DiagramProfile ohne Diagramm-Artefakt „Business Process“)',
     '- **Property-Typen:** ' + DATA.tag.length,
@@ -460,17 +461,27 @@ function buildMarkdown(){
     'Der Katalog zählt ausschließlich die UMLProfiles-Stereotype; Toolbox-Seiten',
     'und Viewpoints werden nicht (bzw. separat) extrahiert.', '',
     'Diese Dateien wurden automatisch aus der offiziellen ADMBw-MDG-Technologie erzeugt',
-    '(https://www.bundeswehr.de/de/organisation/ausruestung-baainbw/vergabe/methode-architektur).',
+    '(Bezug: BAAINBw, Rubrik „Methode Architektur“).',
     'Bei einem MDG-Update einfach den Parser erneut ausführen.'];
   out['admbw-meta.md'] = L.join('\n');
 
   MD_OUT = out;
 }
 
+/* Beziehungs-Metaklassen: dieselbe Liste wie im Python-Parser und in der
+   AI-Suite, damit alle Werkzeuge dieselbe Zahl an Beziehungs-Stereotypen nennen. */
+var KANTEN_METAKLASSEN = { 'Abstraction': 1, 'Aggregation': 1, 'Association': 1, 'Composition': 1, 'Connector': 1, 'ControlFlow': 1, 'Dependency': 1, 'Deployment': 1, 'Extend': 1, 'Generalization': 1, 'Include': 1, 'InformationFlow': 1, 'Manifestation': 1, 'Message': 1, 'ObjectFlow': 1, 'Realisation': 1, 'Realization': 1, 'Substitution': 1, 'Usage': 1 };
+function beziehungsStereotype(){
+  return DATA.stereo.filter(function(s){
+    return (s.applies || []).some(function(a){ return KANTEN_METAKLASSEN[a]; });
+  }).length;
+}
+
 function renderStats(){
   var complete = DATA.topo.filter(function(t){ return t.complete; }).length;
   var items = [
     ['Stereotype', DATA.stereo.length, ''],
+    ['Beziehungs-Stereotype', beziehungsStereotype(), ''],
     ['Topologie-Regeln · ' + complete + ' vollständig', DATA.topo.length, 'amber'],
     ['Viewpoints', DATA.vp.length, 'green'],
     ['Tag-Typen', DATA.tag.length, ''],

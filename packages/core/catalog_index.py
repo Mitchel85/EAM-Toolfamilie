@@ -99,7 +99,10 @@ class Catalog:
                     CatalogEntry(
                         name=str(name).strip(),
                         stereotype=str(stereotype or "").strip(),
-                        guid=guid_text.upper(),
+                        # Woertlich: die Kennung wird nachgeschlagen, nicht
+                        # normalisiert. Eine geaenderte Schreibweise ist fuer den
+                        # Versionsabgleich eine andere Kennung.
+                        guid=guid_text,
                         package=pfad_von(int(package_id or 0)),
                     )
                 )
@@ -118,7 +121,7 @@ class Catalog:
             CatalogEntry(
                 name=str(item.get("name") or "").strip(),
                 stereotype=str(item.get("stereotype") or "").strip(),
-                guid=str(item.get("guid") or "").strip().upper(),
+                guid=str(item.get("guid") or "").strip(),
                 package=str(item.get("package") or "").strip(),
             )
             for item in entries

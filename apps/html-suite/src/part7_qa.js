@@ -674,7 +674,7 @@ var QA = (function () {
     ST.busy = true;
     status('⏳ Frage geht an ' + c.model + ' — nur der Ausschnitt (' + (txt.length / 1024).toFixed(1).replace('.', ',') + ' KB) wird übertragen …');
 
-    var system = 'Du bist Enterprise-Architekt für ADMBw/NAFv4 und beantwortest Fragen zu einem gelieferten Modellausschnitt aus einer Sparx-EA-Datei (.qea). ' +
+    var system = 'Du bist Enterprise-Architekt für ADMBw/NAFv4 und beantwortest Fragen zu einem gelieferten Modellausschnitt aus einer Modelldatei (.qea). ' +
       'Antworte auf Deutsch, sachlich und als Markdown (kurze Absätze, Überschriften, Listen). ' +
       'Stütze dich ausschließlich auf den gelieferten Ausschnitt und erfinde keine Elemente, Beziehungen oder Werte. ' +
       'Wenn Informationen im Ausschnitt fehlen, benenne diese Lücke ausdrücklich. ' +

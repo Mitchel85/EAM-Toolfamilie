@@ -584,6 +584,11 @@ def build(
                 f"{len(result.dropped)} verworfen"
                 + (f", {len(chargen)} Chargen" if chargen else "")
             )
+            bestand_endpunkte = (
+                result.ir.get("meta", {}).get("extraction", {}).get("bekannte_endpunkte", [])
+            )
+            if bestand_endpunkte:
+                say(f"        Endpunkte aus dem Bestand: {len(bestand_endpunkte)}")
             if nachtraege:
                 say(f"        Kanten nachgetragen: {len(nachtraege)}")
                 for nachtrag in nachtraege:

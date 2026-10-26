@@ -75,12 +75,14 @@ def test_guid_wird_verbatim_geschrieben(tmp_path: Path) -> None:
 
 
 def test_guid_ohne_klammern_und_klein_geschrieben(tmp_path: Path) -> None:
+    """Klammern werden ergaenzt, die Schreibweise bleibt woertlich."""
     ir = _ir()
-    ir["packages"][0]["guid"] = GUID_P1.strip("{}").lower()
+    klein = GUID_P1.strip("{}").lower()
+    ir["packages"][0]["guid"] = klein
     ir["elements"][0]["guid"] = GUID_E1.strip("{}")
     qw.write_qea(ir, tmp_path / "klein.qea")
     assert {row[0] for row in _rows(tmp_path / "klein.qea", "SELECT ea_guid FROM t_package")} == {
-        GUID_P1,
+        "{" + klein + "}",
         GUID_P2,
     }
     objekte = dict(_rows(tmp_path / "klein.qea", "SELECT Name, ea_guid FROM t_object"))
@@ -152,3 +154,21 @@ def test_guid_feld_ist_rueckwaertskompatibel_im_plan() -> None:
     assert [e.guid for e in plan.elements] == [GUID_E1, GUID_E2]
     assert [c.guid for c in plan.connectors] == [GUID_C1]
     assert any(row[1] == "CustomProperties" for row in plan.xrefs)
+
+
+def test_gemischte_schreibweise_bleibt_woertlich(tmp_path: Path) -> None:
+    """Eine Kennung aus Katalog oder Startpaket kommt Zeichen fuer Zeichen zurueck."""
+    gemischt = "{ABCD0000-12ab-34CD-56ef-0000000000a1}"
+    ir = _ir()
+    ir["elements"][0]["guid"] = gemischt
+    qw.write_qea(ir, tmp_path / "gemischt.qea")
+    objekte = dict(_rows(tmp_path / "gemischt.qea", "SELECT Name, ea_guid FROM t_object"))
+    assert objekte["Alpha"] == gemischt
+
+
+def test_kennung_nur_in_schreibweise_verschieden_ist_doppelt(tmp_path: Path) -> None:
+    ir = _ir()
+    ir["elements"][0]["guid"] = GUID_E1.lower()
+    ir["elements"][1]["guid"] = GUID_E1
+    with pytest.raises(qw.QeaWriterError, match="doppelte GUID"):
+        qw.write_qea(ir, tmp_path / "doppelt.qea")

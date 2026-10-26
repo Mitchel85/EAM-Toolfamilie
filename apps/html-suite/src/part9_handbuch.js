@@ -14,7 +14,7 @@ var HANDBUCH = (function () {
     'Zweck und Auftrag',
     'Das System im Überblick',
     'Aufbau',
-    'Die Dienste an Bord',
+    'Die Dienste',
     'Abläufe und Verfahren',
     'Fähigkeiten und Leistungsvermögen',
     'Betrieb und Überwachung',
@@ -34,7 +34,7 @@ var HANDBUCH = (function () {
   var NEUTRAL = [
     ['Architektur', 'Aufbau'], ['Metamodell', 'Ordnungsrahmen'],
     ['Modell', 'Vorhaben'], ['Stereotyp', 'Art'], ['Element', 'Bestandteil'],
-    ['Paket', 'Bündel'], ['Sicht', 'Ansicht'], ['Diagramm', 'Darstellung'],
+    ['Paket', 'Bündel'], ['Sicht', 'Blickwinkel'], ['Diagramm', 'Darstellung'],
     ['Datenbank', 'Ablage'], ['Katalog', 'Verzeichnis']
   ];
 
@@ -318,7 +318,23 @@ var HANDBUCH = (function () {
       this.stil.add(s);
       return s;
     }
-    throw fehler('Wiederholung in »' + (rolle || 'Abschnitt') + '«: keine freie Formulierung mehr', liste[0] || '');
+    /* Alle Formulierungen ausgeschöpft (großes Modell, viele gleichartige
+       Einträge): lieber eine Wiederholung als kein Handbuch. Der Befund
+       steht im Bericht, die Ausgabe bricht nicht ab. */
+    for (i = 0; i < liste.length; i++) {
+      if (!liste[i]) continue;
+      s = lesbar(liste[i]);
+      sch = maskiere(s, this.stil.namen);
+      zahl = this.stil.schablone[sch] || 0;
+      if (zahl < bestZahl) { bestZahl = zahl; best = i; }
+    }
+    if (best >= 0) {
+      s = lesbar(liste[best]);
+      this.stil.add(s);
+      this.ausgeschoepft = (this.ausgeschoepft || 0) + 1;
+      return s;
+    }
+    throw fehler('Keine Formulierung für »' + (rolle || 'Abschnitt') + '«', liste[0] || '');
   };
 
   /* Sätze zu Absätzen von drei bis vier Sätzen. */
@@ -1467,7 +1483,7 @@ var HANDBUCH = (function () {
   }
 
   /* ------------------------------------------------------------------
-     4 Die Dienste an Bord
+     4 Die Dienste
      ------------------------------------------------------------------ */
 
   var DIENST_BILD = {
@@ -2624,7 +2640,7 @@ var HANDBUCH = (function () {
 
     b.h3('10.1 Kennzahlen');
     b.tabelle(['Kennzahl', 'Wert'], [
-      ['Dienste an Bord', String(a.zahl.dienste)],
+      ['Dienste', String(a.zahl.dienste)],
       ['Fähigkeiten', String(a.zahl.faehigkeiten)],
       ['Forderungen', String(a.zahl.forderungen)],
       ['Vorgaben', String(a.zahl.vorgaben)],
@@ -2874,6 +2890,9 @@ var HANDBUCH = (function () {
     var wh = wiederholungen(text, a.namen);
     if (wh.probleme.length) {
       warnungen.push('Wiederholungen: ' + wh.probleme.length + ' (' + wh.probleme[0] + ')');
+    }
+    if (b.ausgeschoepft) {
+      warnungen.push('Formulierungen ausgeschöpft: ' + b.ausgeschoepft + '× wiederholt');
     }
     var fehlendKanten = [];
     for (var i = 0; i < a.kanten.length; i++) {

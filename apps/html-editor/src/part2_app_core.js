@@ -106,7 +106,7 @@ function archCategory(st) {
 }
 /* Farben gemäß ADMBw/NAFv4: color = Schichtfarbe (Header/Rand), fill = heller Elementton.
    Quellen: NAFv4.1 Fig. 18; Bw „Grundlagen Methode Architektur nach NAFv4“ Abb. 36 (S. 58);
-   Bw „Verwendung des ADMBw im Sparx EA“ Abb. 35 (S. 42) — siehe docs/ADMBw-Farben.md */
+   Bw-Leitfaden zur ADMBw-Verwendung, Abb. 35 (S. 42) — siehe docs/ADMBw-Farben.md */
 var CAT_META = {
   concept:  { label: 'Konzepte & Fähigkeiten', color: '#C8D300', fill: '#F6FF5D', rank: 0 },
   service:  { label: 'Dienste (Services)',     color: '#CE8ABB', fill: '#E7C7DE', rank: 1 },
@@ -1093,7 +1093,7 @@ function commitMerge(n, skip) {
 function loadQea(buffer, name) {
   if (SINGLE && !MULTI_MODE) {
     try { DB = qeaOpen(buffer); }
-    catch (e) { alert('Datei konnte nicht gelesen werden:\n\n' + e.message + '\n\nUnterstützt werden QEA-/EAPX-Dateien im SQLite-Format (Sparx Enterprise Architect).'); return; }
+    catch (e) { alert('Datei konnte nicht gelesen werden:\n\n' + e.message + '\n\nUnterstützt werden QEA-/EAPX-Dateien im SQLite-Format.'); return; }
     MODELLNAME = name;
     G.built = false;
     resetModelData();
@@ -1101,7 +1101,7 @@ function loadQea(buffer, name) {
     MODEL_DB = DB; MODEL_OBJS = OBJS; MODEL_PKG = PKG; MODEL_DIAGS = DIAGS; MODEL_TAGS = TAGS;
     buildModel();
     if (!Object.keys(OBJS).length && !DIAGS.length && !Object.keys(PKG).length) {
-      alert('In der Datei wurde keine Sparx-EA-Struktur gefunden (Kern-Tabelle t_object fehlt oder ist leer).');
+      alert('In der Datei wurde keine QEA-Modellstruktur gefunden (Kern-Tabelle t_object fehlt oder ist leer).');
       return;
     }
     if (typeof EDIT !== 'undefined' && EDIT.setSource) { EDIT.setSource(buffer, name, 1); if (EDIT.setSourceCount) EDIT.setSourceCount(1); }
@@ -1168,11 +1168,11 @@ function addModelToMerge(buffer, name) {
   try { myDb = qeaOpen(buffer); }
   catch (e) { alert('Datei „' + name + '“ konnte nicht gelesen werden:\n\n' + e.message); return; }
 
-  /* Prüfen, ob überhaupt eine Sparx-EA-Struktur enthalten ist (vor dem Einarbeiten) */
+  /* Prüfen, ob überhaupt eine QEA-Modellstruktur enthalten ist (vor dem Einarbeiten) */
   var probe = null;
   try { probe = myDb.rows('t_object'); } catch (e2) { probe = null; }
   if (!probe || !probe.length) {
-    alert('In der Datei „' + name + '“ wurde keine Sparx-EA-Struktur gefunden (Kern-Tabelle t_object fehlt oder ist leer).');
+    alert('In der Datei „' + name + '“ wurde keine QEA-Modellstruktur gefunden (Kern-Tabelle t_object fehlt oder ist leer).');
     return;
   }
 
@@ -2373,7 +2373,7 @@ function openDiagramView(diagId, mode) {
   h.push('<div class="vp-list" id="vp-list">');
   h.push('<div class="diagbox">' +
     '<div class="diagbox-hdr">' +
-      '<div><span class="diagtitle">Original-Schaubild aus Sparx EA</span><span class="diagsub">💡 Tipp: Klicken Sie direkt auf ein Kästchen im Schaubild, um dessen Steckbrief &amp; Umfeld zu öffnen!</span></div>' +
+      '<div><span class="diagtitle">Original-Schaubild aus dem Modell</span><span class="diagsub">💡 Tipp: Klicken Sie direkt auf ein Kästchen im Schaubild, um dessen Steckbrief &amp; Umfeld zu öffnen!</span></div>' +
       '<div class="diagtools">' +
         '<button class="btn-sm" onclick="zoomDiagSvg(' + diag.id + ', 0.85)">🔍－</button>' +
         '<button class="btn-sm" onclick="zoomDiagSvg(' + diag.id + ', 1.0, true)">100%</button>' +

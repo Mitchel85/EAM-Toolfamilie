@@ -1,5 +1,5 @@
 /* EAM AI Suite v9.1 — Teil 4: Verbindungs- und Pfadanalyse (experimentell)
-   Inspiriert von ArAMIS Web (Architekturmanagement-Informationssystem der Bundeswehr).
+   Angelehnt an webbasierte Architektur-Informationssysteme.
    Findet die Verbindungskette zwischen zwei Elementen über t_connector-Beziehungen,
    visualisiert sie als Schritt-Kette, Tabelle und Graph und diagnostiziert fehlende
    Verbindungen (Komponenten, Erreichbarkeit, gemeinsame Nachbarn).
@@ -181,7 +181,7 @@ function pathRenderTab() {
     });
   }
   var h = [];
-  h.push('<h2>🔗 Verbindung zweier Elemente finden <span class="dim" style="font-size:13px;font-weight:400">(Pfadanalyse – experimentell, inspiriert von ArAMIS Web)</span></h2>');
+  h.push('<h2>🔗 Verbindung zweier Elemente finden <span class="dim" style="font-size:13px;font-weight:400">(Pfadanalyse – experimentell)</span></h2>');
   h.push('<div class="purpose">Wie hängt <b>Element A</b> mit <b>Element B</b> zusammen? Wählen Sie Start- und Ziel-Element — der Analyzer findet die <b>Verbindungskette</b> durch das Modell, zeigt sie als Schrittfolge, Tabelle und Graph und erklärt nachvollziehbar, <b>wenn keine Verbindung existiert</b> (z.&nbsp;B. getrennte Teilarchitekturen).</div>');
   h.push('<div class="pathgrid">');
 
@@ -676,7 +676,7 @@ function pathExportXLSX() {
   var ovRows = [
     ['Eigenschaft', 'Wert'],
     ['Anwendung', 'EAM AI Suite v9.1'],
-    ['Funktion', 'Verbindungs-/Pfadanalyse (ArAMIS-inspiriert)'],
+    ['Funktion', 'Verbindungs-/Pfadanalyse'],
     ['Start-Element', o.s ? o.s.name : '—'],
     ['Start-Stereotype', o.s ? o.s.st : ''],
     ['Ziel-Element', o.e ? o.e.name : '—'],

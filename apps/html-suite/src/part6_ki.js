@@ -79,7 +79,10 @@
     var xml = new DOMParser().parseFromString(new TextDecoder(enc).decode(bytes), 'application/xml');
     if (xml.getElementsByTagName('parsererror').length) throw new Error('MDG-XML konnte nicht geparst werden.');
     var rules = { profileName: name || '', version: '', elementStereo: {}, connectorStereo: {}, viewpoints: [], viewpointInfo: {}, toolbox: {} };
-    var CONN = { 'Connector': 1, 'Package': 1, 'Dependency': 1, 'Abstraction': 1, 'Realization': 1, 'Realisation': 1, 'Generalization': 1, 'Association': 1, 'Aggregation': 1, 'Composition': 1, 'InformationFlow': 1, 'ControlFlow': 1, 'ObjectFlow': 1, 'Usage': 1, 'Trace': 1, 'AssociationClass': 1 };
+    /* Beziehungs-Metaklassen -- dieselbe Liste wie im Python-Parser
+       (packages/rules/mdg_parser.py, CONNECTOR_METACLASSES). Ein Paket ist
+       keine Beziehung, eine Nachricht (Message) schon. */
+    var CONN = { 'Abstraction': 1, 'Aggregation': 1, 'Association': 1, 'Composition': 1, 'Connector': 1, 'ControlFlow': 1, 'Dependency': 1, 'Deployment': 1, 'Extend': 1, 'Generalization': 1, 'Include': 1, 'InformationFlow': 1, 'Manifestation': 1, 'Message': 1, 'ObjectFlow': 1, 'Realisation': 1, 'Realization': 1, 'Substitution': 1, 'Usage': 1 };
     var root = xml.documentElement;
     rules.version = root.getAttribute('version') || '';
 
@@ -312,7 +315,7 @@
   /* ---------- System-Prompt ---------- */
   function systemPrompt(voc, ruleText) {
     var base = [
-      'Du bist ein Enterprise-Architekt fuer die Bundeswehr-Domäne ADMBw (NAFv4/ADMBw-Metamodell).',
+      'Du bist ein Enterprise-Architekt fuer die Domäne ADMBw (NAFv4/ADMBw-Metamodell).',
       'Deine Aufgabe: Extrahiere aus der bereitgestellten Beschreibung (Text und/oder Bild) ein vollstaendiges Architekturmodell als JSON.',
       '',
       'ANTWORTE AUSSCHLIESSLICH MIT JSON (kein Kommentar, kein Markdown). Format:',
@@ -1159,7 +1162,7 @@
         var guid = String(o.ea_guid || '').trim();
         if (!guid) continue;
         eintraege.push({ name: String(o.Name).trim(), stereotype: String(o.Stereotype || '').trim(),
-                         guid: guid.toUpperCase(), package: pfad(Number(o.Package_ID || 0)) });
+                         guid: guid, package: pfad(Number(o.Package_ID || 0)) });
       }
       so.free();
       db.close();
@@ -1380,7 +1383,9 @@
      Inhalt. Katalogelemente behalten damit ihre Kennung, auch wenn sie in ein
      anderes Paket wandern (Labeled-Tree-Abgleich). */
   function elementGuid(ir, e) {
-    if (e && e.guid) return String(e.guid).toUpperCase();
+    /* Woertlich: eine geaenderte Schreibweise waere fuer den Versionsabgleich
+       eine andere Kennung. */
+    if (e && e.guid) return String(e.guid).trim();
     if (e && e.origin) return stableGuid('katalog:' + e.origin);
     return stableGuid(String(e.package || '') + '|' + String(e.stereotype || '') + '|' + String(e.name || ''));
   }
@@ -1398,6 +1403,23 @@
   function escSql(db, s) {
     /* Parameter über prepare/bind statt String-Escaping */
     return s;
+  }
+
+  /* Viewpoint einer Sicht: zuerst aus dem Namen ("C1 : ..."), sonst die
+     Sichtart, deren Elementarten die meisten Elemente der Sicht abdecken.
+     Ohne Zuordnung fehlt der Sicht im Werkzeug die Viewpoint-Kennung. */
+  function sichtCode(d, vp) {
+    var m = /^\s*([A-Z][0-9])\b/.exec(String(d.name || ''));
+    if (m && vp[m[1]]) return m[1];
+    var arten = {};
+    ((S.model && S.model.elements) || []).forEach(function (e) { arten[e.name] = e.stereotype; });
+    var best = '', bestN = 0;
+    Object.keys(vp).sort().forEach(function (k) {
+      var els = vp[k].els || [];
+      var n = (d.elements || []).filter(function (nm) { return els.indexOf(arten[nm]) >= 0; }).length;
+      if (n > bestN) { best = k; bestN = n; }
+    });
+    return best;
   }
 
   function buildQea() {
@@ -1427,6 +1449,22 @@
         try { db.run("DELETE FROM t_xref WHERE Client IN (SELECT ea_guid FROM t_object)"); } catch (e) { }
       }
 
+      /* Bestand des Grundgerüsts (Startpaket): vorhandene Kennungen werden
+         wiederverwendet statt ein zweites Mal angelegt. Verglichen wird ohne
+         Gross-/Kleinschreibung, geschrieben bleibt die vorhandene Schreibweise. */
+      var bestand = {}, bestandKanten = {};
+      if (!clear) {
+        try {
+          st = db.prepare("SELECT Object_ID, ea_guid FROM t_object WHERE ea_guid IS NOT NULL AND ea_guid <> ''");
+          while (st.step()) { r = st.getAsObject(); bestand[String(r.ea_guid).trim().toUpperCase()] = { id: r.Object_ID, guid: String(r.ea_guid).trim() }; }
+          st.free();
+          st = db.prepare("SELECT Connector_ID, ea_guid FROM t_connector WHERE ea_guid IS NOT NULL AND ea_guid <> ''");
+          while (st.step()) { r = st.getAsObject(); bestandKanten[String(r.ea_guid).trim().toUpperCase()] = r.Connector_ID; }
+          st.free();
+        } catch (e) { }
+      }
+      S.uebernommen = 0;
+
       var oid = maxId('t_object', 'Object_ID'), pid = maxId('t_package', 'Package_ID'),
         cid = maxId('t_connector', 'Connector_ID'), did = maxId('t_diagram', 'Diagram_ID'),
         iid = maxId('t_diagramobjects', 'Instance_ID'), prpid = maxId('t_objectproperties', 'PropertyID'),
@@ -1439,39 +1477,77 @@
         [rootPkg, ir.name, 0, ts, ts, stableGuid('|Package|' + String(ir.name || ''))]);
       var pkgId = {}, pkgIds = {};
       pkgIds[ir.packages[0].name] = rootPkg;
+      /* Nur Pakete anlegen, in denen am Ende etwas liegt: Elemente aus dem
+         Grundgerüst bleiben in ihren Paketen; ein leerer Parallelbaum wäre
+         für den Versionsabgleich nur Rauschen. */
+      var elternVon = {}, noetig = {};
+      ir.packages.forEach(function (p) { elternVon[p.name] = p.parent; });
+      function markiere(name) {
+        var schutz = 0;
+        while (name && !noetig[name] && schutz++ < 100) { noetig[name] = true; name = elternVon[name]; }
+      }
+      ir.elements.forEach(function (e) {
+        if (!bestand[String(elementGuid(ir, e)).toUpperCase()]) markiere(e.package);
+      });
+      (ir.diagrams || []).forEach(function (d) { markiere(d.package); });
       ir.packages.forEach(function (p) {
         if (p.name === ir.packages[0].name) return;
+        if (!noetig[p.name]) return;
         var parent = p.parent && pkgIds[p.parent] != null ? pkgIds[p.parent] : rootPkg;
         var id = ++pid;
         pkgIds[p.name] = id;
+        var pg = stableGuid(String(p.parent || '') + '|Package|' + String(p.name || ''));
         ins('t_package', ['Package_ID', 'Name', 'Parent_ID', 'CreatedDate', 'ModifiedDate', 'ea_guid'],
-          [id, p.name, parent, ts, ts, stableGuid(String(p.parent || '') + '|Package|' + String(p.name || ''))]);
-        /* Package-Objekt (EA-Konvention: sitzt im Elternpaket, PDATA1 = eigene Paket-ID) */
+          [id, p.name, parent, ts, ts, pg]);
+        /* Package-Objekt (EA-Konvention: sitzt im Elternpaket, PDATA1 = eigene
+           Paket-ID, dieselbe Kennung wie die Paketzeile -- nicht gewuerfelt,
+           sonst sieht der Versionsabgleich bei jedem Export ein neues Paket). */
         var o = ++oid;
         ins('t_object', ['Object_ID', 'Object_Type', 'Name', 'Package_ID', 'PDATA1', 'NType', 'ea_guid', 'Author', 'Version', 'CreatedDate', 'ModifiedDate'],
-          [o, 'Package', p.name, parent, String(id), 0, newGuid(), 'EAM AI Suite KI', '1.0', ts, ts]);
+          [o, 'Package', p.name, parent, String(id), 0, pg, 'EAM AI Suite KI', '1.0', ts, ts]);
       });
 
       /* 2) Elemente */
       var objId = {}, guidOf = {};
       ir.elements.forEach(function (e) {
+        var g = elementGuid(ir, e);
+        var vorhanden = bestand[String(g).toUpperCase()];
+        if (vorhanden) {
+          /* Steht schon im Grundgerüst: dieselbe Zeile, dieselbe Kennung.
+             Hat das Grundgerüst dort noch keinen Vermerk, wird der aus dem
+             Quelltext ergänzt (vorhandene Vermerke bleiben unangetastet). */
+          objId[e.name] = vorhanden.id;
+          guidOf[e.name] = vorhanden.guid;
+          if (e.note) {
+            try {
+              db.run("UPDATE t_object SET Note = ? WHERE Object_ID = ? AND (Note IS NULL OR TRIM(Note) = '')",
+                [String(e.note), vorhanden.id]);
+            } catch (err) { }
+          }
+          S.uebernommen++;
+          return;
+        }
         var o = ++oid;
         objId[e.name] = o;
-        guidOf[e.name] = elementGuid(ir, e);
+        guidOf[e.name] = g;
+        bestand[String(g).toUpperCase()] = { id: o, guid: g };
         var pkg = pkgIds[e.package] != null ? pkgIds[e.package] : rootPkg;
         ins('t_object', ['Object_ID', 'Object_Type', 'Name', 'Note', 'Package_ID', 'ea_guid', 'Author', 'Version', 'Stereotype', 'CreatedDate', 'ModifiedDate', 'Status', 'Abstract'],
-          [o, e.type || 'Class', e.name, e.note || '', pkg, elementGuid(ir, e), 'EAM AI Suite KI', '1.0', e.stereotype || '', ts, ts, 'Proposed', 0]);
+          [o, e.type || 'Class', e.name, e.note || '', pkg, g, 'EAM AI Suite KI', '1.0', e.stereotype || '', ts, ts, 'Proposed', 0]);
       });
 
       /* 3) Beziehungen */
       ir.connectors.forEach(function (c) {
         var a = objId[c.from], b = objId[c.to];
         if (a == null || b == null) return;
+        var kg = stableGuid(String(guidOf[c.from] || '') + '|' + String(guidOf[c.to] || '') + '|' + String(c.stereotype || '') + '|' + String(c.type || '') + '|' + String(c.name || ''));
+        var schon = bestandKanten[String(kg).toUpperCase()];
+        if (schon != null) { c.__cid = schon; return; }
         var id = ++cid;
         c.__cid = id;
-        ins('t_connector', ['Connector_ID', 'Connector_Type', 'Name', 'Direction', 'Start_Object_ID', 'End_Object_ID', 'ea_guid', 'Stereotype', 'SourceAccess', 'DestAccess', 'RouteStyle'],
-          [id, c.type || 'Association', c.name || '', 'Source -> Destination', a, b,
-            stableGuid(String(guidOf[c.from] || '') + '|' + String(guidOf[c.to] || '') + '|' + String(c.stereotype || '') + '|' + String(c.type || '') + '|' + String(c.name || '')), c.stereotype || '', 'Public', 'Public', 3]);
+        bestandKanten[String(kg).toUpperCase()] = id;
+        ins('t_connector', ['Connector_ID', 'Connector_Type', 'Name', 'Notes', 'Direction', 'Start_Object_ID', 'End_Object_ID', 'ea_guid', 'Stereotype', 'SourceAccess', 'DestAccess', 'RouteStyle'],
+          [id, c.type || 'Association', c.name || '', c.note || '', 'Source -> Destination', a, b, kg, c.stereotype || '', 'Public', 'Public', 3]);
       });
 
       /* 4) Sichten (fehlen sie -> automatisch je Viewpoint-Code gruppieren) */
@@ -1492,11 +1568,12 @@
         var pkg = pkgIds[d.package] != null ? pkgIds[d.package] : rootPkg;
         var vpInfo = null, code = d.code;
         var vp = (window.ADMBW_DATA && ADMBW_DATA.vp) || {};
+        if (!code || !vp[code]) code = sichtCode(d, vp);
         if (code && vp[code]) vpInfo = vp[code];
         var mdg = vpInfo ? 'NAFv4-ADMBw ' + vpInfo.layer + '::' + code + ' - ' + vpInfo.n : '';
         var styleEx = 'SaveTag=' + newGuid().replace(/[{}]/g, '').substring(0, 8) + ';ExcludeRTF=0;DocAll=0;HideQuals=0;AttPkg=1;ShowTests=0;ShowMaint=0;SuppressFOC=1;' + (mdg ? 'MDGDgm=' + mdg + ';' : '');
         ins('t_diagram', ['Diagram_ID', 'Package_ID', 'Name', 'ParentID', 'Diagram_Type', 'ea_guid', 'Version', 'Author', 'CreatedDate', 'ModifiedDate', 'StyleEx', 'ShowForeign', 'ShowPackageContents', 'Orientation', 'Scale'],
-          [id, pkg, d.name, 0, 'Custom', newGuid(), '1.0', 'EAM AI Suite KI', ts, ts, styleEx, 1, 1, 'P', 100]);
+          [id, pkg, d.name, 0, 'Custom', stableGuid('|Diagram|' + String(d.package || '') + '|' + String(d.name || '') + '|' + di), '1.0', 'EAM AI Suite KI', ts, ts, styleEx, 1, 1, 'P', 100]);
         /* Layout: 3 Spalten */
         var i, n = d.elements.length, dx = 0, dy = 0;
         for (i = 0; i < n; i++) {

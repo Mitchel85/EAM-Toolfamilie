@@ -39,7 +39,7 @@ Prüfung gegen das Regelwerk der MDG, nicht gegen die eigene Validierung:
 - **Unbekannte Stereotype:** keine. Alle verwendeten Element- und
   Kanten-Stereotype stehen im Regelwerk.
 - **Metaconstraints:** **1 Verstoß** — `ResourceExchange` verbindet
-  »Aufklärungssatellit« (`OperationalRole`) mit »Geopositionsänderung«
+  »Rolle R1« (`OperationalRole`) mit »Aktivität A1«
   (`ServiceSpecificationRole`). Die Regel erlaubt
   `ResourcePerformer`/`ResourceRole`/`ServiceSpecificationRole`;
   `OperationalRole` erbt nicht von `ResourceRole` (beide erben nur von `AssetRole`).
@@ -61,7 +61,7 @@ weite Teile des Originals — und ordnet Absätze falschen Elementen zu.
 **Erhalten:** alle 26 Dienste samt der sechs Einordnungsketten in die
 Dienstelandschaft; Selbstbeschreibung des »Spacecraft Information Service Bw«
 mit seinen fünf Funktionen, Abhängigkeiten, Nutzung durch »Monitoring Service Bw«
-und der Fähigkeit »Weltraumaufklärung«; die drei Varianten dieses Dienstes;
+und der Fähigkeit »Fähigkeit F1«; die drei Varianten dieses Dienstes;
 »Man in the loop«; drei Konfigurationen; die Beteiligten (Effektor, Bodenkontroll-
 station, Schleuse); Fähigkeiten mit ihrer Bündelung.
 
@@ -77,7 +77,7 @@ station, Schleuse); Fähigkeiten mit ihrer Bündelung.
 - der einzige Dienst, der eine Fähigkeit trägt
 
 **Falsch zugeordnet:** Die Selbstbeschreibung des Spacecraft Information Service
-erscheint als Beschreibung von »Bemanntes Aufklärungselement Weltraum«; die
+erscheint als Beschreibung von »Element E1«; die
 Bereichsnotiz der Idealtypischen Architektur als Beschreibung des »Operationellen
 Architekten Bundeswehr«; die Kettenübersicht als Eigenbeschreibung einzelner
 Dienste. Ursache: Der Generator nimmt den **nächstgelegenen Absatz** als Notiz —

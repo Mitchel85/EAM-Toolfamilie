@@ -182,7 +182,7 @@ var EDIT = (function () {
     if (!d) return;
     var h = [];
     h.push('<div class="edr-head"><b>✏️ Änderungen an der Architektur (' + changes.length + ')</b><button onclick="EDIT.closePanel()" title="Schließen">✕</button></div>');
-    h.push('<div class="edr-hint">Gespeichert wird erst über <b>„Als neue .qea speichern“</b> — in eine <b>neue Datei</b>. Die Originaldatei bleibt unverändert. Für den ersten Test: Ergebnis in einer <b>Kopie</b> mit Sparx EA prüfen.</div>');
+    h.push('<div class="edr-hint">Gespeichert wird erst über <b>„Als neue .qea speichern“</b> — in eine <b>neue Datei</b>. Die Originaldatei bleibt unverändert. Für den ersten Test: Ergebnis in einer <b>Kopie</b> im Modellierungswerkzeug prüfen.</div>');
     if (!changes.length) {
       h.push('<div class="edr-empty">Noch keine Änderungen vorgemerkt.<br><span class="dim">Nutzen Sie die ✏️-Buttons an Elementen, Paketen, Sichten und Beziehungen.</span></div>');
     } else {
@@ -604,7 +604,7 @@ var EDIT = (function () {
     oid = String(oid);
     var o = OBJS[oid];
     if (!o) return;
-    if (o.type === 'Package') { toast('Pakete werden hier nicht gelöscht — bitte in Sparx EA.'); return; }
+    if (o.type === 'Package') { toast('Pakete werden hier nicht gelöscht — bitte im Modellierungswerkzeug.'); return; }
     var conns = 0, i, kinds = [];
     for (i = 0; i < CONS.length; i++) { if (String(CONS[i].a) === oid || String(CONS[i].b) === oid) { conns++; if (kinds.length < 4) kinds.push(s0(CONS[i].st) || s0(CONS[i].type)); } }
     var dgs = 0, k;
@@ -1053,7 +1053,7 @@ var EDIT = (function () {
         h.push('<div class="ok"><b>' + esc(written[i].fname) + '</b><br><span class="dim">' +
           (written.length > 1 ? 'M' + written[i].srcNo + ' · ' : '') + written[i].count + ' Änderung(en) · ' + esc(written[i].dstr) + '</span></div>');
       }
-      h.push('<p class="dim">Die Originaldatei' + (written.length > 1 ? 'en wurden' : ' wurde') + ' nicht verändert. Empfehlung: Die neue(n) Datei(en) zunächst in einer Kopie mit Sparx EA öffnen und prüfen.</p></div>');
+      h.push('<p class="dim">Die Originaldatei' + (written.length > 1 ? 'en wurden' : ' wurde') + ' nicht verändert. Empfehlung: Die neue(n) Datei(en) zunächst in einer Kopie im Modellierungswerkzeug öffnen und prüfen.</p></div>');
       openModal('✅ Änderungen gespeichert', h.join(''), '<button class="btn-sm pri" onclick="EDIT.modalClose()">OK</button>');
 
       /* Ansicht aktualisieren (setzt auch die Vormerkliste zurück) */

@@ -84,8 +84,11 @@ MAX_ATTEMPTS = 2
 # Chargen: Ab dieser Promptlaenge wird der Quelltext geteilt. Das Budget gilt
 # fuer den Quelltextanteil einer Charge, nicht fuer den ganzen Prompt -- das
 # Regelwerk (rund 35.000 Zeichen) kommt in jeder Charge hinzu.
-DEFAULT_BATCH_CHARS = 120_000
-DEFAULT_BATCH_THRESHOLD = 200_000
+# Ein Aufruf liefert nur so viel, wie die Antwortgrenze des Modells hergibt.
+# Lange Quellen werden deshalb abschnittsweise gelesen (gemessen am Quelltext,
+# nicht am Prompt -- der Bestandsblock macht den Prompt sonst scheinbar kurz).
+DEFAULT_BATCH_CHARS = 12_000
+DEFAULT_BATCH_THRESHOLD = 16_000
 
 TAG_SOURCE_REF = "source_ref"
 TAG_SOURCE_DOC = "source_doc"
@@ -590,8 +593,11 @@ def build_prompt(
     if known:
         lines = "\n".join(f"- {name} «{stereotype}»" for name, stereotype in known)
         known_block = (
-            "Bereits erfasste Elemente aus frueheren Abschnitten (exakt diesen Namen\n"
-            "verwenden, nicht neu anlegen, kein zweites Element gleichen Namens):\n"
+            "Bereits erfasste Elemente (Katalog, Startpaket, fruehere Abschnitte). Nennt der\n"
+            "Quelltext eines davon, nimm es mit genau diesem Namen und Stereotyp in\n"
+            "deine Ausgabe auf (mit source_ref des Absatzes, der es nennt) - es wird\n"
+            "mit dem Bestand zusammengefuehrt, nicht doppelt angelegt. Lege keine\n"
+            "abweichende Schreibweise und kein zweites Element gleichen Namens an:\n"
             f"{lines}\n\n"
         )
 
@@ -613,8 +619,8 @@ def build_prompt(
         "Regeln:\n"
         "1. Verwende ausschliesslich die gelisteten Stereotype und waehle den\n"
         "   genauesten, der die Sache benennt (spezifisch vor allgemein).\n"
-        "   Sammelbegriffe (Baugruppen, Dienste, Faehigkeiten, Kennzahlen) sind\n"
-        "   keine Elemente.\n"
+        "   Sammelbegriffe, die nur eine Gruppe benennen (etwa eine Kapitel- oder\n"
+        "   Listenueberschrift im Plural), sind keine Elemente.\n"
         "2. Jedes Element und jede Beziehung braucht \"source_ref\": die Nummer des\n"
         "   Absatzes, in dem es belegt ist (Format D1-S14, aus dem Quelltext unten).\n"
         "   Eine Ueberschrift benennt nur; belegt wird mit dem folgenden Textabsatz.\n"
@@ -981,8 +987,16 @@ def answer_to_ir(
     package: str = DEFAULT_PACKAGE,
     backend: str = "",
     attempts: int = 1,
+    bekannte: Sequence[tuple[str, str]] = (),
 ) -> ExtractionResult:
-    """Kandidaten -> IR. Elemente ohne Beleg werden verworfen und gemeldet."""
+    """Kandidaten -> IR. Elemente ohne Beleg werden verworfen und gemeldet.
+
+    ``bekannte`` sind Elemente aus Katalog, Startpaket oder frueheren Chargen
+    (Name, Stereotyp). Nennt eine Beziehung eines davon als Endpunkt, ohne es
+    selbst aufzufuehren, wird es uebernommen -- aber nur, wenn der Absatz, den
+    die Beziehung zitiert, den Namen woertlich enthaelt. Belegt ist damit die
+    Verwendung; der Gegenstand selbst existiert im Bestand.
+    """
     try:
         validate_answer(answer, rules)
     except AnswerError as exc:
@@ -1061,6 +1075,17 @@ def answer_to_ir(
     for bekannt in seen_names:
         aliases.setdefault(_name_key(bekannt), bekannt)
 
+    bestand_namen: dict[str, tuple[str, str]] = {}
+    bestand_alias: dict[str, tuple[str, str]] = {}
+    for bekannt_name, bekannt_art in bekannte:
+        bekannt_name = str(bekannt_name or "").strip()
+        bekannt_art = str(bekannt_art or "").strip()
+        if not bekannt_name or not bekannt_art:
+            continue
+        bestand_namen.setdefault(_flach(bekannt_name), (bekannt_name, bekannt_art))
+        bestand_alias.setdefault(_name_key(bekannt_name), (bekannt_name, bekannt_art))
+    aus_bestand: list[str] = []
+
     connectors: list[dict[str, Any]] = []
     seen_connectors: set[tuple[str, str, str, str]] = set()
     candidates = sorted(
@@ -1111,8 +1136,35 @@ def answer_to_ir(
                 return geloest
             return []
 
-        quellen = _aufloesen(source)
-        ziele = _aufloesen(target)
+        def _aus_bestand(name: str) -> list[str]:
+            treffer = bestand_namen.get(_flach(name)) or bestand_alias.get(_name_key(name))
+            if not treffer:
+                return []
+            bekannt_name, art = treffer
+            if _flach(bekannt_name) not in _flach(segment.text):
+                return []  # der zitierte Absatz nennt ihn nicht: kein Beleg
+            regel_art = rules.elements.get(art)
+            if regel_art is None or regel_art.abstract:
+                return []
+            if bekannt_name not in seen_names:
+                beleg_b = _beleg_segment(segment, segments)
+                seen_names[bekannt_name] = beleg_b.ref
+                aliases.setdefault(_name_key(bekannt_name), bekannt_name)
+                elements.append(
+                    {
+                        "package": target_package,
+                        "name": bekannt_name,
+                        "stereotype": art,
+                        "ea_type": rules.element_ea_type(art),
+                        "notes": beleg_b.text,
+                        "tags": _provenance_tags(beleg_b, entry.get("confidence", 0.0)),
+                    }
+                )
+                aus_bestand.append(bekannt_name)
+            return [bekannt_name]
+
+        quellen = _aufloesen(source) or _aus_bestand(source)
+        ziele = _aufloesen(target) or _aus_bestand(target)
         if not quellen or not ziele:
             missing = [name for name, treffer in ((source, quellen), (target, ziele)) if not treffer]
             dropped.append(
@@ -1185,6 +1237,7 @@ def answer_to_ir(
                 "segments": len(segments),
                 "documents": sorted({segment.document for segment in segments}),
                 "dropped": [drop.as_json() for drop in dropped],
+                "bekannte_endpunkte": aus_bestand,
                 "notizen": {
                     "gesamt": notizen_gesamt,
                     "vollstaendig_geliefert": notizen_voll,
@@ -1575,6 +1628,19 @@ def plan_batches(
     return tuple(batches)
 
 
+def _bekannte_fuer(
+    batch: Sequence[Segment], known: Sequence[tuple[str, str]], limit: int
+) -> tuple[tuple[str, str], ...]:
+    """Bestand fuer eine Charge: zuerst, was der Abschnitt woertlich nennt,
+    dann das zuletzt Erfasste -- bis zur Obergrenze. Ein grosser Katalog
+    passt nicht in jeden Prompt; gezeigt wird, was der Text braucht."""
+    text = _flach(" ".join(segment.text for segment in batch))
+    genannt = [item for item in known if item[0] and _flach(item[0]) in text]
+    zuletzt = list(reversed(known))
+    auswahl = list(dict.fromkeys([*genannt, *zuletzt]))
+    return tuple(auswahl[:limit])
+
+
 def merge_answers(answers: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     """Fuehrt die Antworten mehrerer Chargen zusammen.
 
@@ -1633,8 +1699,9 @@ def extract_batched(
     """
     segments = split_documents(texts)
     seed = list(known)
-    full_prompt = build_prompt(segments, rules, package, known=tuple(seed))
-    if budget_chars <= 0 or len(full_prompt) <= threshold_chars:
+    quelltext = sum(len(segment.text) for segment in segments)
+    if budget_chars <= 0 or quelltext <= threshold_chars:
+        full_prompt = build_prompt(segments, rules, package, known=tuple(seed))
         answer, attempts = _request_answer(backend, full_prompt, rules)
         return answer_to_ir(
             answer,
@@ -1643,6 +1710,7 @@ def extract_batched(
             package=package,
             backend=backend.name,
             attempts=attempts,
+            bekannte=tuple(seed),
         )
 
     batches = plan_batches(segments, budget_chars)
@@ -1651,7 +1719,7 @@ def extract_batched(
     bericht: list[dict[str, Any]] = []
     attempts_total = 0
     for number, batch in enumerate(batches, start=1):
-        prompt = build_prompt(batch, rules, package, known=tuple(known[-known_limit:]))
+        prompt = build_prompt(batch, rules, package, known=_bekannte_fuer(batch, known, known_limit))
         answer, attempts = _request_answer(backend, prompt, rules, allow_empty=True)
         attempts_total += attempts
         answers.append(answer)
@@ -1685,6 +1753,7 @@ def extract_batched(
         package=package,
         backend=backend.name,
         attempts=attempts_total,
+        bekannte=tuple(known),
     )
     result.ir["meta"]["extraction"]["chargen"] = bericht
     return result

@@ -69,6 +69,8 @@ jobs:
       - name: Script-Maker-Tests
         run: node apps/admbw-script-maker/tests/run_tests.js
 
+      - name: Kein Modellwissen im Anwendungscode
+        run: python scripts/check_no_model_leak.py
       - name: Tests
         run: python -m pytest -q
 

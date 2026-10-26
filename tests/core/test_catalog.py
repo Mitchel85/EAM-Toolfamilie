@@ -160,3 +160,28 @@ def test_ohne_katalog_bleibt_alles_wie_bisher(tmp_path: Path) -> None:
     finally:
         con.close()
     assert guid == qea_writer.guid_for("Architektur", "ServiceSpecification", "Kampfpanzer")
+
+
+def test_katalogkennung_behaelt_schreibweise(tmp_path: Path, monkeypatch) -> None:
+    """Gemischte Gross-/Kleinschreibung im Katalog kommt woertlich im Ergebnis an."""
+    import sys
+
+    gemischt = "{ABCD0000-12ab-34CD-56ef-0000000000a1}"
+    monkeypatch.setattr(sys.modules[__name__], "KATALOG_GUID", gemischt)
+    katalog = _katalog(tmp_path)
+    ziel = tmp_path / "ergebnis.qea"
+    eam_ai.build(
+        mdg=MDG,
+        text=_text(tmp_path),
+        out=ziel,
+        backend=_antwort(),
+        findings_path=tmp_path / "f.json",
+        sidecar=False,
+        katalog=katalog,
+    )
+    con = sqlite3.connect(str(ziel))
+    try:
+        guid = con.execute("select ea_guid from t_object where Name = 'Kampfpanzer'").fetchone()[0]
+    finally:
+        con.close()
+    assert guid == gemischt

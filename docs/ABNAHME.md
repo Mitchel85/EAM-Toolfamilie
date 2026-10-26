@@ -280,8 +280,8 @@ gültigen MDG-Kante**, gemessen über zwei Läufe. Der Zähler steht in
 
 Beide Läufe liegen über der geforderten Schwelle. Der Nachtrag ergänzte je
 Lauf zwei Kanten, die das Modell trotz eindeutigem Satz nicht geliefert hatte:
-`Führungsmodul -> Battle-Management-System Weltraum` und
-`Schleusentür -> Steuerungssoftware` (beide `HostedOn`). Die Kanten tragen
+`Baugruppe A -> System B` und
+`Baugruppe C -> Software D` (beide `HostedOn`). Die Kanten tragen
 `source_ref`, `source_doc` und `source_confidence = 0.60`; die Herkunft ist
 damit vollständig.
 
@@ -296,8 +296,8 @@ damit vollständig.
   der vierte für die **Struktur** (75/100 %). Beide Zahlen gehören zu
   unterschiedlichen Modellen und werden nicht zu einer Quote verrechnet.
 - Die Kanten `HostedOn` sind die erste MDG-gültige Regel für das jeweilige
-  Paar; fachlich enger wäre `Control` (Führungsmodul) bzw. `Composition`
-  (Schleusentür), beide sind im Regelwerk für diese Stereotypen nicht
+  Paar; fachlich enger wäre `Control` (erstes Paar) bzw. `Composition`
+  (zweites Paar), beide sind im Regelwerk für diese Stereotypen nicht
   zulässig. Der Nachtrag nimmt keine Regel an, die die MDG ablehnt.
 
 ## Fünfter Lauf: Download-Einstieg (Release `v2.4.4`)

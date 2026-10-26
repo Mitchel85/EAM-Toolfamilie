@@ -6,6 +6,33 @@ wird von `tests/test_packaging.py` gegeneinander geprueft:
 
 ## 3.2.0 - 2026-10-26
 
+### Kennungen woertlich erhalten (Gross-/Kleinschreibung)
+`catalog_index`, `qea_writer` und die HTML-Suite behandelten `ea_guid` bisher
+als Grossbuchstaben. Eine Kennung mit Kleinbuchstaben aus Katalog oder
+Startpaket kam zwar als dieselbe UUID heraus, aber nicht Zeichen fuer Zeichen
+identisch. Jetzt wird nur ohne Gross-/Kleinschreibung verglichen; geschrieben
+bleibt die vorhandene Schreibweise. In der HTML-Suite werden vorhandene Zeilen
+des Grundgeruests ausserdem direkt wiederverwendet statt neu angelegt.
+
+### Vermerke an wiederverwendeten Bestandselementen
+Traf ein extrahiertes Element auf eine vorhandene Zeile im Startpaket ohne
+eigenen Vermerk (`Note`), ging der aus dem Quelltext gewonnene Absatz beim
+Zusammenfuehren verloren (`model_merge` und HTML-Suite). Leere Vermerke am
+Bestandselement werden jetzt aus der Quelle gefuellt, vorhandene Vermerke
+bleiben unangetastet.
+
+### Chargen nach Quelltextlaenge und Bestand im Prompt
+`extract_batched` misst die Chargenschwelle jetzt am Quelltext statt am Prompt
+und waehlt je Abschnitt zuerst die im Abschnitt genannten Bestandselemente.
+Endpunkte einer Beziehung, die im Bestand stehen und im zitierten Absatz
+woertlich vorkommen, werden mit diesem Absatz als Beleg uebernommen.
+
+### Einheitliche Zaehlung und bereinigte Auslieferungen
+Python-Parser, HTML-Suite und MDG-Web-Parser nutzen dieselben 19
+Beziehungs-Metaklassen (138 Beziehungs-Stereotype in NAFv4-ADMBw 2026.05).
+Hersteller- und Systemkuerzel in den ausgelieferten HTML-Werkzeugen sind durch
+neutrale Fachbegriffe ersetzt.
+
 ### Lange Beschreibungen im Browser
 Die HTML-Suite schickte die ganze Quelle in einem Aufruf und schnitt bei
 12.000 Ausgabetokens ab -- ein Handbuch passt dort nie hinein. Jetzt teilt sie

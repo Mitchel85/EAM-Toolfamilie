@@ -1,5 +1,5 @@
 <script>
-/* QEA-Reader: nativer SQLite-Parser fuer Sparx-Enterprise-Architect .qea-Dateien.
+/* QEA-Reader: nativer SQLite-Parser fuer .qea-Dateien.
    Vanilla-JS, kein WASM/CDN. Liest Tabellen-B-Trees inkl. Overflow-Seiten.
    Danach Abbildung ERB -> gemeinsames Datenmodell (Projekte, Meilensteine, Orgs, Kanten). */
 'use strict';
@@ -10,7 +10,7 @@ function qeaOpen(buffer) {
   const dv = new DataView(buffer);
   let magic = '';
   for (let i = 0; i < 16; i++) magic += String.fromCharCode(u8[i]);
-  if (magic.indexOf('SQLite format 3') !== 0) throw new Error('Kein SQLite-Format erkannt. Unterstützt werden .qea/.qeax/.eapx im SQLite-Format (Sparx EA 13+). Ältere .eap-Dateien (MS Access/Jet) oder anders formatierte Dateien bitte in Enterprise Architect als SQLite-Projekt exportieren.');
+  if (magic.indexOf('SQLite format 3') !== 0) throw new Error('Kein SQLite-Format erkannt. Unterstützt werden .qea/.qeax/.eapx im SQLite-Format (ab Werkzeugversion 13). Ältere .eap-Dateien (MS Access/Jet) oder anders formatierte Dateien bitte in Enterprise Architect als SQLite-Projekt exportieren.');
   const psRaw = dv.getUint16(16, false);
   const pageSize = psRaw === 1 ? 65536 : psRaw;
   const reserved = u8[20];

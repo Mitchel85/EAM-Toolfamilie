@@ -1106,3 +1106,35 @@ def test_extract_batched_stays_single_call_below_threshold(rules):
     )
     assert len(backend.prompts) == 1
     assert "chargen" not in result.ir["meta"]["extraction"]
+
+
+def _bestand_antwort(source_ref: str) -> dict:
+    return {
+        "elements": [
+            {"name": "Lagebildsystem", "stereotype": "System", "source_ref": "D1-S1", "confidence": 0.9},
+        ],
+        "connectors": [
+            {"source": "Lagebildsystem", "target": "Dienst Lagebild", "stereotype": "Provides",
+             "source_ref": source_ref, "confidence": 0.7},
+        ],
+    }
+
+
+def test_endpunkt_aus_bestand_wird_uebernommen_wenn_absatz_ihn_nennt(rules):
+    segmente = ex.split_documents(["Das Lagebildsystem stellt den Dienst Lagebild bereit.\n\nEin zweiter Absatz."])
+    result = ex.answer_to_ir(
+        _bestand_antwort("D1-S1"), segmente, rules, bekannte=(("Dienst Lagebild", "ServicePort"),)
+    )
+    assert [c["stereotype"] for c in result.ir["connectors"]] == ["Provides"]
+    namen = {e["name"]: e["stereotype"] for e in result.ir["elements"]}
+    assert namen["Dienst Lagebild"] == "ServicePort"
+    assert result.ir["meta"]["extraction"]["bekannte_endpunkte"] == ["Dienst Lagebild"]
+
+
+def test_endpunkt_aus_bestand_ohne_nennung_im_absatz_bleibt_verworfen(rules):
+    segmente = ex.split_documents(["Das Lagebildsystem stellt den Dienst Lagebild bereit.\n\nEin zweiter Absatz."])
+    result = ex.answer_to_ir(
+        _bestand_antwort("D1-S2"), segmente, rules, bekannte=(("Dienst Lagebild", "ServicePort"),)
+    )
+    assert result.ir["connectors"] == []
+    assert "Dienst Lagebild" not in {e["name"] for e in result.ir["elements"]}

@@ -178,10 +178,12 @@ _GUID_LEGACY_RE = re.compile(r"^[A-Za-z0-9]+(?:-[A-Za-z0-9]+){3,}$")
 def normalize_guid(value: Any, what: str) -> str:
     """Kanonische EA-GUID: ``{8-4-4-4-12}`` in Grossbuchstaben.
 
-    Akzeptiert mit und ohne geschweifte Klammern, Gross-/Kleinschreibung ist
-    egal. Zusaetzlich werden die in EA-Testmodellen vorkommenden
-    Platzhalter-GUIDs (Buchstaben statt Hexziffern) angenommen und
-    grossgeschrieben zurueckgegeben.
+    Akzeptiert mit und ohne geschweifte Klammern. Die Schreibweise bleibt
+    woertlich erhalten: eine Kennung aus Katalog oder Startpaket muss nach
+    dem Export Zeichen fuer Zeichen dieselbe sein, sonst sieht der
+    Versionsabgleich ein anderes Element. Zusaetzlich werden die in
+    EA-Testmodellen vorkommenden Platzhalter-GUIDs (Buchstaben statt
+    Hexziffern) angenommen.
     """
     text = _text(value, what, allow_empty=False).strip()
     if text.startswith("{") or text.endswith("}"):
@@ -193,9 +195,9 @@ def normalize_guid(value: Any, what: str) -> str:
     if any(character.isspace() for character in text):
         _fail(f"{what}: Leerzeichen in GUID {value!r}")
     if _GUID_HEX_RE.match(text):
-        return "{" + text.upper() + "}"
+        return "{" + text + "}"
     if _GUID_LEGACY_RE.match(text):
-        return "{" + text.upper() + "}"
+        return "{" + text + "}"
     _fail(
         f"{what}: GUID {value!r} hat nicht das Format "
         "'{8-4-4-4-12}' (Hexziffern) -- Beispiel: {00000000-0000-0000-0000-000000000000}"
@@ -869,10 +871,15 @@ def plan_model(ir: Any, *, allow_empty: bool = False) -> ModelPlan:
 
 
 def _check_unique(values: Sequence[str], what: str) -> None:
+    # Verglichen wird ohne Gross-/Kleinschreibung: zwei Zeilen, die sich nur
+    # darin unterscheiden, waeren fuer EA dieselbe Kennung.
     seen: dict[str, int] = {}
+    first: dict[str, str] = {}
     for value in values:
-        seen[value] = seen.get(value, 0) + 1
-    duplicates = sorted(v for v, count in seen.items() if count > 1)
+        key = value.upper()
+        seen[key] = seen.get(key, 0) + 1
+        first.setdefault(key, value)
+    duplicates = sorted(first[k] for k, count in seen.items() if count > 1)
     if duplicates:
         _fail(f"{what}: doppelte GUID(s) {duplicates[:5]} -- Input nicht eindeutig")
 

@@ -1922,7 +1922,7 @@ function loadMASCArchitektur() {
   versuch(0)
     .then(function (res) {
       /* SharePoint liefert bei falschem Pfad oder fehlender Freigabe eine HTML-Seite
-         mit Status 200. Ohne diese Prüfung käme nur „keine Sparx-EA-Struktur". */
+         mit Status 200. Ohne diese Prüfung käme nur „keine QEA-Modellstruktur". */
       var head = '';
       try { head = new TextDecoder('latin1').decode(new Uint8Array(res.buf, 0, 16)); } catch (e) {}
       if (head.indexOf('SQLite format 3') !== 0) {
