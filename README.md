@@ -261,10 +261,11 @@ python3 scripts/verify_graph.py
 
 - Builds sind deterministisch; `tests/test_html_artifacts.py` hält Größe, Titel,
   Funktionsmarker und die Trennung der Werkzeuge fest.
-- Die große Musterarchitektur liegt bewusst nicht im Repository (Prüfsumme in
-  `packages/core/ci/fixtures_manifest.json`). Ohne sie werden die Prüfläufe, die sie
-  brauchen, sichtbar übersprungen. Lokal: Datei nach `packages/core/fixtures/` legen oder
-  `EAM_FIXTURE_STORE` setzen; die MCP-Tests brauchen zusätzlich `MASC_QEA_PATH`.
+- Die große Musterarchitektur liegt als öffentliche Test-Fixture versioniert im Repository
+  (`packages/core/fixtures/Musterarchitektur_MASC.qea`, Prüfsumme in
+  `packages/core/ci/fixtures_manifest.json`). Die Prüfläufe, die sie brauchen, laufen damit
+  überall — auch in CI. `EAM_FIXTURE_STORE` zeigt optional auf einen anderen Fixture-Ordner;
+  die MCP-Tests akzeptieren zusätzlich `MASC_QEA_PATH`.
 - Regelpfad ohne KI im Quellstand: in `packages/core/` `python3 eam_suite.py --no-llm run …`.
 
 Weiterlesen

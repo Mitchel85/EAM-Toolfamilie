@@ -1804,7 +1804,7 @@
     el('ki-template-info').textContent = S.templateName + ' (' + Math.round((buffer.byteLength || 0) / 1024) + ' KB) ✓';
     templateInventory(buffer).then(function (inv) {
       S.templateInv = inv;
-      if (inv) el('ki-template-info').textContent += ' · ' + (inv.split('\n').length - 3) + ' Standardelemente im Prompt';
+      if (inv) el('ki-template-info').textContent += ' · ' + (inv.match(/^- /gm) || []).length + ' Standardelemente im Prompt';
     });
   }
   function pickTemplate() {

@@ -8,9 +8,11 @@ dist/
 # Altwerkzeug-Build schreibt GitHub-Pages-Spiegel; nicht Teil der Auslieferung.
 apps/*/docs/
 
-# Grosse Fixtures liegen im internen Fixture-Store, nie im Repo.
-# (Musterarchitektur_MASC.qea, 12 MB — Pruefsumme in packages/core/ci/fixtures_manifest.json)
+# Grosse Fixtures liegen im internen Fixture-Store; die Musterarchitektur ist die Ausnahme (versionierte Test-Fixture).
+# Grosse Pruefmodelle bleiben lokal -- Ausnahme: die versionierte oeffentliche Test-Fixture
+# (Pruefsumme in packages/core/ci/fixtures_manifest.json)
 packages/core/fixtures/*.qea
+!packages/core/fixtures/Musterarchitektur_MASC.qea
 
 # Vendor-Kopien der Apps entstehen beim Bauen aus vendor/ (scripts/sync_vendor.py).
 apps/*/vendor/

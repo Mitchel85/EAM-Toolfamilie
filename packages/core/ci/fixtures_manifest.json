@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "note": "Nur Pruefsummen der grossen Fixtures. Die Dateien liegen im internen Fixture-Store, nie im Repo (siehe .gitignore). Die MDG-XML ist kein Fixture: sie steht in packages/rules und wird ueber CURRENT gefunden.",
+  "note": "Pruefsummen der grossen Fixtures. Die Musterarchitektur liegt als oeffentliche Test-Fixture versioniert im Repo (packages/core/fixtures/); die Pruefsumme dient der Verifikation. Die MDG-XML ist kein Fixture: sie steht in packages/rules und wird ueber CURRENT gefunden.",
   "fixtures": [
     {
       "name": "Musterarchitektur_MASC.qea",
