@@ -244,7 +244,7 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
   <div class="wrap">
     <div class="kicker">EAM Toolfamilie · Release ${version}</div>
     <h1>Werkzeuge für<br>Architekturmodelle</h1>
-    <p>Vier Werkzeuge für <code>.qea</code>-Modelle: aus Regelwerk und Text ein Modell bauen, ein vorhandenes Modell lesen und prüfen, mehrere Modelle zusammenführen und bearbeiten. Die HTML-Werkzeuge laufen im Browser.</p>
+    <p>Fünf Werkzeuge für <code>.qea</code>-Modelle: aus Regelwerk und Text ein Modell bauen, ein vorhandenes Modell lesen und prüfen, mehrere Modelle zusammenführen und bearbeiten. Die HTML-Werkzeuge laufen im Browser.</p>
     <div class="steps"><span><b>1</b> Werkzeug wählen</span><span><b>2</b> Datei herunterladen</span><span><b>3</b> Im Browser öffnen</span></div>
     <a class="btn light" href="${releases}">Alle Dateien im Release ansehen</a>
     <a class="btn light" href="${repo}">Quelltext und README</a>
