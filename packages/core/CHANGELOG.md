@@ -4,6 +4,16 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.2.2 - 2026-10-27
+
+### Auslieferung
+
+3.2.1 zeigte als Tag auf den Stand vor zwei Nachbesserungen: die Startseite
+sagt wieder „Fünf Werkzeuge", und der MCP-Server findet das Open-WebUI-Tool
+auch unter dem Auslieferungsnamen `eam_qea_analyzer_openwebui.py`. 3.2.2 baut
+alle Assets reproduzierbar aus genau diesem Stand; die Dateien sind sonst
+unverändert.
+
 ## 3.2.1 - 2026-10-27
 
 ### Lieferumfang
