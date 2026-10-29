@@ -19,7 +19,10 @@ import argparse
 
 from mcp.server.fastmcp import FastMCP
 
-from eam_qea_tool import Tools
+try:
+    from eam_qea_tool import Tools
+except ImportError:  # Auslieferung: dieselbe Datei heißt dort eam_qea_analyzer_openwebui.py
+    from eam_qea_analyzer_openwebui import Tools
 
 # ── Init ────────────────────────────────────────
 mcp = FastMCP(
