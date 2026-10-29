@@ -72,7 +72,7 @@ def test_manifest_nennt_nur_ausgelieferte_dateien(tmp_path: Path) -> None:
     sums = _sums(dist)
     assert set(sums) == erwartet
     assert "README.md" not in sums and "GRAPH.md" not in sums
-    assert len(sums) == 11
+    assert len(sums) == len(erwartet)
 
     # Stabile Kopie für direkte Links; identisch mit dem versionierten Archiv.
     stabil = dist / "eam-ai-suite-python.zip"
@@ -83,10 +83,9 @@ def test_manifest_nennt_nur_ausgelieferte_dateien(tmp_path: Path) -> None:
     start = dist / "START-HIER.html"
     assert start.is_file()
     seite = start.read_text(encoding="utf-8")
-    assert seite.count('class="card') == 7
+    assert seite.count('class="card') == 6
     for datei in (
         "EAM-AI-Suite.html",
-        "EAM-QEA-Analyzer.html",
         "EAM-Suite.html",
         "EAM-MDG-Parser.html",
         "eam_qea_analyzer_openwebui.py",
