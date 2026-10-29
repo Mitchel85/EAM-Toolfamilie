@@ -64,8 +64,6 @@ def test_wichtigste_auslieferungen_existieren() -> None:
     erwartet = {
         "apps/html-suite/dist/EAM-AI-Suite.html",
         "apps/html-suite/dist/EAM-AI-Suite.aspx",
-        "apps/html-analyzer/dist/EAM-QEA-Analyzer.html",
-        "apps/html-analyzer/dist/EAM-QEA-Analyzer.aspx",
         "apps/html-editor/dist/EAM-Suite.html",
         "apps/html-editor/dist/EAM-Suite.aspx",
         "apps/mdg-web/dist/EAM-MDG-Parser.html",

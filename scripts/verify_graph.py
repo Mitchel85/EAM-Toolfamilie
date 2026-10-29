@@ -48,8 +48,6 @@ ZELLEN = {
 ARTEFAKTE = {
     "apps/html-suite/dist/EAM-AI-Suite.html": "apps/html-suite",
     "apps/html-suite/dist/EAM-AI-Suite.aspx": "apps/html-suite",
-    "apps/html-analyzer/dist/EAM-QEA-Analyzer.html": "apps/html-analyzer",
-    "apps/html-analyzer/dist/EAM-QEA-Analyzer.aspx": "apps/html-analyzer",
     "apps/html-editor/dist/EAM-Suite.html": "apps/html-editor",
     "apps/html-editor/dist/EAM-Suite.aspx": "apps/html-editor",
     "apps/mdg-web/dist/EAM-MDG-Parser.html": "apps/mdg-web",

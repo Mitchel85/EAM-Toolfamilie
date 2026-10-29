@@ -118,8 +118,9 @@ Teilmodelle zu zerfallen:
 - **EAM Suite** (eine HTML-Datei, Fassung 8.4) — vorhandene Modelle öffnen, mehrere
   verschmelzen, von Hand bearbeiten und als neue `.qea` speichern; ohne MDG-Prüfung, ohne
   KI, ohne Prosa.
-- **EAM QEA Analyzer** (eine HTML-Datei, Fassung 4.0) — vorhandene `.qea` nur lesen und
-  verstehen: Explorer, Sichten, Graph, Pfade, Export als Bild oder Tabelle; schreibt nichts.
+- **EAM QEA Analyzer** (Analyse-Fassung der EAM Suite, Fassung 4.0) — vorhandene `.qea` nur
+  lesen und verstehen: Explorer, Sichten, Graph, Pfade, Export als Bild oder Tabelle; schreibt
+  nichts. Dieselbe Anwendung wie die EAM Suite, auf Analyse reduziert.
 - **EAM MDG Parser** (eine HTML-Datei) — MDG-XML im Browser durchsuchen und als
   Regeldateien exportieren; baut kein Modell. Zusätzlich lässt sich der Master-Prompt des
   ehemaligen ADMBw-Extraktors als optionales Artefakt ausgeben.
@@ -164,10 +165,8 @@ Alle Dateien liegen im öffentlichen Release.
   [EAM-Suite.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.html)
   · für SharePoint:
   [EAM-Suite.aspx](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.aspx)
-- Open WebUI QEA Analyzer:
-  [EAM-QEA-Analyzer.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-QEA-Analyzer.html)
-  · für SharePoint:
-  [EAM-QEA-Analyzer.aspx](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-QEA-Analyzer.aspx)
+- EAM QEA Analyzer (Analyse-Fassung der EAM Suite):
+  [EAM-Suite.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.html)
 - EAM MDG Parser:
   [EAM-MDG-Parser.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-MDG-Parser.html)
 - Open WebUI QEA Analyzer für Open WebUI (fragt eine `.qea` ab, statt zu raten):

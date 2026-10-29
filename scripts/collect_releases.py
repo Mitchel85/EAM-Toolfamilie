@@ -48,18 +48,6 @@ AUSLIEFERUNGEN = [
         "Dieselbe Anwendung als ASPX mit BOM für SharePoint/IIS.",
     ),
     (
-        "apps/html-analyzer/dist/EAM-QEA-Analyzer.html",
-        "EAM-QEA-Analyzer.html",
-        "EAM QEA Analyzer v4.0 — eine HTML-Datei",
-        "Vorhandene `.qea` lesen, prüfen, Abhängigkeiten und Pfade ansehen.",
-    ),
-    (
-        "apps/html-analyzer/dist/EAM-QEA-Analyzer.aspx",
-        "EAM-QEA-Analyzer.aspx",
-        "EAM QEA Analyzer v4.0 — SharePoint-Fassung",
-        "Dieselbe Analyse-App als ASPX mit BOM für SharePoint/IIS; ohne Bearbeiten und ohne KI.",
-    ),
-    (
         "apps/html-editor/dist/EAM-Suite.html",
         "EAM-Suite.html",
         "EAM Suite v8.4 — eine HTML-Datei",
@@ -339,10 +327,10 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
         ),
         _karte(
             "EAM QEA Analyzer", "Nur prüfen",
-            "Vorhandene .qea lesen, prüfen und verstehen: Pakete, Sichten, Elemente, Verbindungen.",
-            "EAM-QEA-Analyzer.html", "EAM-QEA-Analyzer.html herunterladen",
+            "Analyse-Fassung der EAM Suite — dieselbe Anwendung, ohne Bearbeiten. Vorhandene .qea lesen, prüfen und verstehen: Pakete, Sichten, Elemente, Verbindungen.",
+            "EAM-Suite.html", "EAM-Suite.html herunterladen",
             ["Datei herunterladen", "Datei öffnen", "Modell laden"],
-            groesse=groesse("EAM-QEA-Analyzer.html"),
+            groesse=groesse("EAM-Suite.html"),
             slug="analyzer",
         ),
         _karte(
