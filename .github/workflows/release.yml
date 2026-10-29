@@ -42,6 +42,7 @@ jobs:
             dist/EAM-AI-Suite.aspx
             dist/EAM-Suite.html
             dist/EAM-Suite.aspx
+            dist/EAM-Suite-en.html
             dist/EAM-MDG-Parser.html
             dist/eam-mdg-parser.py
             dist/eam_qea_analyzer_openwebui.py

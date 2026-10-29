@@ -88,7 +88,7 @@ FINDINGS_NAME = "findings.json"
 
 # Eine Quelle fuer die Version: hier. pyproject.toml und CHANGELOG.md muessen
 # dazu passen; tests/test_packaging.py prueft die drei Stellen gegeneinander.
-__version__ = "3.2.5"
+__version__ = "3.2.6"
 
 # DOCX ist eine ZIP-Datei mit genau diesem Pfad fuer den sichtbaren Text.
 _DOCX_MAIN = "word/document.xml"

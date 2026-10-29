@@ -4,6 +4,14 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.2.6 - 2026-10-27
+
+### Release-Asset
+
+`EAM-Suite-en.html` wird jetzt auch als Release-Asset veröffentlicht. In 3.2.5
+lag die Datei zwar auf GitHub Pages und in der Prüfsummenliste, fehlte aber in
+der Asset-Liste des Releases.
+
 ## 3.2.5 - 2026-10-27
 
 ### Englische Fassung der EAM Suite
