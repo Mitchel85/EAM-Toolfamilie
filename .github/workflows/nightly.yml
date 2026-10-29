@@ -70,8 +70,6 @@ jobs:
             --notes-file /tmp/notes.md \
             dist/EAM-AI-Suite.html \
             dist/EAM-AI-Suite.aspx \
-            dist/EAM-QEA-Analyzer.html \
-            dist/EAM-QEA-Analyzer.aspx \
             dist/EAM-Suite.html \
             dist/EAM-Suite.aspx \
             dist/EAM-MDG-Parser.html \
