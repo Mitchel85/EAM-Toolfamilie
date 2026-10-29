@@ -42,7 +42,6 @@ jobs:
       - name: HTML-Auslieferungen bauen
         run: |
           python scripts/build_legacy_app.py apps/html-suite
-          python scripts/build_legacy_app.py apps/html-analyzer
           python scripts/build_legacy_app.py apps/html-editor
           python apps/mdg-web/build.py
 

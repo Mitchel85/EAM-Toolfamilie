@@ -88,8 +88,7 @@ ist der lokale Gesamtbau (HTML, Wheel, Offline-Bundle); sein `offline/`- und
 | Datei | Was es ist | Einstieg für |
 |---|---|---|
 | `EAM-AI-Suite.html` | Einzeldatei, offline lauffähig | Sachbearbeiter, SharePoint |
-| `EAM-QEA-Analyzer.html` | Einzeldatei | Lesen/Prüfen einer `.qea` |
-| `EAM-Suite.html` | Einzeldatei | Bearbeiten/Verschmelzen |
+| `EAM-Suite.html` | Einzeldatei | Lesen, Prüfen, Bearbeiten, Verschmelzen |
 | `EAM-MDG-Parser.html` | Browser-Werkzeug für die MDG-XML | Regelwerk prüfen |
 | `eam-ai-suite-python.zip` | Quellstand des Python-Kerns | `pip install ./eam-ai-suite-python` ohne Docker |
 | `eam_qea_analyzer_openwebui.py` | Open-WebUI-Tool (eine Datei) | Open WebUI |
@@ -102,7 +101,7 @@ Bauen — herunterladen, öffnen.
 ## 4. Was ein Nutzer nicht braucht
 
 - Kein Python, um die HTML-Dateien zu öffnen (Doppelklick genügt).
-- Kein Netz für `EAM-AI-Suite.html` und `EAM-QEA-Analyzer.html`.
+- Kein Netz für `EAM-AI-Suite.html` und `EAM-Suite.html`.
 - Kein Docker für die HTML-Dateien; das Offline-Bundle entsteht lokal mit
   `scripts/build_all.py` und ist kein Release-Asset.
 - GitHub-Zugang: Für die Release-Downloads nicht nötig; der Quellcode ist öffentlich.

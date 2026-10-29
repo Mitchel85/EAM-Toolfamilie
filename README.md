@@ -115,27 +115,24 @@ Teilmodelle zu zerfallen:
 - **EAM AI Suite Python** (Kommandozeile `eam-ai` und Webdienst) — dieselbe Kette ohne
   Browser, für Serienläufe und Server. Für das Bauen aus Prosa braucht sie ein KI-Backend;
   ohne KI geht nur das Gerüst aus dem Regelwerk.
-- **EAM Suite** (eine HTML-Datei, Fassung 8.4) — vorhandene Modelle öffnen, mehrere
-  verschmelzen, von Hand bearbeiten und als neue `.qea` speichern; ohne MDG-Prüfung, ohne
-  KI, ohne Prosa.
-- **EAM QEA Analyzer** (Analyse-Fassung der EAM Suite, Fassung 4.0) — vorhandene `.qea` nur
-  lesen und verstehen: Explorer, Sichten, Graph, Pfade, Export als Bild oder Tabelle; schreibt
-  nichts. Dieselbe Anwendung wie die EAM Suite, auf Analyse reduziert.
+- **EAM Suite** (eine HTML-Datei, Fassung 8.4) — vorhandene Modelle analysieren, ansehen
+  (Explorer, Sichten, Graph, Pfade), mehrere verschmelzen, von Hand bearbeiten und als neue
+  `.qea` speichern; ohne MDG-Prüfung, ohne KI, ohne Prosa.
 - **EAM MDG Parser** (eine HTML-Datei) — MDG-XML im Browser durchsuchen und als
   Regeldateien exportieren; baut kein Modell. Zusätzlich lässt sich der Master-Prompt des
   ehemaligen ADMBw-Extraktors als optionales Artefakt ausgeben.
 
 Schnellwahl
 - Neues Modell aus Text → EAM AI Suite (für Serien und Server: EAM AI Suite Python)
-- Modell nur ansehen → EAM QEA Analyzer
+- Modell nur ansehen → EAM Suite
 - Modelle zusammenlegen oder von Hand ändern → EAM Suite
 - Regelwerk nachschlagen → EAM MDG Parser
 
 Abgrenzung
 - Nur die beiden AI Suiten können den ganzen Ablauf. HTML und Python sind zwei getrennte
   Umsetzungen derselben Kette.
-- EAM Suite, EAM QEA Analyzer und EAM MDG Parser sind eigenständige Einzelwerkzeuge mit
-  eigenem Quellstand. Es gibt keinen gemeinsamen UI-Kern.
+- EAM Suite und EAM MDG Parser sind eigenständige Einzelwerkzeuge mit eigenem Quellstand.
+  Es gibt keinen gemeinsamen UI-Kern.
 - Änderungen wandern nicht automatisch mit: ein Fix in der EAM Suite ist kein Fix in der
   EAM AI Suite — und umgekehrt.
 - Die EAM Suite zeigt ein fest eingebautes ADMBw-Referenzraster. Es folgt einer neuen MDG
@@ -165,8 +162,6 @@ Alle Dateien liegen im öffentlichen Release.
   [EAM-Suite.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.html)
   · für SharePoint:
   [EAM-Suite.aspx](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.aspx)
-- EAM QEA Analyzer (Analyse-Fassung der EAM Suite):
-  [EAM-Suite.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.html)
 - EAM MDG Parser:
   [EAM-MDG-Parser.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-MDG-Parser.html)
 - Open WebUI QEA Analyzer für Open WebUI (fragt eine `.qea` ab, statt zu raten):

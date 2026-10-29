@@ -232,7 +232,7 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
   <div class="wrap">
     <div class="kicker">EAM Toolfamilie · Release ${version}</div>
     <h1>Werkzeuge für<br>Architekturmodelle</h1>
-    <p>Fünf Werkzeuge für <code>.qea</code>-Modelle: aus Regelwerk und Text ein Modell bauen, ein vorhandenes Modell lesen und prüfen, mehrere Modelle zusammenführen und bearbeiten. Die HTML-Werkzeuge laufen im Browser.</p>
+    <p>Vier Werkzeuge für <code>.qea</code>-Modelle: aus Regelwerk und Text ein Modell bauen, ein vorhandenes Modell lesen und prüfen, mehrere Modelle zusammenführen und bearbeiten. Die HTML-Werkzeuge laufen im Browser.</p>
     <div class="steps"><span><b>1</b> Werkzeug wählen</span><span><b>2</b> Datei herunterladen</span><span><b>3</b> Im Browser öffnen</span></div>
     <a class="btn light" href="${releases}">Alle Dateien im Release ansehen</a>
     <a class="btn light" href="${repo}">Quelltext und README</a>
@@ -241,7 +241,7 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
 <main class="wrap">
   <h2>Welches Werkzeug wofür</h2>
   <p class="lead">Eine Karte je Werkzeug. Dateiname und Größe stehen darunter.</p>
-  <div class="quick"><b>Schnellwahl:</b> <a href="#ai-suite">Bauen → EAM AI Suite</a> · <a href="#analyzer">Prüfen → QEA Analyzer</a> · <a href="#suite">Bearbeiten → EAM Suite</a> · <a href="#mdg">Nachschlagen → MDG Parser</a></div>
+  <div class="quick"><b>Schnellwahl:</b> <a href="#ai-suite">Bauen → EAM AI Suite</a> · <a href="#suite">Prüfen und Bearbeiten → EAM Suite</a> · <a href="#mdg">Nachschlagen → MDG Parser</a></div>
   <section class="grid">
 ${cards}
   </section>
@@ -250,7 +250,7 @@ ${cards}
   <h2>Auswahl nach Aufgabe</h2>
   <ul class="decision">
     <li><b>Ich habe Text, ein Handbuch, PDF oder ein Bild und will ein Modell bauen.</b> → EAM AI Suite</li>
-    <li><b>Ich habe ein Modell und will es verstehen und prüfen.</b> → EAM QEA Analyzer</li>
+    <li><b>Ich habe ein Modell und will es verstehen und prüfen.</b> → EAM Suite</li>
     <li><b>Ich will Modelle bearbeiten, verschmelzen oder zurückschreiben.</b> → EAM Suite</li>
     <li><b>Ich will nur das Regelwerk nachschlagen.</b> → EAM MDG Parser</li>
     <li><b>Ich nutze Open WebUI und will ein Modell abfragen.</b> → Open-WebUI-Tool (.py)</li>
@@ -326,16 +326,8 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
             slug="ai-suite",
         ),
         _karte(
-            "EAM QEA Analyzer", "Nur prüfen",
-            "Analyse-Fassung der EAM Suite — dieselbe Anwendung, ohne Bearbeiten. Vorhandene .qea lesen, prüfen und verstehen: Pakete, Sichten, Elemente, Verbindungen.",
-            "EAM-Suite.html", "EAM-Suite.html herunterladen",
-            ["Datei herunterladen", "Datei öffnen", "Modell laden"],
-            groesse=groesse("EAM-Suite.html"),
-            slug="analyzer",
-        ),
-        _karte(
-            "EAM Suite", "Bearbeiten",
-            "Mehrere Modelle laden, verschmelzen, bearbeiten und als neue .qea zurückschreiben.",
+            "EAM Suite", "Prüfen und bearbeiten",
+            "Modelle analysieren und ansehen (Explorer, Sichten, Graph, Pfade), mehrere verschmelzen, bearbeiten und als neue .qea zurückschreiben; ohne KI.",
             "EAM-Suite.html", "EAM-Suite.html herunterladen",
             ["Datei herunterladen", "Datei öffnen", "Modelle bearbeiten"],
             groesse=groesse("EAM-Suite.html"),
