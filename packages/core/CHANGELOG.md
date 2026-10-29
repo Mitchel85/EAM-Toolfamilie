@@ -4,6 +4,16 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.2.1 - 2026-10-27
+
+### Lieferumfang
+
+Der EAM QEA Analyzer ist keine eigene HTML-Auslieferung mehr; Analyse, Sichten
+und Viewer stecken in der EAM Suite. Dafür werden zwei eigene Python-Wege
+ausgeliefert: das Open-WebUI-Tool und der MCP-Server (beide brauchen einander).
+Der EAM MDG Parser liegt als HTML und als Python-Skript bei; das Python-Skript
+ist dieselbe Datei wie `mdg_parser.py` im Python-ZIP.
+
 ## 3.2.0 - 2026-10-26
 
 ### Kennungen woertlich erhalten (Gross-/Kleinschreibung)
