@@ -4,6 +4,14 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.2.4 - 2026-10-27
+
+### Beschreibung
+
+Die EAM AI Suite wird als Bauen, Prüfen, Ansehen, Bearbeiten und Speichern
+beschrieben. Das Handbuch ist kein Produktmerkmal; der Rückweg `.qea` →
+Handbuch → Vergleich steht als Test in der README, nicht im Workflow.
+
 ## 3.2.3 - 2026-10-27
 
 ### Startseite

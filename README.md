@@ -95,6 +95,11 @@ Teilmodelle zu zerfallen:
    nachziehen, als neue `.qea` speichern. Das Original bleibt unberührt.
 7. **Ergebnis** — die `.qea` liegt vor.
 
+**Der Rückweg ist ein Test, kein Workflowschritt.** Geprüft wurde, ob das erzeugte Modell
+die Quelle noch trägt: aus der `.qea` wieder ein Handbuch erzeugen und mit der Eingabe
+vergleichen. Das ist eine Kontrolle, keine Funktion des Werkzeugs; Messwerte und Grenzen
+stehen in [docs/ABNAHME.md](docs/ABNAHME.md).
+
 ![Workflow-Abdeckung: welche der fünf Werkzeuge welchen Schritt können](docs/workflow-abdeckung.png)
 
 - Die MDG kommt zuerst. Ohne Regelwerk wird nichts gebaut.
@@ -111,7 +116,7 @@ Teilmodelle zu zerfallen:
 
 - **EAM AI Suite** (eine HTML-Datei, Fassung 9.1) — die ganze Kette im Browser: MDG laden,
   Standardelemente übernehmen, Prosa mit KI in ein Modell übersetzen, prüfen, ansehen,
-  bearbeiten, Handbuch erzeugen.
+  bearbeiten, als `.qea` speichern.
 - **EAM AI Suite Python** (Kommandozeile `eam-ai` und Webdienst) — dieselbe Kette ohne
   Browser, für Serienläufe und Server. Für das Bauen aus Prosa braucht sie ein KI-Backend;
   ohne KI geht nur das Gerüst aus dem Regelwerk.

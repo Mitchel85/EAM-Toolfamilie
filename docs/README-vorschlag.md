@@ -50,7 +50,7 @@ den Ablauf. Messwerte und Grenzen: [docs/ABNAHME.md](docs/ABNAHME.md).
 
 - **EAM AI Suite** (eine HTML-Datei, Fassung 9.1) — die ganze Kette im Browser: MDG laden,
   Standardelemente übernehmen, Prosa mit KI in ein Modell übersetzen, prüfen, ansehen,
-  bearbeiten, Handbuch für den Rückweg-Test erzeugen.
+  bearbeiten, als `.qea` speichern.
 - **EAM AI Suite Python** (Kommandozeile `eam-ai` und Webdienst) — dieselbe Kette ohne
   Browser, für Serienläufe, Server und Läufe ohne KI.
 - **EAM Suite** (eine HTML-Datei, Fassung 8.4) — vorhandene Modelle öffnen, mehrere

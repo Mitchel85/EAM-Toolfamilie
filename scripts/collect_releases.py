@@ -39,7 +39,7 @@ AUSLIEFERUNGEN = [
         "apps/html-suite/dist/EAM-AI-Suite.html",
         "EAM-AI-Suite.html",
         "EAM AI Suite v9.1 — eine HTML-Datei",
-        "Prosa oder Handbuch hinein, `.qea` heraus: prüfen, ansehen, bearbeiten, Handbuch zurück.",
+        "Prosa oder Handbuch hinein, `.qea` heraus: prüfen, ansehen, bearbeiten.",
     ),
     (
         "apps/html-suite/dist/EAM-AI-Suite.aspx",
@@ -334,7 +334,7 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
     karten = [
         _karte(
             "EAM AI Suite", "Bauen",
-            "Text, Handbuch, PDF oder Bild einlesen und daraus ein Modell erzeugen; prüfen, ansehen, bearbeiten und ein Handbuch zurückschreiben.",
+            "Text, Handbuch, PDF oder Bild einlesen und daraus ein Modell erzeugen; prüfen, ansehen, bearbeiten und als .qea speichern.",
             "EAM-AI-Suite.html", "EAM-AI-Suite.html herunterladen",
             ["Datei herunterladen", "Datei öffnen", "Modell erzeugen"],
             groesse=groesse("EAM-AI-Suite.html"),
