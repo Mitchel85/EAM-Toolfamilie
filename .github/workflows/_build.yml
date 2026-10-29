@@ -43,6 +43,7 @@ jobs:
         run: |
           python scripts/build_legacy_app.py apps/html-suite
           python scripts/build_legacy_app.py apps/html-editor
+          python apps/html-editor/build_english.py
           python apps/mdg-web/build.py
 
       - name: Auslieferungsgraph (jede Zelle, jede Kante, jedes Artefakt)

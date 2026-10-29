@@ -4,7 +4,7 @@
   "sourceRepo": "Mitchel85/EAM-Suite",
   "sourceCommit": "3407bc0",
   "sourceNote": "Titel/H1 ohne den Altvermerk EXPERIMENTELL; Funktion unverändert",
-  "sourceTreeSha256": "4ad78e85ce0be69b4b28b548cac1f4fce3c9e6d2a1c606a33074f0f2d12a3817",
+  "sourceTreeSha256": "86e8c0b8b3970031146e4e555ceaf8ca4d76135e95160c579cfbb287a2c70e5d",
   "buildScript": "src/build_release.py",
   "sourceOutput": "EAM_Suite.html",
   "sourceAspx": "EAM_Suite.aspx",

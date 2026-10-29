@@ -42,8 +42,8 @@ jobs:
           name: dist
           path: dist
 
-      # Nur die Startseite wird veröffentlicht — keine Werkzeuge, keine
-      # Modelldateien, keine Prüfsummen, keine Repository-Dateien.
+      # Startseite plus englische Fassung. Keine Modelldateien, keine
+      # Prüfsummen, keine Repository-Dateien.
       - name: Seitengerüst legen
         run: |
           set -eu
@@ -51,6 +51,7 @@ jobs:
           cp dist/START-HIER.html seite/index.html
           # Damit die Adresse /START-HIER.html ebenfalls antwortet (alte Links).
           cp dist/START-HIER.html seite/START-HIER.html
+          cp dist/EAM-Suite-en.html seite/EAM-Suite-en.html
           # Kein Jekyll: reines HTML, keine Verarbeitung nötig.
           touch seite/.nojekyll
           ls -la seite

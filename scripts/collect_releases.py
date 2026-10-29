@@ -60,6 +60,12 @@ AUSLIEFERUNGEN = [
         "Dieselbe Bearbeiten-App als ASPX mit BOM für SharePoint/IIS; ohne KI.",
     ),
     (
+        "apps/html-editor/dist/EAM-Suite-en.html",
+        "EAM-Suite-en.html",
+        "EAM Suite v8.4 — englische Fassung",
+        "Dieselbe App mit englischer Oberfläche; Modellinhalte und Dateiformat bleiben unverändert.",
+    ),
+    (
         "apps/mdg-web/dist/EAM-MDG-Parser.html",
         "EAM-MDG-Parser.html",
         "EAM-ADMBw-MDG-Parser — eine HTML-Datei",
@@ -255,7 +261,8 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
   <section class="grid">
 ${cards}
   </section>
-  <p class="lead" style="margin-top:14px">SharePoint-Fassung: <a href="https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-AI-Suite.aspx">EAM-AI-Suite.aspx</a> — dieselbe App für SharePoint/IIS.</p>
+  <p class="lead" style="margin-top:14px">SharePoint-Fassung: <a href="https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-AI-Suite.aspx">EAM-AI-Suite.aspx</a> — dieselbe App für SharePoint/IIS.<br>
+  Englische Fassung: <a href="EAM-Suite-en.html">EAM-Suite-en.html</a> — dieselbe EAM Suite mit englischer Oberfläche.</p>
 
   <h2>Auswahl nach Aufgabe</h2>
   <ul class="decision">

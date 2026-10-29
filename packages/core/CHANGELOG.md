@@ -4,6 +4,14 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.2.5 - 2026-10-27
+
+### Englische Fassung der EAM Suite
+
+Die EAM Suite gibt es zusätzlich als `EAM-Suite-en.html` mit englischer
+Oberfläche. Die Datei steht im Release neben der SharePoint-Fassung; die
+Quellen und das Übersetzungswörterbuch liegen unter `apps/html-editor/`.
+
 ## 3.2.4 - 2026-10-27
 
 ### Beschreibung
