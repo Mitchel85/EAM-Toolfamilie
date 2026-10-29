@@ -257,8 +257,6 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
   <section class="grid">
 ${cards}
   </section>
-  <p class="lead" style="margin-top:14px">SharePoint-Fassung: <a href="https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-AI-Suite.aspx">EAM-AI-Suite.aspx</a> — dieselbe App für SharePoint/IIS.</p>
-
   <h2>Auswahl nach Aufgabe</h2>
   <ul class="decision">
     <li><b>Ich habe Text, ein Handbuch, PDF oder ein Bild und will ein Modell bauen.</b> → EAM AI Suite</li>
