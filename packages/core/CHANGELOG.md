@@ -4,6 +4,13 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.2.7 - 2026-10-27
+
+### EAM Suite
+
+Die Schaltfläche „MASC laden" und die zugehörige Ladefunktion entfallen. Die
+Musterarchitektur wird bei Bedarf über „Eine Architektur laden" geöffnet.
+
 ## 3.2.6 - 2026-10-27
 
 ### Release-Asset
