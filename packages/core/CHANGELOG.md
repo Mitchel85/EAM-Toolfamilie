@@ -4,6 +4,14 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.2.3 - 2026-10-27
+
+### Startseite
+
+Der einleitende Absatz und die drei Schritte (Werkzeug wählen, Datei
+herunterladen, im Browser öffnen) entfallen. Unter „Welches Werkzeug wofür"
+stehen direkt die Karten.
+
 ## 3.2.2 - 2026-10-27
 
 ### Auslieferung
