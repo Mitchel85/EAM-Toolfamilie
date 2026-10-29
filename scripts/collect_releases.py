@@ -66,10 +66,22 @@ AUSLIEFERUNGEN = [
         "MDG-XML laden: Stereotype, Topologie, Viewpoints, Tag-Typen und Stereotyp-Tags durchsuchen; sechs Regeldateien exportieren. Offline im Browser.",
     ),
     (
+        "packages/rules/mdg_parser.py",
+        "eam-mdg-parser.py",
+        "EAM MDG Parser — Python-Variante",
+        "Dieselbe Datei wie im Python-ZIP: MDG-XML in ein Regelwerk übersetzen; ohne Browser.",
+    ),
+    (
         "apps/mcp/eam_qea_tool.py",
         "eam_qea_analyzer_openwebui.py",
-        "EAM AI QEA Analyzer — Open-WebUI-Tool",
+        "EAM QEA Analyzer — Open-WebUI-Tool",
         "In Open WebUI unter Werkzeuge einfügen; das Modell fragt damit eine `.qea` ab, statt zu raten.",
+    ),
+    (
+        "apps/mcp/mcp_server.py",
+        "eam-qea-mcp-server.py",
+        "EAM QEA Analyzer — MCP-Server",
+        "MCP-Wrapper für Open WebUI, Claude Desktop und VS Code; braucht eam_qea_analyzer_openwebui.py im selben Ordner.",
     ),
 ]
 
@@ -241,7 +253,7 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
 <main class="wrap">
   <h2>Welches Werkzeug wofür</h2>
   <p class="lead">Eine Karte je Werkzeug. Dateiname und Größe stehen darunter.</p>
-  <div class="quick"><b>Schnellwahl:</b> <a href="#ai-suite">Bauen → EAM AI Suite</a> · <a href="#suite">Prüfen und Bearbeiten → EAM Suite</a> · <a href="#mdg">Nachschlagen → MDG Parser</a></div>
+  <div class="quick"><b>Schnellwahl:</b> <a href="#ai-suite">Bauen → EAM AI Suite</a> · <a href="#suite">Prüfen und Bearbeiten → EAM Suite</a> · <a href="#mdg">Nachschlagen → MDG Parser</a> · <a href="#qea-analyzer">Abfragen → QEA Analyzer</a></div>
   <section class="grid">
 ${cards}
   </section>
@@ -253,7 +265,7 @@ ${cards}
     <li><b>Ich habe ein Modell und will es verstehen und prüfen.</b> → EAM Suite</li>
     <li><b>Ich will Modelle bearbeiten, verschmelzen oder zurückschreiben.</b> → EAM Suite</li>
     <li><b>Ich will nur das Regelwerk nachschlagen.</b> → EAM MDG Parser</li>
-    <li><b>Ich nutze Open WebUI und will ein Modell abfragen.</b> → Open-WebUI-Tool (.py)</li>
+    <li><b>Ich nutze Open WebUI oder MCP und will ein Modell abfragen.</b> → EAM QEA Analyzer (Open-WebUI-Tool + MCP-Server)</li>
     <li><b>Ich will Kommandozeile, Webdienst oder MCP.</b> → Python-ZIP</li>
     <li><b>Ich will einen eigenen Server.</b> → Container-Image</li>
   </ul>
@@ -295,16 +307,21 @@ def _menschlich(n: int) -> str:
 
 def _karte(titel: str, badge: str, text: str, datei: str, label: str,
            schritte: list[str], extra: str = "", groesse: str = "",
-           slug: str = "") -> str:
+           slug: str = "", weitere: list[tuple[str, str]] | None = None) -> str:
     schritt_html = "".join(f"<li>{s}</li>" for s in schritte)
     meta = html.escape(datei) + (f" · {html.escape(groesse)}" if groesse else "")
     kennung = f' id="{html.escape(slug)}"' if slug else ""
+    weitere_html = "".join(
+        f'<a class="btn" style="margin-top:8px" href="{html.escape(_dl(andere))}">⬇ {html.escape(andere_label)}</a>'
+        for andere, andere_label in (weitere or [])
+    )
     return f"""<article class="card"{kennung}>
   <span class="badge">{html.escape(badge)}</span>
   <h3>{html.escape(titel)}</h3>
   <p>{html.escape(text)}</p>
   <div class="meta">{meta}</div>
   <a class="btn" href="{html.escape(_dl(datei))}">⬇ {html.escape(label)}</a>
+  {weitere_html}
   {extra}
   <ol>{schritt_html}</ol>
 </article>"""
@@ -335,19 +352,21 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
         ),
         _karte(
             "EAM MDG Parser", "Nachschlagen und exportieren",
-            "MDG-XML laden: Stereotype, Topologie, Viewpoints, Tag-Typen und Stereotyp-Tags durchsuchen; sechs Regeldateien exportieren. Die Anzahl hängt vom MDG-Stand ab.",
+            "MDG-XML laden: Stereotype, Topologie, Viewpoints, Tag-Typen und Stereotyp-Tags durchsuchen; sechs Regeldateien exportieren. Als HTML im Browser oder als Python-Skript.",
             "EAM-MDG-Parser.html", "EAM-MDG-Parser.html herunterladen",
             ["Datei herunterladen", "Datei öffnen", "MDG-XML laden und durchsuchen"],
             groesse=groesse("EAM-MDG-Parser.html"),
             slug="mdg",
+            weitere=[("eam-mdg-parser.py", "Python-Variante herunterladen")],
         ),
         _karte(
-            "Open-WebUI-Tool", "Für Open WebUI",
-            "Ein Werkzeug für Open WebUI, das <code>.qea</code>-Dateien liest und Abfragen daraus beantwortet.",
-            "eam_qea_analyzer_openwebui.py", "eam_qea_analyzer_openwebui.py herunterladen",
+            "EAM QEA Analyzer", "Abfragen",
+            "Vorhandene <code>.qea</code>-Modelle befragen: als Open-WebUI-Tool oder als MCP-Server für Open WebUI, Claude Desktop und VS Code.",
+            "eam_qea_analyzer_openwebui.py", "Open-WebUI-Tool herunterladen",
             ["Datei herunterladen", "In Open WebUI unter Werkzeuge einfügen", "Modell fragen"],
             groesse=groesse("eam_qea_analyzer_openwebui.py"),
-            slug="openwebui",
+            slug="qea-analyzer",
+            weitere=[("eam-qea-mcp-server.py", "MCP-Server herunterladen")],
         ),
         _karte(
             "EAM AI Suite Python", "Für Terminal und Server",

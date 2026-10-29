@@ -118,15 +118,20 @@ Teilmodelle zu zerfallen:
 - **EAM Suite** (eine HTML-Datei, Fassung 8.4) — vorhandene Modelle analysieren, ansehen
   (Explorer, Sichten, Graph, Pfade), mehrere verschmelzen, von Hand bearbeiten und als neue
   `.qea` speichern; ohne MDG-Prüfung, ohne KI, ohne Prosa.
-- **EAM MDG Parser** (eine HTML-Datei) — MDG-XML im Browser durchsuchen und als
-  Regeldateien exportieren; baut kein Modell. Zusätzlich lässt sich der Master-Prompt des
-  ehemaligen ADMBw-Extraktors als optionales Artefakt ausgeben.
+- **EAM MDG Parser** (HTML-Datei und Python-Skript) — MDG-XML im Browser oder auf der
+  Kommandozeile durchsuchen und als Regeldateien exportieren; baut kein Modell. Das
+  Python-Skript ist dieselbe Datei, die auch im Python-ZIP liegt. Zusätzlich lässt sich der
+  Master-Prompt des ehemaligen ADMBw-Extraktors als optionales Artefakt ausgeben.
+- **EAM QEA Analyzer** (Open-WebUI-Tool und MCP-Server) — vorhandene `.qea`-Modelle
+  befragen, ohne eigenen HTML-Viewer. Das Open-WebUI-Tool liest die `.qea`; der MCP-Server
+  stellt dieselben Abfragen für Open WebUI, Claude Desktop und VS Code bereit.
 
 Schnellwahl
 - Neues Modell aus Text → EAM AI Suite (für Serien und Server: EAM AI Suite Python)
 - Modell nur ansehen → EAM Suite
 - Modelle zusammenlegen oder von Hand ändern → EAM Suite
 - Regelwerk nachschlagen → EAM MDG Parser
+- Modell abfragen (Open WebUI/MCP) → EAM QEA Analyzer
 
 Abgrenzung
 - Nur die beiden AI Suiten können den ganzen Ablauf. HTML und Python sind zwei getrennte
@@ -137,12 +142,12 @@ Abgrenzung
   EAM AI Suite — und umgekehrt.
 - Die EAM Suite zeigt ein fest eingebautes ADMBw-Referenzraster. Es folgt einer neuen MDG
   nicht; gegen die aktuelle MDG prüfen nur die beiden AI Suiten.
-- Der Open WebUI QEA Analyzer arbeitet nur auf der Tabellenstruktur der `.qea`; ein
+- Der EAM QEA Analyzer arbeitet nur auf der Tabellenstruktur der `.qea`; ein
   ADMBw-Schema bringt er nicht mit.
 - Die KI-Schritte der EAM AI Suite brauchen einen KI-Zugang (Endpunkt, Schlüssel). Laden,
   Sehen und Bearbeiten gehen ohne.
 - Fragen an ein Modell, nur lesend, beantworten die EAM AI Suite, `eam-ai frage` und der
-  Open WebUI QEA Analyzer.
+  EAM QEA Analyzer (Open-WebUI-Tool oder MCP-Server).
 - Weitere Werkzeuge der Familie: die Prompt-Werkzeuge EAM-AI-ADMBw-Extractor, -Batch und
   -Script-Maker. Sie arbeiten mit der Wissensbasis aus der MDG; Quellen unter `apps/`.
   Der ADMBw-Extractor wird nicht ausgeliefert; sein Master-Prompt liegt beim EAM MDG Parser.
@@ -164,8 +169,10 @@ Alle Dateien liegen im öffentlichen Release.
   [EAM-Suite.aspx](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.aspx)
 - EAM MDG Parser:
   [EAM-MDG-Parser.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-MDG-Parser.html)
-- Open WebUI QEA Analyzer für Open WebUI (fragt eine `.qea` ab, statt zu raten):
-  [eam_qea_analyzer_openwebui.py](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam_qea_analyzer_openwebui.py)
+  · [Python-Variante](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam-mdg-parser.py)
+- EAM QEA Analyzer:
+  [Open-WebUI-Tool](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam_qea_analyzer_openwebui.py)
+  · [MCP-Server](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam-qea-mcp-server.py)
 - Inhalt des Release:
   [RELEASES.md](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/RELEASES.md)
 
@@ -175,6 +182,7 @@ So geht's
 3. Die eigene `.qea` bzw. die MDG-XML hineinziehen.
 
 - Die `.aspx`-Dateien sind dieselben Anwendungen für SharePoint/IIS (UTF-8 mit BOM).
+- Die `.py`-Dateien sind für Kommandozeile, Open WebUI oder MCP; sie werden nicht im Browser geöffnet.
 
 ### EAM AI Suite Python
 
@@ -198,6 +206,28 @@ eam-ai --help
 - Viewer (`viewer_html.py`) und Handbuch (`handbuch_generator.py`,
   `prosa_vergleich.py`) liegen als Module im Paket; eigene `eam-ai`-Befehle dafür gibt es
   noch nicht.
+
+### EAM MDG Parser (Python)
+
+```bash
+python eam-mdg-parser.py technologie.xml -o rules.json --check
+```
+
+Dieselbe Datei liegt als `mdg_parser.py` auch im Python-ZIP; sie wird nicht doppelt gepflegt.
+
+### EAM QEA Analyzer
+
+Open-WebUI-Tool: `eam_qea_analyzer_openwebui.py` unter **Werkzeuge** einfügen.
+MCP-Server: beide Dateien in einen Ordner legen, dann
+
+```bash
+pip install "mcp>=1.28,<2" pandas networkx requests
+python eam-qea-mcp-server.py --sse          # http://localhost:8000/sse
+python eam-qea-mcp-server.py --http         # http://localhost:8000/mcp
+```
+
+Der MCP-Server importiert `eam_qea_tool.py`; die Open-WebUI-Datei muss deshalb im selben
+Ordner liegen.
 
 ## Häufige Fragen
 

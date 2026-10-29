@@ -90,8 +90,10 @@ ist der lokale Gesamtbau (HTML, Wheel, Offline-Bundle); sein `offline/`- und
 | `EAM-AI-Suite.html` | Einzeldatei, offline lauffähig | Sachbearbeiter, SharePoint |
 | `EAM-Suite.html` | Einzeldatei | Lesen, Prüfen, Bearbeiten, Verschmelzen |
 | `EAM-MDG-Parser.html` | Browser-Werkzeug für die MDG-XML | Regelwerk prüfen |
+| `eam-mdg-parser.py` | Python-Variante, dieselbe Datei wie im ZIP | Kommandozeile |
 | `eam-ai-suite-python.zip` | Quellstand des Python-Kerns | `pip install ./eam-ai-suite-python` ohne Docker |
 | `eam_qea_analyzer_openwebui.py` | Open-WebUI-Tool (eine Datei) | Open WebUI |
+| `eam-qea-mcp-server.py` | MCP-Wrapper für dieselben Abfragen | Open WebUI, Claude Desktop, VS Code |
 | Container `ghcr.io/mitchel85/eam-toolfamilie` | Webdienst + CLI | Rechner mit Docker |
 
 Jede Zeile ist im README verlinkt **und** als GitHub-Release-Asset vorhanden.

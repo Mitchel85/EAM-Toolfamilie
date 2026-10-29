@@ -89,6 +89,8 @@ def test_manifest_nennt_nur_ausgelieferte_dateien(tmp_path: Path) -> None:
         "EAM-Suite.html",
         "EAM-MDG-Parser.html",
         "eam_qea_analyzer_openwebui.py",
+        "eam-qea-mcp-server.py",
+        "eam-mdg-parser.py",
         "eam-ai-suite-python.zip",
     ):
         assert f"releases/latest/download/{datei}" in seite, datei
