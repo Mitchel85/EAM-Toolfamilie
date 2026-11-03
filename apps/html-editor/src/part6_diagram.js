@@ -154,6 +154,203 @@ function pathMidpoint(points) {
 }
 
 /* ------------------------------------------------------------------ Renderer */
+
+/* ------------------------------------------------- Rechtwinklige Linienfuehrung
+   Nach den BPMN-Gestaltungsregeln: keine schraegen Linien, Anschluesse exakt
+   auf dem Rand, Kreuzungen moeglichst vermeiden. ------------------------------------ */
+
+function seiteAusAnker(code) {
+  var c = String(code || '').charAt(0).toUpperCase();
+  return c === 'L' ? 'l' : c === 'R' ? 'r' : c === 'T' ? 't' : c === 'B' ? 'b' : null;
+}
+
+/* Zugewandte Seite: horizontale Richtung hat Vorrang, damit Fluesse von links
+   nach rechts laufen (BPMN-Grundsatz). */
+function seiteNachLage(ra, rb) {
+  var dx = (rb.x + rb.w / 2) - (ra.x + ra.w / 2);
+  var dy = (rb.y + rb.h / 2) - (ra.y + ra.h / 2);
+  if (Math.abs(dx) >= Math.abs(dy) * 0.7) return dx >= 0 ? 'r' : 'l';
+  return dy >= 0 ? 'b' : 't';
+}
+
+function richtung(seite) {
+  if (seite === 'l') return { x: -1, y: 0 };
+  if (seite === 'r') return { x: 1, y: 0 };
+  if (seite === 't') return { x: 0, y: -1 };
+  return { x: 0, y: 1 };
+}
+
+/* Punkt exakt auf dem Rand; Lage entlang der Kante aus dem Ziel abgeleitet. */
+function randPunkt(rc, seite, ziel, versatz) {
+  var v = versatz || 0;
+  /* Randabstand darf die Form nicht ueberschreiten (Pins sind nur 16 px gross). */
+  var my = Math.max(2, Math.min(12, rc.h / 2 - 1));
+  var mx = Math.max(2, Math.min(12, rc.w / 2 - 1));
+  if (seite === 'l' || seite === 'r') {
+    var y = Math.max(rc.y + my, Math.min(rc.y + rc.h - my, ziel.y + v));
+    return { x: (seite === 'l' ? rc.x : rc.x + rc.w), y: y };
+  }
+  var x = Math.max(rc.x + mx, Math.min(rc.x + rc.w - mx, ziel.x + v));
+  return { x: x, y: (seite === 't' ? rc.y : rc.y + rc.h) };
+}
+
+/* Ankerpunkt aus der Modelldatei auf den Rand ziehen (kein Ende im Nichts). */
+/* Ereignisse sind Kreise, Gateways Rauten: Der Rand liegt nur in der Mitte der
+   Bounding-Box an. Andernfalls endet die Linie neben der Form statt an ihr. */
+/* Wird das Element im Bild gezeichnet? Sonst darf keine Linie dorthin laufen. */
+/* Liegt das Element in einem Pool? Dann ist der Pool das Ziel eines
+   Nachrichtenflusses ueber die Poolgrenze (Blackbox). */
+function poolVonBauen(order) {
+  var pools = [];
+  for (var i = 0; i < order.length; i++) if (/^pool$/i.test(order[i].st || '')) pools.push(order[i]);
+  var map = {};
+  for (var j = 0; j < order.length; j++) {
+    var r = order[j], treffer = null;
+    for (var k = 0; k < pools.length; k++) {
+      var p = pools[k];
+      if (p === r) continue;
+      var cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+      if (cx > p.x && cx < p.x + p.w && cy > p.y && cy < p.y + p.h) {
+        if (!treffer || p.w * p.h < treffer.w * treffer.h) treffer = p;
+      }
+    }
+    map[r.oid] = treffer;
+  }
+  return map;
+}
+
+function elternRechteck(rc, rects) {
+  var o = (typeof OBJS !== 'undefined') ? OBJS[rc.oid] : null;
+  if (!o || o.parent == null) return null;
+  return rects[String(o.parent)] || null;
+}
+
+function wirdGezeichnet(rc, bpmn) {
+  if (!rc) return false;
+  if (bpmn && /^actionpin$/i.test(rc.type || '')) return true;
+  if (!rc.name && !rc.st) return false;
+  if (/^proxyconn?ector$/i.test(rc.st || '')) return false;
+  return true;
+}
+
+/* Punkt auf die tatsaechliche Form ziehen: Kreis oder Raute. Die Bounding-Box
+   ist bei beiden groesser als die Form, sonst bleibt ein Spalt. */
+function aufForm(rc, pt) {
+  if (!pt) return pt;
+  var s = (String(rc.st || '') + ' ' + String(rc.type || '')).toLowerCase();
+  var cx = rc.x + rc.w / 2, cy = rc.y + rc.h / 2;
+  var dx = pt.x - cx, dy = pt.y - cy;
+  var d = Math.sqrt(dx * dx + dy * dy) || 1;
+  if (/startevent|endevent|intermediateevent|^event /.test(s)) {
+    var r = Math.max(6, Math.min(rc.w, rc.h) / 2 - 1);
+    return { x: cx + dx / d * r, y: cy + dy / d * r };
+  }
+  if (/gateway|decision/.test(s)) {
+    var nenner = Math.abs(dx) / (rc.w / 2) + Math.abs(dy) / (rc.h / 2);
+    var k = nenner ? 1 / nenner : 1;
+    return { x: cx + dx * k, y: cy + dy * k };
+  }
+  return pt;
+}
+
+function istPunktform(rc) {
+  var s = (String(rc.st || '') + ' ' + String(rc.type || '')).toLowerCase();
+  return /startevent|endevent|intermediateevent|gateway|decision|^event /.test(s);
+}
+
+function seitenMitte(rc, seite) {
+  if (seite === 'l') return { x: rc.x, y: rc.y + rc.h / 2 };
+  if (seite === 'r') return { x: rc.x + rc.w, y: rc.y + rc.h / 2 };
+  if (seite === 't') return { x: rc.x + rc.w / 2, y: rc.y };
+  return { x: rc.x + rc.w / 2, y: rc.y + rc.h };
+}
+
+function aufRand(rc, pt, seite) {
+  if (!pt) return null;
+  if (seite === 'l' || seite === 'r') {
+    return { x: (seite === 'l' ? rc.x : rc.x + rc.w),
+             y: Math.max(rc.y + 2, Math.min(rc.y + rc.h - 2, pt.y)) };
+  }
+  return { x: Math.max(rc.x + 2, Math.min(rc.x + rc.w - 2, pt.x)),
+           y: (seite === 't' ? rc.y : rc.y + rc.h) };
+}
+
+function streckeFrei(a, b, hindernisse) {
+  var x1 = Math.min(a.x, b.x) - 2, x2 = Math.max(a.x, b.x) + 2;
+  var y1 = Math.min(a.y, b.y) - 2, y2 = Math.max(a.y, b.y) + 2;
+  for (var i = 0; i < hindernisse.length; i++) {
+    var r = hindernisse[i];
+    if (x2 <= r.x || x1 >= r.x + r.w || y2 <= r.y || y1 >= r.y + r.h) continue;
+    return false;
+  }
+  return true;
+}
+
+/* Punkte entdoppeln und Zwischenpunkte auf gerader Linie entfernen. */
+function vereinfache(pts) {
+  var out = [];
+  for (var i = 0; i < pts.length; i++) {
+    var p = pts[i];
+    if (!p) continue;
+    if (out.length && Math.abs(out[out.length - 1].x - p.x) < 0.6 &&
+        Math.abs(out[out.length - 1].y - p.y) < 0.6) continue;
+    out.push(p);
+  }
+  for (var j = out.length - 2; j >= 1; j--) {
+    var a = out[j - 1], b = out[j], c = out[j + 1];
+    if ((Math.abs(a.x - b.x) < 0.6 && Math.abs(b.x - c.x) < 0.6) ||
+        (Math.abs(a.y - b.y) < 0.6 && Math.abs(b.y - c.y) < 0.6)) out.splice(j, 1);
+  }
+  return out;
+}
+
+/* Rechtwinkliger Weg von p1 nach p2, mit Stummel, Kanal und Hindernisprüfung. */
+function routeOrtho(p1, s1, p2, s2, hindernisse) {
+  var stub = 16;
+  var d1 = richtung(s1), d2 = richtung(s2);
+  var q1 = { x: p1.x + d1.x * stub, y: p1.y + d1.y * stub };
+  var q2 = { x: p2.x + d2.x * stub, y: p2.y + d2.y * stub };
+  var h1 = (s1 === 'l' || s1 === 'r'), h2 = (s2 === 'l' || s2 === 'r');
+  var pts = [];
+
+  if (h1 && h2) {
+    if (Math.abs(q1.y - q2.y) < 1.5) {
+      pts = [p1, q1, q2, p2];
+    } else {
+      var mitte = (q1.x + q2.x) / 2;
+      var kan = [mitte, mitte + 24, mitte - 24, mitte + 52, mitte - 52, mitte + 90, mitte - 90];
+      var wahl = mitte;
+      for (var i = 0; i < kan.length; i++) {
+        var mx = kan[i];
+        if (streckeFrei(q1, { x: mx, y: q1.y }, hindernisse) &&
+            streckeFrei({ x: mx, y: q1.y }, { x: mx, y: q2.y }, hindernisse) &&
+            streckeFrei({ x: mx, y: q2.y }, q2, hindernisse)) { wahl = mx; break; }
+      }
+      pts = [p1, q1, { x: wahl, y: q1.y }, { x: wahl, y: q2.y }, q2, p2];
+    }
+  } else if (!h1 && !h2) {
+    if (Math.abs(q1.x - q2.x) < 1.5) {
+      pts = [p1, q1, q2, p2];
+    } else {
+      var m2 = (q1.y + q2.y) / 2;
+      var kan2 = [m2, m2 + 24, m2 - 24, m2 + 52, m2 - 52, m2 + 90, m2 - 90];
+      var wahl2 = m2;
+      for (var k = 0; k < kan2.length; k++) {
+        var my = kan2[k];
+        if (streckeFrei(q1, { x: q1.x, y: my }, hindernisse) &&
+            streckeFrei({ x: q1.x, y: my }, { x: q2.x, y: my }, hindernisse) &&
+            streckeFrei({ x: q2.x, y: my }, q2, hindernisse)) { wahl2 = my; break; }
+      }
+      pts = [p1, q1, { x: q1.x, y: wahl2 }, { x: q2.x, y: wahl2 }, q2, p2];
+    }
+  } else {
+    /* gemischt: ein Knick */
+    var eck = h1 ? { x: q2.x, y: q1.y } : { x: q1.x, y: q2.y };
+    pts = [p1, q1, eck, q2, p2];
+  }
+  return vereinfache(pts);
+}
+
 var DIAG = (function () {
   var ghostOn = {};
 
@@ -263,7 +460,9 @@ var DIAG = (function () {
     }
 
     /* --- belegte Verbindungen --- */
-    var treeCount = {}, drawn = 0, missing = 0, labels = [], arrows = [];
+    var treeCount = {}, drawn = 0, missing = 0, labels = [], arrows = [], portZaehler = {};
+    var hindernisse = order.filter(function (r) { return !/^(pool|lane)$/i.test(r.st || ''); });
+    var poolVon = bpmn ? poolVonBauen(order) : {};
     for (i = 0; i < links.length; i++) {
       var link = links[i];
       if (link.hidden) continue;
@@ -272,21 +471,57 @@ var DIAG = (function () {
       var ra = rects[cn.a], rb = rects[cn.b];
       if (!ra || !rb || ra === rb) { missing++; continue; }
 
+      /* Pins sind Anschlussklemmen: Die Linie gehoert an die Aufgabe, nicht an
+         die 16-px-Klemme. */
+      if (bpmn && /^actionpin$/i.test(ra.type || '')) ra = elternRechteck(ra, rects) || ra;
+      if (bpmn && /^actionpin$/i.test(rb.type || '')) rb = elternRechteck(rb, rects) || rb;
+      if (ra === rb) { missing++; continue; }
+
+      /* Nachrichtenfluss ueber die Poolgrenze endet am Pool, nicht im Leeren. */
+      if (bpmn) {
+        var pa = poolVon[ra.oid], pb = poolVon[rb.oid];
+        if (pb && pa !== pb) rb = pb;
+        if (ra === rb) { missing++; continue; }
+      }
+      /* Elemente ohne Namen und ohne Stereotyp werden nicht gezeichnet; eine
+         Linie dorthin haette kein Ziel. Pins sind davon ausgenommen. */
+      if (!wirdGezeichnet(ra, bpmn) || !wirdGezeichnet(rb, bpmn)) { missing++; continue; }
+
       var geo = eaGeometry(link.geo);
       var sty = eaStyle(link.sty);
       var isTree = !!sty.tree && sty.tree !== '-';
 
-      /* Ankerpunkte: Quelle unten/links, Ziel oben/rechts -- je nachdem was da ist. */
+      /* Anschlussseiten: gespeicherte Anker haben Vorrang, sonst die zugewandte
+         Seite. Damit laufen Fluesse von Kante zu Kante statt schraeg durch den
+         Raum, und die Spitze sitzt exakt auf dem Rand. */
       var srcCode = null, dstCode = null;
       if (geo.anchors.LLB || geo.anchors.LLT) srcCode = geo.anchors.LLB ? 'LLB' : 'LLT';
       else if (geo.anchors.LMB) srcCode = 'LMB';
       if (geo.anchors.LRT || geo.anchors.LRB) dstCode = geo.anchors.LRB ? 'LRB' : 'LRT';
       else if (geo.anchors.LMT) dstCode = 'LMT';
 
-      var p1 = srcCode ? anchorPoint(ra, srcCode, geo.anchors[srcCode])
-                       : sidePoint(ra, rb.y > ra.y ? 'bottom' : 'top');
-      var p2 = dstCode ? anchorPoint(rb, dstCode, geo.anchors[dstCode])
-                       : sidePoint(rb, rb.y > ra.y ? 'top' : 'bottom');
+      var s1 = (srcCode && seiteAusAnker(srcCode)) || seiteNachLage(ra, rb);
+      var s2 = (dstCode && seiteAusAnker(dstCode)) || seiteNachLage(rb, ra);
+
+      /* Mehrere Kanten an derselben Seite auffaechern, sonst liegen sie uebereinander. */
+      var pKey1 = ra.oid + ':' + s1, pKey2 = rb.oid + ':' + s2;
+      var n1 = (portZaehler[pKey1] = (portZaehler[pKey1] || 0) + 1) - 1;
+      var n2 = (portZaehler[pKey2] = (portZaehler[pKey2] || 0) + 1) - 1;
+      var v1 = (n1 % 2 ? -1 : 1) * Math.ceil(n1 / 2) * 12;
+      var v2 = (n2 % 2 ? -1 : 1) * Math.ceil(n2 / 2) * 12;
+
+      var mzA = { x: rb.x + rb.w / 2, y: rb.y + rb.h / 2 };
+      var p1, p2;
+      if (srcCode) p1 = aufRand(ra, anchorPoint(ra, srcCode, geo.anchors[srcCode]), s1);
+      else if (bpmn && istPunktform(ra)) p1 = seitenMitte(ra, s1);
+      else p1 = randPunkt(ra, s1, mzA, v1);
+
+      if (dstCode) p2 = aufRand(rb, anchorPoint(rb, dstCode, geo.anchors[dstCode]), s2);
+      else if (bpmn && istPunktform(rb)) p2 = seitenMitte(rb, s2);
+      else p2 = randPunkt(rb, s2, p1, v2);
+
+      if (bpmn && istPunktform(ra)) p1 = aufForm(ra, p1);
+      if (bpmn && istPunktform(rb)) p2 = aufForm(rb, p2);
 
       var pts;
       if (isTree) {
@@ -296,25 +531,11 @@ var DIAG = (function () {
         if (rb.y > ra.y) busY = ra.y + ra.h + 22 + count * 9;
         else busY = rb.y + rb.h + 22 + count * 9;
         pts = [p1, { x: p1.x, y: busY }, { x: p2.x, y: busY }, p2];
-      } else if (geo.edge === 1) {
-        pts = [p1, p2];                                  /* freier Verlauf */
-      } else if (geo.edge === 3 || geo.edge === 4) {
-        if (Math.abs(p2.x - p1.x) < 6) pts = [p1, p2];
-        else if (Math.abs(p2.y - p1.y) < 6) pts = [p1, p2];
-        else pts = [p1, { x: p1.x, y: (p1.y + p2.y) / 2 }, { x: p2.x, y: (p1.y + p2.y) / 2 }, p2];
       } else {
-        pts = [p1, p2];                                  /* direkt */
+        pts = routeOrtho(p1, s1, p2, s2, hindernisse);
       }
+      pts = vereinfache(pts);
 
-      /* Endpunkt um die Pfeillaenge zuruecknehmen: Die Elemente werden nach
-         den Linien gezeichnet und wuerden die Spitze sonst verdecken. */
-      var lastI = pts.length - 1;
-      var vx = pts[lastI].x - pts[lastI - 1].x, vy = pts[lastI].y - pts[lastI - 1].y;
-      var vlen = Math.sqrt(vx * vx + vy * vy);
-      if (vlen > 10) {
-        var zurueck = Math.min(8, vlen * 0.18);
-        pts[lastI] = { x: pts[lastI].x - (vx / vlen) * zurueck, y: pts[lastI].y - (vy / vlen) * zurueck };
-      }
       var d = polyPath(
         [{ x: pts[0].x + ox, y: pts[0].y + oy }].concat(
           pts.slice(1).map(function (p) { return { x: p.x + ox, y: p.y + oy }; })),
@@ -326,10 +547,12 @@ var DIAG = (function () {
 
       /* Pfeilspitze separat merken: Sie wird nach den Kaesten gezeichnet,
          damit sie nicht von der Zielflaeche verdeckt wird. */
+      var lastI = pts.length - 1;
+      var segX = pts[lastI].x - pts[lastI - 1].x, segY = pts[lastI].y - pts[lastI - 1].y;
       arrows.push({
         x: pts[lastI].x + ox, y: pts[lastI].y + oy,
-        a: Math.atan2(pts[lastI].y - pts[lastI - 1].y, pts[lastI].x - pts[lastI - 1].x),
-        len: Math.sqrt(Math.pow(pts[lastI].x - pts[lastI - 1].x, 2) + Math.pow(pts[lastI].y - pts[lastI - 1].y, 2)),
+        a: Math.atan2(segY, segX),
+        len: Math.sqrt(segX * segX + segY * segY),
         color: col,
         offen: !!fl.offen
       });
@@ -375,6 +598,7 @@ var DIAG = (function () {
       for (var bi = 0; bi < order.length; bi++) {
         var rc = order[bi];
         if ((!!cont[rc.oid]) !== (pass === 0)) continue;
+      if (bpmn && /^actionpin$/i.test(rc.type || '')) continue;   /* Klemmen nicht zeichnen */
       if (!rc.name && !rc.st) continue;
       if (/^proxyconn?ector$/i.test(rc.st)) continue;
       var isBoundary = (rc.type === 'Boundary');

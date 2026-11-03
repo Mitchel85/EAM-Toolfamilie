@@ -200,7 +200,7 @@ var BPMN = (function () {
     var s = ((cn.type || '') + ' ' + (cn.st || '')).toLowerCase();
     if (/messageflow|message/.test(s)) return { dash: '6 4', offen: true, breite: 1.5, farbe: C.primary };
     if (/objectflow|object/.test(s)) return { dash: '5 4', offen: true, breite: 1.5, farbe: C.warning };
-    if (/informationflow|information/.test(s)) return { dash: '1 4', offen: true, breite: 1.3, farbe: '#cbd3e1' };
+    if (/informationflow|information/.test(s)) return { dash: '2 4', offen: true, breite: 1.3, farbe: '#a7b1c2' };
     return { dash: '', offen: false, breite: 1.6, farbe: C.muted };
   }
 

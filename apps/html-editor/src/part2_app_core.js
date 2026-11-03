@@ -1646,6 +1646,7 @@ function buildModel() {
       pkg: pObj ? (pObj.shortPath || pObj.path) : '',
       pkgFull: pObj ? pObj.path : '',
       type: qcol(r, 'Object_Type'),
+      parent: qcol(r, 'ParentID'),
       m: MODEL_N
     };
     OBJS[oidV] = oItem;
