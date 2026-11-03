@@ -4,7 +4,7 @@
   "sourceRepo": "Mitchel85/EAM-Suite",
   "sourceCommit": "3407bc0",
   "sourceNote": "Titel/H1 ohne Altvermerk EXPERIMENTELL; ergänzt um Sicht-Renderer und Befunde (Stereotyp Issue), Funktion sonst unverändert",
-  "sourceTreeSha256": "080ed0a54e20f038f89aeabb99894fb4ca4d6c9453b6df93affde0d56656c366",
+  "sourceTreeSha256": "fa2988aa3a1b9379dbf337ba52b3b64e776d8f864511780d14931ed966f59496",
   "buildScript": "src/build_release.py",
   "sourceOutput": "EAM_Suite.html",
   "sourceAspx": "EAM_Suite.aspx",

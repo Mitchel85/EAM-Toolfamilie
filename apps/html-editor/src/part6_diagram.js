@@ -166,10 +166,17 @@ function seiteAusAnker(code) {
 
 /* Zugewandte Seite: horizontale Richtung hat Vorrang, damit Fluesse von links
    nach rechts laufen (BPMN-Grundsatz). */
+/* Gegenueberliegende Seite: Ein gespeicherter Anker, der vom Ziel wegzeigt,
+   wuerde die Linie quer durch den Kasten fuehren. Dann gilt die Lage. */
+function gegenueber(a, b) {
+  return (a === 'l' && b === 'r') || (a === 'r' && b === 'l') ||
+         (a === 't' && b === 'b') || (a === 'b' && b === 't');
+}
+
 function seiteNachLage(ra, rb) {
   var dx = (rb.x + rb.w / 2) - (ra.x + ra.w / 2);
   var dy = (rb.y + rb.h / 2) - (ra.y + ra.h / 2);
-  if (Math.abs(dx) >= Math.abs(dy) * 0.7) return dx >= 0 ? 'r' : 'l';
+  if (Math.abs(dx) > Math.abs(dy) * 1.2) return dx >= 0 ? 'r' : 'l';
   return dy >= 0 ? 'b' : 't';
 }
 
@@ -268,10 +275,12 @@ function seitenMitte(rc, seite) {
 function aufRand(rc, pt, seite) {
   if (!pt) return null;
   if (seite === 'l' || seite === 'r') {
+    var my = Math.max(2, Math.min(10, rc.h / 2 - 2));
     return { x: (seite === 'l' ? rc.x : rc.x + rc.w),
-             y: Math.max(rc.y + 2, Math.min(rc.y + rc.h - 2, pt.y)) };
+             y: Math.max(rc.y + my, Math.min(rc.y + rc.h - my, pt.y)) };
   }
-  return { x: Math.max(rc.x + 2, Math.min(rc.x + rc.w - 2, pt.x)),
+  var mx = Math.max(2, Math.min(10, rc.w / 2 - 2));
+  return { x: Math.max(rc.x + mx, Math.min(rc.x + rc.w - mx, pt.x)),
            y: (seite === 't' ? rc.y : rc.y + rc.h) };
 }
 
@@ -305,6 +314,17 @@ function vereinfache(pts) {
 }
 
 /* Rechtwinkliger Weg von p1 nach p2, mit Stummel, Kanal und Hindernisprüfung. */
+/* Fast senkrechte/waagerechte Segmente exakt ausrichten (1-2 px Versatz). */
+function raste(pts) {
+  for (var i = 1; i < pts.length; i++) {
+    var d = pts[i], p = pts[i - 1];
+    var dx = Math.abs(d.x - p.x), dy = Math.abs(d.y - p.y);
+    if (dx < 2.5 && dy > 2.5) d.x = p.x;
+    else if (dy < 2.5 && dx > 2.5) d.y = p.y;
+  }
+  return vereinfache(pts);
+}
+
 function routeOrtho(p1, s1, p2, s2, hindernisse) {
   var stub = 16;
   var d1 = richtung(s1), d2 = richtung(s2);
@@ -500,8 +520,15 @@ var DIAG = (function () {
       if (geo.anchors.LRT || geo.anchors.LRB) dstCode = geo.anchors.LRB ? 'LRB' : 'LRT';
       else if (geo.anchors.LMT) dstCode = 'LMT';
 
-      var s1 = (srcCode && seiteAusAnker(srcCode)) || seiteNachLage(ra, rb);
-      var s2 = (dstCode && seiteAusAnker(dstCode)) || seiteNachLage(rb, ra);
+      var geo1 = seiteNachLage(ra, rb), geo2 = seiteNachLage(rb, ra);
+      var anker1 = srcCode ? seiteAusAnker(srcCode) : null;
+      var anker2 = dstCode ? seiteAusAnker(dstCode) : null;
+      /* Nur ein Anker, der zur Lage passt, wird uebernommen. Sonst entstehen
+         Wege quer durch den Kasten. */
+      var anker1Ok = !!anker1 && anker1 === geo1;
+      var anker2Ok = !!anker2 && anker2 === geo2;
+      var s1 = anker1Ok ? anker1 : geo1;
+      var s2 = anker2Ok ? anker2 : geo2;
 
       /* Mehrere Kanten an derselben Seite auffaechern, sonst liegen sie uebereinander. */
       var pKey1 = ra.oid + ':' + s1, pKey2 = rb.oid + ':' + s2;
@@ -512,16 +539,17 @@ var DIAG = (function () {
 
       var mzA = { x: rb.x + rb.w / 2, y: rb.y + rb.h / 2 };
       var p1, p2;
-      if (srcCode) p1 = aufRand(ra, anchorPoint(ra, srcCode, geo.anchors[srcCode]), s1);
-      else if (bpmn && istPunktform(ra)) p1 = seitenMitte(ra, s1);
+      if (bpmn && istPunktform(ra)) p1 = seitenMitte(ra, s1);
+      else if (anker1Ok) p1 = aufRand(ra, anchorPoint(ra, srcCode, geo.anchors[srcCode]), s1);
       else p1 = randPunkt(ra, s1, mzA, v1);
 
-      if (dstCode) p2 = aufRand(rb, anchorPoint(rb, dstCode, geo.anchors[dstCode]), s2);
-      else if (bpmn && istPunktform(rb)) p2 = seitenMitte(rb, s2);
+      if (bpmn && istPunktform(rb)) p2 = seitenMitte(rb, s2);
+      else if (anker2Ok) p2 = aufRand(rb, anchorPoint(rb, dstCode, geo.anchors[dstCode]), s2);
       else p2 = randPunkt(rb, s2, p1, v2);
 
-      if (bpmn && istPunktform(ra)) p1 = aufForm(ra, p1);
-      if (bpmn && istPunktform(rb)) p2 = aufForm(rb, p2);
+      /* Anker duerfen nicht in der abgerundeten Ecke landen. */
+      p1 = aufRand(ra, p1, s1);
+      p2 = aufRand(rb, p2, s2);
 
       var pts;
       if (isTree) {
@@ -534,7 +562,7 @@ var DIAG = (function () {
       } else {
         pts = routeOrtho(p1, s1, p2, s2, hindernisse);
       }
-      pts = vereinfache(pts);
+      pts = raste(pts);
 
       var d = polyPath(
         [{ x: pts[0].x + ox, y: pts[0].y + oy }].concat(
@@ -604,11 +632,11 @@ var DIAG = (function () {
       var isBoundary = (rc.type === 'Boundary');
       var isText = (rc.type === 'Text');
       var isLane = /^(pool|lane)$/i.test(rc.st);
-      var fill = (typeof stFill === 'function') ? stFill(rc.st) : '#EAF2F8';
-      var stroke = (typeof stColor === 'function') ? stColor(rc.st) : '#004471';
+      var fill = (typeof stFill === 'function') ? stFill(rc.st) : '#FFFFFF';
+      var stroke = (typeof stColor === 'function') ? stColor(rc.st) : '#cbd3e1';
       var dash = '';
       if (isBoundary) { fill = 'none'; dash = ' stroke-dasharray="5 4"'; stroke = '#8AA0B0'; }
-      else if (isLane) { fill = '#EEF4F8'; stroke = '#004471'; }
+      else if (isLane) { fill = '#fbfcfe'; stroke = '#e9ecef'; }
 
       var flagged = issues[rc.oid];
       var click = (!isBoundary && rc.oid) ? ' class="diag-node" onclick="openElement(\'' + rc.oid + '\')"' : '';
@@ -683,7 +711,7 @@ var DIAG = (function () {
     for (var ai = 0; ai < arrows.length; ai++) {
       var ar = arrows[ai];
       /* Kurze Stuecke brauchen kleine Pfeile, sonst bleibt von der Linie nichts uebrig. */
-      var alen = Math.max(4, Math.min(11, (ar.len || 20) * 0.30));
+      var alen = Math.max(7, Math.min(11, (ar.len || 20) * 0.30));
       var awid = alen * 0.5;
       var ax = ar.x, ay = ar.y, ang = ar.a;
       var tip = { x: ax, y: ay };
