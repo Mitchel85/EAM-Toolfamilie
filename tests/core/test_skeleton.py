@@ -141,24 +141,31 @@ def test_geruest_ohne_modellaufruf(tmp_path: Path, monkeypatch: pytest.MonkeyPat
 
     assert report.exported is True
     assert report.blocked is False
-    assert report.backend == skeleton.SKELETON_BACKEND
+    # Standard ist seit dem Leitfaden-Umbau die Struktur nach Abbildung 1,
+    # nicht mehr das Metaklassen-Geruest.
+    assert report.backend == "leitfaden-architektur"
     assert report.segments == 0
     assert report.attempts == 0
-    assert report.elements == 5
-    assert report.connectors == 3
+    assert report.elements > 0
     assert report.provenance_tags == 0
     assert report.quellen is None
     assert target.is_file()
     assert json.loads((tmp_path / "findings.json").read_text(encoding="utf-8")) == []
 
     ir = read_qea(target)
-    assert {element["name"] for element in ir["elements"]} == {
-        "ActualProject",
-        "Capability",
-        "OperationalActivity",
-        "Process",
-        "ServiceSpecification",
+    # Kein Element darf einen Stereotyp tragen, den das Regelwerk nicht kennt.
+    # Namen ohne Stereotyp (Glossareintrag, Einstufungswert) sind Projektinhalt
+    # und keine Erfindung von Modellierungselementen.
+    erlaubt = {
+        str(e.get("name"))
+        for e in mdg_parser.parse_mdg(MDG).get("elementStereotypes") or ()
     }
+    verwendet = {
+        str(element["stereotype"])
+        for element in ir["elements"]
+        if element.get("stereotype")
+    }
+    assert verwendet <= erlaubt, f"unbekannte Stereotype: {sorted(verwendet - erlaubt)}"
 
 
 def test_backend_ohne_quelle_ist_laut(tmp_path: Path) -> None:

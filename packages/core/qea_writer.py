@@ -373,6 +373,35 @@ class Connector:
 
 
 @dataclass
+class DiagramMembership:
+    """Ein Element auf einer Sicht: Position optional, Reihenfolge fest."""
+
+    object_id: int
+    left: int = 0
+    top: int = 0
+    right: int = 0
+    bottom: int = 0
+    sequence: int = 0
+
+
+@dataclass
+class Diagram:
+    """Eine Sicht (t_diagram) mit ihren Mitgliedern (t_diagramobjects)."""
+
+    name: str
+    package_path: str
+    diagram_type: str = "Custom"
+    mdg_viewpoint: str = ""
+    notes: str = ""
+    stereotype: str = ""
+    is_default: bool = False
+    parent_name: str = ""
+    members: tuple[DiagramMembership, ...] = ()
+    guid: str = ""
+    diagram_id: int = 0
+
+
+@dataclass
 class ModelPlan:
     profile: str
     packages: list[Package]
@@ -384,6 +413,10 @@ class ModelPlan:
     connector_tags: list[tuple[int, str, str, str]] = field(default_factory=list)
     # (xref_id, xref_name, xref_type, description, client_guid)
     xrefs: list[tuple[str, str, str, str, str]] = field(default_factory=list)
+    # Sichten. Der Writer legt keine Geometrie fest -- er schreibt nur, was im
+    # IR belegt ist. Leere Geometrie ist erlaubt: EA ordnet beim ersten
+    # Oeffnen an (Auto Layout), die Sicht und ihre Mitglieder stehen aber.
+    diagrams: list["Diagram"] = field(default_factory=list)
 
 
 # --------------------------------------------------------------------------
@@ -669,11 +702,8 @@ def plan_model(ir: Any, *, allow_empty: bool = False) -> ModelPlan:
     technology = _mapping(obj.get("technology", {}), "technology")
     _check_keys(technology, _TECHNOLOGY_KEYS, "technology")
     profile = _text(technology.get("profile"), "technology.profile", default="")
-    if obj.get("diagrams"):
-        _fail(
-            "diagrams: Sichten sind bewusst nicht Teil des Writers "
-            "(keine Sichten, kein Layout) -- Liste muss leer sein"
-        )
+    # Sichten sind ab 2.5 Teil des Writers: Name, Typ, Paket und Mitglieder.
+    # Geometrie bleibt optional; fehlt sie, ordnet EA beim Oeffnen an.
 
     packages = _read_packages(obj)
     package_map = {pkg.path: pkg for pkg in packages}
@@ -859,6 +889,17 @@ def plan_model(ir: Any, *, allow_empty: bool = False) -> ModelPlan:
     _check_unique(all_object_guids, "t_object.ea_guid")
     _check_unique([c.guid for c in connectors], "t_connector.ea_guid")
 
+    diagrams = _read_diagrams(obj, package_map, elements)
+    # Kennung erst vergeben, dann Eindeutigkeit pruefen -- vorher sind alle
+    # Felder leer und die Pruefung meldete faelschlich "".
+    _assign_guids(
+        diagrams,
+        base_key=lambda d: f"Diagram|{d.package_path}|{d.name}",
+        content_key=lambda d: (d.diagram_type, d.mdg_viewpoint, d.notes, d.members),
+        set_guid=lambda d, g: setattr(d, "guid", g),
+    )
+    _check_unique([d.guid for d in diagrams], "t_diagram.ea_guid")
+
     return ModelPlan(
         profile=profile,
         packages=sorted(packages, key=lambda p: p.package_id),
@@ -867,7 +908,117 @@ def plan_model(ir: Any, *, allow_empty: bool = False) -> ModelPlan:
         object_tags=object_tags,
         connector_tags=connector_tags,
         xrefs=xrefs,
+        diagrams=sorted(diagrams, key=lambda d: (d.package_path, d.name)),
     )
+
+
+_DIAGRAM_KEYS = {
+    "name",
+    "package",
+    "type",
+    "mdg",
+    "notes",
+    "stereotype",
+    "default",
+    "parent",
+    "members",
+    "guid",
+}
+_DIAGRAM_MEMBER_KEYS = {"element", "left", "top", "right", "bottom", "sequence"}
+
+
+def _read_diagrams(
+    ir: Mapping[str, Any],
+    packages: Mapping[str, "Package"],
+    elements: Sequence["Element"],
+) -> list["Diagram"]:
+    """Sichten aus dem IR lesen und ihre Mitglieder pruefen.
+
+    ``members[].element`` ist eine Element-Referenz wie im IR ueblich
+    (``<paketpfad>::<name>``). Unbekannte Elemente sind ein Fehler: eine Sicht
+    mit einem Element, das es nicht gibt, ist keine Sicht.
+    """
+    raw = ir.get("diagrams", [])
+    if raw is None:
+        raw = []
+    if not isinstance(raw, Sequence) or isinstance(raw, (str, bytes)):
+        _fail("diagrams: Liste erwartet")
+    by_guid = {e.guid.upper(): e for e in elements}
+    by_ref: dict[str, list["Element"]] = {}
+    for element in elements:
+        by_ref.setdefault(f"{element.package_path}::{element.name}", []).append(element)
+
+    out: list[Diagram] = []
+    for index, item in enumerate(raw):
+        what = f"diagrams[{index}]"
+        entry = _mapping(item, what)
+        _check_keys(entry, _DIAGRAM_KEYS, what)
+        name = _text(entry.get("name"), f"{what}.name", allow_empty=False)
+        package_path = _normalize_path(entry.get("package"), f"{what}.package")
+        if package_path not in packages:
+            _fail(f"{what}.package: Paket {package_path!r} ist nicht deklariert")
+        diagram_type = _text(entry.get("type"), f"{what}.type", default="Custom")
+        mdg = _text(entry.get("mdg"), f"{what}.mdg", default="")
+        is_default = entry.get("default", False)
+        if not isinstance(is_default, bool):
+            _fail(f"{what}.default: Wahrheitswert erwartet")
+
+        members: list[DiagramMembership] = []
+        raw_members = entry.get("members", []) or []
+        if not isinstance(raw_members, Sequence) or isinstance(raw_members, (str, bytes)):
+            _fail(f"{what}.members: Liste erwartet")
+        for position, raw_member in enumerate(raw_members):
+            member_what = f"{what}.members[{position}]"
+            member = _mapping(raw_member, member_what)
+            _check_keys(member, _DIAGRAM_MEMBER_KEYS, member_what)
+            ref = _text(member.get("element"), f"{member_what}.element", allow_empty=False)
+            treffer = by_ref.get(ref)
+            if not treffer and ref.upper() in by_guid:
+                treffer = [by_guid[ref.upper()]]
+            if not treffer:
+                _fail(f"{member_what}.element: Element {ref!r} steht nicht im IR")
+            element = treffer[0]
+            left = _int(member.get("left"), f"{member_what}.left", default=0)
+            top = _int(member.get("top"), f"{member_what}.top", default=0)
+            right = _int(member.get("right"), f"{member_what}.right", default=left + 180)
+            bottom = _int(member.get("bottom"), f"{member_what}.bottom", default=top + 80)
+            members.append(
+                DiagramMembership(
+                    object_id=element.object_id,
+                    left=left,
+                    top=top,
+                    right=right,
+                    bottom=bottom,
+                    sequence=_int(member.get("sequence"), f"{member_what}.sequence", default=position),
+                )
+            )
+
+        out.append(
+            Diagram(
+                name=name,
+                package_path=package_path,
+                diagram_type=diagram_type,
+                mdg_viewpoint=mdg,
+                notes=_free_text(entry.get("notes"), f"{what}.notes"),
+                stereotype=_text(entry.get("stereotype"), f"{what}.stereotype", default=""),
+                is_default=is_default,
+                parent_name=_text(entry.get("parent"), f"{what}.parent", default=""),
+                members=tuple(members),
+                guid=_optional_guid(entry.get("guid"), f"{what}.guid"),
+            )
+        )
+    names = [(d.package_path, d.name.casefold()) for d in out]
+    if len(set(names)) != len(names):
+        _fail("diagrams: Name je Paket doppelt -- EA zeigt sonst zwei gleiche Sichten")
+    return out
+
+
+def _int(value: Any, what: str, *, default: int = 0) -> int:
+    if value is None:
+        return default
+    if isinstance(value, bool) or not isinstance(value, int):
+        _fail(f"{what}: Ganzzahl erwartet, gefunden {type(value).__name__}")
+    return value
 
 
 def _check_unique(values: Sequence[str], what: str) -> None:
@@ -1311,6 +1462,47 @@ _INSERT_COLUMNS: dict[str, tuple[str, ...]] = {
     "t_connectortag": ("PropertyID", "ElementID", "Property", "VALUE", "NOTES", "ea_guid"),
     "t_xref": ("XrefID", "Name", "Type", "Description", "Client"),
     "usys_system": ("Property", "Value"),
+    "t_diagram": (
+        "Diagram_ID",
+        "Package_ID",
+        "ParentID",
+        "Diagram_Type",
+        "Name",
+        "Version",
+        "Author",
+        "ShowDetails",
+        "Notes",
+        "Stereotype",
+        "AttPub",
+        "AttPri",
+        "AttPro",
+        "Orientation",
+        "cx",
+        "cy",
+        "Scale",
+        "CreatedDate",
+        "ModifiedDate",
+        "HTMLPath",
+        "ShowForeign",
+        "ShowBorder",
+        "ShowPackageContents",
+        "PDATA",
+        "Locked",
+        "ea_guid",
+        "TPos",
+        "Swimlanes",
+        "StyleEx",
+    ),
+    "t_diagramobjects": (
+        "Diagram_ID",
+        "Object_ID",
+        "RectTop",
+        "RectLeft",
+        "RectRight",
+        "RectBottom",
+        "Sequence",
+        "ObjectStyle",
+    ),
 }
 
 
@@ -1328,11 +1520,20 @@ def project_guid(plan: ModelPlan) -> str:
 
 
 def _system_rows(plan: ModelPlan) -> tuple[tuple[str, str], ...]:
-    """Zeilen fuer ``usys_system``: Projektkennung und EA-Schemaversion."""
-    return (
+    """Zeilen fuer ``usys_system``: Projektkennung, EA-Schemaversion, Startseite.
+
+    Das Standarddiagramm steht in ``usys_system`` als ``DefaultDiagram`` mit
+    der Diagramm-ID (Leitfaden St-MK03: die Startseite oeffnet sich zuerst).
+    """
+    rows: list[tuple[str, str]] = [
         ("ProjectGUID", project_guid(plan)),
         ("Version", SYSTEM_SCHEMA_VERSION),
-    )
+    ]
+    for diagram in plan.diagrams:
+        if diagram.is_default and diagram.diagram_id:
+            rows.append(("DefaultDiagram", str(diagram.diagram_id)))
+            break
+    return tuple(rows)
 
 
 def _quote(identifier: str) -> str:
@@ -1453,6 +1654,104 @@ def _insert(con: sqlite3.Connection, table: str, rows: Sequence[Sequence[Any]]) 
     return len(rows)
 
 
+def _diagram_rows(plan: ModelPlan, package_ids: Mapping[str, int]) -> list[tuple]:
+    """Zeilen fuer ``t_diagram`` -- Reihenfolge nach Diagramm-ID."""
+    rows: list[tuple] = []
+    for number, diagram in enumerate(plan.diagrams, start=1):
+        diagram.diagram_id = number
+        style_ex = (
+            "ExcludeRTF=0;DocAll=0;HideQuals=0;AttPkg=1;ShowTests=0;ShowMaint=0;"
+            "SuppressFOC=1;MatrixActive=0;SwimlanesActive=1;KanbanActive=0;"
+            "MatrixLineWidth=1;MatrixLineClr=0;MatrixLocked=0;"
+            "TConnectorNotation=UML 2.1;TExplicitNavigability=0;"
+            "AdvancedElementProps=1;AdvancedFeatureProps=1;AdvancedConnectorProps=1;"
+            "m_bElementClassifier=1;SPT=1;"
+        )
+        if diagram.mdg_viewpoint:
+            style_ex += f"MDGDgm={diagram.mdg_viewpoint};"
+        style_ex += "STBLDgm=;ShowNotes=0;VisibleAttributeDetail=0;ShowOpRetType=1;"
+        style_ex += "SuppressBrackets=0;SuppConnectorLabels=0;PrintPageHeadFoot=0;"
+        style_ex += "ShowAsList=0;SuppressedCompartments=;ShowElementData=0;"
+        rows.append(
+            (
+                diagram.diagram_id,
+                package_ids[diagram.package_path],
+                0,
+                diagram.diagram_type,
+                diagram.name,
+                FIXED_VERSION,
+                "",
+                1 if diagram.is_default else 0,
+                diagram.notes,
+                diagram.stereotype,
+                1,
+                1,
+                1,
+                "P",
+                _diagram_width(diagram),
+                _diagram_height(diagram),
+                100,
+                FIXED_DATE,
+                FIXED_DATE,
+                "",
+                1,
+                1,
+                1,
+                "HideRel=0;ShowTags=0;ShowReqs=0;ShowCons=0;OpParams=1;ShowSN=0;"
+                "ScalePI=0;PPgs.cx=0;PPgs.cy=0;PSize=9;ShowIcons=1;SuppCN=0;"
+                "HideProps=0;HideParents=0;UseAlias=0;HideAtts=0;HideOps=0;"
+                "HideStereo=0;HideEStereo=0;ShowRec=1;ShowRes=0;ShowShape=1;FormName=;",
+                0,
+                diagram.guid,
+                0,
+                "",
+                style_ex,
+            )
+        )
+    return rows
+
+
+def _diagram_width(diagram: "Diagram") -> int:
+    if not diagram.members:
+        return 827
+    return max(member.right for member in diagram.members) + 80
+
+
+def _diagram_height(diagram: "Diagram") -> int:
+    if not diagram.members:
+        return 1169
+    return max(member.bottom for member in diagram.members) + 80
+
+
+def _diagram_object_rows(plan: ModelPlan) -> list[tuple]:
+    """Zeilen fuer ``t_diagramobjects``; Positionen kommen aus dem IR."""
+    rows: list[tuple] = []
+    order: dict[int, str] = {id(d): d.guid for d in plan.diagrams}
+    guid_to_diagram = {d.guid: d for d in plan.diagrams}
+    for diagram in plan.diagrams:
+        for member in sorted(diagram.members, key=lambda m: (m.sequence, m.object_id)):
+            rows.append(
+                (
+                    diagram.diagram_id,
+                    member.object_id,
+                    member.top,
+                    member.left,
+                    member.right,
+                    member.bottom,
+                    member.sequence,
+                    "",
+                )
+            )
+    return rows
+
+
+def _is_default_diagram(plan: ModelPlan, diagram_id: int) -> bool:
+    for diagram in plan.diagrams:
+        if diagram.diagram_id == diagram_id:
+            return diagram.is_default
+    return False
+
+
 def _write_file(plan: ModelPlan, target: Path) -> None:
     target.parent.mkdir(parents=True, exist_ok=True)
     handle, temp_name = tempfile.mkstemp(
@@ -1501,6 +1800,11 @@ def _write_file(plan: ModelPlan, target: Path) -> None:
                         for xref_id, xref_name, xref_type, description, client in plan.xrefs
                     ],
                 )
+                # Sichten: erst die Koepfe (t_diagram), dann die Mitglieder.
+                # Die Reihenfolge ist wichtig, weil die Mitglieder die
+                # Diagramm-ID tragen.
+                _insert(con, "t_diagram", _diagram_rows(plan, package_ids))
+                _insert(con, "t_diagramobjects", _diagram_object_rows(plan))
                 # Projektkennung + Schemaversion: AAroN baut daraus den
                 # Projektknoten; EA legt beides an.
                 _insert(con, "usys_system", _system_rows(plan))

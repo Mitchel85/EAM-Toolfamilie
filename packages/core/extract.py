@@ -1358,6 +1358,11 @@ class OpenAICompatibleBackend:
     api_key: str = ""
     timeout: float = 120.0
     json_mode: bool = True
+    #: Obergrenze fuer die Antwort. Der Standard der Anbieter (oft 4096) reicht
+    #: fuer eine volle Charge nicht: Bei 12.000 Zeichen Quelltext braucht die
+    #: Antwort rund 30.000 Zeichen. Ohne dieses Feld schneidet der Anbieter
+    #: mitten im JSON ab -- die Antwort ist dann ungueltig und wird verworfen.
+    max_tokens: int = 32768
 
     @property
     def name(self) -> str:
@@ -1370,6 +1375,8 @@ class OpenAICompatibleBackend:
             "temperature": 0,
             "stream": False,
         }
+        if self.max_tokens:
+            payload["max_tokens"] = int(self.max_tokens)
         if self.json_mode:
             payload["response_format"] = {"type": "json_object"}
         return payload

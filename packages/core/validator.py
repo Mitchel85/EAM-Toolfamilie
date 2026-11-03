@@ -490,11 +490,15 @@ def _read_model(ir: Mapping[str, Any]) -> Model:
     version = doc.get("ir_version")
     if isinstance(version, bool) or version != IR_VERSION:
         _fail(f"IR.ir_version: {IR_VERSION} erwartet, gefunden {version!r}")
-    if doc.get("diagrams"):
-        _fail(
-            "IR.diagrams: Sichten und Layout sind bewusst nicht Teil des IR "
-            "-- die Liste muss leer sein"
-        )
+    # Sichten sind seit dem Leitfaden-Umbau Teil des IR: der Writer schreibt
+    # t_diagram und t_diagramobjects (A2-MK02 ff. verlangen Diagramme je
+    # Viewpoint). Geprueft wird nur die Form -- eine Liste von Objekten.
+    _diagrams = doc.get("diagrams")
+    if _diagrams is not None and not isinstance(_diagrams, list):
+        _fail("IR.diagrams: Liste erwartet")
+    for _index, _item in enumerate(_diagrams or ()):
+        if not isinstance(_item, Mapping):
+            _fail(f"IR.diagrams[{_index}]: Objekt erwartet")
 
     raw_packages = _sequence(doc.get("packages"), "IR.packages")
     if not raw_packages:

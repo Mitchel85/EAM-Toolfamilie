@@ -645,7 +645,7 @@ def test_kaputtes_ir_ist_laut() -> None:
     assert "ir_version" in str(error.value)
 
     ir = clean_ir()
-    ir["diagrams"] = [{"name": "unzulaessig"}]
+    ir["diagrams"] = "keine Liste"
     with pytest.raises(ValidatorError) as error:
         validate(ir)
     assert "diagrams" in str(error.value)

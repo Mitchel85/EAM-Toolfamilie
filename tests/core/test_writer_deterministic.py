@@ -372,16 +372,21 @@ def test_connectors_reference_existing_objects(tmp_path: Path) -> None:
         con.close()
 
 
-def test_diagram_table_is_empty_and_diagrams_are_rejected(tmp_path: Path) -> None:
+def test_diagram_table_is_empty_without_diagrams(tmp_path: Path) -> None:
+    """Ohne Sichten im IR bleibt t_diagram leer."""
     path = write_qea(load_fixture(), tmp_path / "modell.qea")
     con = connect(path)
     try:
         assert con.execute("SELECT COUNT(*) FROM t_diagram").fetchone()[0] == 0
     finally:
         con.close()
+
+
+def test_diagram_without_package_is_rejected(tmp_path: Path) -> None:
+    """Eine Sicht ohne Paket ist unvollstaendig -- der Writer bricht ab."""
     ir = load_fixture()
     ir["diagrams"] = [{"name": "Nicht erlaubt"}]
-    with pytest.raises(QeaWriterError, match="Sichten"):
+    with pytest.raises(QeaWriterError, match="package"):
         plan_model(ir)
 
 

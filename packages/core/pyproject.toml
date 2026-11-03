@@ -65,6 +65,12 @@ modules = [
     "nl_edit",
     "qea_chat",
     "skeleton",
+    "skeleton_arch",
+    "architektur",
+    "build_backend",
+    "kanten",
+    "leitfaden",
+    "struktur",
 ]
 resources = [
     "rules.schema.json",

@@ -42,6 +42,9 @@ import extract
 #: Kennung im IR: das Modell kam aus dem Regelwerk, nicht aus einem Sprachmodell.
 SKELETON_BACKEND = "regelwerk"
 
+#: Art des Geruests -- von ``eam_ai.build`` ausgewertet.
+SKELETON_KIND = "metaklasse"
+
 #: Paketname fuer Element-Stereotype ohne eigene Metaklasse. Kein erfundener
 #: Metaklassenname, sondern die ehrliche Bezeichnung der Luecke.
 OHNE_METAKLASSE = "ohne Metaklasse"

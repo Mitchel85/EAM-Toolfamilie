@@ -74,6 +74,13 @@ import relation_fill as relation_module
 import repair_loop as repair_module
 import rules_schema
 import skeleton as skeleton_module
+import skeleton_arch as skeleton_arch_module
+import architektur as architektur_module
+
+#: Geruestart, wenn keine gewaehlt wurde: MASC-Struktur.
+LEITFADEN_KIND = "leitfaden"
+MASC_KIND = "masc"
+ARCH_SKELETON_KIND = LEITFADEN_KIND
 import validator
 from emit import EmitError, EmitReport
 from extract import ExtractionError, ExtractionResult
@@ -346,6 +353,7 @@ def _failure_findings(message: str) -> list[dict[str, str]]:
 def build(
     *,
     mdg: str | Path,
+    skeleton: str | None = None,
     text: str | Path | None = None,
     out: str | Path,
     images: Sequence[str | Path] = (),
@@ -448,20 +456,51 @@ def build(
 
         if skeleton_mode:
             say("[3/6] Kein Text, kein Bild: Geruest aus dem Regelwerk (kein Modellaufruf)")
-            try:
-                skeleton_ir = skeleton_module.build_skeleton(rules, package=package)
-            except skeleton_module.SkeletonError as exc:
-                raise BuildError(f"Geruest: {exc}") from exc
+            # Zwei Gerueste: "architektur" legt die MASC-Struktur an (Katalog,
+            # Viewpoints, Volumes) -- das ist der Standard. "metaklasse" ist der
+            # alte Weg (ein Paket je UML-Metaklasse) und bleibt fuer Vergleichs-
+            # laeufe zugaenglich.
+            geruest_art = skeleton or ARCH_SKELETON_KIND
+            if geruest_art == skeleton_module.SKELETON_KIND:
+                # Alter Weg: ein Paket je UML-Metaklasse (nur Vergleichslaeufe).
+                try:
+                    skeleton_ir = skeleton_module.build_skeleton(rules, package=package)
+                except skeleton_module.SkeletonError as exc:
+                    raise BuildError(f"Geruest: {exc}") from exc
+                backend_label = skeleton_module.SKELETON_BACKEND
+            elif geruest_art == MASC_KIND:
+                # Musterarchitektur-Struktur (aeltere MASC-QEA). Nicht
+                # leitfadenkonform -- bleibt fuer Vergleiche zugaenglich.
+                try:
+                    skeleton_ir = skeleton_arch_module.build_arch_skeleton(rules, package=package)
+                except skeleton_arch_module.ArchSkeletonError as exc:
+                    raise BuildError(f"Geruest: {exc}") from exc
+                backend_label = skeleton_arch_module.ARCH_BACKEND
+            else:
+                # Standard: die in Abbildung 1 und den xx-MK01-Konventionen
+                # vorgegebene Struktur des Leitfadens.
+                auftrag = architektur_module.Auftrag(
+                    projekt=str(package or "Architektur"),
+                    titel=str(package or "Architektur"),
+                    architekt="",
+                    einstufung="OFFEN",
+                )
+                try:
+                    skeleton_ir = architektur_module.build_architektur(rules, auftrag)
+                except Exception as exc:  # noqa: BLE001 -- Fehler praezise weiterreichen
+                    raise BuildError(f"Geruest: {exc}") from exc
+                backend_label = architektur_module.ARCH_BACKEND
             result: ExtractionResult = ExtractionResult(
                 ir=skeleton_ir,
                 segments=(),
                 dropped=(),
                 attempts=0,
-                backend=skeleton_module.SKELETON_BACKEND,
+                backend=backend_label,
             )
             say(
-                f"[4/6] Geruest: {len(result.elements)} Element(e), "
-                f"{len(result.connectors)} Beziehung(en), 0 Modellaufrufe"
+                f"[4/6] Geruest ({geruest_art}): {len(result.elements)} Element(e), "
+                f"{len(result.connectors)} Beziehung(en), "
+                f"{len(result.ir['packages'])} Paket(e), 0 Modellaufrufe"
             )
         else:
             if chosen is None:
@@ -890,6 +929,16 @@ def build_parser() -> argparse.ArgumentParser:
         "--package", default=DEFAULT_PACKAGE, help=f"Zielpaket (Default: {DEFAULT_PACKAGE})"
     )
     p_build.add_argument(
+        "--geruest",
+        choices=(LEITFADEN_KIND, MASC_KIND, skeleton_module.SKELETON_KIND),
+        default=ARCH_SKELETON_KIND,
+        help=(
+            "Art des Geruests ohne Quelle: 'leitfaden' = Leitfaden-Struktur "
+            "(Katalog, Viewpoints, Volumes; Standard), 'metaklasse' = altes "
+            "Geruest (ein Paket je UML-Metaklasse)"
+        )
+    )
+    p_build.add_argument(
         "--backend",
         default=None,
         help="openai, ollama oder datei; ohne --text/--bild kein Modellaufruf",
@@ -1226,6 +1275,7 @@ def cmd_build(args: argparse.Namespace) -> int:
             repair_ir_path=args.repair_ir,
             batch_chars=args.chargen_zeichen,
             batch_threshold=args.chargen_schwelle,
+            skeleton=getattr(args, "geruest", None),
             startpaket=args.startpaket,
             katalog=args.katalog,
             modell=args.modell,
