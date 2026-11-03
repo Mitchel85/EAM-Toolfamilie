@@ -43,7 +43,7 @@ APPS = {
         "product": "EAM Suite",
         "version": "v8.4",
         "title": "EAM Suite — QEA-Architekturen analysieren, erkunden, bearbeiten &amp; exportieren",
-        "bytes": 1_418_826,
+        "bytes": 1_423_458,
         "min_size": 1_000_000,
         "max_size": 2_000_000,
         "markers": ("var EDIT =", "var MERGE", "var ISSUE =", "var DIAG ="),

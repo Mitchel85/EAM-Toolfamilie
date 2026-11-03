@@ -202,7 +202,7 @@ var DIAG = (function () {
     var bpmn = (typeof BPMN !== 'undefined') && BPMN.modus(diag.id) === 'bpmn';
     var pad = 30;
     var ox = -minX + pad, oy = -minY + pad;
-    var W = Math.round(maxX - minX + 2 * pad + (bpmn ? 150 : 0)), H = Math.round(maxY - minY + 2 * pad);
+    var W = Math.round(maxX - minX + 2 * pad + (bpmn ? 240 : 0)), H = Math.round(maxY - minY + 2 * pad);
 
     var issues = (typeof ISSUE !== 'undefined' && ISSUE.idsFor) ? ISSUE.idsFor(diag.id) : {};
     var links = DIAGLINK[diag.id] || [];
@@ -214,6 +214,11 @@ var DIAG = (function () {
       (st.hidden ? ' · ' + st.hidden + ' unterdrückt' : '') + '</span>' +
       '<label class="diag-ghost"><input type="checkbox" ' + (ghostOn[diag.id] ? 'checked' : '') +
       ' onchange="DIAG.toggleGhost(' + diag.id + ')"> nicht belegte Verbindungen grau zeigen</label>' +
+      (bpmn ? '<span class="diag-legend">' +
+        '<i class="lg lg-seq"></i>Steuerfluss' +
+        '<i class="lg lg-obj"></i>Objekt' +
+        '<i class="lg lg-msg"></i>Nachricht' +
+        '<i class="lg lg-info"></i>Information</span>' : '') +
       '<label class="diag-ghost">Darstellung <select onchange="DIAG.setModus(' + diag.id + ',this.value)">' +
       '<option value="auto"' + (bpmnModus(diag.id) === 'auto' ? ' selected' : '') + '>automatisch' + (bpmn ? ' (BPMN)' : ' (UML)') + '</option>' +
       '<option value="bpmn"' + (bpmnModus(diag.id) === 'bpmn' ? ' selected' : '') + '>BPMN</option>' +
@@ -231,6 +236,8 @@ var DIAG = (function () {
     parts.push('<defs>' +
       '<marker id="arr6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="13" markerHeight="13" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#004471"/></marker>' +
       '<marker id="arr6g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="13" markerHeight="13" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#B8C4CE"/></marker>' +
+      '<filter id="agShadow" x="-25%" y="-25%" width="150%" height="150%">' +
+      '<feDropShadow dx="0" dy="1.5" stdDeviation="1.6" flood-color="#32325d" flood-opacity="0.14"/></filter>' +
       '</defs>');
 
     var connStart = parts.length;
@@ -313,16 +320,19 @@ var DIAG = (function () {
           pts.slice(1).map(function (p) { return { x: p.x + ox, y: p.y + oy }; })),
         geo.edge === 4 ? 9 : (isTree ? 7 : 0)
       );
+      var fl = bpmn ? BPMN.fluss(cn) : { dash: '', offen: false, breite: 1.3, farbe: null };
+      var col = (sty.color != null && sty.color >= 0) ? '#' + ('000000' + sty.color.toString(16)).slice(-6)
+                : (fl.farbe || '#004471');
+
       /* Pfeilspitze separat merken: Sie wird nach den Kaesten gezeichnet,
          damit sie nicht von der Zielflaeche verdeckt wird. */
       arrows.push({
         x: pts[lastI].x + ox, y: pts[lastI].y + oy,
         a: Math.atan2(pts[lastI].y - pts[lastI - 1].y, pts[lastI].x - pts[lastI - 1].x),
         len: Math.sqrt(Math.pow(pts[lastI].x - pts[lastI - 1].x, 2) + Math.pow(pts[lastI].y - pts[lastI - 1].y, 2)),
-        color: ((sty.color != null && sty.color >= 0) ? '#' + ('000000' + sty.color.toString(16)).slice(-6) : '#004471')
+        color: col,
+        offen: !!fl.offen
       });
-      var col = (sty.color != null && sty.color >= 0) ? '#' + ('000000' + sty.color.toString(16)).slice(-6) : '#004471';
-      var fl = bpmn ? BPMN.fluss(cn) : { dash: '', offen: false, breite: 1.3 };
       if (fl.offen) arrows[arrows.length - 1].offen = true;
       parts.push('<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' +
         ((sty.lwidth && sty.lwidth > 0) ? sty.lwidth : fl.breite) +
@@ -484,9 +494,19 @@ var DIAG = (function () {
       if (doppelt) continue;
       gezeichnet.push(lb);
       var lt = lb.text.length > 30 ? lb.text.substring(0, 28) + '…' : lb.text;
-      parts.push('<text x="' + lb.x.toFixed(1) + '" y="' + lb.y.toFixed(1) +
-        '" font-size="8.5" fill="#334155" text-anchor="middle" style="paint-order:stroke;stroke:#FFFFFF;stroke-width:3px">' +
-        diagEsc(lt) + '</text>');
+      if (bpmn) {
+        /* Argon: weisse Plakette, damit die Beschriftung auf jeder Linie lesbar bleibt. */
+        var bw = Math.min(240, lt.length * 4.9 + 12);
+        parts.push('<rect x="' + (lb.x - bw / 2).toFixed(1) + '" y="' + (lb.y - 10).toFixed(1) +
+          '" width="' + bw.toFixed(1) + '" height="13.5" rx="6.7" fill="#FFFFFF" stroke="#e9ecef" stroke-width="1"/>');
+        parts.push('<text x="' + lb.x.toFixed(1) + '" y="' + (lb.y + 0.5).toFixed(1) +
+          '" font-family="\u0027Open Sans\u0027, system-ui, sans-serif" font-size="8.5" font-weight="600" ' +
+          'fill="#5e72e4" text-anchor="middle">' + diagEsc(lt) + '</text>');
+      } else {
+        parts.push('<text x="' + lb.x.toFixed(1) + '" y="' + lb.y.toFixed(1) +
+          '" font-size="8.5" fill="#334155" text-anchor="middle" style="paint-order:stroke;stroke:#FFFFFF;stroke-width:3px">' +
+          diagEsc(lt) + '</text>');
+      }
     }
 
     parts.push('</svg>');

@@ -10,6 +10,11 @@
     --bw-blue:#004471; --bw-dark:#0A2E4D; --bw-mid:#5A7184; --bw-light:#C6D6DE;
     --amber:#B45309; --amber-bg:#FEF3C7; --green:#1E6F5C; --green-bg:#E6F4F1;
     --ink:#1E293B; --bg:#F1F5F9; --card:#FFFFFF; --border:#CBD5E1;
+    /* Argon Design System (Creative Tim) — Grundwerte */
+    --ag-primary:#5e72e4; --ag-info:#11cdef; --ag-success:#2dce89; --ag-warning:#fb6340;
+    --ag-danger:#f5365c; --ag-heading:#172b4d; --ag-body:#32325d; --ag-muted:#8898aa;
+    --ag-soft:#f6f9fc; --ag-bg:#f8f9fe; --ag-border:#e9ecef;
+    --ag-shadow:0 4px 6px rgba(50,50,93,.11), 0 1px 3px rgba(0,0,0,.08);
   }
   * { box-sizing: border-box; }
   [hidden] { display:none !important; }
@@ -197,25 +202,45 @@
   .diagtitle { font-size:13.5px; color:var(--bw-blue); font-weight:700; }
   .diagsub { font-size:11.5px; color:var(--bw-mid); font-weight:400; margin-left:6px; }
   .diagtools { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
-  .svgwrap { overflow:auto; text-align:center; background:#FAFCFF; border:1px solid #E2E8F0; border-radius:6px; padding:8px; max-height:680px; }
+  .svgwrap { overflow:auto; text-align:center; background:#fff; border:1px solid var(--ag-border);
+    border-radius:12px; padding:16px; max-height:700px;
+    box-shadow:var(--ag-shadow); font-family:"Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .svgwrap svg { display:block; margin:0 auto; }
+  .svgwrap .hint { color:var(--ag-muted); font-size:13px; padding:18px 8px; background:var(--ag-soft); border-radius:8px; }
   /* Sicht-Renderer + Befunde (Teil 6) */
-  .diag-tools { display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between;
-    font-size:12px; color:#475569; padding:2px 4px 8px 4px; text-align:left; }
-  .diag-stat { font-weight:600; color:#004471; }
-  .diag-ghost { display:inline-flex; gap:6px; align-items:center; cursor:pointer; font-weight:500; }
-  .issue-panel { border:1px solid #E2E8F0; border-left:4px solid #B45309; border-radius:6px;
-    background:#FFFDF8; padding:10px 12px; margin:10px 0 14px 0; font-size:13px; }
+  .diag-tools { display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:space-between;
+    font-size:12.5px; color:var(--ag-body); padding:4px 2px 12px 2px; text-align:left;
+    font-family:"Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .diag-stat { font-weight:700; color:var(--ag-heading); font-size:12.5px; }
+  .diag-stat span { color:var(--ag-muted); font-weight:600; }
+  .diag-ghost { display:inline-flex; gap:7px; align-items:center; cursor:pointer; font-weight:600; color:var(--ag-muted); }
+  .diag-ghost input[type=checkbox] { accent-color:var(--ag-primary); width:15px; height:15px; cursor:pointer; }
+  .diag-ghost select { font:inherit; font-size:12.5px; font-weight:600; color:var(--ag-body); background:#fff;
+    border:1px solid var(--ag-border); border-radius:8px; padding:6px 10px; cursor:pointer;
+    box-shadow:0 1px 2px rgba(50,50,93,.06); }
+  .diag-ghost select:focus { outline:none; border-color:var(--ag-primary); }
+  .diag-legend { display:inline-flex; align-items:center; gap:14px; color:var(--ag-muted);
+    font-size:11.5px; font-weight:600; }
+  .diag-legend .lg { display:inline-block; width:22px; height:0; margin-right:-9px;
+    border-top-width:2px; border-top-style:solid; }
+  .lg-seq { border-color:#8898aa; }
+  .lg-obj { border-color:#fb6340; border-top-style:dashed !important; }
+  .lg-msg { border-color:#5e72e4; border-top-style:dashed !important; }
+  .lg-info { border-color:#cbd3e1; border-top-style:dotted !important; }
+  .issue-panel { border:1px solid var(--ag-border); border-left:4px solid var(--ag-warning); border-radius:10px;
+    background:#fff; box-shadow:var(--ag-shadow); padding:14px 16px; margin:12px 0 16px 0; font-size:13px;
+    font-family:"Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif; color:var(--ag-body); }
   .issue-head { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-  .issue-head b { color:#004471; }
-  .issue-count { background:#B45309; color:#fff; border-radius:10px; padding:1px 8px; font-size:11.5px; font-weight:700; }
+  .issue-head b { color:var(--ag-heading); font-size:13.5px; }
+  .issue-count { background:var(--ag-warning); color:#fff; border-radius:20px; padding:2px 9px; font-size:11px; font-weight:700; }
   .issue-actions { margin-left:auto; display:flex; gap:6px; flex-wrap:wrap; }
   .issue-list { margin-top:8px; display:flex; flex-direction:column; gap:6px; }
   .issue-empty { color:#64748B; font-style:italic; }
-  .issue-item { display:flex; align-items:flex-start; gap:8px; background:#fff; border:1px solid #EDE3D3;
-    border-radius:5px; padding:6px 8px; }
+  .issue-item { display:flex; align-items:flex-start; gap:9px; background:var(--ag-soft); border:1px solid var(--ag-border);
+    border-radius:8px; padding:8px 10px; }
   .issue-sev { color:#fff; font-size:10.5px; font-weight:700; border-radius:4px; padding:2px 7px; white-space:nowrap; }
   .issue-txt { flex:1; color:#1F2937; line-height:1.35; }
-  .issue-elem { color:#004471; font-weight:600; white-space:nowrap; }
+  .issue-elem { color:var(--ag-primary); font-weight:700; white-space:nowrap; }
   .issue-del { background:none; border:none; color:#94A3B8; cursor:pointer; font-size:14px; line-height:1; }
   .issue-del:hover { color:#B91C1C; }
   .issue-form { margin-top:10px; padding:10px; background:#fff; border:1px dashed #D6C7AE; border-radius:6px; }
