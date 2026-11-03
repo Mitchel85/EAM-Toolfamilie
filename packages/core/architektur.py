@@ -1180,8 +1180,20 @@ def _mitglieder(
     nach_paket: dict[str, list[str]] = {}
     for element in elements:
         nach_paket.setdefault(str(element.get("package") or ""), []).append(str(element.get("name") or ""))
-    inhalt_pakete = {str(e.get("package") or "") for e in inhalt_elemente}
+    # Projektinhalt zuerst: Er liegt in der Perspektive (z. B. <AD>/Concepts),
+    # die Sicht aber im Viewpoint-Paket darunter. Deshalb ueber den Stereotyp
+    # zuordnen, nicht ueber den Paketpfad -- sonst bleibt jede Sicht leer.
+    pflicht = set(leitfaden.PFLICHT_STEREOTYPE.get(code, ()))
     priorität: list[str] = []
+    if pflicht:
+        for element in inhalt_elemente:
+            if str(element.get("stereotype") or "") not in pflicht:
+                continue
+            pkg = str(element.get("package") or "")
+            name = str(element.get("name") or "")
+            if pkg and name:
+                priorität.append(f"{pkg}::{name}")
+    inhalt_pakete = {str(e.get("package") or "") for e in inhalt_elemente}
     for pkg in sorted(nach_paket):
         if not pkg.startswith(package):
             continue

@@ -165,8 +165,10 @@ def test_build_aus_beispiel_erzeugt_lesbare_qea(server: webui.WebServer, tmp_pat
     state = wait_for(server, payload)
 
     assert state["state"] == "done", state["error"]
-    assert state["summary"]["elements"] == 3
-    assert state["summary"]["connectors"] == 1
+    # Struktur + Inhalt: die drei Elemente aus dem Text sind enthalten,
+    # dazu kommen die Geruestelemente des Regelwerks.
+    assert state["summary"]["elements"] >= 3
+    assert state["summary"]["connectors"] >= 1
     assert state["summary"]["errors"] == 0
     assert any(line.startswith("[1/6]") for line in state["log"])
     assert any(line.startswith("[6/6]") for line in state["log"])
@@ -202,12 +204,10 @@ def test_build_aus_beispiel_erzeugt_lesbare_qea(server: webui.WebServer, tmp_pat
     target = tmp_path / "download.qea"
     target.write_bytes(qea_bytes)
     ir = read_qea(target)
-    assert len(ir["elements"]) == 3
-    assert len(ir["connectors"]) == 1
-    assert {element["name"] for element in ir["elements"]} == {
-        "Ablauf A",
-        "Faehigkeit B",
-        "Dienst C",
+    assert len(ir["elements"]) >= 3
+    assert len(ir["connectors"]) >= 1
+    assert {"Ablauf A", "Faehigkeit B", "Dienst C"} <= {
+        element["name"] for element in ir["elements"]
     }
     assert ir["technology"]["profile"] == "NAFv4-ADMBw"
 

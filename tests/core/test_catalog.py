@@ -111,6 +111,7 @@ def test_neues_element_bekommt_eigene_kennung(tmp_path: Path) -> None:
     katalog = _katalog(tmp_path)
     ziel = tmp_path / "ergebnis.qea"
     eam_ai.build(
+        struktur=False,
         mdg=MDG,
         text=_text(tmp_path),
         out=ziel,
@@ -145,6 +146,7 @@ def test_katalog_ist_im_prompt_und_wird_nachgeschlagen(tmp_path: Path) -> None:
 def test_ohne_katalog_bleibt_alles_wie_bisher(tmp_path: Path) -> None:
     ziel = tmp_path / "ergebnis.qea"
     eam_ai.build(
+        struktur=False,
         mdg=MDG,
         text=_text(tmp_path),
         out=ziel,

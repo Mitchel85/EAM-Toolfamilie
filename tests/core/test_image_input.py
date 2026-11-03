@@ -281,6 +281,7 @@ def test_nur_bild_ist_eine_quelle(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
         "connectors": [],
     }
     report = eam_ai.build(
+        struktur=False,
         mdg=mdg,
         images=[_bild(tmp_path)],
         out=tmp_path / "modell.qea",

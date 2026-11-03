@@ -48,6 +48,7 @@ in die Zieldatei, nie in eine Eingabedatei.
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import json
 import os
 import shutil
@@ -401,6 +402,7 @@ def build(
     ai_backend: object | None = None,
     repair_bericht: str | Path | None = None,
     repair_ir_path: str | Path | None = None,
+    struktur: bool = True,
     log: Log | None = None,
 ) -> BuildReport:
     """Technologie + Prosa -> .qea. Liefert den Bericht, bricht laut ab.
@@ -658,6 +660,35 @@ def build(
                     )
             for drop in result.dropped:
                 say(f"        verworfen: {drop.kind} {drop.name!r}: {drop.reason}")
+
+            # 4b/6 Inhalt in die Leitfaden-Struktur einsortieren.
+            # Mit ``struktur=False`` bleibt das flache Extraktionsergebnis
+            # stehen -- fuer Vergleichslaeufe und fuer Regelwerke, die die
+            # Leitfaden-Struktur nicht abdecken.
+            # Die Extraktion liefert ein flaches Modell (ein Zielpaket). Erst
+            # hier entsteht die Struktur aus Abbildung 1: Perspektiven,
+            # Viewpoint-Pakete, Katalog, Sichten. Der Inhalt behaelt Name,
+            # Stereotyp, Notiz und Herkunft; nur das Paket wird gesetzt.
+            if struktur:
+                auftrag = architektur_module.Auftrag(
+                    projekt=str(package or "Architektur"),
+                    titel=str(package or "Architektur"),
+                    architekt="",
+                    einstufung="OFFEN",
+                )
+                try:
+                    struktur_ir = architektur_module.build_architektur(
+                        rules, auftrag, inhalte=result.ir
+                    )
+                except Exception as exc:  # noqa: BLE001 -- Fehler praezise weiterreichen
+                    raise BuildError(f"Leitfaden-Struktur: {exc}") from exc
+                struktur_ir.setdefault("meta", {}).update(dict(result.ir.get("meta") or {}))
+                result = dataclasses.replace(result, ir=struktur_ir)
+                say(
+                    f"[4b/6] Leitfaden-Struktur: {len(result.ir['packages'])} Paket(e), "
+                    f"{len(result.elements)} Element(e), {len(result.connectors)} Beziehung(en), "
+                    f"{len(result.ir.get('diagrams') or ())} Sicht(en)"
+                )
 
         # 5/6 Validieren -- und mit --repair selbsttaetig gegen die MDG geraderuecken
         try:
@@ -1022,6 +1053,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Hochstzahl der Reparaturrunden (Default: 6)",
     )
     p_build.add_argument(
+        "--ohne-struktur",
+        action="store_true",
+        help="Inhalt flach lassen (kein Leitfaden-Paketbaum) -- fuer Vergleichslaeufe",
+    )
+    p_build.add_argument(
         "--repair-ir",
         type=Path,
         default=None,
@@ -1317,6 +1353,7 @@ def cmd_build(args: argparse.Namespace) -> int:
             repair_rounds=args.repair_runden,
             repair_bericht=args.repair_bericht,
             repair_ir_path=args.repair_ir,
+            struktur=not getattr(args, "ohne_struktur", False),
             batch_chars=args.chargen_zeichen,
             batch_threshold=args.chargen_schwelle,
             skeleton=getattr(args, "geruest", None),

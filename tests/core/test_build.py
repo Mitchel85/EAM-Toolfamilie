@@ -148,6 +148,7 @@ def test_end_to_end_txt_writes_qea_and_findings(tmp_path: Path) -> None:
     target = tmp_path / "modell.qea"
 
     report = eam_ai.build(
+        struktur=False,
         mdg=MDG,
         text=source,
         out=target,
@@ -274,6 +275,7 @@ def test_cli_end_to_end_reports_progress_on_stderr(tmp_path: Path, capsys) -> No
         str(answer),
         "--findings",
         str(tmp_path / "findings.json"),
+        "--ohne-struktur",
     )
 
     assert code == 0
@@ -614,6 +616,7 @@ def test_build_continues_existing_model(tmp_path: Path) -> None:
     erst = tmp_path / "erst.txt"
     erst.write_text("Der Dienst Lagebild ist ein ServicePort.\n", encoding="utf-8")
     erstes = eam_ai.build(
+        struktur=False,
         mdg=MDG, text=erst, out=tmp_path / "teil1.qea",
         backend=make_backend({"elements": [
             {"name": "Dienst Lagebild", "stereotype": "ServiceSpecification",
@@ -625,6 +628,7 @@ def test_build_continues_existing_model(tmp_path: Path) -> None:
     zweit = tmp_path / "zweit.txt"
     zweit.write_text("Der Dienst Wetterbild ist ein ServicePort.\n", encoding="utf-8")
     zweites = eam_ai.build(
+        struktur=False,
         mdg=MDG, text=zweit, out=tmp_path / "gesamt.qea",
         backend=make_backend({"elements": [
             {"name": "Dienst Wetterbild", "stereotype": "ServiceSpecification",
@@ -715,6 +719,7 @@ def test_build_counts_all_object_types(tmp_path: Path) -> None:
     quelle = tmp_path / "text.txt"
     quelle.write_text(TEXT, encoding="utf-8")
     report = eam_ai.build(
+        struktur=False,
         mdg=MDG, text=quelle, out=tmp_path / "gesamt.qea", backend=make_backend(),
         findings_path=tmp_path / "f.json", modell=basis, sidecar=False,
     )
@@ -794,6 +799,7 @@ def test_drei_prosa_laeufe_bleiben_ein_modell(tmp_path: Path) -> None:
         if bestand is not None:
             kwargs["modell"] = bestand
         eam_ai.build(
+        struktur=False,
             mdg=MDG, text=quelle, out=ziel, backend=backend,
             findings_path=tmp_path / f"f{nummer}.json", sidecar=False, **kwargs,
         )
@@ -807,3 +813,33 @@ def test_drei_prosa_laeufe_bleiben_ein_modell(tmp_path: Path) -> None:
                 f"Lauf {nummer}: Kennung von {element_name!r} veraendert"
             )
         bestand = ziel
+
+
+def test_build_legt_die_leitfaden_struktur_an(tmp_path: Path) -> None:
+    """Der Regelweg legt den Paketbaum aus Abbildung 1 an.
+
+    Ohne ``struktur=False`` entsteht nicht ein Sammelpaket, sondern die
+    Struktur aus dem Leitfaden; der Inhalt steht danach in den Perspektiven.
+    """
+    source = tmp_path / "text.txt"
+    source.write_text(TEXT, encoding="utf-8")
+    report = eam_ai.build(
+        struktur=True,
+        mdg=MDG,
+        text=source,
+        out=tmp_path / "struktur.qea",
+        backend=make_backend(),
+        findings_path=tmp_path / "findings.json",
+        package="Probe",
+        sidecar=False,
+    )
+    daten = read_qea(tmp_path / "struktur.qea")
+    pfade = {str(paket.get("path") or "") for paket in daten["packages"]}
+    assert "Probe" in pfade
+    assert any(pfad.startswith("Probe - Projektarchitektur/Concepts") for pfad in pfade)
+    assert any(pfad.startswith("Probe - Projektarchitektur/Architecture Foundation") for pfad in pfade)
+    assert "StEKa" in pfade
+    assert any(pfad == "Probe - PBN-Architektur" or pfad.startswith("Probe - PBN-Architektur") for pfad in pfade)
+    namen = {str(element.get("name")) for element in daten["elements"]}
+    assert {"Ablauf A", "Faehigkeit B", "Dienst C"} <= namen
+    assert report.elements > 3, "Struktur kommt zum Inhalt hinzu"
