@@ -29,6 +29,7 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
 import leitfaden
+import wizard
 
 ERROR = "error"
 WARNING = "warning"
@@ -329,8 +330,18 @@ def check_startseite(model: Mapping[str, Any], projekt: str) -> list[Finding]:
             if str(e.get("stereotype") or "") == "Viewpoint"
         }
         for diagram in treffer:
-            for ref in diagram.get("member_refs") or ():
-                paket, _, name = str(ref).rpartition("::")
+            roh = diagram.get("member_refs")
+            if not roh:
+                roh = diagram.get("members")
+            if not isinstance(roh, (list, tuple)):
+                roh = ()
+            for mitglied in roh:
+                ref = (
+                    str(mitglied.get("element") or "")
+                    if isinstance(mitglied, dict)
+                    else str(mitglied)
+                )
+                paket, _, name = ref.rpartition("::")
                 if (paket, name) in elemente:
                     views.append({"name": name})
                     break
@@ -358,7 +369,12 @@ def check_diagram_members(model: Mapping[str, Any]) -> list[Finding]:
             continue
         if "members" not in diagram:
             continue  # IR-Modell ohne Mitgliederzahlen: nicht bewertbar
-        if int(diagram.get("members") or 0) > 0:
+        mitglieder = diagram.get("members")
+        if isinstance(mitglieder, (list, tuple)):
+            anzahl = len(mitglieder)
+        else:
+            anzahl = int(mitglieder or 0)
+        if anzahl > 0:
             continue
         _add(
             out,
@@ -445,7 +461,43 @@ def check_viewpoint_coverage(model: Mapping[str, Any]) -> list[Finding]:
     return out
 
 
-def validate(model: Mapping[str, Any], projekt: str) -> list[Finding]:
+def check_modelwizard(
+    model: Mapping[str, Any],
+    vorlagen: Mapping[str, "wizard.Vorlage"],
+) -> list[Finding]:
+    """Abgleich gegen die 52 Model-Wizard-Vorlagen des ADMBw.
+
+    Der Model Wizard deckt alle Viewpoints des ADMBw ab, der Leitfaden fuer
+    FFFmLV nur 26 davon. Deshalb ist ein Viewpoint ausserhalb dieses
+    Geltungsbereichs ein Hinweis, kein Fehler. Innerhalb des Geltungsbereichs
+    zaehlt: Paket vorhanden, Sicht vorhanden, und die von der Vorlage
+    vorgesehenen Modellierungselemente sind im Bau angelegt.
+    """
+    bereich = {d.viewpoint for d in leitfaden.DIAGRAMS if d.viewpoint}
+    out: list[Finding] = []
+    for befund in wizard.vergleiche(
+        model,
+        vorlagen,
+        geltungsbereich=bereich,
+        pflichtstereotype={
+            code: list(werte) for code, werte in leitfaden.PFLICHT_STEREOTYPE.items()
+        },
+    ):
+        stufe = {
+            "error": ERROR,
+            "warning": WARNING,
+            "info": INFO,
+        }.get(befund.severity, INFO)
+        _add(out, stufe, f"modelWizard:{befund.art}", befund.viewpoint, befund.message)
+    return out
+
+
+def validate(
+    model: Mapping[str, Any],
+    projekt: str,
+    *,
+    vorlagen: Mapping[str, "wizard.Vorlage"] | None = None,
+) -> list[Finding]:
     """Alle Leitfaden-Prüfungen in einem Lauf."""
     findings: list[Finding] = []
     findings.extend(check_packages(model, projekt))
@@ -455,6 +507,8 @@ def validate(model: Mapping[str, Any], projekt: str) -> list[Finding]:
     findings.extend(check_diagram_members(model))
     findings.extend(check_viewpoint_catalog(model, projekt))
     findings.extend(check_viewpoint_coverage(model))
+    if vorlagen:
+        findings.extend(check_modelwizard(model, vorlagen))
     return findings
 
 
@@ -475,7 +529,8 @@ def render(findings: Sequence[Finding], limit: int = 40) -> str:
     order = {ERROR: 0, WARNING: 1, INFO: 2}
     for finding in sorted(findings, key=lambda f: (order.get(f.severity, 9), f.code, f.object))[:limit]:
         code = f"[{finding.code}] " if finding.code else ""
-        lines.append(f"  {finding.severity:7s} {code}{finding.message}")
+        obj = f"{finding.object}: " if finding.object else ""
+        lines.append(f"  {finding.severity:7s} {code}{obj}{finding.message}")
     if len(findings) > limit:
         lines.append(f"  ... {len(findings) - limit} weitere")
     return "\n".join(lines)

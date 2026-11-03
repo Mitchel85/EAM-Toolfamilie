@@ -115,10 +115,10 @@ def test_keine_leeren_sichten_ausser_fachlich_offenen(ir) -> None:
     * Sr  -- den Stereotyp CHANGE gibt es im MDG 2026.05 nicht.
     """
     leer = {d["name"] for d in ir["diagrams"] if not d.get("members")}
-    assert len(leer) == 7, f"unerwartet leer: {sorted(leer)}"
-    assert all(
-        name.split(":")[0].strip() in {"Ar", "C1", "Cr", "Sr"} for name in leer
-    )
+    # Nur noch Ar: die Konvention Ar-MK03 verlangt eine ARCHITECTURALDESCRIPTION,
+    # die im MDG ein Paket-Stereotyp ist und deshalb nicht als Element auf einer
+    # Sicht liegen kann.
+    assert leer == {"Ar : Testprojekt : Architecture Roadmap"}, sorted(leer)
 
 
 def test_mdg_pruefung_ist_sauber(ir, rules) -> None:

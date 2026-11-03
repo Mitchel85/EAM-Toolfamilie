@@ -76,6 +76,8 @@ import rules_schema
 import skeleton as skeleton_module
 import skeleton_arch as skeleton_arch_module
 import architektur as architektur_module
+import struktur as struktur_module
+import wizard as wizard_module
 
 #: Geruestart, wenn keine gewaehlt wurde: MASC-Struktur.
 LEITFADEN_KIND = "leitfaden"
@@ -348,6 +350,25 @@ def _failure_findings(message: str) -> list[dict[str, str]]:
 # --------------------------------------------------------------------------
 # Gesamtlauf
 # --------------------------------------------------------------------------
+
+
+
+#: Verzeichnis mit den 52 Model-Wizard-Vorlagen (BAAINBw, ADMBw).
+WIZARD_VERZEICHNIS = Path(__file__).resolve().parents[2] / "knowledge" / "modelwizard"
+
+
+def _wizard_vorlagen() -> dict[str, "wizard_module.Vorlage"]:
+    """Die Modellvorlagen laden, wenn sie vorliegen -- sonst leer.
+
+    Sie sind optional: ohne sie laeuft die Leitfaden-Pruefung, nur ohne den
+    Abgleich je Viewpoint.
+    """
+    if not WIZARD_VERZEICHNIS.is_dir():
+        return {}
+    try:
+        return wizard_module.lade_alle(WIZARD_VERZEICHNIS)
+    except (OSError, ValueError):
+        return {}
 
 
 def build(
@@ -677,6 +698,29 @@ def build(
             f"[5/6] Pruefung: {counts['total']} Findings: {counts['error']} Fehler, "
             f"{counts['warning']} Warnungen -> {target_findings}"
         )
+
+        # 5b) Methodische Pruefung: Leitfaden-Konventionen und die 52
+        #     Model-Wizard-Vorlagen. Sie blockiert nicht -- ein Leitfaden-
+        #     Verstoss ist ein Befund, kein Exportfehler.
+        try:
+            modell = struktur_module.from_ir(result.ir)
+            vorlagen = _wizard_vorlagen()
+            lf = struktur_module.validate(
+                modell,
+                str(result.ir.get("projekt") or package or "Projekt"),
+                vorlagen=vorlagen or None,
+            )
+        except Exception as exc:  # noqa: BLE001 -- Pruefung darf den Bau nicht kippen
+            say(f"[5b] Leitfaden-Pruefung nicht ausfuehrbar: {exc}")
+        else:
+            zahlen = struktur_module.summary(lf)
+            say(
+                f"[5b] Leitfaden-Pruefung: {zahlen['error']} Fehler, "
+                f"{zahlen['warning']} Warnungen, {zahlen['info']} Hinweise"
+                + ("" if not vorlagen else f" (inkl. {len(vorlagen)} Model-Wizard-Vorlagen)")
+            )
+            for zeile in struktur_module.render(lf, limit=8).splitlines()[1:]:
+                say("       " + zeile.strip())
 
         if repair_ir_path:
             # Zwischenstand sichern: zeigt, was die KI gebaut hat, bevor der

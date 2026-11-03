@@ -71,6 +71,7 @@ modules = [
     "kanten",
     "leitfaden",
     "struktur",
+    "wizard",
 ]
 resources = [
     "rules.schema.json",

@@ -37,6 +37,39 @@ LEITFADEN_VERSION = "2.0"
 LEITFADEN_STAND = "17.04.2026"
 LEITFADEN_MDG_VERSION = "2025.11"
 
+
+#: Pflichtstereotype je Viewpoint.
+#:
+#: Schnittmenge aus zwei belegten Quellen:
+#:   * der Leitfaden nennt den Stereotyp in einer ``xx-MK``-Konvention, und
+#:   * die Model-Wizard-Vorlage des Viewpoints zeigt ihn.
+#: Was nur in der Vorlage steht (MASC-Beispielinhalte wie "Project" in A1),
+#: ist bewusst nicht enthalten -- sonst wuerde der Bau Beispielinhalte
+#: nachbilden, die fuer ein anderes Projekt nicht gelten.
+PFLICHT_STEREOTYPE: dict[str, tuple[str, ...]] = {
+    "A1": ("Classification",),
+    "A2": ("Concern", "View", "Viewpoint"),
+    "A8": ("Standard",),
+    "C1": ("Capability",),
+    "Cr": ("Capability",),
+    "L1": ("OperationalPerformer",),
+    "L2": ("OperationalArchitecture", "OperationalPerformer"),
+    "L3": ("OperationalArchitecture",),
+    "L4": ("OperationalArchitecture",),
+    "L7": ("InformationElement",),
+    "L8": ("Classification", "DocumentReference", "OperationalConstraint", "StrategicConstraint"),
+    "P1": ("ServiceSpecification",),
+    "P2": ("Location",),
+    "P8": ("Classification", "DocumentReference", "OperationalConstraint", "Reference",
+           "ResourceConstraint", "SMEReference"),
+    "R2": ("RequirementCatalogue", "RequirementCategory"),
+    "R7": ("OperationalConstraint",),
+    "S1": ("ServiceSpecification",),
+    "S2": ("MeasurementType", "ServiceSpecification"),
+    "S3": ("DataElement", "ServiceInterface", "ServicePort", "ServiceSpecification"),
+    "Sr": ("ServiceSpecification",),
+}
+
 #: Perspektiven der übergreifenden Paketstruktur (Leitfaden Abbildung 1).
 VIEWPOINT_FAMILY: tuple[str, ...] = (
     "Architecture Foundation",

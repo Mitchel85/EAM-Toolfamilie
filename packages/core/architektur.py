@@ -524,6 +524,73 @@ def build_architektur(
         if diagram.get("name") == f"A2 : {projekt} : Viewpoints":
             diagram["members"] = [{"element": ref} for ref in (*vp_refs, *view_refs)]
 
+    # 6b2) Pflichtstereotype je Viewpoint. Der Leitfaden nennt sie, die
+    #      Model-Wizard-Vorlage zeigt sie. Ein Element wird wiederverwendet,
+    #      wenn es schon im Modell liegt -- in EA steht ein Element in vielen
+    #      Sichten, ohne kopiert zu werden. Sonst entsteht es im Paket der
+    #      Sicht und wird als Geruestelement gekennzeichnet.
+    nach_stereotyp: dict[str, list[dict[str, Any]]] = {}
+    for element in elements:
+        stereo = str(element.get("stereotype") or "")
+        if stereo:
+            nach_stereotyp.setdefault(stereo, []).append(element)
+    vorhandene_refs_set = {
+        f"{e.get('package')}::{e.get('name')}" for e in elements
+    }
+    for diagram in diagrams:
+        code = str(diagram.get("name") or "").split(":")[0].strip()
+        pflicht = leitfaden.PFLICHT_STEREOTYPE.get(code, ())
+        if not pflicht:
+            continue
+        paket = str(diagram.get("package") or "")
+        refs = {str(m.get("element") or "") for m in diagram.get("members") or ()}
+        im_paket = {
+            str(e.get("stereotype") or "")
+            for e in elements
+            if str(e.get("package") or "") == paket
+        }
+        for stereotype in pflicht:
+            if stereotype == "Viewpoint" or stereotype == "View":
+                continue  # zentral in A2/Viewpoints, siehe oben
+            if stereotype in im_paket:
+                continue
+            kandidat = next(
+                (e for e in nach_stereotyp.get(stereotype, ())
+                 if str(e.get("package") or "") == paket),
+                None,
+            )
+            if kandidat is None:
+                kandidat = next(iter(nach_stereotyp.get(stereotype, ())), None)
+            if kandidat is not None:
+                ref = f"{kandidat.get('package')}::{kandidat.get('name')}"
+                if ref not in refs:
+                    diagram.setdefault("members", []).append({"element": ref})
+                    refs.add(ref)
+                continue
+            stereo_name, ea_type = _stereotyp(rules, stereotype)
+            if not stereo_name:
+                continue
+            name = GERUEST_NAME.get(stereotype, stereotype)
+            elements.append(
+                {
+                    "package": paket,
+                    "name": name,
+                    "stereotype": stereo_name,
+                    "ea_type": ea_type or "Class",
+                    "notes": (
+                        f"Geruestelement fuer {code}: der Leitfaden verlangt "
+                        f"{stereotype} in diesem Viewpoint."
+                    ),
+                }
+            )
+            nach_stereotyp.setdefault(stereotype, []).append(elements[-1])
+            im_paket.add(stereotype)
+            ref = f"{paket}::{name}"
+            if ref not in refs:
+                diagram.setdefault("members", []).append({"element": ref})
+                refs.add(ref)
+                vorhandene_refs_set.add(ref)
+
     # 6c) Sichtinhalt sicherstellen. Eine Sicht ohne Element erfuellt ihren
     #     Zweck nicht (der Leitfaden-Pruefer meldet das zu Recht). Wo der
     #     Leitfaden Projektinhalt zulaesst, wird ein benanntes Geruestelement
@@ -983,6 +1050,36 @@ SICHT_GERUEST: dict[tuple[str, str], tuple[str, str, str]] = {
     ("R3", "Requirements Dependencies"): ("Forderung", "FunctionalRequirement", "R3-MK03"),
     ("R7", "Requirements Derivation"): ("Forderung", "FunctionalRequirement", "R7-MK03"),
 }
+
+#: Sprechende Namen fuer Geruestelemente, die der Bau anlegen muss, weil der
+#: Viewpoint sie verlangt. Fehlt ein Eintrag, traegt das Element den
+#: Stereotypnamen -- das ist eindeutig, wenn auch technisch.
+GERUEST_NAME: dict[str, str] = {
+    "Classification": "Einstufung",
+    "Capability": "Faehigkeit",
+    "Concern": "Analysebedarf",
+    "DataElement": "Datenelement",
+    "DocumentReference": "Dokumentreferenz",
+    "InformationElement": "Informationselement",
+    "Location": "Standort",
+    "MeasurementType": "Messgroesse",
+    "OperationalArchitecture": "Anwendungsfall",
+    "OperationalConstraint": "Operationelle Vorgabe",
+    "OperationalPerformer": "Logischer Aufgabentraeger",
+    "Reference": "Referenz",
+    "RequirementCatalogue": "Forderungskatalog",
+    "RequirementCategory": "Forderungskategorie",
+    "ResourceConstraint": "Implementierungsvorgabe",
+    "SMEReference": "SME-Referenz",
+    "ServiceInterface": "Serviceschnittstelle",
+    "ServicePort": "Serviceport",
+    "ServiceSpecification": "Service",
+    "Standard": "Standard",
+    "StrategicConstraint": "Strategische Vorgabe",
+    "View": "View",
+    "Viewpoint": "Viewpoint",
+}
+
 
 def _sicher(rules: Mapping[str, Any], stereotype: str) -> str:
     """Stereotyp nur zurueckgeben, wenn das Regelwerk ihn kennt -- sonst "".

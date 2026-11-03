@@ -26,3 +26,7 @@ apps/admbw-script-maker/tests/results.json
 # Leitfaden V2.0: Single Source of Truth ist die Verlags-/BMVg-Seite.
 # Im Repo liegen nur die abgeleiteten Regelmodelle (konventionen.json, leitfaden.txt).
 knowledge/leitfaden/*.pdf
+
+# Model-Wizard-Vorlagen (BAAINBw, ADMBw): offizielle Dokumente, kein Redistributions-
+# recht. Bleiben lokal; der Abgleich laeuft nur, wenn das Verzeichnis vorhanden ist.
+knowledge/modelwizard/
