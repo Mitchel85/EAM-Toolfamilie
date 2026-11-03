@@ -227,6 +227,8 @@ var DIAG = (function () {
       '<marker id="arr6g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="13" markerHeight="13" orient="auto" markerUnits="userSpaceOnUse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#B8C4CE"/></marker>' +
       '</defs>');
 
+    var connStart = parts.length;
+
     /* --- nicht belegte Verbindungen (optional, gestrichelt) --- */
     if (ghostOn[diag.id]) {
       var belegt = {};
@@ -297,7 +299,8 @@ var DIAG = (function () {
       var vx = pts[lastI].x - pts[lastI - 1].x, vy = pts[lastI].y - pts[lastI - 1].y;
       var vlen = Math.sqrt(vx * vx + vy * vy);
       if (vlen > 10) {
-        pts[lastI] = { x: pts[lastI].x - (vx / vlen) * 8, y: pts[lastI].y - (vy / vlen) * 8 };
+        var zurueck = Math.min(8, vlen * 0.18);
+        pts[lastI] = { x: pts[lastI].x - (vx / vlen) * zurueck, y: pts[lastI].y - (vy / vlen) * zurueck };
       }
       var d = polyPath(
         [{ x: pts[0].x + ox, y: pts[0].y + oy }].concat(
@@ -309,6 +312,7 @@ var DIAG = (function () {
       arrows.push({
         x: pts[lastI].x + ox, y: pts[lastI].y + oy,
         a: Math.atan2(pts[lastI].y - pts[lastI - 1].y, pts[lastI].x - pts[lastI - 1].x),
+        len: Math.sqrt(Math.pow(pts[lastI].x - pts[lastI - 1].x, 2) + Math.pow(pts[lastI].y - pts[lastI - 1].y, 2)),
         color: ((sty.color != null && sty.color >= 0) ? '#' + ('000000' + sty.color.toString(16)).slice(-6) : '#004471')
       });
       var col = (sty.color != null && sty.color >= 0) ? '#' + ('000000' + sty.color.toString(16)).slice(-6) : '#004471';
@@ -322,13 +326,38 @@ var DIAG = (function () {
       drawn++;
     }
 
+    /* Verbindungen werden spaeter gezeichnet: Container (Rahmen, Pools,
+       Lanes) zuerst, dann die Linien, dann die Elemente. Sonst deckt die
+       Fuellung eines Rahmens die Verbindungen zu. */
+    var connParts = parts.splice(connStart);
+
     /* --- Elemente --- */
-    order.sort(function (a, b) { return a.seq - b.seq; });
-    for (var bi = 0; bi < order.length; bi++) {
-      var rc = order[bi];
+    /* Hoher Sequence-Wert liegt in EA hinten. Aufsteigend gezeichnet wuerde
+       ein Rahmen (Seq 13) die Zustandskoerper (Seq 1..12) verdecken. */
+    order.sort(function (a, b) { return (b.seq || 0) - (a.seq || 0); });
+
+    /* Container erkennen: Rechteck umschliesst mindestens zwei andere. */
+    var cont = {};
+    for (var ci = 0; ci < order.length; ci++) {
+      var cr = order[ci], innen = 0;
+      for (var cj = 0; cj < order.length; cj++) {
+        if (ci === cj) continue;
+        var cq = order[cj];
+        if (cq.x >= cr.x - 1 && cq.y >= cr.y - 1 &&
+            cq.x + cq.w <= cr.x + cr.w + 1 && cq.y + cq.h <= cr.y + cr.h + 1) innen++;
+      }
+      if (innen >= 2) cont[cr.oid] = true;
+    }
+
+    for (var pass = 0; pass < 2; pass++) {
+      if (pass === 1) { for (var cp = 0; cp < connParts.length; cp++) parts.push(connParts[cp]); }
+      for (var bi = 0; bi < order.length; bi++) {
+        var rc = order[bi];
+        if ((!!cont[rc.oid]) !== (pass === 0)) continue;
       if (!rc.name && !rc.st) continue;
       if (/^proxyconn?ector$/i.test(rc.st)) continue;
       var isBoundary = (rc.type === 'Boundary');
+      var isText = (rc.type === 'Text');
       var isLane = /^(pool|lane)$/i.test(rc.st);
       var fill = (typeof stFill === 'function') ? stFill(rc.st) : '#EAF2F8';
       var stroke = (typeof stColor === 'function') ? stColor(rc.st) : '#004471';
@@ -339,7 +368,7 @@ var DIAG = (function () {
       var flagged = issues[rc.oid];
       var click = (!isBoundary && rc.oid) ? ' class="diag-node" onclick="openElement(\'' + rc.oid + '\')"' : '';
       parts.push('<g' + click + '><title>' + diagEsc(rc.name + (rc.st ? '  «' + rc.st + '»' : '')) + '</title>');
-      parts.push('<rect x="' + (rc.x + ox).toFixed(1) + '" y="' + (rc.y + oy).toFixed(1) +
+      if (!isText) parts.push('<rect x="' + (rc.x + ox).toFixed(1) + '" y="' + (rc.y + oy).toFixed(1) +
         '" width="' + rc.w.toFixed(1) + '" height="' + rc.h.toFixed(1) + '" rx="4" fill="' + fill +
         '" stroke="' + (flagged ? '#B45309' : stroke) + '" stroke-width="' + (flagged ? '2.4' : '1.4') + '"' + dash + '/>');
       if (flagged) {
@@ -371,24 +400,25 @@ var DIAG = (function () {
         parts.push('<text x="' + (rc.x + ox + rc.w + 4).toFixed(1) + '" y="' + (rc.y + oy + rc.h / 2 + 3).toFixed(1) +
           '" font-size="8.5" fill="#1A1A1A" text-anchor="start">' + diagEsc(shortN) + '</text>');
       } else {
-        var lines = [];
-        var maxc = Math.max(6, Math.floor((rc.w - 8) / (fs * 0.66)));
-        if (nm.length <= maxc) lines.push(nm);
-        else {
-          var cut = nm.lastIndexOf(' ', maxc);
-          if (cut < 4) {
-            /* Kein Wortende in Reichweite: nicht mitten im Wort trennen. */
-            lines.push(nm.substring(0, Math.max(3, maxc - 1)) + '…');
-          } else {
-            lines.push(nm.substring(0, cut));
-            var rest = nm.substring(cut + 1);
-            if (rest.length > maxc) {
-              var cut2 = rest.lastIndexOf(' ', maxc);
-              rest = (cut2 < 4) ? rest.substring(0, Math.max(3, maxc - 1)) + '…' : rest.substring(0, cut2) + '…';
-            }
-            lines.push(rest);
-          }
+        /* So viele Zeilen wie in die Hoehe passen; Schrift bei Bedarf kleiner. */
+        var fs0 = 11;
+        if (rc.h < 30 || rc.w < 90) fs0 = 9.5;
+        var maxZeilen = Math.max(1, Math.min(4, Math.floor((rc.h - 8) / (fs0 * 1.15))));
+        var lines = [], rest0 = nm;
+        var maxc0 = Math.max(6, Math.floor((rc.w - 8) / (fs0 * 0.62)));
+        while (rest0.length && lines.length < maxZeilen) {
+          if (rest0.length <= maxc0) { lines.push(rest0); rest0 = ''; break; }
+          var c0 = rest0.lastIndexOf(' ', maxc0);
+          if (c0 < 4) c0 = maxc0;
+          lines.push(rest0.substring(0, c0));
+          rest0 = rest0.substring(c0 + 1);
         }
+        if (rest0.length) {
+          var last = lines[lines.length - 1];
+          var keep = Math.max(3, maxc0 - 1);
+          lines[lines.length - 1] = (last.length > keep ? last.substring(0, keep) : last) + '…';
+        }
+        fs = fs0;
         var ty = rc.y + oy + 13 + (rc.h - 15) / 2 - (lines.length - 1) * (fs * 0.62);
         for (var li = 0; li < lines.length; li++) {
           parts.push('<text x="' + (rc.x + ox + rc.w / 2).toFixed(1) + '" y="' + (ty + li * fs * 1.2).toFixed(1) +
@@ -396,11 +426,15 @@ var DIAG = (function () {
         }
       }
       parts.push('</g>');
+      }
     }
 
     /* Pfeilspitzen nach den Kaesten: garantierte Sichtbarkeit. */
     for (var ai = 0; ai < arrows.length; ai++) {
-      var ar = arrows[ai], alen = 11, awid = 5.5;
+      var ar = arrows[ai];
+      /* Kurze Stuecke brauchen kleine Pfeile, sonst bleibt von der Linie nichts uebrig. */
+      var alen = Math.max(4, Math.min(11, (ar.len || 20) * 0.30));
+      var awid = alen * 0.5;
       var ax = ar.x, ay = ar.y, ang = ar.a;
       var tip = { x: ax, y: ay };
       var b1 = { x: ax - Math.cos(ang) * alen + Math.cos(ang + Math.PI / 2) * awid,
