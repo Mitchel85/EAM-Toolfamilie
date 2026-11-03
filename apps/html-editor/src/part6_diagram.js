@@ -199,9 +199,10 @@ var DIAG = (function () {
       return;
     }
 
+    var bpmn = (typeof BPMN !== 'undefined') && BPMN.modus(diag.id) === 'bpmn';
     var pad = 30;
     var ox = -minX + pad, oy = -minY + pad;
-    var W = Math.round(maxX - minX + 2 * pad), H = Math.round(maxY - minY + 2 * pad);
+    var W = Math.round(maxX - minX + 2 * pad + (bpmn ? 150 : 0)), H = Math.round(maxY - minY + 2 * pad);
 
     var issues = (typeof ISSUE !== 'undefined' && ISSUE.idsFor) ? ISSUE.idsFor(diag.id) : {};
     var links = DIAGLINK[diag.id] || [];
@@ -213,6 +214,11 @@ var DIAG = (function () {
       (st.hidden ? ' · ' + st.hidden + ' unterdrückt' : '') + '</span>' +
       '<label class="diag-ghost"><input type="checkbox" ' + (ghostOn[diag.id] ? 'checked' : '') +
       ' onchange="DIAG.toggleGhost(' + diag.id + ')"> nicht belegte Verbindungen grau zeigen</label>' +
+      '<label class="diag-ghost">Darstellung <select onchange="DIAG.setModus(' + diag.id + ',this.value)">' +
+      '<option value="auto"' + (bpmnModus(diag.id) === 'auto' ? ' selected' : '') + '>automatisch' + (bpmn ? ' (BPMN)' : ' (UML)') + '</option>' +
+      '<option value="bpmn"' + (bpmnModus(diag.id) === 'bpmn' ? ' selected' : '') + '>BPMN</option>' +
+      '<option value="uml"' + (bpmnModus(diag.id) === 'uml' ? ' selected' : '') + '>UML</option>' +
+      '</select></label>' +
       '</div>');
 
     if (!st.visible) {
@@ -316,12 +322,17 @@ var DIAG = (function () {
         color: ((sty.color != null && sty.color >= 0) ? '#' + ('000000' + sty.color.toString(16)).slice(-6) : '#004471')
       });
       var col = (sty.color != null && sty.color >= 0) ? '#' + ('000000' + sty.color.toString(16)).slice(-6) : '#004471';
-      parts.push('<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' + ((sty.lwidth && sty.lwidth > 0) ? sty.lwidth : 1.3) +
+      var fl = bpmn ? BPMN.fluss(cn) : { dash: '', offen: false, breite: 1.3 };
+      if (fl.offen) arrows[arrows.length - 1].offen = true;
+      parts.push('<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' +
+        ((sty.lwidth && sty.lwidth > 0) ? sty.lwidth : fl.breite) +
+        (fl.dash ? '" stroke-dasharray="' + fl.dash : '') +
         '" marker-end="url(#arr6)"><title>' + diagEsc(cn.st || cn.type || '') + '</title></path>');
 
       var mid = pathMidpoint(pts.map(function (p) { return { x: p.x + ox, y: p.y + oy }; }));
-      if (cn.st && mid) {
-        labels.push({ x: mid.x, y: mid.y - 4, text: cn.st });
+      var labTxt = bpmn ? ((typeof BPMN !== 'undefined') ? BPMN.beschriftung(cn) : '') : cn.st;
+      if (labTxt && mid) {
+        labels.push({ x: mid.x, y: mid.y - 4, text: labTxt });
       }
       drawn++;
     }
@@ -367,6 +378,11 @@ var DIAG = (function () {
 
       var flagged = issues[rc.oid];
       var click = (!isBoundary && rc.oid) ? ' class="diag-node" onclick="openElement(\'' + rc.oid + '\')"' : '';
+      if (bpmn) {
+        parts.push('<g' + click + '><title>' + diagEsc(rc.name + (rc.st ? '  «' + rc.st + '»' : '')) + '</title>' +
+          BPMN.shape(rc, ox, oy, flagged) + '</g>');
+        continue;
+      }
       parts.push('<g' + click + '><title>' + diagEsc(rc.name + (rc.st ? '  «' + rc.st + '»' : '')) + '</title>');
       if (!isText) parts.push('<rect x="' + (rc.x + ox).toFixed(1) + '" y="' + (rc.y + oy).toFixed(1) +
         '" width="' + rc.w.toFixed(1) + '" height="' + rc.h.toFixed(1) + '" rx="4" fill="' + fill +
@@ -441,9 +457,17 @@ var DIAG = (function () {
                  y: ay - Math.sin(ang) * alen + Math.sin(ang + Math.PI / 2) * awid };
       var b2 = { x: ax - Math.cos(ang) * alen - Math.cos(ang + Math.PI / 2) * awid,
                  y: ay - Math.sin(ang) * alen - Math.sin(ang + Math.PI / 2) * awid };
-      parts.push('<path d="M ' + tip.x.toFixed(1) + ' ' + tip.y.toFixed(1) +
-        ' L ' + b1.x.toFixed(1) + ' ' + b1.y.toFixed(1) +
-        ' L ' + b2.x.toFixed(1) + ' ' + b2.y.toFixed(1) + ' z" fill="' + ar.color + '"/>');
+      if (ar.offen) {
+        /* Nachricht und Objektfluss: offene Spitze, kein gefuelltes Dreieck. */
+        parts.push('<path d="M ' + b1.x.toFixed(1) + ' ' + b1.y.toFixed(1) +
+          ' L ' + tip.x.toFixed(1) + ' ' + tip.y.toFixed(1) +
+          ' L ' + b2.x.toFixed(1) + ' ' + b2.y.toFixed(1) +
+          '" fill="none" stroke="' + ar.color + '" stroke-width="1.3"/>');
+      } else {
+        parts.push('<path d="M ' + tip.x.toFixed(1) + ' ' + tip.y.toFixed(1) +
+          ' L ' + b1.x.toFixed(1) + ' ' + b1.y.toFixed(1) +
+          ' L ' + b2.x.toFixed(1) + ' ' + b2.y.toFixed(1) + ' z" fill="' + ar.color + '"/>');
+      }
     }
 
     /* Beschriftungen zuletzt: sonst liegen sie unter den Kaesten. */
@@ -469,6 +493,20 @@ var DIAG = (function () {
     host.innerHTML = parts.join('');
   }
 
+  function bpmnModus(diagId) {
+    var w = null;
+    try { w = localStorage.getItem('diagmodus_' + diagId); } catch (e) { }
+    return (w === 'bpmn' || w === 'uml') ? w : 'auto';
+  }
+
+  function setModus(diagId, m) {
+    if (typeof BPMN !== 'undefined') BPMN.setzeModus(diagId, m);
+    var diag = DIAGMAP[diagId], host = null;
+    var nodes = document.querySelectorAll('.svgwrap');
+    for (var i = 0; i < nodes.length; i++) if (nodes[i].id === 'diag-' + diagId) host = nodes[i];
+    if (diag && host) render(diag, host);
+  }
+
   function toggleGhost(diagId) {
     ghostOn[diagId] = !ghostOn[diagId];
     var diag = DIAGMAP[diagId];
@@ -480,7 +518,7 @@ var DIAG = (function () {
     if (diag && host) render(diag, host);
   }
 
-  return { render: render, stats: stats, toggleGhost: toggleGhost, _ghost: ghostOn };
+  return { render: render, stats: stats, toggleGhost: toggleGhost, setModus: setModus, _ghost: ghostOn };
 })();
 
 /* ------------------------------------------------------------------ Befunde */

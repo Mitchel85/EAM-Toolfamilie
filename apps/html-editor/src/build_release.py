@@ -8,7 +8,7 @@ Aufbau der Einzeldatei:
   + <script>sql.js-Glue (vendor/sql-wasm.js)</script>
   + <script>var SQLJS_WASM_B64="..."</script>   (eingebettetes SQLite-WASM, MIT-Lizenz)
   + <script>part2_app_core.js + part3_app_graph.js + part4_path.js + part5_edit.js
-    + part5b_issue.js + part6_diagram.js</script>
+    + part5b_issue.js + part7_bpmn.js + part6_diagram.js</script>
 
 ASPY-Regeln (Vorgabe Mitch, 10/2026):
   * Die ASPX-Datei beginnt DIREKT mit '<!DOCTYPE html>' — KEINE <%@ … %>-Direktive!
@@ -41,6 +41,7 @@ part3 = rd(SRC, "part3_app_graph.js")
 part4 = rd(SRC, "part4_path.js")
 part5 = rd(SRC, "part5_edit.js")
 part5b = rd(SRC, "part5b_issue.js")
+part7 = rd(SRC, "part7_bpmn.js")
 part6 = rd(SRC, "part6_diagram.js")
 script_reader = rd(SRC, "part0_reader_data.js")
 sqlglue = rd(VEND, "sql-wasm.js")
@@ -63,6 +64,7 @@ full_html = (
     part4.rstrip() + "\n\n" +
     part5.rstrip() + "\n\n" +
     part5b.rstrip() + "\n\n" +
+    part7.rstrip() + "\n\n" +
     part6.rstrip() + "\n" +
     "</script>\n</body>\n</html>\n"
 )
