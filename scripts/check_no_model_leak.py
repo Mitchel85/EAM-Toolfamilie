@@ -39,11 +39,26 @@ TECHNISCH = {
     "Spezialist", "Ebene 1",
     # allgemeine Fachwoerter (Tag-Namen, Erklaertexte, Metamodell-Doku)
     "Verfügbarkeit", "Domäne", "Führung", "Unterstützung",
+    # Begriffe, die der Leitfaden selbst vorgibt (Viewpoint- und Sichtnamen,
+    # Einstufungswerte, Paketnamen) -- sie stammen nicht aus dem Testmodell,
+    # sondern aus der methodischen Vorgabe.
+    "Fähigkeitsforderungen", "Fähigkeitsforderung", "Serviceabhängigkeiten", "Abkürzungsverzeichnis",
+    "VS-NUR FÜR DEN DIENSTGEBRAUCH", "VS-VERTRAULICH",
 }
 
 DATEIENDUNGEN = {".py", ".js", ".html", ".css", ".json", ".toml", ".ys", ".txt", ".md"}
 AUSGESCHLOSSEN = ("/fixtures/", "/dist/", "/node_modules/", "/.git/", "/tests/",
-                  "/build/", "/vendor/", "/__pycache__/", "/CHANGELOG")
+                  "/build/", "/vendor/", "/__pycache__/", "/CHANGELOG",
+                  # Die Wissensbasis ist die Vorgabe selbst: der Leitfaden
+                  # enthaelt MASC als Beispielmodellierung, masc_paketbaum.json
+                  # ist bewusst daraus abgeleitet. Ein Treffer dort ist kein
+                  # eingebautes Wissen, sondern die Quelle.
+                  "/knowledge/leitfaden/", "/knowledge/masc_paketbaum.json",
+                  "/knowledge/modelwizard/",
+                  # skeleton_arch.py baut bewusst die MASC-Struktur (Vergleichs-
+                  # pfad --geruest masc). Die MASC-Paketnamen sind dort Zweck,
+                  # nicht Leck.
+                  "/packages/core/skeleton_arch.py")
 
 
 def pruefnamen(modell: Path) -> list[str]:

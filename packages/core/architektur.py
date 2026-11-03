@@ -2,23 +2,24 @@
 
 Was dieser Baustein tut
 -----------------------
-Er baut aus einem geparsten MDG-Regelwerk (und optional aus Prosa-Inhalten)
-ein Modell mit der **Paketstruktur der Musterarchitektur** und den
-**Sichten, die der Leitfaden vorschreibt**:
+Er baut aus einem geparsten MDG-Regelwerk ein Modell mit der **Struktur, die
+der Leitfaden in Abbildung 1 zeigt** und den **Sichten, die die
+Konventionen ``xx-MK01`` ff. vorschreiben**:
 
+    StEKa                                  Standardelementekatalog (eigene Wurzel)
     <Projekt>
-    ├── <Projekt> - Startseite            Diagramm "Startseite <Projekt>"
+    ├── <Projekt> - Startseite             Diagramm "Startseite <Projekt>" (St-MK03)
     ├── <Projekt> - Glossar
-    │   └── Abkürzungsverzeichnis
-    ├── <Projekt> - Idealtypische Architektur      ≈ MASC - Projektarchitektur
-    │   ├── Architecture Foundation                 A1..A8, Ar
-    │   ├── Concepts                                C1, C8, Cr
-    │   ├── Logical Specifications                  L1..L8
-    │   ├── Service Specifications                  S1..S7, Sr
-    │   ├── Physical Resource Specifications        P1, P2, P7, P8
-    │   ├── Requirements                            R2, R3, R7
-    │   └── Modellelementekatalog                   je Stereotyp ein Paket
-    └── <Projekt> - Viewpoints (Gesamtgefüge)       Viewpoint + View je Code
+    │   └── Glossar
+    ├── «ArchitecturalDescription» <Projekt> - Projektarchitektur
+    │   ├── Architecture Foundation        A1..A8, Ar
+    │   ├── Concepts                       C1, C8, Cr
+    │   ├── Logical Specifications         L1..L8
+    │   ├── Service Specifications         S1..S7, Sr
+    │   ├── Physical Resource Specifications P1, P2, P7, P8
+    │   ├── Requirements                   R2, R3, R7
+    │   └── Modellelementekatalog          je Stereotyp ein Paket
+    └── «ArchitecturalDescription» <Projekt> - PBN-Architektur
 
 Warum diese Form
 ----------------
