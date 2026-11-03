@@ -1696,7 +1696,6 @@ function buildModel() {
   for (i = 0; i < rows.length; i++) {
     r = rows[i];
     var hid = qcol(r, 'Hidden');
-    if (hid === 1 || hid === '1') continue;
     var dgid = qcol(r, 'DiagramID');
     if (dgid == null) dgid = qcol(r, 'Diagram_ID');
     if (dgid == null) continue;
@@ -1704,7 +1703,16 @@ function buildModel() {
     if (clid == null) clid = qcol(r, 'Connector_ID');
     var dlk = diagKey(dgid);
     if (!DIAGLINK[dlk]) DIAGLINK[dlk] = [];
-    DIAGLINK[dlk].push({ cid: connKey(clid) });
+    /* Geometrie, Stil und Weg werden mitgelesen: Ohne sie laesst sich die
+       Sicht nicht so zeichnen, wie sie im Modell liegt (EDGE, Ankerpunkte,
+       Baumkanten, eigener Verlauf). */
+    DIAGLINK[dlk].push({
+      cid: connKey(clid),
+      hidden: (hid === 1 || hid === '1'),
+      geo: qcol(r, 'Geometry') || '',
+      sty: qcol(r, 'Style') || '',
+      path: qcol(r, 'Path') || ''
+    });
   }
 
   rows = DB.rows('t_diagram');
@@ -1824,18 +1832,23 @@ function getDiagramData(diagId) {
   }
   var cmap = CONNMAP;
   for (i = 0; i < dlinks.length; i++) {
+    if (dlinks[i].hidden) continue;              /* in dieser Sicht unterdrueckt */
     var cn = cmap[dlinks[i].cid];
     if (cn && !relAdded[cn.id]) {
       relAdded[cn.id] = true;
       rels.push(cn);
     }
   }
-  /* Falls t_diagramlinks leer ist, alle Beziehungen zwischen den platzierten Elementen ergänzen */
-  for (i = 0; i < CONS.length; i++) {
-    var c = CONS[i];
-    if (!relAdded[c.id] && elSet[c.a] && elSet[c.b]) {
-      relAdded[c.id] = true;
-      rels.push(c);
+  /* Nur wenn die Sicht gar keine Link-Eintraege hat, ist die Ableitung aus
+     den platzierten Elementen erlaubt. Sonst wuerde sie Verbindungen
+     erfinden, die im Modell nicht auf dieser Sicht liegen. */
+  if (!dlinks.length) {
+    for (i = 0; i < CONS.length; i++) {
+      var c = CONS[i];
+      if (!relAdded[c.id] && elSet[c.a] && elSet[c.b]) {
+        relAdded[c.id] = true;
+        rels.push(c);
+      }
     }
   }
   els.sort(function (a, b) { return (a.st || '').localeCompare(b.st || '', 'de') || (a.name || '').localeCompare(b.name || '', 'de'); });
@@ -2370,7 +2383,11 @@ function openDiagramView(diagId, mode) {
     '</span>');
   h.push('</div>');
 
-  h.push('<div class="vp-list" id="vp-list">');
+  /* Befunde zu dieser Sicht: Notiz, JSON-Batch, Issue-.qea */
+  if (typeof ISSUE !== 'undefined' && ISSUE.panelHtml) {
+    h.push(ISSUE.panelHtml(diag));
+  }
+
   h.push('<div class="diagbox">' +
     '<div class="diagbox-hdr">' +
       '<div><span class="diagtitle">Original-Schaubild aus dem Modell</span><span class="diagsub">💡 Tipp: Klicken Sie direkt auf ein Kästchen im Schaubild, um dessen Steckbrief &amp; Umfeld zu öffnen!</span></div>' +

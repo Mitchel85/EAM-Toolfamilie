@@ -198,6 +198,32 @@
   .diagsub { font-size:11.5px; color:var(--bw-mid); font-weight:400; margin-left:6px; }
   .diagtools { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
   .svgwrap { overflow:auto; text-align:center; background:#FAFCFF; border:1px solid #E2E8F0; border-radius:6px; padding:8px; max-height:680px; }
+  /* Sicht-Renderer + Befunde (Teil 6) */
+  .diag-tools { display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:space-between;
+    font-size:12px; color:#475569; padding:2px 4px 8px 4px; text-align:left; }
+  .diag-stat { font-weight:600; color:#004471; }
+  .diag-ghost { display:inline-flex; gap:6px; align-items:center; cursor:pointer; font-weight:500; }
+  .issue-panel { border:1px solid #E2E8F0; border-left:4px solid #B45309; border-radius:6px;
+    background:#FFFDF8; padding:10px 12px; margin:10px 0 14px 0; font-size:13px; }
+  .issue-head { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .issue-head b { color:#004471; }
+  .issue-count { background:#B45309; color:#fff; border-radius:10px; padding:1px 8px; font-size:11.5px; font-weight:700; }
+  .issue-actions { margin-left:auto; display:flex; gap:6px; flex-wrap:wrap; }
+  .issue-list { margin-top:8px; display:flex; flex-direction:column; gap:6px; }
+  .issue-empty { color:#64748B; font-style:italic; }
+  .issue-item { display:flex; align-items:flex-start; gap:8px; background:#fff; border:1px solid #EDE3D3;
+    border-radius:5px; padding:6px 8px; }
+  .issue-sev { color:#fff; font-size:10.5px; font-weight:700; border-radius:4px; padding:2px 7px; white-space:nowrap; }
+  .issue-txt { flex:1; color:#1F2937; line-height:1.35; }
+  .issue-elem { color:#004471; font-weight:600; white-space:nowrap; }
+  .issue-del { background:none; border:none; color:#94A3B8; cursor:pointer; font-size:14px; line-height:1; }
+  .issue-del:hover { color:#B91C1C; }
+  .issue-form { margin-top:10px; padding:10px; background:#fff; border:1px dashed #D6C7AE; border-radius:6px; }
+  .issue-form select, .issue-form textarea { width:100%; font:inherit; padding:6px 8px; margin-bottom:8px;
+    border:1px solid #CBD5E1; border-radius:5px; box-sizing:border-box; }
+  .issue-row { display:flex; gap:8px; }
+  .issue-row select { flex:1; }
+  .issue-row .btn-sm { margin-bottom:8px; }
   .svgwrap svg .diag-node { cursor:pointer; transition:opacity .12s; }
   .svgwrap svg .diag-node:hover rect { stroke:#B45309 !important; stroke-width:2.4px !important; }
 

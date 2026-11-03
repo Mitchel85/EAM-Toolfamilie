@@ -775,6 +775,12 @@ function setVPMode(m) {
 /* ---------- Klickbares EA-Diagramm als SVG rendern ---------- */
 function renderDiagram(diag, host) {
   if (!host) return;
+  /* Der Renderer aus Teil 6 zeichnet die Sicht so, wie sie im Modell liegt:
+     Positionen, sichtbare Verbindungen, Linienfuehrung und Baumkanten. */
+  if (typeof DIAG !== 'undefined' && DIAG.render) {
+    DIAG.render(diag, host);
+    return;
+  }
   var objs = DIAGOBJ[diag.id] || [];
   var links = DIAGLINK[diag.id] || [];
   if (!objs.length) { host.innerHTML = '<div class="hint">Leeres Diagramm (keine platzierten Elemente).</div>'; return; }

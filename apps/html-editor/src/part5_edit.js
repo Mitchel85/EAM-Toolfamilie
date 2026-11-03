@@ -911,6 +911,15 @@ var EDIT = (function () {
       stereoXrefSync(db, crow.ea_guid, 'connector property', ch.stereotype);
       return;
     }
+    if (ch.kind === 'issue.pack') {
+      if (typeof window.applyIssueBatch === 'function') {
+        window.applyIssueBatch(db, ch, {
+          now: now, encNote: encNote, one: one, colNames: colNames,
+          newGuid: newGuid, stereoXrefSync: stereoXrefSync, shortLabel: shortLabel
+        });
+      }
+      return;
+    }
     if (ch.kind === 'el.del') {
       var g3 = one(db, 'SELECT ea_guid FROM t_object WHERE Object_ID=?', [ch.id]);
       var myGuid = g3 ? g3.ea_guid : null;
@@ -1159,6 +1168,19 @@ var EDIT = (function () {
     _clearConfirmOk: _clearConfirmOk,
     openPanel: openPanel,
     closePanel: closePanel,
+    /* Befunde aus Teil 6 als Paket vormerken (Stereotyp «Issue») */
+    addIssueBatch: function (payload) {
+      if (!payload || !payload.befunde || !payload.befunde.length) return;
+      q({
+        kind: 'issue.pack',
+        key: null,
+        paket: payload.paket || 'Qualitätssicherung',
+        sicht: payload.sicht || 'Sicht',
+        befunde: payload.befunde,
+        label: 'Befunde „' + shortLabel(payload.sicht || 'Sicht', 40) + '“ (' + payload.befunde.length + ')',
+        sub: 'Qualitätssicherung · ' + payload.befunde.length + ' Befund(e) als Element «Issue»'
+      });
+    },
     togglEdit: function () { },
     modalClose: modalClose,
     openModal: openModal,
