@@ -39,6 +39,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -69,6 +70,11 @@ TARGET_ROLES = frozenset(
 ANY_ENDPOINT = "*"
 
 # Metaklassen, die Kanten repraesentieren. Alles andere gilt als Knoten.
+#: Eintrag im Werkzeugkasten: "Profil::Stereotyp(UML::Metaklasse)".
+TOOLBOX_ITEM = re.compile(
+    r"^(?P<profile>[^:]+)::(?P<stereotype>[^(]+)\((?P<metaclass>[^)]+)\)$"
+)
+
 CONNECTOR_METACLASSES = frozenset(
     {
         "Abstraction",
@@ -405,6 +411,53 @@ def _viewpoint(
     }
 
 
+def _toolboxes(root: ET.Element) -> list[dict[str, Any]]:
+    """Werkzeugkaesten je Viewpoint -- die fehlende Verbindung Element->Sicht.
+
+    Die Technologie fuehrt im Abschnitt ``UIToolboxes`` je Diagramm einen
+    Kasten. Jeder Eintrag nennt Stereotyp und Metaklasse in der Form
+    ``Profil::Stereotyp(UML::Metaklasse)``. Erst damit laesst sich sagen, welche
+    Elemente in einer Sicht ueberhaupt vorgesehen sind -- der Viewpoint-
+    Stereotyp selbst traegt diese Liste nicht.
+    """
+    out: list[dict[str, Any]] = []
+    for box in root.iter():
+        if _local(box.tag) != "UIToolboxes":
+            continue
+        for profile in list(box):
+            if _local(profile.tag) != "UMLProfile":
+                continue
+            documentation = _kid(profile, "Documentation")
+            name = _attr(documentation, "name") if documentation is not None else None
+            if not name:
+                continue
+            gesehen: set[tuple[str, str]] = set()
+            for tag in profile.iter():
+                if _local(tag.tag) != "Tag":
+                    continue
+                wert = _attr(tag, "name") or ""
+                treffer = TOOLBOX_ITEM.match(wert)
+                if not treffer:
+                    continue
+                gesehen.add(
+                    (
+                        treffer.group("stereotype").strip(),
+                        treffer.group("metaclass").split("::")[-1].strip(),
+                    )
+                )
+            out.append(
+                {
+                    "name": name,
+                    "items": [
+                        {"stereotype": stereotype, "metaclass": metaclass}
+                        for stereotype, metaclass in sorted(gesehen)
+                    ],
+                }
+            )
+    out.sort(key=lambda entry: entry["name"])
+    return out
+
+
 def _viewpoints(root: ET.Element, technology_name: str) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     for container, profile in _profiles(root):
@@ -699,6 +752,7 @@ def _build_rules(root: ET.Element, *, filename: str, data: bytes) -> dict[str, A
         raise MdgParseError(f"{filename}: Technologie enthaelt keine Stereotypen")
 
     viewpoint_list = _viewpoints(root, header["technologyName"])
+    toolbox_list = _toolboxes(root)
 
     metaclass_usage: dict[str, dict[str, Any]] = {}
 
@@ -739,6 +793,7 @@ def _build_rules(root: ET.Element, *, filename: str, data: bytes) -> dict[str, A
         "elementStereotypes": [elements[name] for name in sorted(elements)],
         "connectorRules": [rules[key] for key in sorted(rules)],
         "viewpoints": viewpoint_list,
+        "toolboxes": toolbox_list,
         "taggedValueTypes": _property_types(root),
         "metaclasses": metaclasses,
         "warnings": warnings,
@@ -746,6 +801,7 @@ def _build_rules(root: ET.Element, *, filename: str, data: bytes) -> dict[str, A
             "elementStereotypes": len(elements),
             "connectorRules": len(rules),
             "viewpoints": len(viewpoint_list),
+            "toolboxes": len(toolbox_list),
             "metaclasses": len(metaclasses),
             "warnings": len(warnings),
         },

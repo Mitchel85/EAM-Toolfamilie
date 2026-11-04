@@ -108,7 +108,13 @@ def pruefe() -> dict:
         befunde.extend(f"Vendor: {b}" for b in unterschiede(app))
 
     # Wissensbasis: Symlinks, keine Kopien
-    wissensbasis = {p.name for p in (ROOT / "knowledge").glob("*") if p.is_file()}
+    # README.md beschreibt die Wissensbasis, ist aber selbst keine Wissensdatei.
+    # Ohne die Ausnahme gilt jedes README einer Zelle als Kopie.
+    wissensbasis = {
+        p.name
+        for p in (ROOT / "knowledge").glob("*")
+        if p.is_file() and p.name.lower() not in {"readme.md"}
+    }
     for rel in WISSEN_APPS:
         ordner = ROOT / rel
         for datei in sorted(ordner.iterdir()):

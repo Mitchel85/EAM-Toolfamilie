@@ -22,5 +22,6 @@
 - connectorRules: 138
 - elementStereotypes: 180
 - metaclasses: 27
+- toolboxes: 53
 - viewpoints: 53
 - warnings: 32

@@ -104,6 +104,7 @@ def test_fremdtechnologie_wird_geladen() -> None:
         "elementStereotypes": 4,
         "connectorRules": 4,
         "viewpoints": 2,
+        "toolboxes": 0,
         "metaclasses": 7,
         "warnings": 1,
     }

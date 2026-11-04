@@ -65,6 +65,13 @@ def sha256_file(path: Path) -> str:
     return sha256_bytes(path.read_bytes())
 
 
+#: Wissen, das jede Auslieferung braucht (relativ zum Repo-Wurzelverzeichnis).
+REGELWERK_DATEIEN = [
+    "knowledge/regelwerk.json",
+    "knowledge/leitfaden/konventionen.json",
+    "knowledge/leitfaden/konventionen-pbn.json",
+]
+
 RULES = ROOT.parent / "rules"  # einziger MDG-Leser, neben dem Kern
 
 
@@ -342,6 +349,15 @@ def _payload() -> tuple[dict, dict[str, tuple[bytes, int]]]:
         files[f"source/{resource}"] = (_read(resource), 0o644)
     for name in ("antwort.json", "mdg_admbw_auszug.xml", "prosa.txt"):
         files[f"source/{EXAMPLE_SUFFIX}/{name}"] = (_read(f"{EXAMPLE_SUFFIX}/{name}"), 0o644)
+
+    # Das Regelwerk-Artefakt gehoert in das Bundle: ohne ihn kann keine
+    # Pipeline die drei Wissensschichten aufloesen.
+    for rel in REGELWERK_DATEIEN:
+        pfad = ROOT.parents[1] / rel
+        if not pfad.is_file():
+            raise BundleError(f"{rel}: Regelwerk fehlt -- scripts/build_regelwerk.py laufen lassen")
+        files[f"knowledge/{Path(rel).name}"] = (pfad.read_bytes(), 0o644)
+        files[f"source/{rel}"] = (pfad.read_bytes(), 0o644)
 
     return project, files
 

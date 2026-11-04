@@ -40,6 +40,8 @@ class Vorlage:
     assoziationen: int
     diagramme: tuple[str, ...]
     rtf: bool
+    #: (Stereotyp der Beziehung, Stereotyp der Quelle, Stereotyp des Ziels)
+    beziehungen: tuple[tuple[str, str, str], ...] = ()
 
     @property
     def stereotype(self) -> tuple[str, ...]:
@@ -56,8 +58,63 @@ _PACKAGE = re.compile(r'<UML:Package name="([^"]*)"')
 _DIAGRAM = re.compile(r'<UML:Diagram name="([^"]*)"')
 _ASSOC = re.compile(r'<UML:Association ')
 _STEREO = re.compile(r'<UML:Stereotype name="([^"]*)"')
+_KNOTEN_TAG = re.compile(
+    r"<UML:(?P<tag>[A-Za-z_][A-Za-z0-9_.]*)\b(?P<attrs>(?:[^>\"]|\"[^\"]*\")*?)(?P<slash>/?)>",
+    re.S,
+)
+_CLASS_TAG = re.compile(r"<UML:Class\b(?P<attrs>[^>]*?)(?P<slash>/?)>", re.S)
+_ASSOC_BLOCK = re.compile(r"<UML:Association\b.*?</UML:Association>", re.S)
+_ASSOC_ENDE = re.compile(r"<UML:AssociationEnd\b[^>]*?type=\"([^\"]*)\"")
+_XMI_ID = re.compile(r'xmi\.id="([^"]+)"')
 _STYPE = re.compile(r'tag="ea_stype" value="([^"]*)"')
 _PKGNAME = re.compile(r'tag="package_name" value="([^"]*)"')
+
+
+#: Elemente, die keine Modellknoten sind und deshalb nicht in die Zuordnung
+#: Kennung -> Stereotyp gehoeren.
+KEINE_KNOTEN = frozenset(
+    {
+        "Association",
+        "AssociationEnd",
+        "AssociationClass",
+        "Diagram",
+        "DiagramElement",
+        "DiagramLink",
+        "Event",
+        "Model",
+        "ModelElement",
+        "Namespace",
+        "Package",
+        "Stereotype",
+        "TaggedValue",
+    }
+)
+
+
+def _stereotyp_nach_kennung(raw: str) -> dict[str, str]:
+    """Kennung -> Stereotyp fuer alle Modellknoten einer Vorlage.
+
+    Assoziationsenden nennen nur die Kennung ihres Gegenuebers. Die Gegenstelle
+    ist in diesen Vorlagen selten eine Klasse -- BPMN-Sichten bestehen aus
+    ActionState, Transition, ClassifierRole. Deshalb wird jeder Knoten
+    aufgenommen, nicht nur ``UML:Class``.
+    """
+    out: dict[str, str] = {}
+    for treffer in _KNOTEN_TAG.finditer(raw):
+        tag = treffer.group("tag")
+        if tag in KEINE_KNOTEN or tag.startswith("ModelElement."):
+            continue
+        kennung = _XMI_ID.search(treffer.group("attrs"))
+        if not kennung:
+            continue
+        if treffer.group("slash") == "/":
+            out[kennung.group(1)] = ""
+            continue
+        ende = raw.find(f"</UML:{tag}>", treffer.end())
+        rumpf = raw[treffer.end() : ende if ende > 0 else treffer.end()]
+        stereo = _STEREO.search(rumpf)
+        out[kennung.group(1)] = stereo.group(1) if stereo else ""
+    return out
 
 
 def parse_vorlage(xml_path: str | Path) -> Vorlage:
@@ -83,6 +140,24 @@ def parse_vorlage(xml_path: str | Path) -> Vorlage:
                 stype.group(1) if stype else "Class",
             )
         )
+    # Welche Stereotype verbinden die Assoziationen? Dafuer wird die Kennung
+    # jedes Klassenblocks aufgeloest; die Enden nennen nur die Kennung.
+    nach_kennung = _stereotyp_nach_kennung(raw)
+
+    beziehungen: list[tuple[str, str, str]] = []
+    for block in _ASSOC_BLOCK.findall(raw):
+        stereo = _STEREO.search(block)
+        enden = _ASSOC_ENDE.findall(block)
+        if len(enden) < 2:
+            continue
+        beziehungen.append(
+            (
+                stereo.group(1) if stereo else "",
+                nach_kennung.get(enden[0], ""),
+                nach_kennung.get(enden[1], ""),
+            )
+        )
+
     rtf = source.with_suffix(".rtf")
     return Vorlage(
         name=source.stem,
@@ -91,6 +166,7 @@ def parse_vorlage(xml_path: str | Path) -> Vorlage:
         assoziationen=len(_ASSOC.findall(raw)),
         diagramme=tuple(_DIAGRAM.findall(raw)),
         rtf=rtf.is_file(),
+        beziehungen=tuple(sorted(set(beziehungen))),
     )
 
 

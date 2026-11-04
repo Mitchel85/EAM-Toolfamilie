@@ -78,6 +78,20 @@ Teilmodelle zu zerfallen:
   Texte verarbeitet sie in Abschnitten von rund 8.000 Zeichen (ein KI-Aufruf je Abschnitt).
   Für Modelle im dreistelligen MB-Bereich ist die Python-Fassung der Weg.
 
+## Die Wissensbasis
+
+Drei Schichten, ein Artefakt: `knowledge/regelwerk.json`.
+
+- **erlaubt** — was gebaut werden darf: Stereotype, Konnektoren, Werkzeugkästen je Sicht. Aus der MDG, gelesen vom einzigen MDG-Leser.
+- **gefordert** — was der Auftraggeber verlangt: 303 Modellierungskonventionen für FFFmLV, 226 für Projektarchitekturen (PBN), je Viewpoint.
+- **gemustert** — wie eine gute Sicht aussieht: 52 Model-Wizard-Vorlagen mit Elementen und Beziehungen.
+
+Jede Aussage im Artefakt trägt ihre Herkunft; Widersprüche werden gemeldet, nicht
+stillschweigend aufgelöst. 54 Viewpoints, davon 19 nur im Model Wizard. Details in
+[`knowledge/README.md`](knowledge/README.md).
+
+Im Code: `packages/core/regelwerk.py`.
+
 ## Der Ablauf in sieben Schritten
 
 1. **MDG einlesen** — die Technologie-XML laden. Daraus entsteht das Regelwerk: Stereotype
