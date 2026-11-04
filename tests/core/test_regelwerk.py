@@ -93,3 +93,33 @@ def test_nur_wizard_sichten_sind_begruendet(daten: dict) -> None:
     for code, eintrag in daten["viewpoints"].items():
         if not eintrag["leitfaeden"]["ffmlv"]["konventionen"] and not eintrag["leitfaeden"]["pbn"]["konventionen"]:
             assert eintrag["model_wizard"] is not None, f"{code} haengt in der Luft"
+
+
+def test_pruefung_ist_im_artefakt(daten: dict) -> None:
+    """Pakete, Sichten und Pflichtstereotype gehoeren zum Artefakt."""
+    p = daten["pruefung"]
+    assert len(p["packages"]) == 43
+    assert len(p["diagrams"]) == 41
+    assert len(p["pflicht"]) == 20
+    assert daten["quellen"]["pruefung"]["pakete"] == 43
+
+
+def test_leitfaden_liest_aus_dem_artefakt(daten: dict) -> None:
+    """leitfaden.py haelt keine eigene Kopie der Tabellen mehr."""
+    import leitfaden  # noqa: PLC0415
+
+    assert len(leitfaden.PACKAGES) == len(daten["pruefung"]["packages"])
+    assert len(leitfaden.DIAGRAMS) == len(daten["pruefung"]["diagrams"])
+    assert len(leitfaden.PFLICHT_STEREOTYPE) == len(daten["pruefung"]["pflicht"])
+    # Stichprobe: die erste Regel muss Zeichen fuer Zeichen dieselbe sein.
+    artefakt = daten["pruefung"]["packages"][0]
+    gelesen = leitfaden.PACKAGES[0]
+    assert (gelesen.code, gelesen.path, gelesen.viewpoint, gelesen.family) == (
+        artefakt["code"], artefakt["path"], artefakt["viewpoint"], artefakt["family"],
+    )
+
+
+def test_konventionen_dateien_bleiben_unabhaengig(daten: dict) -> None:
+    """Die Konventionstexte sind kein Teil des Artefakts, werden aber verwiesen."""
+    for key in ("ffmlv", "pbn"):
+        assert daten["quellen"]["leitfaeden"][key]["eintraege"] > 0

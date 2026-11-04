@@ -106,6 +106,8 @@ def _wizard() -> dict[str, Any]:
 def baue() -> dict[str, Any]:
     mdg = _mdg()
     vorlagen = _wizard()
+    pruefung_datei = ROOT / "knowledge" / "leitfaden" / "pruefung.json"
+    pruefung = json.loads(pruefung_datei.read_text(encoding="utf-8"))
     leit = {key: _konventionen(ROOT / wert["datei"]) for key, wert in QUELLEN.items()}
 
     # --- Viewpoints sammeln: MDG ist die Klammer, alles andere haengt sich an
@@ -274,9 +276,24 @@ def baue() -> dict[str, Any]:
                 "ordner": "knowledge/modelwizard",
                 "vorlagen": len(vorlagen),
             },
+            "pruefung": {
+                "datei": "knowledge/leitfaden/pruefung.json",
+                "sha256": _sha256(pruefung_datei),
+                "pakete": len(pruefung["packages"]),
+                "sichten": len(pruefung["diagrams"]),
+                "pflicht": len(pruefung["pflicht"]),
+            },
         },
         "summary": summary,
         "viewpoints": viewpoints,
+        # Pakete, Sichten und Pflichtstereotype je Viewpoint. Das ist die
+        # Ebene, gegen die struktur.py prueft -- ohne sie kennt das Artefakt
+        # zwar die Bausteine, aber nicht die geforderte Form.
+        "pruefung": {
+            "packages": pruefung["packages"],
+            "diagrams": pruefung["diagrams"],
+            "pflicht": pruefung["pflicht"],
+        },
         "konflikte": sorted(konflikte, key=lambda k: (k["viewpoint"], k["typ"])),
     }
 

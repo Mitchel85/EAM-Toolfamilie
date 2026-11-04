@@ -30,6 +30,12 @@ vorkommen, im Model Wizard.
 }
 ```
 
+Daneben der Abschnitt `pruefung`: 43 verlangte Pakete, 41 verlangte Sichten und
+20 Pflichtstereotype je Viewpoint -- die Ebene, gegen die `struktur.py` prüft.
+Sie stammt aus `knowledge/leitfaden/pruefung.json` und wird beim Bauen
+eingemischt. `leitfaden.py` hält keine eigene Kopie mehr, sondern liest sie aus
+dem Artefakt.
+
 `luecken` nennt, welche Schicht zu einer Sicht nichts sagt. Das ist keine
 Warnung, sondern eine Auskunft: C2 ist im Wizard gemustert, in beiden
 Leitfäden aber nicht verlangt.

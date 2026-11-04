@@ -30,6 +30,13 @@
   "model_wizard": {
    "ordner": "knowledge/modelwizard",
    "vorlagen": 52
+  },
+  "pruefung": {
+   "datei": "knowledge/leitfaden/pruefung.json",
+   "sha256": "e7573e232288b7c5d79d08d0ec04e07822521c16239e95680e8c4852a1e43e9f",
+   "pakete": 43,
+   "sichten": 41,
+   "pflicht": 20
   }
  },
  "summary": {
@@ -5685,6 +5692,635 @@
    "luecken": [
     "mdg",
     "model-wizard"
+   ]
+  }
+ },
+ "pruefung": {
+  "packages": [
+   {
+    "code": "St-MK01",
+    "family": "",
+    "path": "{projekt} - Startseite",
+    "viewpoint": "St"
+   },
+   {
+    "code": "A1-MK01",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A1/Meta-Data Definitions",
+    "viewpoint": "A1"
+   },
+   {
+    "code": "A2-MK01",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A2 - Stakeholder",
+    "viewpoint": "A2"
+   },
+   {
+    "code": "A2-MK08",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A2/Concerns",
+    "viewpoint": "A2"
+   },
+   {
+    "code": "A2-MK15",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A2/Viewpoints",
+    "viewpoint": "A2"
+   },
+   {
+    "code": "A3-MK01",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A3/Architecture Correspondence",
+    "viewpoint": "A3"
+   },
+   {
+    "code": "A6-MK01",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A6/Architecture Version",
+    "viewpoint": "A6"
+   },
+   {
+    "code": "A7-MK01",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A7/Architecture Compliance",
+    "viewpoint": "A7"
+   },
+   {
+    "code": "A7-MK07",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A7/Findings and Recommendations",
+    "viewpoint": "A7"
+   },
+   {
+    "code": "A7-MK17",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A7/Compliance Statement",
+    "viewpoint": "A7"
+   },
+   {
+    "code": "A8-MK01",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A8/Standards",
+    "viewpoint": "A8"
+   },
+   {
+    "code": "Ar-MK01",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/Ar/Architecture Roadmap",
+    "viewpoint": "Ar"
+   },
+   {
+    "code": "C1-MK01",
+    "family": "Concepts",
+    "path": "Concepts/C1/Capability Taxonomy",
+    "viewpoint": "C1"
+   },
+   {
+    "code": "C8-MK01",
+    "family": "Concepts",
+    "path": "Concepts/C8/Planning Assumptions",
+    "viewpoint": "C8"
+   },
+   {
+    "code": "Cr-MK01",
+    "family": "Concepts",
+    "path": "Concepts/Cr/Capability Roadmap",
+    "viewpoint": "Cr"
+   },
+   {
+    "code": "L1-MK01",
+    "family": "Logical Specifications",
+    "path": "Logical Specifications/L1/Node Types",
+    "viewpoint": "L1"
+   },
+   {
+    "code": "L2-MK01",
+    "family": "Logical Specifications",
+    "path": "Logical Specifications/L2/Logical Nodes",
+    "viewpoint": "L2"
+   },
+   {
+    "code": "L2-MK05",
+    "family": "Logical Specifications",
+    "path": "Logical Specifications/L2/Logical Scenario",
+    "viewpoint": "L2"
+   },
+   {
+    "code": "L3-MK01",
+    "family": "Logical Specifications",
+    "path": "Logical Specifications/L3/Node Interaction",
+    "viewpoint": "L3"
+   },
+   {
+    "code": "L4-MK01",
+    "family": "Logical Specifications",
+    "path": "Logical Specifications/L4/Logical Activities",
+    "viewpoint": "L4"
+   },
+   {
+    "code": "L7-MK01",
+    "family": "Logical Specifications",
+    "path": "Logical Specifications/L7/Information Model",
+    "viewpoint": "L7"
+   },
+   {
+    "code": "L8-MK01",
+    "family": "Logical Specifications",
+    "path": "Logical Specifications/L8/Logical Constraints",
+    "viewpoint": "L8"
+   },
+   {
+    "code": "S1-MK01",
+    "family": "Service Specifications",
+    "path": "Service Specifications/S1/Charakterisierung - Service Description",
+    "viewpoint": "S1"
+   },
+   {
+    "code": "S1-MK12",
+    "family": "Service Specifications",
+    "path": "Service Specifications/S1/IT-Service Varianten",
+    "viewpoint": "S1"
+   },
+   {
+    "code": "S2-MK01",
+    "family": "Service Specifications",
+    "path": "Service Specifications/S2/IT-Service Komposition",
+    "viewpoint": "S2"
+   },
+   {
+    "code": "S2-MK05",
+    "family": "Service Specifications",
+    "path": "Service Specifications/S2/Serviceabhängigkeiten",
+    "viewpoint": "S2"
+   },
+   {
+    "code": "S2-MK10",
+    "family": "Service Specifications",
+    "path": "Service Specifications/S2/Warranties",
+    "viewpoint": "S2"
+   },
+   {
+    "code": "S3-MK01",
+    "family": "Service Specifications",
+    "path": "Service Specifications/S3/Logische Kontextsicht",
+    "viewpoint": "S3"
+   },
+   {
+    "code": "S4-MK01",
+    "family": "Service Specifications",
+    "path": "Service Specifications/S4/Servicefunktion",
+    "viewpoint": "S4"
+   },
+   {
+    "code": "S7-MK01",
+    "family": "Service Specifications",
+    "path": "Service Specifications/S7/Serviceinterface",
+    "viewpoint": "S7"
+   },
+   {
+    "code": "Sr-MK01",
+    "family": "Service Specifications",
+    "path": "Service Specifications/Sr/Service Change",
+    "viewpoint": "Sr"
+   },
+   {
+    "code": "P1-MK01",
+    "family": "Physical Resource Specifications",
+    "path": "Physical Resource Specifications/P1/Resource Types",
+    "viewpoint": "P1"
+   },
+   {
+    "code": "P1-MK07",
+    "family": "Physical Resource Specifications",
+    "path": "Physical Resource Specifications/P1/Service Provision",
+    "viewpoint": "P1"
+   },
+   {
+    "code": "P2-MK01",
+    "family": "Physical Resource Specifications",
+    "path": "Physical Resource Specifications/P2/Resource Structure",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P2-MK07",
+    "family": "Physical Resource Specifications",
+    "path": "Physical Resource Specifications/P2/Internal Dependencies",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P2-MK12",
+    "family": "Physical Resource Specifications",
+    "path": "Physical Resource Specifications/P2/External Dependencies",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P2-MK20",
+    "family": "Physical Resource Specifications",
+    "path": "Physical Resource Specifications/P2/Node Realization",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P2-MK25",
+    "family": "Physical Resource Specifications",
+    "path": "Physical Resource Specifications/P2/Application Hosting",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P7-MK01",
+    "family": "Physical Resource Specifications",
+    "path": "Physical Resource Specifications/P7/Data Model",
+    "viewpoint": "P7"
+   },
+   {
+    "code": "P8-MK01",
+    "family": "Physical Resource Specifications",
+    "path": "Physical Resource Specifications/P8/Resource Constraint Realization",
+    "viewpoint": "P8"
+   },
+   {
+    "code": "R2-MK01",
+    "family": "Requirements",
+    "path": "Requirements/R2/Requirement Catalogue",
+    "viewpoint": "R2"
+   },
+   {
+    "code": "R3-MK01",
+    "family": "Requirements",
+    "path": "Requirements/R3/Requirement Dependencies",
+    "viewpoint": "R3"
+   },
+   {
+    "code": "R7-MK01",
+    "family": "Requirements",
+    "path": "Requirements/R7/Requirement Derivation",
+    "viewpoint": "R7"
+   }
+  ],
+  "diagrams": [
+   {
+    "code": "St-MK02",
+    "diagram_type": "A2 - Architecture Products",
+    "name": "Startseite {projekt}",
+    "package": "{projekt} - Startseite",
+    "viewpoint": "St"
+   },
+   {
+    "code": "A1-MK02",
+    "diagram_type": "A1 - Meta-Data Definitions",
+    "name": "A1 : {projekt} : Meta-Data Definitions",
+    "package": "Architecture Foundation/A1/Meta-Data Definitions",
+    "viewpoint": "A1"
+   },
+   {
+    "code": "A2-MK02",
+    "diagram_type": "A2 - Architecture Products",
+    "name": "A2 : {projekt} : Stakeholder",
+    "package": "Architecture Foundation/A2 - Stakeholder",
+    "viewpoint": "A2"
+   },
+   {
+    "code": "A2-MK09",
+    "diagram_type": "A2 - Architecture Products",
+    "name": "A2 : {projekt} : Concerns",
+    "package": "Architecture Foundation/A2/Concerns",
+    "viewpoint": "A2"
+   },
+   {
+    "code": "A2-MK16",
+    "diagram_type": "A2 - Architecture Products",
+    "name": "A2 : {projekt} : Viewpoints",
+    "package": "Architecture Foundation/A2/Viewpoints",
+    "viewpoint": "A2"
+   },
+   {
+    "code": "A6-MK02",
+    "diagram_type": "A6 - Architecture Version",
+    "name": "A6 : {projekt} : Architecture Versions",
+    "package": "Architecture Foundation/A6/Architecture Version",
+    "viewpoint": "A6"
+   },
+   {
+    "code": "A7-MK02",
+    "diagram_type": "A7 - Architecture Compliance",
+    "name": "A7 : {projekt} : Architecture Compliance",
+    "package": "Architecture Foundation/A7/Architecture Compliance",
+    "viewpoint": "A7"
+   },
+   {
+    "code": "A7-MK08",
+    "diagram_type": "A7 - Architecture Compliance",
+    "name": "A7 : {projekt} : Findings and Recommendations",
+    "package": "Architecture Foundation/A7/Findings and Recommendations",
+    "viewpoint": "A7"
+   },
+   {
+    "code": "A7-MK18",
+    "diagram_type": "A7 - Architecture Compliance",
+    "name": "A7 : {projekt} : Compliance Statement",
+    "package": "Architecture Foundation/A7/Compliance Statement",
+    "viewpoint": "A7"
+   },
+   {
+    "code": "A8-MK02",
+    "diagram_type": "A8 - Standards",
+    "name": "A8 : {projekt} : Standards",
+    "package": "Architecture Foundation/A8/Standards",
+    "viewpoint": "A8"
+   },
+   {
+    "code": "Ar-MK02",
+    "diagram_type": "Ar - Architecture Roadmap",
+    "name": "Ar : {projekt} : Architecture Roadmap",
+    "package": "Architecture Foundation/Ar/Architecture Roadmap",
+    "viewpoint": "Ar"
+   },
+   {
+    "code": "C1-MK02",
+    "diagram_type": "C1 - Capability Taxonomy",
+    "name": "C1 : {projekt} : Funktionale Bausteine",
+    "package": "Concepts/C1/Capability Taxonomy",
+    "viewpoint": "C1"
+   },
+   {
+    "code": "C1-MK04",
+    "diagram_type": "C1 - Capability Taxonomy",
+    "name": "C1 : {projekt} : NATO Capability Codes",
+    "package": "Concepts/C1/Capability Taxonomy",
+    "viewpoint": "C1"
+   },
+   {
+    "code": "C1-MK06",
+    "diagram_type": "C1 - Capability Taxonomy",
+    "name": "C1 : {projekt} : Fähigkeitsforderungen",
+    "package": "Concepts/C1/Capability Taxonomy",
+    "viewpoint": "C1"
+   },
+   {
+    "code": "C1-MK08",
+    "diagram_type": "C1 - Capability Taxonomy",
+    "name": "C1 : {projekt} : EU Priorities",
+    "package": "Concepts/C1/Capability Taxonomy",
+    "viewpoint": "C1"
+   },
+   {
+    "code": "Cr-MK02",
+    "diagram_type": "Cr - Capability Roadmap",
+    "name": "Cr : {projekt} : Capability Roadmap",
+    "package": "Concepts/Cr/Capability Roadmap",
+    "viewpoint": "Cr"
+   },
+   {
+    "code": "L1-MK02",
+    "diagram_type": "L1 - Node Types",
+    "name": "L1 : {projekt} : Node Types",
+    "package": "Logical Specifications/L1/Node Types",
+    "viewpoint": "L1"
+   },
+   {
+    "code": "L2-MK02",
+    "diagram_type": "L2 - Logical Scenario",
+    "name": "L2 : {projekt} : Logical Nodes",
+    "package": "Logical Specifications/L2/Logical Nodes",
+    "viewpoint": "L2"
+   },
+   {
+    "code": "L2-MK05",
+    "diagram_type": "L2 - Logical Scenario",
+    "name": "L2 : {projekt} : Logical Scenario",
+    "package": "Logical Specifications/L2/Logical Scenario",
+    "viewpoint": "L2"
+   },
+   {
+    "code": "L3-MK02",
+    "diagram_type": "L3 - Node Interactions",
+    "name": "L3 : {projekt} : Node Interaction",
+    "package": "Logical Specifications/L3/Node Interaction",
+    "viewpoint": "L3"
+   },
+   {
+    "code": "L4-MK02",
+    "diagram_type": "L4 - Logical Activities",
+    "name": "L4 : {projekt} : Hierarchie",
+    "package": "Logical Specifications/L4/Logical Activities",
+    "viewpoint": "L4"
+   },
+   {
+    "code": "L7-MK02",
+    "diagram_type": "L7 - Information Model",
+    "name": "L7 : {projekt} : Information Model",
+    "package": "Logical Specifications/L7/Information Model",
+    "viewpoint": "L7"
+   },
+   {
+    "code": "L8-MK02",
+    "diagram_type": "L8 - Logical Constraints",
+    "name": "L8 : {projekt} : Logical Constraints",
+    "package": "Logical Specifications/L8/Logical Constraints",
+    "viewpoint": "L8"
+   },
+   {
+    "code": "S1-MK13",
+    "diagram_type": "S1 - Service Taxonomy",
+    "name": "S1 : {projekt} : Service Variants",
+    "package": "Service Specifications/S1/IT-Service Varianten",
+    "viewpoint": "S1"
+   },
+   {
+    "code": "S2-MK06",
+    "diagram_type": "S2 - Service Structure",
+    "name": "S2 : {projekt} : External Service Dependencies",
+    "package": "Service Specifications/S2/Serviceabhängigkeiten",
+    "viewpoint": "S2"
+   },
+   {
+    "code": "S2-MK11",
+    "diagram_type": "S2 - Service Structure",
+    "name": "S2 : {projekt} : Service Warranties",
+    "package": "Service Specifications/S2/Warranties",
+    "viewpoint": "S2"
+   },
+   {
+    "code": "S3-MK02",
+    "diagram_type": "S3 - Service Interfaces",
+    "name": "S3 : {projekt} : Service Interfaces",
+    "package": "Service Specifications/S3/Logische Kontextsicht",
+    "viewpoint": "S3"
+   },
+   {
+    "code": "S4-MK02",
+    "diagram_type": "S4 - Service Functions",
+    "name": "S4 : {projekt} : Service Functions",
+    "package": "Service Specifications/S4/Servicefunktion",
+    "viewpoint": "S4"
+   },
+   {
+    "code": "S7-MK02",
+    "diagram_type": "S7 - Service Interface Parameters",
+    "name": "S7 : {projekt} : Service Interface Parameters",
+    "package": "Service Specifications/S7/Serviceinterface",
+    "viewpoint": "S7"
+   },
+   {
+    "code": "Sr-MK02",
+    "diagram_type": "Sr - Service Roadmap",
+    "name": "Sr : {projekt} : Service Change",
+    "package": "Service Specifications/Sr/Service Change",
+    "viewpoint": "Sr"
+   },
+   {
+    "code": "P1-MK02",
+    "diagram_type": "P1 - Resource Types",
+    "name": "P1 : {projekt} : Resource Types",
+    "package": "Physical Resource Specifications/P1/Resource Types",
+    "viewpoint": "P1"
+   },
+   {
+    "code": "P1-MK08",
+    "diagram_type": "P1 - Resource Types",
+    "name": "P1 : {projekt} : Service Provision",
+    "package": "Physical Resource Specifications/P1/Service Provision",
+    "viewpoint": "P1"
+   },
+   {
+    "code": "P2-MK02",
+    "diagram_type": "P2 - Resource Structure",
+    "name": "P2 : {projekt} : Resource Structure",
+    "package": "Physical Resource Specifications/P2/Resource Structure",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P2-MK08",
+    "diagram_type": "P2 - Resource Structure",
+    "name": "P2 : {projekt} : Internal Dependencies",
+    "package": "Physical Resource Specifications/P2/Internal Dependencies",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P2-MK13",
+    "diagram_type": "P2 - Resource Structure",
+    "name": "P2 : {projekt} : External Dependencies",
+    "package": "Physical Resource Specifications/P2/External Dependencies",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P2-MK21",
+    "diagram_type": "P2 - Resource Structure",
+    "name": "P2 : {projekt} : Node Realization",
+    "package": "Physical Resource Specifications/P2/Node Realization",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P2-MK26",
+    "diagram_type": "P2 - Resource Structure",
+    "name": "P2 : {projekt} : Application Hosting",
+    "package": "Physical Resource Specifications/P2/Application Hosting",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P8-MK02",
+    "diagram_type": "P8 - Resource Constraints",
+    "name": "P8 : {projekt} : Resource Constraint",
+    "package": "Physical Resource Specifications/P8/Resource Constraint Realization",
+    "viewpoint": "P8"
+   },
+   {
+    "code": "R2-MK02",
+    "diagram_type": "R2 - Requirement Catalogue",
+    "name": "R2 : {projekt} : Requirement Catalogue",
+    "package": "Requirements/R2/Requirement Catalogue",
+    "viewpoint": "R2"
+   },
+   {
+    "code": "R3-MK02",
+    "diagram_type": "R3 - Requirement Dependencies",
+    "name": "R3 : {projekt} : Requirements Dependencies",
+    "package": "Requirements/R3/Requirement Dependencies",
+    "viewpoint": "R3"
+   },
+   {
+    "code": "R7-MK02",
+    "diagram_type": "R7 - Requirement Derivation",
+    "name": "R7 : {projekt} : Requirements Derivation",
+    "package": "Requirements/R7/Requirement Derivation",
+    "viewpoint": "R7"
+   }
+  ],
+  "pflicht": {
+   "A1": [
+    "Classification"
+   ],
+   "A2": [
+    "Concern",
+    "View",
+    "Viewpoint"
+   ],
+   "A8": [
+    "Standard"
+   ],
+   "C1": [
+    "Capability"
+   ],
+   "Cr": [
+    "Capability"
+   ],
+   "L1": [
+    "OperationalPerformer"
+   ],
+   "L2": [
+    "OperationalArchitecture",
+    "OperationalPerformer"
+   ],
+   "L3": [
+    "OperationalArchitecture"
+   ],
+   "L4": [
+    "OperationalArchitecture"
+   ],
+   "L7": [
+    "InformationElement"
+   ],
+   "L8": [
+    "Classification",
+    "DocumentReference",
+    "OperationalConstraint",
+    "StrategicConstraint"
+   ],
+   "P1": [
+    "ServiceSpecification"
+   ],
+   "P2": [
+    "Location"
+   ],
+   "P8": [
+    "Classification",
+    "DocumentReference",
+    "OperationalConstraint",
+    "Reference",
+    "ResourceConstraint",
+    "SMEReference"
+   ],
+   "R2": [
+    "RequirementCatalogue",
+    "RequirementCategory"
+   ],
+   "R7": [
+    "OperationalConstraint"
+   ],
+   "S1": [
+    "ServiceSpecification"
+   ],
+   "S2": [
+    "MeasurementType",
+    "ServiceSpecification"
+   ],
+   "S3": [
+    "DataElement",
+    "ServiceInterface",
+    "ServicePort",
+    "ServiceSpecification"
+   ],
+   "Sr": [
+    "ServiceSpecification"
    ]
   }
  },
