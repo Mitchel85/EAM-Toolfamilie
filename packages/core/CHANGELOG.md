@@ -4,6 +4,15 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.3.6 - 2026-11-04
+
+### Altnamen wirklich im Release
+
+3.3.4 hat die Altnamen gebaut, aber der Release-Ablauf laedt nur eine feste
+Dateiliste hoch -- `EAM-MDG-Parser.html` und `eam-mdg-parser.py` fehlten
+deshalb im Release und die alten Links liefen ins Leere. Die Liste ist
+ergaenzt; beide Namen werden jetzt mitgeliefert.
+
 ## 3.3.5 - 2026-11-04
 
 ### Anleitung: Regeldateien im Chatbot
