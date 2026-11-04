@@ -71,6 +71,8 @@ def test_konventionen_vollstaendig_uebernommen(daten: dict) -> None:
 
 
 def test_artefakt_ist_reproduzierbar() -> None:
+    if not any((ROOT / "knowledge" / "modelwizard").glob("*.xml")):
+        pytest.skip("Model-Wizard-Vorlagen fehlen (nicht versioniert, 7,3 MB)")
     ergebnis = subprocess.run(
         [sys.executable, str(ROOT / "scripts" / "build_regelwerk.py"), "--check"],
         cwd=ROOT,
