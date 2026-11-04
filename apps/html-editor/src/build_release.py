@@ -55,18 +55,23 @@ assert "var ADMBW_DATA =" in script_reader, "ADMBW_DATA fehlt!"
 # bricht der Bau -- sonst altert die Einzeldatei still weiter.
 import subprocess as _sp
 _wurzel = os.path.dirname(os.path.dirname(REPO))
-_pruefung = _sp.run(
-    [sys.executable, os.path.join(_wurzel, "scripts", "build_html_data.py"),
-     "--app", "html-editor", "--pruefen"],
-    capture_output=True, text=True,
-)
-if _pruefung.returncode != 0:
-    raise SystemExit(
-        "ADMBW_DATA passt nicht zum Regelwerk:\n"
-        + (_pruefung.stdout + _pruefung.stderr).strip()
-        + "\nNeu schreiben: python3 scripts/build_html_data.py --app html-editor --schreiben"
+if os.environ.get("EAM_ENGLISCH"):
+    # Die englische Fassung tauscht die Quelldateien vor dem Bau aus; der
+    # eingebettete Datensatz ist dann uebersetzt und weicht zwangslaeufig ab.
+    print("ADMBW_DATA: Pruefung im englischen Lauf ausgelassen")
+else:
+    _pruefung = _sp.run(
+        [sys.executable, os.path.join(_wurzel, "scripts", "build_html_data.py"),
+         "--app", "html-editor", "--pruefen"],
+        capture_output=True, text=True,
     )
-print(_pruefung.stdout.strip())
+    if _pruefung.returncode != 0:
+        raise SystemExit(
+            "ADMBW_DATA passt nicht zum Regelwerk:\n"
+            + (_pruefung.stdout + _pruefung.stderr).strip()
+            + "\nNeu schreiben: python3 scripts/build_html_data.py --app html-editor --schreiben"
+        )
+    print(_pruefung.stdout.strip())
 assert "</script" not in sqlglue, "sql.js-Glue enthält '</script'!"
 assert "</scr" not in script_reader, "Reader-Block enthält '</scr'-Sequenz!"
 

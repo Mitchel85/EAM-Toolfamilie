@@ -4,7 +4,7 @@
   "sourceRepo": "Mitchel85/EAM-Suite",
   "sourceCommit": "3407bc0",
   "sourceNote": "Titel/H1 ohne Altvermerk EXPERIMENTELL; Befunde (Stereotyp Issue) und Referenzdaten aus dem Regelwerk",
-  "sourceTreeSha256": "ab1afff3a4c787d1b2eecbbd039c2feec96830466fa0d7ac8e3a9a684f332504",
+  "sourceTreeSha256": "97f80e3d219b9efbc4f0685507bc5ac2797486e47114b3202deb9a785c9bc3b2",
   "buildScript": "src/build_release.py",
   "sourceOutput": "EAM_Suite.html",
   "sourceAspx": "EAM_Suite.aspx",

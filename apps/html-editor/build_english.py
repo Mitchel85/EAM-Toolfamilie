@@ -376,7 +376,10 @@ def main() -> int:
     try:
         for name in DATEIEN:
             (SRC / name).write_bytes((FREIGABE / name).read_bytes())
-        subprocess.check_call([sys.executable, str(SRC / "build_release.py")], cwd=APP)
+        umgebung = dict(os.environ, EAM_ENGLISCH="1")
+        subprocess.check_call(
+            [sys.executable, str(SRC / "build_release.py")], cwd=APP, env=umgebung
+        )
     finally:
         for name, inhalt in sicherung.items():
             (SRC / name).write_bytes(inhalt)
