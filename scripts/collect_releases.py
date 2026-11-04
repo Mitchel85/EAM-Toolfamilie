@@ -49,6 +49,8 @@ KOPFZEILE = {
         '\n'
     ),
 }
+#: Altnamen behalten dieselbe Kopfzeile -- der Inhalt ist identisch.
+KOPFZEILE["eam-mdg-parser.py"] = KOPFZEILE["admbw-extraktor.py"]
 
 AUSLIEFERUNGEN = [
     (
@@ -92,6 +94,18 @@ AUSLIEFERUNGEN = [
         "admbw-extraktor.py",
         "ADMBw Extraktor — Python-Variante",
         "Dieselbe Datei wie im Python-ZIP: MDG-XML in ein Regelwerk übersetzen; ohne Browser.",
+    ),
+    (
+        "apps/mdg-web/dist/ADMBw-Extraktor.html",
+        "EAM-MDG-Parser.html",
+        "EAM MDG Parser — Altname (unveraendert bedient)",
+        "Dieselbe Datei unter dem frueheren Namen; alte Links und Lesezeichen bleiben gueltig.",
+    ),
+    (
+        "packages/rules/mdg_parser.py",
+        "eam-mdg-parser.py",
+        "EAM MDG Parser — Python-Altname (unveraendert bedient)",
+        "Dieselbe Datei unter dem frueheren Namen; alte Aufrufe bleiben gueltig.",
     ),
     (
         "apps/mcp/eam_qea_tool.py",
@@ -273,7 +287,7 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
 <main class="wrap">
   <h2>Welches Werkzeug wofür</h2>
   <p class="lead">Eine Karte je Werkzeug. Dateiname und Größe stehen darunter.</p>
-  <div class="quick"><b>Schnellwahl:</b> <a href="#ai-suite">Bauen → EAM AI Suite</a> · <a href="#suite">Prüfen und Bearbeiten → EAM Suite</a> · <a href="#mdg">Nachschlagen → MDG Parser</a> · <a href="#qea-analyzer">Abfragen → QEA Analyzer</a></div>
+  <div class="quick"><b>Schnellwahl:</b> <a href="#ai-suite">Bauen → EAM AI Suite</a> · <a href="#suite">Prüfen und Bearbeiten → EAM Suite</a> · <a href="#mdg">Nachschlagen → ADMBw Extraktor</a> · <a href="#qea-analyzer">Abfragen → QEA Analyzer</a></div>
   <section class="grid">
 ${cards}
   </section>
@@ -302,6 +316,16 @@ ${cards}
     <li><b>Architektur bearbeiten.</b> Korrigieren, Standardelemente nachziehen, als neue <code>.qea</code> speichern.</li>
     <li><b>Ergebnis.</b> Die <code>.qea</code> liegt vor und ist in Auswertewerkzeugen lesbar.</li>
   </ol>
+  <h2>Regeldateien in einem Chatbot nutzen</h2>
+  <p class="lead">Die sechs Markdown-Dateien aus dem ADMBw Extraktor sind reine Fachdaten. Jeder Chatbot kann sie als Wissensquelle lesen — ChatGPT, Claude, Gemini, Open WebUI oder ein lokales Modell. Der Chatbot schlägt dann vor; prüfen tut er nicht.</p>
+  <ol class="decision">
+    <li><b>Dateien erzeugen.</b> Im ADMBw Extraktor die MDG-XML laden und „Alle 6" herunterladen: <code>admbw-knowledge-stereotypes.md</code>, <code>-topology.md</code>, <code>-viewpoints.md</code>, <code>-tagtypes.md</code>, <code>-stereotype-tags.md</code>, <code>admbw-meta.md</code>.</li>
+    <li><b>Open WebUI.</b> <i>Workspace → Knowledge → „+"</i>, die sechs Dateien hochladen, Sammlung <i>ADMBw-Regelwerk</i> nennen. Im Chat mit <code>#</code> vor der Frage anhängen — oder unter <i>Workspace → Models</i> beim Modell als Knowledge eintragen, dann greift sie in jedem Chat.</li>
+    <li><b>Andere Chatbots.</b> ChatGPT: Projekt anlegen, Dateien hinzufügen (oder Custom GPT → Knowledge). Claude: Projekt → Knowledge. Gemini: Gem oder Notebook mit den Dateien als Quelle. Lokal: Dateien in den Kontext legen oder einen Index bauen.</li>
+    <li><b>Master-Prompt.</b> <code>ADMBw-Prompt.md</code> als System-Anweisung setzen, die sechs Wissensdateien als Knowledge. Der Prompt sagt, wie gebaut wird; die Dateien sagen, was erlaubt ist.</li>
+    <li><b>Grenzen.</b> Die Dateien sind Daten, keine Befehle. Bei Widerspruch gilt die MDG, nicht die Chat-Antwort.</li>
+  </ol>
+
   <h2>Prüfen</h2>
   <p class="lead">Jede Datei hat eine Prüfsumme. <a href="${sums}">SHA256SUMS herunterladen</a> und danach im Download-Ordner <code>sha256sum -c SHA256SUMS</code> ausführen.</p>
 

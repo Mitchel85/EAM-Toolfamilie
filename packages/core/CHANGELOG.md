@@ -4,6 +4,27 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.3.5 - 2026-11-04
+
+### Anleitung: Regeldateien im Chatbot
+
+Der ADMBw Extraktor, die Startseite und die README erklaeren jetzt an derselben
+Stelle, wie die sechs Markdown-Regeldateien in einem Chatbot genutzt werden --
+mit Schritt fuer Schritt fuer Open WebUI (Knowledge-Sammlung, `#` im Chat,
+Zuordnung am Modell) und fuer ChatGPT, Claude, Gemini und lokale Modelle.
+
+Klarstellung: Der Chatbot schlaegt vor, er prueft nicht; bei Widerspruch gilt
+die MDG.
+
+## 3.3.4 - 2026-11-04
+
+### Altnamen bleiben bedienbar
+
+`ADMBw-Extraktor.html` und `admbw-extraktor.py` werden zusaetzlich unter den
+frueheren Namen `EAM-MDG-Parser.html` und `eam-mdg-parser.py` ausgeliefert.
+Inhalt und Pruefsumme sind identisch; alte Links und Lesezeichen laufen
+weiter. Die neuen Namen bleiben die empfohlenen.
+
 ## 3.3.3 - 2026-11-04
 
 ### ADMBw Extraktor

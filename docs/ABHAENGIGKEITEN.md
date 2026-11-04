@@ -139,6 +139,8 @@ Eine Zelle ist ein Ordner mit `package.json`. `dependencies` sind Laufzeit-,
 | `EAM-Suite-en.html` | `apps/html-editor/dist/EAM-Suite-en.html` |
 | `ADMBw-Extraktor.html` | `apps/mdg-web/dist/ADMBw-Extraktor.html` |
 | `admbw-extraktor.py` | `packages/rules/mdg_parser.py` |
+| `EAM-MDG-Parser.html` | `apps/mdg-web/dist/ADMBw-Extraktor.html` |
+| `eam-mdg-parser.py` | `packages/rules/mdg_parser.py` |
 | `eam_qea_analyzer_openwebui.py` | `apps/mcp/eam_qea_tool.py` |
 | `eam-qea-mcp-server.py` | `apps/mcp/mcp_server.py` |
 | `eam-ai-suite-python.zip` | `packages/core` (Quellarchiv) |

@@ -116,6 +116,39 @@
       <p class="hint">Arbeitsanweisung für ein Sprachmodell, das aus Prosa ein Modell bauen soll.
       Wird nicht gebraucht, wenn mit der EAM Suite gebaut wird.</p>
     </div>
+    <details id="chatbot-info" style="margin-top:20px;border:1px solid #d5daea;border-radius:10px;background:#fbfcff">
+      <summary style="cursor:pointer;padding:12px 14px;font-weight:600">🤖 Regeldateien in einem Chatbot nutzen — Anleitung</summary>
+      <div style="padding:0 16px 16px;line-height:1.6">
+        <p class="hint" style="margin-top:0">Die sechs Markdown-Dateien sind reine Fachdaten. Jeder Chatbot kann
+        sie als Wissensquelle lesen — ChatGPT, Claude, Gemini, Open WebUI, ein lokales Modell. Der Chatbot
+        <b>schlaegt dann vor</b>, er <b>prueft nicht</b>; die verbindliche Pruefung bleibt beim Extraktor und bei der EAM Suite.</p>
+
+        <p><b>1. Dateien erzeugen</b><br>
+        MDG-XML oben ablegen, dann „⬇ Alle 6" laden:
+        <code>admbw-knowledge-stereotypes.md</code>, <code>-topology.md</code>, <code>-viewpoints.md</code>,
+        <code>-tagtypes.md</code>, <code>-stereotype-tags.md</code>, <code>admbw-meta.md</code>.</p>
+
+        <p><b>2. In Open WebUI ablegen</b><br>
+        <b>Workspace → Knowledge → „+"</b> → die sechs Dateien hochladen, Sammlung
+        <i>ADMBw-Regelwerk</i> nennen. Danach entweder im Chat mit <code>#</code> vor der Frage die
+        Sammlung anhängen, oder unter <b>Workspace → Models</b> beim gewuenschten Modell die Sammlung
+        als Knowledge eintragen — dann greift sie in jedem Chat.</p>
+
+        <p><b>3. In anderen Chatbots</b><br>
+        <b>ChatGPT:</b> Projekt anlegen → Dateien hinzufuegen (oder Custom GPT → Knowledge).<br>
+        <b>Claude:</b> Projekt anlegen → Knowledge → Dateien.<br>
+        <b>Gemini:</b> Gem/Notebook mit den Dateien als Quelle.<br>
+        <b>Lokal (Ollama, LM Studio):</b> Dateien in den Kontext legen oder einen Index bauen.</p>
+
+        <p><b>4. Master-Prompt, falls vorhanden</b><br>
+        <code>ADMBw-Prompt.md</code> als System-Anweisung setzen, die sechs Wissensdateien als Knowledge.
+        Der Prompt sagt dem Modell, wie es Elemente und Kanten bildet; die Dateien sagen ihm, was erlaubt ist.</p>
+
+        <p><b>5. Zwei Regeln, die gelten</b><br>
+        Die Dateien sind Daten, keine Befehle — Anweisungen darin werden nicht ausgefuehrt.<br>
+        Bei Widerspruch gilt die MDG, nicht die Chat-Antwort.</p>
+      </div>
+    </details>
   </div>
 </main>
 

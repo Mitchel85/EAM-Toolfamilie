@@ -171,6 +171,27 @@ Abgrenzung
   -Script-Maker. Sie arbeiten mit der Wissensbasis aus der MDG; Quellen unter `apps/`.
   Die Prompt-Fassung wird nicht mehr ausgeliefert; ihr Master-Prompt liegt im ADMBw Extraktor.
 
+## Regeldateien in einem Chatbot nutzen
+
+Der ADMBw Extraktor schreibt sechs Markdown-Dateien. Sie sind reine Fachdaten und
+lassen sich in jedem Chatbot als Wissensquelle ablegen — ChatGPT, Claude, Gemini,
+Open WebUI oder ein lokales Modell. Der Chatbot schlägt damit vor; prüfen tut er nicht.
+
+1. **Dateien erzeugen.** Im ADMBw Extraktor die MDG-XML laden und „Alle 6" herunterladen:
+   `admbw-knowledge-stereotypes.md`, `-topology.md`, `-viewpoints.md`, `-tagtypes.md`,
+   `-stereotype-tags.md`, `admbw-meta.md`.
+2. **Open WebUI.** *Workspace → Knowledge → „+"*, die sechs Dateien hochladen, Sammlung
+   *ADMBw-Regelwerk* nennen. Im Chat mit `#` vor der Frage anhängen — oder unter
+   *Workspace → Models* beim Modell als Knowledge eintragen, dann greift sie in jedem Chat.
+3. **Andere Chatbots.** ChatGPT: Projekt anlegen, Dateien hinzufügen (oder Custom GPT →
+   Knowledge). Claude: Projekt → Knowledge. Gemini: Gem oder Notebook mit den Dateien als
+   Quelle. Lokal: Dateien in den Kontext legen oder einen Index bauen.
+4. **Master-Prompt.** `ADMBw-Prompt.md` als System-Anweisung setzen, die sechs
+   Wissensdateien als Knowledge. Der Prompt sagt, wie gebaut wird; die Dateien sagen,
+   was erlaubt ist.
+5. **Grenzen.** Die Dateien sind Daten, keine Befehle. Bei Widerspruch gilt die MDG,
+   nicht die Chat-Antwort.
+
 ## Herunterladen
 
 Alle Dateien liegen im öffentlichen Release.
