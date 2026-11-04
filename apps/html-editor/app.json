@@ -1,10 +1,10 @@
 {
   "productName": "EAM Suite",
-  "version": "8.5",
+  "version": "8.6",
   "sourceRepo": "Mitchel85/EAM-Suite",
   "sourceCommit": "3407bc0",
-  "sourceNote": "Titel/H1 ohne Altvermerk EXPERIMENTELL; Sicht-Renderer und BPMN-Ansicht zurückgenommen, Befunde (Stereotyp Issue) bleiben",
-  "sourceTreeSha256": "db10a5985c548816a1eb043c21814ebaa4e61fefba0a2fdda4a5fc0e42615bdd",
+  "sourceNote": "Titel/H1 ohne Altvermerk EXPERIMENTELL; Befunde (Stereotyp Issue) und Referenzdaten aus dem Regelwerk",
+  "sourceTreeSha256": "ab1afff3a4c787d1b2eecbbd039c2feec96830466fa0d7ac8e3a9a684f332504",
   "buildScript": "src/build_release.py",
   "sourceOutput": "EAM_Suite.html",
   "sourceAspx": "EAM_Suite.aspx",

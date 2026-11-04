@@ -4,6 +4,19 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.3.2 - 2026-11-04
+
+### EAM Suite
+
+Die Referenzdaten (ADMBW-Grid, Viewpoint-Namen, Elementlisten, Topologie)
+werden beim Bauen aus `knowledge/regelwerk.json` erzeugt, nicht mehr von Hand
+gepflegt. Damit stimmen die angezeigten Elemente mit der MDG ueberein; die
+bisherige Liste war eine abgeschriebene NAF-Fassung und wich bei allen 52
+Sichten ab. Der Bau bricht ab, wenn die eingebettete Fassung vom Regelwerk
+abweicht.
+
+Version 8.6.
+
 ## 3.3.1 - 2026-11-04
 
 ### EAM Suite

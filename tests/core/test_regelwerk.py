@@ -125,10 +125,12 @@ def test_konventionen_dateien_bleiben_unabhaengig(daten: dict) -> None:
         assert daten["quellen"]["leitfaeden"][key]["eintraege"] > 0
 
 
-def test_html_suite_daten_entsprechen_dem_regelwerk() -> None:
-    """Die HTML-Suite traegt keinen eigenen, gealterten Regelsatz."""
+@pytest.mark.parametrize("app", ["html-suite", "html-editor"])
+def test_html_daten_entsprechen_dem_regelwerk(app: str) -> None:
+    """Keine HTML-Auslieferung traegt einen eigenen, gealterten Regelsatz."""
     ergebnis = subprocess.run(
-        [sys.executable, str(ROOT / "scripts" / "build_html_data.py"), "--pruefen"],
+        [sys.executable, str(ROOT / "scripts" / "build_html_data.py"),
+         "--app", app, "--pruefen"],
         cwd=ROOT, capture_output=True, text=True, timeout=120,
     )
     assert ergebnis.returncode == 0, ergebnis.stdout + ergebnis.stderr

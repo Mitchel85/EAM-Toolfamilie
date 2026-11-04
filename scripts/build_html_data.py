@@ -31,7 +31,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 REGELWERK = ROOT / "knowledge" / "regelwerk.json"
 BESCHREIBUNGEN = ROOT / "knowledge" / "viewpoint-descriptions.json"
-ZIEL = ROOT / "apps" / "html-suite" / "src" / "part0_reader_data.js"
+#: Ziel je App. Beide Altwerkzeuge tragen denselben Datenblock.
+ZIELE = {
+    "html-suite": ROOT / "apps" / "html-suite" / "src" / "part0_reader_data.js",
+    "html-editor": ROOT / "apps" / "html-editor" / "src" / "part0_reader_data.js",
+}
 
 BEGINN = "var ADMBW_DATA = "
 ENDE = ";\n"
@@ -133,6 +137,7 @@ def als_js(daten: dict) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="ADMBW_DATA aus dem Regelwerk erzeugen")
+    ap.add_argument("--app", choices=sorted(ZIELE), default="html-suite", help="welche App")
     ap.add_argument("--schreiben", action="store_true", help="Quelldatei ersetzen")
     ap.add_argument("--pruefen", action="store_true", help="nur vergleichen")
     args = ap.parse_args()
@@ -142,6 +147,7 @@ def main() -> int:
     neu = erzeuge(regelwerk, beschreibungen)
     block = als_js(neu)
 
+    ZIEL = ZIELE[args.app]
     quelle = ZIEL.read_text(encoding="utf-8")
     if BEGINN not in quelle:
         print(f"{ZIEL.name}: kein ADMBW_DATA gefunden", file=sys.stderr)
