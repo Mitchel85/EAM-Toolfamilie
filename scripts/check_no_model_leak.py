@@ -7,11 +7,18 @@ dient (Standard: das oeffentliche Testmodell unter ``packages/core/fixtures``).
 Geprueft wird ausschliesslich Anwendungscode und Dokumentation -- keine
 Fixtures, keine Tests, keine gebauten Dateien.
 
+Zusaetzlich prueft das Skript das Modell selbst auf Autorenangaben. In
+``t_object.Author`` und ``t_diagram.Author`` stehen bei gewachsenen Modellen
+Klarnamen, Dienststellen und Kennungen. Eine veroeffentlichte Fixture darf
+davon nichts enthalten; erlaubt sind nur leere Werte und der Neutralwert
+``MASC``.
+
 Aufruf::
 
     python3 scripts/check_no_model_leak.py [modell.qea] [--bericht treffer.json]
 
-Exit-Code 1, wenn ein Name gefunden wird.
+Exit-Code 1, wenn ein Name im Anwendungscode gefunden wird oder wenn das Modell
+nicht neutralisierte Autorenangaben enthaelt.
 """
 from __future__ import annotations
 
@@ -80,11 +87,50 @@ def pruefnamen(modell: Path) -> list[str]:
     ]
 
 
+def pruefe_autoren(modell: Path) -> dict[str, int]:
+    """Zaehlt Autorenwerte, die weder leer noch der Neutralwert sind.
+
+    Personenbezug entsteht nicht durch die Anzahl, sondern durch den Inhalt:
+    Klarnamen, Dienststellen und numerische Kennungen. Deshalb wird hier nicht
+    auf ein Muster geprueft, sondern auf alles, was nicht ausdruecklich erlaubt
+    ist -- ein neuer Bearbeitername faellt damit sofort auf.
+    """
+    erlaubt = {"", "MASC"}
+    befunde: dict[str, int] = {}
+    con = sqlite3.connect(f"file:{modell}?mode=ro", uri=True)
+    try:
+        vorhanden = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        for tabelle, spalte in (("t_object", "Author"), ("t_diagram", "Author")):
+            if tabelle not in vorhanden:
+                continue
+            werte = [
+                r[0] for r in con.execute(
+                    f'SELECT DISTINCT "{spalte}" FROM "{tabelle}" '
+                    f'WHERE "{spalte}" IS NOT NULL AND TRIM("{spalte}")<>""'
+                )
+            ]
+            offen = [w for w in werte if str(w).strip() not in erlaubt]
+            if offen:
+                befunde[f"{tabelle}.{spalte}"] = len(offen)
+    finally:
+        con.close()
+    return befunde
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("modell", nargs="?", type=Path, default=STANDARD_MODELL)
     parser.add_argument("--bericht", type=Path, default=None, help="Treffer als JSON")
     args = parser.parse_args(argv)
+
+    autoren = pruefe_autoren(args.modell)
+    if autoren:
+        print("PERSONENBEZUG: Autorenangaben nicht neutralisiert")
+        for spalte, anzahl in autoren.items():
+            print(f"  {spalte}: {anzahl} verschiedene Werte")
+        print("  Behebung: python3 scripts/neutralize_model_authors.py <modell.qea>")
+    else:
+        print(f"Autorenangaben in {args.modell.name}: neutral")
 
     namen = pruefnamen(args.modell)
     print(f"Pruefnamen aus {args.modell.name}: {len(namen)}")
@@ -114,7 +160,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Dateien mit Treffern: {len(treffer)}")
     for datei, gefunden in treffer.items():
         print(f"  {datei}: {gefunden}")
-    return 1 if treffer else 0
+    return 1 if (treffer or autoren) else 0
 
 
 if __name__ == "__main__":

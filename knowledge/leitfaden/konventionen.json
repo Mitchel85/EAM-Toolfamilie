@@ -3,7 +3,7 @@
   "id": "A1-MK01",
   "viewpoint": "A1",
   "kind": "package",
-  "text": "Es ist ein Package Architectural Foundation/A1/Meta-Data Definitions angelegt. -"
+  "text": "Es ist ein Package Architectural Foundation/A1/Meta-Data Definitions angelegt."
  },
  {
   "id": "A1-MK02",
@@ -15,7 +15,7 @@
   "id": "A1-MK03",
   "viewpoint": "A1",
   "kind": "diagram",
-  "text": "Die Architekturbeschreibung (ARCHITECTURALDESCRIPTION) ist auf dem A1-B Diagramm angelegt oder aus dem Modellelementekatalog entnommen. Hinweis: Der Name der Architekturbeschreibung enthält „Projektkürzel – Art der Modellierungskonventionen Nummer Modellierungskonvention Verweis Architektur“ z.B. „MASC – Projektarchitektur“."
+  "text": "Die Architekturbeschreibung (ARCHITECTURALDESCRIPTION) ist auf dem A1-B Diagramm angelegt oder aus dem Modellelementekatalog entnommen. Hinweis: Der Name der Architekturbeschreibung enthält „Projektkürzel – Art der Architektur“ z.B. „MASC – Projektarchitektur“."
  },
  {
   "id": "A1-MK04",
@@ -81,13 +81,13 @@
   "id": "A1-MK14",
   "viewpoint": "A1",
   "kind": "diagram",
-  "text": "Alle projektbezogenen Abkürzungen Akronyme und Begriffe sind im Glossar A1-F (GLOSSARY) des Architekturmodells hinterlegt. Tabelle 3: Modellierungskonventionen: A1 - Meta-Data Definitions NAFv4-ADMBw «ArchitecturalDescription» «CapabilityConfig... «Standard» MASC - Proj ektarchitektur Multipurpose Armed NAFv 4-ADMBw Spacecraft «ConformsTo» «Expresses» 2025.10 + Concepts + Architecture Foundation Architekturtyp + Logical Specifications «OperationalArchi... «Standard» + Physical Ressource Specifications Direkte Führung Geschäftsarchitektur + Requirements bemanntes Raumschiff «ConformsTo» «DescribedBy» + Service Specifications + Modellelementekatalog Architekturart «OperationalArchi... «Standard» Ausbildung tags Proj ektarchitektur Weltraumoperation «ConformsTo» AbstractionLevel = 6 «DescribedBy» approvalAuthority = EAMBw approvalDate = 12.03.2026 Dimension architect = Max Mustermann «ActualProject» assumptionAndConstraint = Es wird kein SteKa Multipurpose Armed «Standard» angebunden werden. Die Architketur wird zukünftig als Spacecraft: PBN- Weltraum «ConformsTo» «ArchitectureForProject» Referenz hinzugezogen für die Erarbeitung der Regelv erfahren Referenzarchitektur Weltraum creatingOrganization = Kommando Weltraum Architekturebene dateCompleted = 31.12.2029 «ActualProjectMil... «Standard» framework = ADMBw-MDG-2025.10 Nutzungsphase: Proj ektebene methodologyUsed = Grundlagen \"Methode Architektur Nutzungsphase «ConformsTo» «ArchitectureForProject» nach NAFv4\"; Leitfaden \"Architekturn in FFFmLV\"; Leitfaden Projektarchitekturen (PBN) – Anteil Service und System\", Dokumentation \"ADMBW - Version 2025.10\" Domäne «Classification» purpose = Darstellen der operationellen Abläufe und der «Standard» Fähigkeitsentwicklung zum Bestehen in der Dimension OFFEN Aufklärung «ConformsTo» Weltall. «Classified» recommendations = siehe A7 status = approved summaryOfFindings = siehe A7 toBe = true toolsUsed = SPARX EA 17.1 version = 2.01.000 Es ist ein fiktives Projekt, bei welchem ein bewaffnetes Mehrzweckraumschiff (MASC: Multipurpose Armed Spacecraft) für die Dimension Weltraum die Forderungen der Bedarfsträger am besten erfüllt. Es kann sowohl zur Aufklärung,als auch zur Wirkung eingesetzt werden. Abbildung 4: Beispielmodellierung A1 : MASC : Meta-Data Definitions Im Beispiel ist die Architekturbeschreibung für das Multipurpose Armed Spacecraft mit dem Projektnamen, dem Architekturtyp und der Projektphase dargestellt. Es ist die Abstraktionsebene 6, EAMBw als methodisch verantwortliche Stelle, sowie das Mitprüfungsdatum 12.03.2026 angegeben. Hinzu kommt der Modellierer Moritz Modellierer und dessen Organisation Kommando Weltraum. Zudem ist das Datum der Finalisierung 31.12.2029, das genutzte ADMBw-MDG-2025- 10 Framework und die dazugehörende Methode NAFv4 ADMBw angegeben. Zweck, Status und die Information, ob es sich um eine SOLL- (true) oder eine IST-Beschreibung handelt, gehört ebenfalls dazu. Zudem ist hier das Werkzeug SPARX EA 17.1 und die Version 2.01.000 der Architekturmodellierung genannt. 3.2.3.2 A2 - Architecture Products Der A2-Architecture Products beschreibt die Architekturprodukte, die in einer Architektur vorhanden sind. 3.2.3.2.1 A2 - Stakeholder Ein Diagramm A2 - Stakeholder vom Typ A2 - Architecture Products stellt einen Stakeholder der Architektur mit seinen Analysefragen und den relevanten Viewpoints dar. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Alle projektbezogenen Abkürzungen Akronyme und Begriffe sind im Glossar A1-F (GLOSSARY) des Architekturmodells hinterlegt."
  },
  {
   "id": "A2-MK01",
   "viewpoint": "A2",
   "kind": "package",
-  "text": "Es ist ein Package Architectural Foundation/A2 - Stakeholder angelegt. -"
+  "text": "Es ist ein Package Architectural Foundation/A2 - Stakeholder angelegt."
  },
  {
   "id": "A2-MK02",
@@ -123,13 +123,13 @@
   "id": "A2-MK07",
   "viewpoint": "A2",
   "kind": "diagram",
-  "text": "Die für den Stakeholder (STAKEHOLDER) relevanten Viewpoints (VIEWPOINT) sind A2-H auf dem Diagramm mit dem entsprechenden Stakeholder verbunden (VIEWPOINTTOSTAKEHOLDER). Tabelle 4: Modellierungskonventionen: A2 - Stakeholder «Viewpoint» «ActualPost» «Concern» C1 - Capability Taxonomy Proj ektleiter MASC: Proj ektleiter Welche Fähigkeiten w erden unterstützt? «ViewpointToStakeholder» «StakeholderConcern» «Viewpoint» «Concern» L4 - Logical Activ ities Wie läuft eine Weltraumoperation ab? «ViewpointToStakeholder» «StakeholderConcern» Abbildung 5: Beispielmodellierung A2 : MASC : Stakeholder (Projektleiter MASC) Im Beispiel ist der Stakeholder „Projektleiter MASC“ dargestellt. Zudem sind seine Analysebedarfe und die dafür notwendigen Viewpoints dargestellt. 3.2.3.2.2 A2 - Concern Ein Diagramm A2 - Concern vom Typ A2 - Architecture Products stellt die Analysebedarf(e) eines Stakeholders dar. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die für den Stakeholder (STAKEHOLDER) relevanten Viewpoints (VIEWPOINT) sind A2-H auf dem Diagramm mit dem entsprechenden Stakeholder verbunden (VIEWPOINTTOSTAKEHOLDER)."
  },
  {
   "id": "A2-MK08",
   "viewpoint": "A2",
   "kind": "package",
-  "text": "Es ist ein Package Architectural Foundation/A2/Concerns angelegt. -"
+  "text": "Es ist ein Package Architectural Foundation/A2/Concerns angelegt."
  },
  {
   "id": "A2-MK09",
@@ -165,13 +165,13 @@
   "id": "A2-MK14",
   "viewpoint": "A2",
   "kind": "diagram",
-  "text": "Die vom Stakeholder (STAKEHOLDER) geäußerten Analysebedarfe (CONCERN) sind A2-E auf dem Diagramm mit dem entsprechenden Stakeholder verbunden Modellierungskonventionen Nummer Modellierungskonvention Verweis (STAKEHOLDERCONCERN). Tabelle 5: Modellierungskonventionen: A2 - Concerns «ActualPost» «Concern» «ActualEnterprisePhase» Proj ektleiter MASC: Wie läuft eine Weltraumoperation Vorbereitung Einsatz im Weltraum mit Proj ektleiter ab? Fokus Führung: Zw ischenschritt 2023 «StakeholderConcern» «ConcernForActualEnterprisePhase» «Concern» Welche Fähigkeiten w erden unterstützt? «StakeholderConcern» «ConcernForActualEnterprisePhase» Abbildung 6: Beispielmodellierung A2 : MASC : Concern (Projektleiter MASC) Im Beispiel sind die Analysefragen dem entsprechenden Stakeholder zugeordnet. Zudem sind beide dargestellten Concerns mit der betreffenden aktuellen Enterprisephase „Vorbereitung Einsatz im Weltraum mit Fokus Führung“ zugeordnet. Die Phase ist vom Typ „Zwischenschritt 2023“. 3.2.3.2.3 A2 - Viewpoints Das Diagramm A2 - Viewpoints vom Typ A2 - Architecture Products stellt die Sichten (Views und Viewpoints) dar sowie die Analysefragen die mit diesen betrachtet werden. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die vom Stakeholder (STAKEHOLDER) geäußerten Analysebedarfe (CONCERN) sind A2-E auf dem Diagramm mit dem entsprechenden Stakeholder verbunden (STAKEHOLDERCONCERN)."
  },
  {
   "id": "A2-MK15",
   "viewpoint": "A2",
   "kind": "package",
-  "text": "Es ist ein Package Architectural Foundation/A2/Viewpoints angelegt. -"
+  "text": "Es ist ein Package Architectural Foundation/A2/Viewpoints angelegt."
  },
  {
   "id": "A2-MK16",
@@ -213,13 +213,13 @@
   "id": "A2-MK22",
   "viewpoint": "A2",
   "kind": "other",
-  "text": "Die Elemente mit dem Stereotypen View/Viewpoint (VIEW VIEWPOINT) sind mit dem - jeweilig zugehörigen Diagramm als Composite-Diagram verknüpft. Hinweis: Dieser Schritt ist für die Views erst sinnvoll durchführbar wenn die Views im Rahmen der Architekturarbeit erstellt sind. Tabelle 6: Modellierungskonventionen: A2 - Viewpoints «Concern» «Viewpoint» Wie läuft eine L4 - Logical Weltraumoperation ab? Activ ities «ConcernForViewpoint» «CompliesViewpoint» «ConcernForView» «View» Aktiv itätendiagramm Weltraumoperation Abbildung 7: Beispielmodellierung A2 : MASC : Viewpoints (L4) Im Beispiel ist die Verknüpfung der Analysefragen mit den Viewpoints und Views dargestellt. 3.2.3.3 A3 – Architecture Correspondence Der A3 – Architecture Correspondence erfasst die Abhängigkeiten zu anderen Architekturen. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die Elemente mit dem Stereotypen View/Viewpoint (VIEW VIEWPOINT) sind mit dem - jeweilig zugehörigen Diagramm als Composite-Diagram verknüpft. Hinweis: Dieser Schritt ist für die Views erst sinnvoll durchführbar wenn die Views im Rahmen der Architekturarbeit erstellt sind."
  },
  {
   "id": "A3-MK01",
   "viewpoint": "A3",
   "kind": "package",
-  "text": "Es ist ein Package Architectural Foundation/A3/Architecture Correspondence angelegt. -"
+  "text": "Es ist ein Package Architectural Foundation/A3/Architecture Correspondence angelegt."
  },
  {
   "id": "A3-MK02",
@@ -243,13 +243,13 @@
   "id": "A3-MK05",
   "viewpoint": "A3",
   "kind": "catalog",
-  "text": "Die Abhängigkeit zwischen Architekturbeschreibungen A3-C (ARCHITECTURALDESCRIPTION) ist auf dem Diagramm durch eine Relation (ARCHITECTURALREFERENCE) zur abhängigen Architekturbeschreibung dargestellt. Hinweis: Jede Abhängigkeit ist im Namens-Feld mit einer Beschreibung zu versehen. Tabelle 7: Modellierungskonventionen: A3 - Architecture Correspondence «ArchitecturalDescription» «ArchitecturalDescription» MASC - Proj ektarchitektur Referenzarchitektur Weltraum + Concepts + Architecture Foundation + Logical Specifications Die Referenzarchitektur Weltraum + Physical Ressource Specifications basiert auf Erkenntnissen der + Requirements Projektarchitektur MASC + Service Specifications + Modellelementekatalog «ArchitecturalReference» Abbildung 8: Beispielmodellierung A3 : Architecture Correspondence Im Beispiel ist dargestellt, dass die Referenzarchitektur Weltraum auf Erkenntnissen der Projektarchitektur MASC basiert. 3.2.3.4 A6 - Architecture Versions Der A6 - Architecture Versions beschreibt die Versionsgeschichte des Architekturmodells. Wenn in der Analysephase eine bereits mit der Initiative oder Beauftragung erstelltes Architekturmodell fortgeschrieben wird, wird der A6 im Startpaket bereitgestellt und ist in der Analysephase fortzuschreiben. Wird in der Analysephase erstmalig ein Architekturmodell für das betreffende Projekt erstellt, ist der A6 initial zu modellieren. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die Abhängigkeit zwischen Architekturbeschreibungen A3-C (ARCHITECTURALDESCRIPTION) ist auf dem Diagramm durch eine Relation (ARCHITECTURALREFERENCE) zur abhängigen Architekturbeschreibung dargestellt. Hinweis: Jede Abhängigkeit ist im Namens-Feld mit einer Beschreibung zu versehen."
  },
  {
   "id": "A6-MK01",
   "viewpoint": "A6",
   "kind": "package",
-  "text": "Es ist ein Package Architecture Foundation/A6/Architecture Version angelegt. -"
+  "text": "Es ist ein Package Architecture Foundation/A6/Architecture Version angelegt."
  },
  {
   "id": "A6-MK02",
@@ -279,13 +279,13 @@
   "id": "A6-MK06",
   "viewpoint": "A6",
   "kind": "catalog",
-  "text": "Die betrachtende Architekturbeschreibung (ARCHITECTURALDESCRIPTION) ist auf A6-D dem Diagramm mit den Vorversionen der Architekturbeschreibungen verbunden (ARCHITECTURALSEQUENCE). Tabelle 8: Modellierungskonventionen: A6 - Architecture Versions «ArchitecturalDescription» «ArchitecturalDescription» MASC - Voranalysephase MASC - Proj ektarchitektur tags + Concepts approvalAuthority = KdoWR + Architecture Foundation approvalDate = 01.01.2024 + Logical Specifications status = Approved version = 0.50.000 + Physical Ressource Specifications + Requirements + Service Specifications «ArchitecturalSequence» + Modellelementekatalog tags AbstractionLevel = 6 approvalAuthority = EAMBw approvalDate = 12.03.2026 architect = Max Mustermann assumptionAndConstraint = Es wird kein SteKa angebunden werden. Die Architketur wird zukünftig als Referenz hinzugezogen für die Erarbeitung der Referenzarchitektur Weltraum creatingOrganization = Kommando Weltraum dateCompleted = 31.12.2029 framework = ADMBw-MDG-2025.10 methodologyUsed = Grundlagen \"Methode Architektur nach NAFv4\"; Leitfaden \"Architekturn in FFFmLV\"; Leitfaden Projektarchitekturen (PBN) – Anteil Service und System\", Dokumentation \"ADMBW - Version 2025.10\" purpose = Darstellen der operationellen Abläufe und der Fähigkeitsentwicklung zum Bestehen in der Dimension Weltall. recommendations = siehe A7 status = approved summaryOfFindings = siehe A7 toBe = true toolsUsed = SPARX EA 17.1 version = 2.01.000 Abbildung 9: Beispielmodellierung A6 : MASC : Architecture Version Im Beispiel sind die beiden voneinander abhängenden Architekturbeschreibungen „Multipurpose Armed Spacecraft – Voranalyse“ in der Version 0.50.000 und „MASC - Projektarchitektur“ in der Version 2.01 dargestellt. 3.2.3.5 A7 – Architecture Compliance Der A7 – Architecture Compliance stellt die Konformität des Architekturmodells zum NAFv4- ADMBw fest und Abweichungen zu diesen Vorgaben dar. Weiterhin werden Erkenntnisse und Empfehlungen im A7 zusammengefasst. 3.2.3.5.1 A7 - Architecture Compliance Der A7 – Architecture Compliance stellt die Konformität des Architekturmodells zum NAFv4- ADMBw fest. Gleichende Elemente werden hier aufgenommen. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die betrachtende Architekturbeschreibung (ARCHITECTURALDESCRIPTION) ist auf A6-D dem Diagramm mit den Vorversionen der Architekturbeschreibungen verbunden (ARCHITECTURALSEQUENCE)."
  },
  {
   "id": "A7-MK01",
   "viewpoint": "A7",
   "kind": "package",
-  "text": "Es ist ein Package Architecture Foundation/A7/Architecture Compliance angelegt. -"
+  "text": "Es ist ein Package Architecture Foundation/A7/Architecture Compliance angelegt."
  },
  {
   "id": "A7-MK02",
@@ -315,13 +315,13 @@
   "id": "A7-MK06",
   "viewpoint": "A7",
   "kind": "diagram",
-  "text": "Die gleichbedeutenden Elemente sind auf dem Diagramm mit den entsprechenden A7-E Beschreibungstexten zu den jeweiligen Abweichungen verbunden (NOTELINK). Tabelle 9: Modellierungskonventionen: A7 - Architecture Compliance «OperationalPerfor... «OperationalPerfor... Aufklärungstrupp Weltraumbesatzung «SameAs» «Information» «Information» Begriff in der Marine Begriff im Heer Abbildung 10: Beispielmodellierung A7 : MASC : Architecture Compliance (NodeTypes) Im Beispiel ist dargestellt, dass im Modell zwei gleiche Elemente für die Aufklärung mit unterschiedlichen Namen verwendet werden. 3.2.3.5.2 A7 - Compliance Statement Der A7 – Compliance Statment stellt die Konformität des Architekturmodells zum NAFv4-ADMBw fest und Abweichungen zu diesen Vorgaben dar. Ordentlich begründete Abweichungen in Form von Erkenntnissen können in der methodischen und fachlichen Prüfung bestätigt und abgenommen werden und werden im Compliance Statement berücksichtigt. Nicht ordentlich dokumentierte und begründete Abweichungen werden abgelehnt und mit dem Modellierungsteam bewertet und aufgelöst. Das Compliance Statement wird von der methodischen Fachaufsicht (Ref EAM MOD und/oder EAMBw UstgV BWI FKo Mod) in Abstimmung mit dem Modellierungsteam beschrieben. Die methodische und inhaltliche Bewertung zum aktuellen Stand der Architekturbeschreibung wird im Compliance Statement festgehalten. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die gleichbedeutenden Elemente sind auf dem Diagramm mit den entsprechenden A7-E Beschreibungstexten zu den jeweiligen Abweichungen verbunden (NOTELINK)."
  },
  {
   "id": "A7-MK07",
   "viewpoint": "A7",
   "kind": "package",
-  "text": "Es ist ein Package Architecture Foundation/A7/Findings and Recommendations angelegt. - Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Es ist ein Package Architecture Foundation/A7/Findings and Recommendations angelegt."
  },
  {
   "id": "A7-MK08",
@@ -375,13 +375,13 @@
   "id": "A7-MK16",
   "viewpoint": "A7",
   "kind": "diagram",
-  "text": "Eine ggf. erfolgte Umsetzung einer Empfehlung (RECOMMENDATION) kann durch - Zuordnung (REALIZESRECOMMENDATION) eines Architekturelementes ausgedrückt werden. Tabelle 11: Modellierungskonventionen: A7 - Findings and Recommendations «Finding» «Recommendation» Zw ei gleiche Elemente Einigung auf einen Begriff tags «RefersTo» Type = Subject tags Type = Subject «ResultsFrom» «ResultsFrom» Aufklärungselement Aufklärungselement Weltraum «OperationalPerfor... «OperationalPerformer» Aufklärungstrupp Weltraumbesatzung Abbildung 12: Beispielmodellierung A7 : MASC : Findings and Recommendations (Modellelemente) Im Beispiel ist die Erkenntnis (Finding) dargestellt, dass zwei gleiche Elemente unterschiedlich in der Architektur benannt sind. Diese soll durch die Empfehlung (Recommendation) berücksichtigt werden, dass man sich auf einen der beiden Begriffe einigt. 3.2.3.6 A8 - Standards Der A8 - Standards stellt die für den Betrachtungsgegenstand relevanten oder bei der Modellerstellung beachteten Standards dar. Dabei werden sowohl Standards für die Erstellung des Architekturmodells, als auch Standards zur Nutzung in den in der Architektur beschriebenen Systemen dargestellt. Standards für die Erstellung des Architekturmodells und Standards zur Nutzung in dem Modell beschriebenen Systemen sind im Architekturmodell durch unterschiedliche Diagramme zu trennen. Anerkannte Standards sollten als Standardelemente verfügbar sein. Prüfen Sie, ob sich ein entsprechendes Element im StEKa befindet, bevor Sie einen Standard neu anlegen. Ist dies nicht der Fall, markieren Sie das neu angelegte Element mit einem FINDING (\"Standard im StEKa nicht enthalten\", möglichst mit Angaben zu Kontext (technisch, formal, prozedural, …), Herausgeber u.ä. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Eine ggf. erfolgte Umsetzung einer Empfehlung (RECOMMENDATION) kann durch - Zuordnung (REALIZESRECOMMENDATION) eines Architekturelementes ausgedrückt werden."
  },
  {
   "id": "A7-MK17",
   "viewpoint": "A7",
   "kind": "package",
-  "text": "Es ist ein Package Architecture Foundation/A7/Compliance Statement angelegt. -"
+  "text": "Es ist ein Package Architecture Foundation/A7/Compliance Statement angelegt."
  },
  {
   "id": "A7-MK18",
@@ -393,13 +393,13 @@
   "id": "A7-MK19",
   "viewpoint": "A7",
   "kind": "diagram",
-  "text": "Das Compliance Statement (INFORMATION) ist auf dem Diagramm angelegt. A7-L Hinweis: Das Compliance Statement ist als Text formuliert und enthält mindestens eine Aussage dazu dass alle Vorgaben eingehalten wurden. Nicht eingehaltene Vorgaben sind aufgeführt begründet und im Vorfeld mit der methodisch begleitenden Stelle abgestimmt. Tabelle 10: Modellierungskonventionen: A7 - Compliance Statement «Information» Alle Vorgaben wurden eingehalten! Ausnahmen gibt es aktuell keine. Abbildung 11: Beispielmodellierung A7 : MASC : Compliance Statement Im Beispiel ist das Compliance Statement dargestellt. Es sagt aus, dass alle Vorgaben im Projekt eingehalten wurden. Ausnahmen wurden nicht benötigt. 3.2.3.5.3 A7 - Findings and Recommendations Der A7 – Findings and Recommendations fasst die Erkenntnisse und Empfehlungen zusammengefasst. Während der Modellierung identifizierte methodische oder fachliche Abweichungen werden in A7 - Findings and Recommendations durch das Modellierungsteam dokumentiert. Die dort festgehaltenen Erkenntnisse dienen in der methodischen und inhaltlichen Prüfung als Übersicht der Abweichungen und werden in dieser bewertet. Eine inhaltliche Abweichung im Sinne der Verringerung oder Erhöhung der Leistung zur Leistungsbeschreibung muss vom Bedarfsträger schriftlich bestätigt (mitgezeichnet) werden (z.B. per Protokoll oder E-Mail). Nach Abschluss der Modellierungstätigkeiten werden die dokumentierten Erkenntnisse gemäß ihrem Attribut über die entsprechende Rolle prozessiert und perspektivisch aufgelöst. Dies wird über die methodische Begleitung oder Projektkoordination initiiert. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Das Compliance Statement (INFORMATION) ist auf dem Diagramm angelegt. A7-L Hinweis: Das Compliance Statement ist als Text formuliert und enthält mindestens eine Aussage dazu dass alle Vorgaben eingehalten wurden. Nicht eingehaltene Vorgaben sind aufgeführt begründet und im Vorfeld mit der methodisch begleitenden Stelle abgestimmt."
  },
  {
   "id": "A8-MK01",
   "viewpoint": "A8",
   "kind": "package",
-  "text": "Es ist ein Package Architecture Foundation/A8/Standards angelegt. -"
+  "text": "Es ist ein Package Architecture Foundation/A8/Standards angelegt."
  },
  {
   "id": "A8-MK02",
@@ -417,13 +417,13 @@
   "id": "A8-MK04",
   "viewpoint": "A8",
   "kind": "other",
-  "text": "Für alle (im Projektkontext) relevanten Standards (STANDARD) ist die ratifizierende A8-D, A8-E Stelle als zuständige Organisation (ACTUALORGANIZATION) angegeben und auf dem Diagramm eingeblendet. Tabelle 12: Modellierungskonventionen: A8 - Standards «Standard» «ActualOrganization» «Protocolstack» «ActualOrganization» ISO 19115 Internationale Organisation HTTP W3C: Gremium für Normung : Vereinigung «RatifiedStandards» «RatifiedStandards» v on Normungsorganisationen «ProtocolLayer» Application: RFC 5321[1] «Standard» ISO/IEC 27001 «RatifiedStandards» «ProtocolLayer» Transport: RFC 9293 - TCP[1] «Standard» ISO 42010 «ProtocolLayer» «RatifiedStandards» Internet: RFC 8200 - IPv 6[1] «Standard» «ActualOrganization» USB 2.0 USB Implementers Forum: «ProtocolLayer» NPO Netw ork Access: IEEE 802.3 - Ethernet[1] «RatifiedStandards» «Standard» «ActualOrganization» ISO 24113:2023 International Organization for Standardization (ISO): «RatifiedStandards» Internationale Organisation «Protocol» «ActualOrganization» RFC 5321 International Netw ork Working Group «RatifiedStandards» «Protocol» «ActualOrganization» IEEE 802.3 - Ethernet Institute of Electrical and Electronics Engineers «RatifiedStandards» (IEEE): Internationale Organisation Abbildung 13: Beispielmodellierung A8 : MASC : Standards Im Beispiel sind verschiedene Standards dargestellt, die in dem Architekturmodell verwendet werden. Hierzu gehören Standards wie „ISO 42010“. Ebenfalls ist das Protokoll HTTP mit seiner ratifizierenden Stelle „W3C“ und der Aufbau des Protokollstacks „HTTP“ dargestellt. 3.2.3.7 Ar – Architecture Roadmap Der Ar – Architecture Roadmap befasst sich mit der zeitlichen Entwicklung von Architekturmodellen. Dies schließt die Validierung von Entwurfsfassungen des Architekturmodells sowie den Zeitplan für weitere Validierungen ein. Im Ar - Architecture Roadmap wird der zukünftige Verlauf der Architekturmodellen dargestellt. Im Gegensatz dazu wird im A6 aus der Perspektive der Architekturbeschreibung die aktuelle Entwicklungshistorie beschrieben. Die inhaltlichen Abhängigkeiten zu anderen Architekturenmodellen werden im A3 beschrieben. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Für alle (im Projektkontext) relevanten Standards (STANDARD) ist die ratifizierende A8-D, A8-E Stelle als zuständige Organisation (ACTUALORGANIZATION) angegeben und auf dem Diagramm eingeblendet."
  },
  {
   "id": "Ar-MK01",
   "viewpoint": "Ar",
   "kind": "package",
-  "text": "Es ist ein Package Architectural Foundation/Ar/Architecture Roadmap angelegt. -"
+  "text": "Es ist ein Package Architectural Foundation/Ar/Architecture Roadmap angelegt."
  },
  {
   "id": "Ar-MK02",
@@ -441,13 +441,13 @@
   "id": "Ar-MK04",
   "viewpoint": "Ar",
   "kind": "catalog",
-  "text": "Die Architekturbeschreibung (ARCHITECTURALDESCRIPTION) für die PLAN- Ar-C Modellerstellung ist vollständig ausgefüllt und die Informationen auf dem Diagramm dargestellt. Die Architekturbeschreibungen sind entsprechend der zeitlichen Abfolge in Beziehung gesetzt (ARCHITECTURALSEQUENCE). Tabelle 13: Modellierungskonventionen: Ar -Architecture Roadmap «ArchitecturalDescription» «ArchitecturalDescription» MASC - Proj ektarchitektur Raumschiff der Zukunft (RdZ) + Concepts + Architecture Foundation «ArchitecturalSequence» + Logical Specifications + Physical Ressource Specifications + Requirements + Service Specifications + Modellelementekatalog Abbildung 14: Beispielmodellierung Ar : MASC : Architecture Roadmap Im Beispiel ist der Plan für die Entwicklung des Architekturmodells dargestellt. Das Architekturmodell \"Raumschiff der Zukunft (RdZ) \" folgt auf die aktuelle Projektarchitektur zum \"MASC\". 3.2.4 Concept Views Nachfolgend sind die Konventionen für die Views innerhalb der Concept Perspektive aufgelistet. 3.2.4.1 C1 - Capability Taxonomy Der C1 - Capability Taxonomy klassifiziert Fähigkeiten untereinander (Taxonomie). Dabei werden nur Fähigkeiten aufgenommen, die in einem unmittelbaren Zusammenhang mit dem zu realisierenden Projekt stehen. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die Architekturbeschreibung (ARCHITECTURALDESCRIPTION) für die PLAN- Ar-C Modellerstellung ist vollständig ausgefüllt und die Informationen auf dem Diagramm dargestellt. Die Architekturbeschreibungen sind entsprechend der zeitlichen Abfolge in Beziehung gesetzt (ARCHITECTURALSEQUENCE)."
  },
  {
   "id": "C1-MK01",
   "viewpoint": "C1",
   "kind": "package",
-  "text": "Es ist ein Package Concepts/C1/Capability Taxonomy angelegt. -"
+  "text": "Es ist ein Package Concepts/C1/Capability Taxonomy angelegt."
  },
  {
   "id": "C1-MK02",
@@ -465,7 +465,7 @@
   "id": "C1-MK04",
   "viewpoint": "C1",
   "kind": "package",
-  "text": "Für die Darstellung der NATO Targets ist ein Diagramm vom Typ C1 - Capability C1-A Taxonomy mit dem Namen \"C1 : Projektkürzel : NATO Capability Codes\" in dem Modellierungskonventionen Nummer Modellierungskonvention Verweis Package angelegt."
+  "text": "Für die Darstellung der NATO Targets ist ein Diagramm vom Typ C1 - Capability C1-A Taxonomy mit dem Namen \"C1 : Projektkürzel : NATO Capability Codes\" in dem Package angelegt."
  },
  {
   "id": "C1-MK05",
@@ -501,13 +501,13 @@
   "id": "C1-MK10",
   "viewpoint": "C1",
   "kind": "other",
-  "text": "Für alle Fähigkeiten (CAPABILITY) ist insofern vorhanden die nächsthöhere Taxonomie- C1-B Ebene mit eingeblendet. Tabelle 14: Modellierungskonventionen: C1 - Capability Taxonomy Fähigkeit «Capability» Funktionaler Baustein «CapabilityGeneralization» «Capability» Weltraumfähigkeit «CapabilityGeneralization» «CapabilityGeneralizat «Capability» «Capability» Besondere Aufklärung - Weltraumv erteidigung Weltraum «CapabilityGeneralization» «CapabilityGeneralization» «CapabilityGeneralizatio «Capability» «Capability» «Capability» Weltraumaufklärung Weltraumüberw achung Lähmen und Vernichten im Weltraum Abbildung 15: Beispielmodellierung C1 : MASC : Capability Taxonomy (Funktionale Bausteine) Im Beispiel sind die Fähigkeiten \"Lähmen und Vernichten im Weltraum\" dargestellt, welche der Taxonomie \"Weltraumverteidigung\" zugeordnet sind, sowie die \"Weltraumaufklärung\" und \"Weltraumüberwachung\" unter dem Taxonomieelement \"Besondere Aufklärung - Weltraum\" sind im Architekturmodell von Relevanz. 3.2.4.2 C8 - Planning Assumption Der C8 - Planning Assumptions dient der Identifizierung und Beschreibung von Annahmen, die hinsichtlich der Umsetzung von Fähigkeiten getroffen wurden. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Für alle Fähigkeiten (CAPABILITY) ist insofern vorhanden die nächsthöhere Taxonomie- C1-B Ebene mit eingeblendet."
  },
  {
   "id": "C8-MK01",
   "viewpoint": "C8",
   "kind": "package",
-  "text": "Es ist ein Package Concepts/C8/Planning Assumptions angelegt. -"
+  "text": "Es ist ein Package Concepts/C8/Planning Assumptions angelegt."
  },
  {
   "id": "C8-MK02",
@@ -537,13 +537,13 @@
   "id": "C8-MK06",
   "viewpoint": "C8",
   "kind": "classification",
-  "text": "Jede strategische Vorgabe und Rahmenbedingung (STRATEGICCONSTRAINT) ist durch C8-E, C8- eine Referenz (REFERENCE DOCUMENTREFERENCE SMEREFERENCE) begründet. Ea, C8-Eb, Die Referenzbeziehung ist näher beschrieben oder die strategische Vorgabe ist aus einer C8-F anderen strategischen Vorgabe abgeleitet. Ist eine Dokumentenreferenz eingestuft ist die Einstufung (CLASSIFICATION) der Dokumentenreferenz zugeordnet. Tabelle 15: Modellierungskonventionen: C8 - Planning Assumptions Besondere Aufklärung - Weltraum «StrategicConstraint» «DocumentReference» «Classification» Schutz v on Hochw ertzielen Kapitel Verteidigungskonzept VS-NUR FÜR DEN «Capability» «Satisfy» 3.6 «JustifiedBy» Weltraum und erdnahes DIENSTGEBRAUCH Weltraumaufklärung Umfeld 2030 «Classified» «StrategicConstraint» Schnelle Handlungsfähigkeit Kapitel «Satisfy» im Verteidigungsfall 1.5 «JustifiedBy» Abbildung 16: Beispielmodellierung C8 : MASC : Weltraumaufklärung Im Beispiel ist dargestellt, dass sich aus der VS-NfD-eingestuften Dokumentenreferenz „Verteidigungskonzept Weltraum (..)“ zwei strategische Vorgaben ableiten lassen. Die erste strategische Vorgabe beschreibt, dass Hochwertziele geschützt werden müssen. Die zweite strategische Vorgabe gibt vor, dass es in einem Verteidigungsfall möglich sein muss, schnell handlungsfähig zu sein. Beide Vorgaben beziehen sich auf die Fähigkeit der Weltraumaufklärung. 3.2.4.3 Cr - Capability Roadmap Der Cr - Capability Roadmap stellt den Zusammenhang zwischen fähigkeitsstiftenden Gesamtsystemen und den durch sie unterstützten Fähigkeiten der Fähigkeitslage dar. Er kann weiterhin strategische Vorgaben für die Realisierung des Projektes enthalten. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Jede strategische Vorgabe und Rahmenbedingung (STRATEGICCONSTRAINT) ist durch C8-E, C8- eine Referenz (REFERENCE DOCUMENTREFERENCE SMEREFERENCE) begründet. Ea, C8-Eb, Die Referenzbeziehung ist näher beschrieben oder die strategische Vorgabe ist aus einer C8-F anderen strategischen Vorgabe abgeleitet. Ist eine Dokumentenreferenz eingestuft ist die Einstufung (CLASSIFICATION) der Dokumentenreferenz zugeordnet."
  },
  {
   "id": "Cr-MK01",
   "viewpoint": "Cr",
   "kind": "package",
-  "text": "Es ist ein Package Concepts/Cr /Capability Roadmap angelegt. -"
+  "text": "Es ist ein Package Concepts/Cr /Capability Roadmap angelegt."
  },
  {
   "id": "Cr-MK02",
@@ -567,13 +567,13 @@
   "id": "Cr-MK05",
   "viewpoint": "Cr",
   "kind": "diagram",
-  "text": "Die Fähigkeiten sind auf dem Diagramm mit den entsprechenden Cr-D Fähigkeitskonfigurationen verbunden (EXHIBITS). Hinweis: Die Auswirkungen auf die Fähigkeitsentwicklung sind im Namen der Relation zwischen Ressource und Fähigkeit vermerkt. Tabelle 16: Modellierungskonventionen: Cr - Capability Roadmap Besondere Aufklärung - Weltraum MASC schafft IOC für die «CapabilityConfiguration» Weltraumaufklärung aus dem «Capability» Multipurpose Armed Weltraum heraus Weltraumaufklärung Spacecraft «Exhibits» Abbildung 17: Beispielmodellierung Cr : MASC : Capability Roadmap (Weltraumaufklärung) Im Beispiel ist dargestellt, dass der Ressourcenverbund MASC zur Fähigkeit „Weltraumaufklärung“ im Zusammenhang steht. Aus dem Namen der Relation geht zudem hervor, wie der Ressourcenverbund zur Fähigkeit beiträgt. Nämlich mit der Schaffung der Anfangsbefähigung (IOC). 3.2.5 Logical Specification Views Nachfolgend sind die Konventionen für die Views innerhalb der Logical Specification Perspektive aufgelistet. 3.2.5.1 L1 - Node Types Der L1 - Node Types klassifiziert logische Aufgabenträger untereinander (Taxonomie), die in einer Architektur verwendet werden. Unter einem logischen Aufgabenträger wird ein Element unabhängig von seiner Realisierung verstanden. Das bedeutet, dass seine Eigenschaften, die Struktur und sein Verhalten unabhängig davon sind, ob zu seiner Realisierung ein Mensch, eine Maschine oder eine beliebige Kombination von beiden eingesetzt wird. In vielen Fällen sind logische Aufgabenträger bereits definiert, beispielsweise als Elemente der Gefechtsgliederung. Im Regelfall werden die in einer Architektur genutzten logischen Aufgabenträger und deren taxonomische Einordnung durch Standardelemente vorgegeben. Wenn der benötigte logische Aufgabenträger nicht in der Taxonomie vorhanden ist, wird dieser neu erstellt und in die Taxonomie eingeordnet. Ein neu einsortierter logischer Aufgabenträger kann weiter verfeinert werden. Die Einordnung eines solchen Elements ist bei der methodisch begleitenden Stelle anzuzeigen. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die Fähigkeiten sind auf dem Diagramm mit den entsprechenden Cr-D Fähigkeitskonfigurationen verbunden (EXHIBITS). Hinweis: Die Auswirkungen auf die Fähigkeitsentwicklung sind im Namen der Relation zwischen Ressource und Fähigkeit vermerkt."
  },
  {
   "id": "L1-MK01",
   "viewpoint": "L1",
   "kind": "package",
-  "text": "Es ist ein Package Logical Specifications/L1/Node Types angelegt. -"
+  "text": "Es ist ein Package Logical Specifications/L1/Node Types angelegt."
  },
  {
   "id": "L1-MK02",
@@ -597,13 +597,13 @@
   "id": "L1-MK05",
   "viewpoint": "L1",
   "kind": "package",
-  "text": "Das TaggedValue abstractionLevel der Aufgabenträger (OPERATIONALPERFORMER) - ist gemäß dem Wert des Taxonomieelements gesetzt. Hinweis: Die Angabe des Abstraktionslevel ist notwendig um einen einheitlichen Abstraktionsgrad bei der Beschreibung der inneren Struktur der Aufgabeträger zu gewährleisten und nicht unterschiedliche Abstraktionsebene hinsichtlich der inhaltlichen Beschreibung miteinander zu vermischen. Tabelle 17: Modellierungskonventionen: L1 - Node Types «OperationalPerformer» Aufklärungselement «PropertySetGeneralisation» «OperationalPerformer» Aufklärungselement Weltraum «PropertySetGeneralisation» «PropertySetGeneralisation» «PropertySetGeneralisation» «PropertySetGeneralisation» «OperationalPerformer» «OperationalPerformer» «OperationalPerformer» «OperationalPerformer» Unbemanntes Bemanntes Weltraumbesatzung Weltraumsensor Aufklärungselement Weltraum Aufklärungselement Weltraum «PropertySetGeneralisation» «PropertySetGeneralisati «OperationalPerformer» «OperationalPerformer» Weltraumsensor multispektral Weltraumsensor v isuell Abbildung 18: Beispielmodellierung L1 : MASC : Node Types (Aufklärungselement) Im Beispiel ist die Taxonomie der Aufklärungselemente dargestellt. Hiervon gibt es vier Spezialisierungen: „Aufklärungselement Boden“, Luft, See und Weltraum. Das „Aufklärungselement Weltraum“ hat zwei weitere Spezialisierungen. Ein bemanntes und ein unbemanntes Aufklärungselement Weltraum. 3.2.5.2 L2-L3 - Logical Concept Der L2-L3 - Logical Concept stellt das operationelle Konzept auf grundsätzlicher und anschaulicher Ebene dar. Modellierungskonventionen Nummer Modellierungskonvention Verweis L2-L3- Es ist ein Package Logical Specifications/L2-L3/Logical Concept angelegt. - MK01 L2-L3- Für die Darstellung des Logical Concept ist ein Diagramm des Typs L2-L3 - L2-L3-A MK02 Logical Concept mit dem Namen „L2-L3 : Projektkürzel : Logical Concept“ in dem Package angelegt. L2-L3- Das relevante logische Konzept (HIGHLEVELOPERATIONALCONCEPT) ist L2-L3-B MK03 angelegt oder aus dem Modellelementekatalog entnommen. L2-L3- Das relevante logische Konzept (HIGHLEVELOPERATIONALCONCEPT) ist als Grafik L2-L3-B, MK04 ausgedrückt und zusätzlich kurz und prägnant in einem Notes-Feld beschrieben. L2-L3-C Tabelle 18: Modellierungskonventionen: L2-L3 - Logical Concept «HighLevelOperationalConcept» MASC Das Multipurpose Armed Spacecraft (MASC) ist das bemannte Raumschiff der Bundeswehr, welches in der Lage ist, die Informations-, Führungs- und Wirküberlegenheit in der Dimension Weltraum zu sichern. Hierbei sind die entsprechenden Einrichtungen für Führung und Unterstützung in der Bodenkontrollstation abgedeckt. Abbildung 19: Beispielmodellierung L2-L3 : MASC : Logical Concept Im Beispiel ist das sogenannte Big Picture dargestellt. Dabei wird das Projekt in einem anschaulichen Format und Kontext dargestellt. Man erkennt, dass es sich bei dem Projekt „MASC“ um ein Raumschiff handelt, welches durch ein Bodenkontrollsystem geführt und unterstützt wird. Das Raumschiff hat mehrere Aufgaben. Dazu gehören der Schutz der eigenen Weltraumelemente, die Aufklärung sowie das Lähmen und Vernichten von anderen Weltraumelementen. 3.2.5.3 L2 - Logical Scenario Der L2 - Logical Scenario dient der Identifizierung von Anwendungsfällen und der Definition von logischen Aufgabenträgern. 3.2.5.3.1 L2 - Logical Nodes Der L2 - Logical Nodes dient der Definition von Aufgabenträgern und deren Struktur. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Das TaggedValue abstractionLevel der Aufgabenträger (OPERATIONALPERFORMER) - ist gemäß dem Wert des Taxonomieelements gesetzt. Hinweis: Die Angabe des Abstraktionslevel ist notwendig um einen einheitlichen Abstraktionsgrad bei der Beschreibung der inneren Struktur der Aufgabeträger zu gewährleisten und nicht unterschiedliche Abstraktionsebene hinsichtlich der inhaltlichen Beschreibung miteinander zu vermischen."
  },
  {
   "id": "L2-MK01",
   "viewpoint": "L2",
   "kind": "package",
-  "text": "Es ist ein Package Logical Specifications/L2/Logical Nodes angelegt. -"
+  "text": "Es ist ein Package Logical Specifications/L2/Logical Nodes angelegt."
  },
  {
   "id": "L2-MK02",
@@ -621,13 +621,13 @@
   "id": "L2-MK04",
   "viewpoint": "L2",
   "kind": "diagram",
-  "text": "Die Bestandteile der relevanten Aufgabenträger (OPERATIONALROLE L2-C, L2-D, MEASUREMENTS) sind auf dem Diagramm angelegt oder aus dem L2-E Modellelementekatalog entnommen. Hinweis: Die internen Beziehungen sind ausgeblendet. Tabelle 19: Modellierungskonventionen: L2 - Logical Nodes «OperationalPerformer» Bemanntes Aufklärungselement Weltraum Dieses Element ist ein im Weltraum eingesetztes Flugobjekt. Es verfügt über Sensoren und Effektoren, welche von der Besatzung gesteuert werden. Es dient der Aufklärung von Zielen am Boden, in der Luft und im Weltraum. Es ist fähig, Bedrohungen zu bekämpfen. «Measurement» 10: Einsatzbereitschaft / NTE (Tage) «OperationalRole» dynamischer Effektor: Weltraumeffektor[2 .. 6] «OperationalRole» Sensor: Weltraumsensor v isuell[1 .. 3] «OperationalRole» Zugangsmöglichkeit: Schleuse[2..*] «OperationalRole» Besatzung Aufklärungselement Weltraum: Weltraumbesatzung[2, 4] Abbildung 20: Beispielmodellierung L2 : MASC : Logical Nodes (bemanntes Aufklärungselement Weltraum) Im Beispiel ist die Struktur des „bemannten Aufklärungselement Weltraum“ dargestellt. Dieses besteht aus drei logischen Aufgabenträgern, der „Weltraumbesatzung“, dem „Effektor Weltraum- Weltraum“ sowie dem „Weltraumsensor visuell“. Zudem ist der Parameter „Einsatzbereitschaft/NTM“ mit 10 Stunden angegeben. Diese sind typisiert und mit einer Multiplizität ergänzt. 3.2.5.3.2 L2 - Logical Scenario Der L2 - Logical Scenario dient der Identifizierung von Anwendungsfällen. Bei der Erstellung von Architekturen im Rahmen der FFFmLV nach Regelverfahren PBN wird nur eine Abstraktionsebene innerhalb der Anwendungsfälle abgebildet. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die Bestandteile der relevanten Aufgabenträger (OPERATIONALROLE L2-C, L2-D, MEASUREMENTS) sind auf dem Diagramm angelegt oder aus dem L2-E Modellelementekatalog entnommen. Hinweis: Die internen Beziehungen sind ausgeblendet."
  },
  {
   "id": "L2-MK05",
   "viewpoint": "L2",
   "kind": "package",
-  "text": "Es ist ein Package Logical Specifications/L2/Logical Scenario angelegt. Für die L2-A Darstellung der Anwendungsfälle ist ein Diagramm des Typs L2 - Logical Scenario mit dem Namen „L2 : Projektkürzel : Logical Scenario“ im Package angelegt. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Es ist ein Package Logical Specifications/L2/Logical Scenario angelegt. Für die L2-A Darstellung der Anwendungsfälle ist ein Diagramm des Typs L2 - Logical Scenario mit dem Namen „L2 : Projektkürzel : Logical Scenario“ im Package angelegt."
  },
  {
   "id": "L2-MK06",
@@ -651,13 +651,13 @@
   "id": "L2-MK09",
   "viewpoint": "L2",
   "kind": "finding",
-  "text": "Den Anwendungsfällen Aufgabenträgern und Eigenschaften sind bei Bedarf Services - (SERVICESPECIFICATION) zugeordnet (CONSUMEDBY). Hinweis: Es werden keine neuen Services angelegt sondern ausschließlich aus dem Standardelementekatalog verwendet. Sollte der gesuchte Service nicht vorhanden sein wird ein Klärungsbedarf (FINDING) angelegt und Verbindung mit der methodisch begleitenden Stelle aufgenommen. Tabelle 20: Modellierungskonventionen: L2 - Logical Scenario «OperationalArchitecture» Geospatial Services Direkte Führung bemanntes Raumschiff «ServiceSpecification» «ConsumedBy» GIS Serv ice Bw Direkte Führung umfasst die Führung des Raumschiffs aus der Kontrollstation heraus. Hierbei sind außer einem zusätzlichen Aufklärungssatelliten keine weiteren (nationale und internationale) Elemente beteiligt. «OperationalRole» Raumschiff: Bemanntes Aufklärungselement Weltraum[1..4] «OperationalRole» Sensor: Weltraumsensor v isuell[1 .. 3] «OperationalRole» dynamischer Effektor: Weltraumeffektor[2 .. 6] «OperationalRole» Besatzung Aufklärungselement Weltraum: Weltraumbesatzung[2, 4] «RequiredEnvironment» «OperationalRole» Zugangsmöglichkeit: Schleuse[2..*] «ActualEnvironment» «Measurement» Erdnaher Orbit: Weltraum 10: Einsatzbereitschaft / NTE (Tage) «EnvironmentalContext» «OperationalRole» Aufklärungssatellit: Unbemanntes Aufklärungselement Weltraum[1] «OperationalRole» «Location» Deutschland Kontrollstation: Bodenkontrollstation Weltraum[1] «LocationType» Abbildung 21: Beispielmodellierung L2 : MASC : Logical Scenario (Direkte Führung bemanntes Raumschiff) Im Beispiel ist der Anwendungsfall „Direkte Führung bemanntes Raumschiff“ des Projektes dargestellt. Diese ist textuell beschrieben und mit Informationen zur Verortung (Location) und der Umgebung (ActualEnvironment) verknüpft. Zudem sind die in dem Anwendungsfall handelnden logischen Aufgabenträger (OperationalRole) dargestellt. 3.2.5.4 L3 - Node Interaction Der L3 - Node Interaction stellt die Austauschbeziehungen zwischen den Aufgabenträgern dar. Bei der Erstellung von Architekturen im Rahmen der FFFmLV nach Regelverfahren PBN wird nur eine Abstraktionsebene innerhalb der Anwendungsfälle abgebildet. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Den Anwendungsfällen Aufgabenträgern und Eigenschaften sind bei Bedarf Services - (SERVICESPECIFICATION) zugeordnet (CONSUMEDBY). Hinweis: Es werden keine neuen Services angelegt sondern ausschließlich aus dem Standardelementekatalog verwendet. Sollte der gesuchte Service nicht vorhanden sein wird ein Klärungsbedarf (FINDING) angelegt und Verbindung mit der methodisch begleitenden Stelle aufgenommen."
  },
  {
   "id": "L3-MK01",
   "viewpoint": "L3",
   "kind": "package",
-  "text": "Es ist ein Package Logical Specifications/L3/ Node Interaction angelegt. - Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Es ist ein Package Logical Specifications/L3/ Node Interaction angelegt."
  },
  {
   "id": "L3-MK02",
@@ -687,13 +687,13 @@
   "id": "L3-MK06",
   "viewpoint": "L3",
   "kind": "other",
-  "text": "Die Austauschbeziehungen werden mit den zu übertragenden Elementen verbunden L3-E ({EXCHANGEITEM}). Hinweis: Dabei können auch mehrere Elemente mit einer Austauschbeziehung übertragen werden. Tabelle 21: Modellierungskonventionen: L3 - Node Interaction «OperationalArchitecture» Direkte Führung bemanntes Raumschiff «OperationalRole» Raumschiff: Bemanntes Aufklärungselement Weltraum[1..4] «InformationElement» «OperationalExchange» Einsatzbereitschaftsmeldung «InformationElement» Abschlussbericht «OperationalExchange» «OperationalExchange» «InformationElement» «InformationElement» Operationsbefehl «InformationElement» «InformationElement» Positionbefehl Positionbefehl Operationsmeldung «OperationalExchange» «OperationalExchange» «OperationalExchange» «OperationalRole» «OperationalRole» Aufklärungssatellit: Unbemanntes Aufklärungselement Weltraum[1] Kontrollstation: Bodenkontrollstation Weltraum[1] «OperationalExchange» «InformationElement» Operationsmeldung, «InformationElement» Operationsbefehl Abbildung 22: Beispielmodellierung L3 : MASC : Node Interactions (Direkte Führung bemanntes Raumschiff) Im Beispiel sind die Informationsaustauschbeziehungen für den Anwendungsfall „Direkte Führung bemanntes Raumschiff“ dargestellt. Die Informationsaustausche zwischen den logischen Aufgabenträgern sind aus dem L4 abgeleitet. Unter anderem übergibt die „Kontrollstation“ dem „Raumschiff“ das Informationselement „Operationsbefehl“. 3.2.5.5 L4 - Logical Activities Der L4 - Logical Activities stellt Prozesse und Abläufe dar, die im Rahmen der Anwendungsfälle durchgeführt bzw. unterstützt werden sollen. Diesen Prozesse und Abläufe oder Teile von diesen werden die logischen Aufgabenträger zugeordnet, die diese ausführen. Die Modellierung leerer Pools und/oder Lanes als \"Black Boxes\" ist zulässig. Die Auswahl und Detailtiefe der zu modellierenden Prozesse richtet sich nach dem Bedarf an Forderungen an die zu beschaffende Ressource. So kann es bei einer Kauflösung sinnvoll sein, sich auf die Integration in das System Bundeswehr zu konzentrieren, z.B. in Bezug auf Führungsmittel. 3.2.5.5.1 L4 - Activity Hierarchie Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die Austauschbeziehungen werden mit den zu übertragenden Elementen verbunden L3-E ({EXCHANGEITEM}). Hinweis: Dabei können auch mehrere Elemente mit einer Austauschbeziehung übertragen werden."
  },
  {
   "id": "L4-MK01",
   "viewpoint": "L4",
   "kind": "package",
-  "text": "Es ist ein Package Logical Specifications/L4/Logical Activities angelegt. -"
+  "text": "Es ist ein Package Logical Specifications/L4/Logical Activities angelegt."
  },
  {
   "id": "L4-MK02",
@@ -729,7 +729,7 @@
   "id": "L4-MK07",
   "viewpoint": "L4",
   "kind": "other",
-  "text": "Die relevanten Aktivitäten (OPERATIONALACTIVITY) können über ein Business L4-Bd Process Diagram (als Composite Diagram modelliert) verfeinert werden welches den Namen der Aktivität trägt. Tabelle 22: Modellierungskonventionen: L4 - Logical Activities Ebene 1 Legende Ausmodellierter Prozess Nicht ausmodellierter Prozess «OperationalActivity» Bekämpfung v orbereiten Ebene 2 «OperationalActivity» «OperationalActivity» «OperationalActivity» «OperationalActivity» «OperationalActivity,... Einsatzbereitschaft Raumschiff v orbereiten Ziel lokalisieren Einsatz v orbereiten Referenzprozess melden Operation planen «Implements» «OperationalActivity» Weltraumstart durchführen Abbildung 23: Beispielmodellierung L4 : MASC : Hierarchie Im Beispiel ist der Prozess auf der Ebene 1 und die 5 Prozesse der Ebene 2 des Prozessmodells dargestellt. Der Prozess „Bekämpfung vorbereiten“ ist näher beschrieben, was mit einer dicken Umrahmung des Elementes hervorgehoben wird. Zudem ist ein Composite-Diagramm hinterlegt, ersichtlich durch das \"Brillen\"-Symbol. Des Weiteren setzt der Prozess \"Einsatz vorbereiten\" den vorgegebenen \"Referenzprozess planen Operation\" 1:1 um. 3.2.5.5.2 L4 - Logical Activities Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die relevanten Aktivitäten (OPERATIONALACTIVITY) können über ein Business L4-Bd Process Diagram (als Composite Diagram modelliert) verfeinert werden welches den Namen der Aktivität trägt."
  },
  {
   "id": "L4-MK08",
@@ -807,13 +807,13 @@
   "id": "L4-MK20",
   "viewpoint": "L4",
   "kind": "other",
-  "text": "Der Informationsaustausch zwischen Pools erfolgt über eine speziellen Kontrollfluss - (OPERATIONALMESSAGEFLOW). Analog zum Kontrollfluss (OPERATIONALCONTROLFLOW) werden hier „Conveyed Items“ (EXCHANGEITEM) zugewiesen. Der Notwendigkeit des Empfangs eines solchen Elementes vor einer Aktion stellt eine besondere Bedingung dar und ist mit einem Zwischenereignis (INTERMEDIATEEVENT) zu modellieren. Modellierungskonventionen Nummer Modellierungskonvention Verweis Zur Wahrung der Übersichtlichkeit ist auf einem Business Process Diagram nur ein - Anwendungsfall dargestellt. Werden mehrere Anwendungsfälle betrachtet ist das Business Process Diagram (Composite Diagram) ohne Anwendungsfall dargestellt (Original- Diagramm). Auf duplizierten Diagrammen sind die Anwendungsfälle jeweils auf einem eigenen Diagramm dargestellt und die Akteure sind den Aktionen des OriginalDiagramms zugeordnet. Auf dem Business Process Diagram (Composite Diagram) sind Hyperlinks zu den duplizieren Diagrammen in Form von Navigation Cells eingefügt. Tabelle 23: Modellierungskonventionen: L4 - Logical Activities «OperationalArchitecture» Aufklärungselement Weltraum Direkte Führung bemanntes Raumschiff «Lane» Aufklärungselement «Pool» Weltraumkommando I: Direkte Führung bemanntes Weltall: Unbemanntes «OperationalRole» Aufklärungssatellit: Unbemanntes Aufklärungselement «InformationElement» Weltraum[1] Positionsbefehl Ziel lokalisieren «InformationElement» «PerformsInContext» Positionsmeldung Raumschiff «Lane» bemanntens Raumschiff: Bemanntes Aufklärungselement «InformationElement» «InformationElement» «InformationElement» «InformationElement» «InformationElement» Einsatzbereitschaftsmeldung EinsatzbereitschaftsmeldungEinsatzbefehl Operationsbefehl Positionsmeldung, Einsatz «InformationElement» «InformationElement» Bestätigung Operationsbefehl «OperationalRole» Operationsmeldung Weltraum Einsatz vorbereiten Einsatzbereitschaft Raumschiff Weltraumstart Raumschiff: Bemanntes Aufklärungselement Weltraum[1..4] melden vorbereiten durchführen Einsatz Bekämpfung «PerformsInContext» Und beginn vorbereitet «InformationElement» Einsatzbereitschaftsmeldung «InformationElement» Positionsbefehl, «InformationElement» Einsatzbereitschaftsmeldung «InformationElement» Einsatzbefehl «InformationElement» Operationsmeldung Bodenkontrollstation Weltraum «OperationalRole» «Pool» Kontrollstation: Kontrollstation: Bodenkontrollstation Weltraum[1] «PerformsInContext» Abbildung 24: Beispielmodellierung L4 : MASC : Logical Activities Im Beispiel ist die Prozessmodellierung des Prozesses zur Vorbereitung der Bekämpfung dargestellt. 3.2.5.6 L7 - Information Model Der L7 – Information Model behandelt die Identifizierung von Informationselementen und die Beschreibung ihrer Beziehungen. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Der Informationsaustausch zwischen Pools erfolgt über eine speziellen Kontrollfluss - (OPERATIONALMESSAGEFLOW). Analog zum Kontrollfluss (OPERATIONALCONTROLFLOW) werden hier „Conveyed Items“ (EXCHANGEITEM) zugewiesen. Der Notwendigkeit des Empfangs eines solchen Elementes vor einer Aktion stellt eine besondere Bedingung dar und ist mit einem Zwischenereignis (INTERMEDIATEEVENT) zu modellieren."
  },
  {
   "id": "L7-MK01",
   "viewpoint": "L7",
   "kind": "package",
-  "text": "Es ist ein Package Logical Specifications/L7/Information Model angelegt. -"
+  "text": "Es ist ein Package Logical Specifications/L7/Information Model angelegt."
  },
  {
   "id": "L7-MK02",
@@ -855,13 +855,13 @@
   "id": "L7-MK08",
   "viewpoint": "L7",
   "kind": "tag",
-  "text": "Das TaggedValue abstractionLevel der Informationen (INFORMATIONELEMENT) ist - Modellierungskonventionen Nummer Modellierungskonvention Verweis gemäß dem Wert des Taxonomieelements gesetzt. Hinweis: Die Angabe des Abstraktionslevel ist notwendig um einen einheitlichen Abstraktionsgrad bei der Beschreibung der inneren Struktur der Informationselemente zu gewährleisten und nicht unterschiedliche Abstraktionsebene hinsichtlich der inhaltlichen Beschreibung miteinander zu vermischen. Tabelle 24: Modellierungskonventionen: L7 - Information Model «InformationEleme... «InformationEleme... «Classification» Datumzeitgruppe Information OFFEN 1 0..* «Classified» «InformationEleme... Absender 1 «InformationEleme... «InformationEleme... «InformationEleme... «InformationEleme... Abschlussbericht Meldung Befehl Nachricht 1 «Implements» «InformationEleme... «InformationEleme... «InformationEleme... «InformationEleme... «InformationElement» Bericht Einsatzbereitschaftsmeldung Operationsmeldung Positionsmeldung Führungsunterstützungsmeldu Abbildung 25: Beispielmodellierung L7 : MASC : Information Model Im Beispiel ist dargestellt, dass im Informationsmodell (konzeptionelles Datenmodell) für das MASC Informationen verwendet werden. Das Informationselement „Information“ setzt sich aus den Teilen „Datumzeitgruppe“, „Absender“ und „Nachricht“ zusammen. „Befehl“, „Meldung“ und „Abschlussbericht“ sind spezielle Informationen. Zwischen dem „Befehl“ und der „Meldung“ existiert eine Assoziation. Des Weiteren ist dargestellt, dass es zwei spezielle Meldungen, nämlich eine „Einsatzbereitschaftsmeldung“ und eine „Operationsmeldung“ gibt. 3.2.5.7 L8 - Logical Constraints Der L8 - Logical Constraints fasst die operationellen Vorgaben und Rahmenbedingungen (OPERATIONALCONSTRAINT) zusammen. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Das TaggedValue abstractionLevel der Informationen (INFORMATIONELEMENT) ist - gemäß dem Wert des Taxonomieelements gesetzt. Hinweis: Die Angabe des Abstraktionslevel ist notwendig um einen einheitlichen Abstraktionsgrad bei der Beschreibung der inneren Struktur der Informationselemente zu gewährleisten und nicht unterschiedliche Abstraktionsebene hinsichtlich der inhaltlichen Beschreibung miteinander zu vermischen."
  },
  {
   "id": "L8-MK01",
   "viewpoint": "L8",
   "kind": "package",
-  "text": "Es ist ein Package Logical Specifications/L8/Logical Constraints angelegt. -"
+  "text": "Es ist ein Package Logical Specifications/L8/Logical Constraints angelegt."
  },
  {
   "id": "L8-MK02",
@@ -885,7 +885,7 @@
   "id": "L8-MK05",
   "viewpoint": "L8",
   "kind": "other",
-  "text": "Die Elemente für die eine Vorgabe gilt (SUBJECTOFOPERATIONALCONSTRAINT) L8-D sind auf dem Diagramm mit den entsprechenden operationellen Vorgaben und Rahmenbedingungen verbunden (SATISFY). Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die Elemente für die eine Vorgabe gilt (SUBJECTOFOPERATIONALCONSTRAINT) L8-D sind auf dem Diagramm mit den entsprechenden operationellen Vorgaben und Rahmenbedingungen verbunden (SATISFY)."
  },
  {
   "id": "L8-MK06",
@@ -921,13 +921,13 @@
   "id": "L8-MK11",
   "viewpoint": "L8",
   "kind": "package",
-  "text": "Die Dokumentenreferenz ist mit der Einstufung verbunden (CLASSIFIED). L8-Gb Hinweis: Offene Dokumentenreferenzen sind mit der Einstufung OFFEN gekennzeichnet. Tabelle 25: Modellierungskonventionen: L8 - Logical Constraints «StrategicConstraint» «Classification» Schnelle Handlungsfähigkeit VS-NUR FÜR DEN im Verteidigungsfall DIENSTGEBRAUCH «Classified» «Implements» «OperationalActivity» «OperationalConstraint» «DocumentReference» Weltraumstart Weltraumstart im Kapitel Verteidigungskonzept Weltraum und erdnahes durchführen Verteidigungsfall 2.1 Umfeld «Satisfy» «JustifiedBy» «OperationalConstraint» Belastungsobergrenze Anlage Weltraumstart 4 «JustifiedBy» «Satisfy» «OperationalConstraint» Reduzierte Belastung für Kapitel Piloten 8 «Satisfy» «JustifiedBy» Abbildung 26: Beispielmodellierung L8 : MASC : Logical Constraints (Weltraumstart durchführen) Im Beispiel sind die Operationellen Vorgaben \"Weltraumstart im Verteidigungsfall\", \"Belastungsobergrenze Weltraumstart\" und \"Reduzierte Belastung für Piloten\" dargestellt, die sich aus der Dokumentenreferenz \"Verteidigungskonzept Weltraum und erdnahes Umfeld\" ableiten lassen. Die Operationelle Vorgabe \"Weltraumstart im Verteidigungsfall\" lässt sich auch aus der Strategischen Vorgabe \"Schnelle Handlungsfähigkeit im Verteidigungsfall\" ableiten . Die Operationellen Vorgaben gelten für die Aktivität \"Weltraumstart durchführen\". 3.2.6 Service Specification Views Nachfolgend sind die Konventionen für die Views innerhalb der Service Specification Perspektive aufgelistet. Die S-Sichten werden nur bei Bedarf, nämlich bei einem zu dokumentierenden IT- Servicemodul im Rahmen der FFFmLV gefordert und modelliert. 3.2.6.1 C1-S1 - Capability to Service Mapping Der C1-S1 – Capability to Service Mapping dient der Einordnung des Service in die Fähigkeitslage. Modellierungskonventionen Nummer Modellierungskonvention Verweis C1-S1- Es ist ein Package Service Specifications/C1-S1/Einordnung Fähigkeitslage angelegt. - MK01 C1-S1- Für die Darstellung der Einordnung der Services in die Fähigkeitslage ist ein C1-S1-A MK02 Diagramm des Typs C1-S1 – Capability to Service Mapping mit dem Namen „C1-S1 : Projektkürzel : Capability to Service Mapping“ angelegt. C1-S1- Die zu beschreibenden Services (SERVICESPECIFICATION) sind auf dem C1-S1-C MK03 Diagramm angelegt oder aus dem Modell- oder Standardelementekatalog entnommen. C1-S1- Die relevanten Fähigkeiten (CAPABILITY) sind aus Standardelementekatalog C1-S1-B MK04 entnommen. Hinweis: Es werden keine neuen Fähigkeiten angelegt sondern ausschließlich Fähigkeiten aus dem Standardelementekatalog verwendet. Sollte die benötigte Fähigkeit nicht vorhanden sein wird ein Klärungsbedarf (FINDING) angelegt und Verbindung mit der methodisch begleitenden Stelle aufgenommen. C1-S1- Die zu beschreibenden Services (SERVICESPECIFICATION) werden mit den C1-S1-D MK05 entsprechenden Fähigkeiten auf dem Diagramm verbunden (EXHIBITS). Tabelle 26: Modellierungskonventionen: C1-S1 - Capability to Service Mapping «Capability» Weltraumaufklärung «Environment» Weltraum «EnvironmentalCondition» «Exhibits» «ServiceSpecification» Spacecraft Information Serv ice Bw Abbildung 27: Beispielmodellierung C1-S1 : MASC : Capability to Service Mapping Im Beispiel ist dargestellt, dass der Service Spacecraft Information Service Bw einen Beitrag zur Fähigkeit Weltraumaufklärung leistet. 3.2.6.2 S1 - Service Taxonomy Der S1 - Service Description dient der Erfassung der Servicebeschreibung und der Einordnung des Service in eine der drei Ebenen des Service-Portfolios. Im S1 - Service Taxonomy werden die genutzten und bereitgestellten Services klassifiziert untereinander (Taxonomie). 3.2.6.2.1 S1 - Service Description Der S1 – Service Description dient der Erfassung der Servicebeschreibung und der Einordnung des Service in eine der drei Ebenen des Portfolios. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die Dokumentenreferenz ist mit der Einstufung verbunden (CLASSIFIED). L8-Gb Hinweis: Offene Dokumentenreferenzen sind mit der Einstufung OFFEN gekennzeichnet."
  },
  {
   "id": "P1-MK01",
   "viewpoint": "P1",
   "kind": "package",
-  "text": "Es ist ein Package Physical Resource Specifications/P1/Resource Types angelegt. -"
+  "text": "Es ist ein Package Physical Resource Specifications/P1/Resource Types angelegt."
  },
  {
   "id": "P1-MK02",
@@ -957,13 +957,13 @@
   "id": "P1-MK06",
   "viewpoint": "P1",
   "kind": "other",
-  "text": "Die Ressource ({RESOURCEPERFORMER}) ist der Phase für welche die vorhandene P1-H, P1-I Prognose gilt zugeordnet (FORECAST). Tabelle 37: Modellierungskonventionen: P1 - Resource Types «Software» Führungsinformationssystem «PropertySetGeneralisation» «PropertySetGeneralisation» «PropertySetGeneralisation» «Software» «Software» «Software» Harmonisierung der Führungsinformationssystem Battle Managament Führungsinformationssysteme Weltraum (FüInfoSys W) System Weltraum «Forecast» (HaFIS) «ForecastPeriod» «ActualEnterprisePha... Durchführung Einsatz im Weltraum mit Fokus Führung: Zw ischenschritt 2031 Abbildung 38: Beispielmodellierung P1 : MASC : Resource Types (Multipurpose Armed Spacecraft) Das o. a. Beispiel stellt einen Auszug der für das MASC relevanten Ressourcen dar. Der Fokus liegt dabei auf den verschiedenen Arten von Multipurpose Armed Spacecraft. 3.2.7.1.2 P1 - Service Provision Der P1 – Projektbezug erfasst die einem Service zugeordneten Ressourcen. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die Ressource ({RESOURCEPERFORMER}) ist der Phase für welche die vorhandene P1-H, P1-I Prognose gilt zugeordnet (FORECAST)."
  },
  {
   "id": "P1-MK07",
   "viewpoint": "P1",
   "kind": "package",
-  "text": "Es ist ein Package Physical Resource Specifications/P1/Service Provision angelegt. -"
+  "text": "Es ist ein Package Physical Resource Specifications/P1/Service Provision angelegt."
  },
  {
   "id": "P1-MK08",
@@ -993,19 +993,19 @@
   "id": "P1-MK12",
   "viewpoint": "P1",
   "kind": "tag",
-  "text": "Das TaggedValue abstractionLevel der Ressourcen ({RESOURCEPERFORMER}) ist - gemäß dem Wert des Taxonomieelements gesetzt. Hinweis: Die Angabe des Abstraktionslevel ist notwendig um einen einheitlichen Abstraktionsgrad bei der Beschreibung der inneren Struktur der Ressourcen zu gewährleisten und nicht unterschiedliche Abstraktionsebene hinsichtlich der inhaltlichen Beschreibung miteinander zu vermischen. Tabelle 38: Modellierungskonventionen: P1 - Projektbezug «ServiceSpecification» «CapabilityConfiguration» Spacecraft Information Serv ice Multipurpose Armed Spacecraft Bw «ResourceRole» Signalaufklärung: Multifunktionssensor «abstraction» \"MF4\"[2] «ServiceProvision» Abbildung 39: Beispielmodellierung P1 : MASC : Service Provision Im Beispiel wird dargestellt, dass der \"Spacecraft Information Service Bw\" dem Multipurpose Armed Spacecraft zugeordnet ist. 3.2.7.2 P2 - Resource Structure Der P2 - Resource Structure behandelt die Zusammensetzung und internen Interaktionen von Ressourcen. 3.2.7.2.1 P2 - Resource Structure Der P2 – Resource Structure behandelt die Zusammensetzung einer Ressource. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Das TaggedValue abstractionLevel der Ressourcen ({RESOURCEPERFORMER}) ist - gemäß dem Wert des Taxonomieelements gesetzt. Hinweis: Die Angabe des Abstraktionslevel ist notwendig um einen einheitlichen Abstraktionsgrad bei der Beschreibung der inneren Struktur der Ressourcen zu gewährleisten und nicht unterschiedliche Abstraktionsebene hinsichtlich der inhaltlichen Beschreibung miteinander zu vermischen."
  },
  {
   "id": "P2-MK01",
   "viewpoint": "P2",
   "kind": "package",
-  "text": "Es ist ein Package Physical Resource Specifications/P2/Resource Structure angelegt. -"
+  "text": "Es ist ein Package Physical Resource Specifications/P2/Resource Structure angelegt."
  },
  {
   "id": "P2-MK02",
   "viewpoint": "P2",
   "kind": "package",
-  "text": "Für die Darstellung der Ressourcen ist ein Diagramm des Typs P2 - P2-A Resource Structure mit dem Namen „P2 : Projektkürzel : Resource Modellierungskonventionen Nummer Modellierungskonvention Verweis Structure“ in dem Package angelegt."
+  "text": "Für die Darstellung der Ressourcen ist ein Diagramm des Typs P2 - P2-A Resource Structure mit dem Namen „P2 : Projektkürzel : Resource Structure“ in dem Package angelegt."
  },
  {
   "id": "P2-MK03",
@@ -1029,13 +1029,13 @@
   "id": "P2-MK06",
   "viewpoint": "P2",
   "kind": "other",
-  "text": "Die internen Ressourcen ({RESOURCEPERFORMER}) sind bei Bedarf mit P2-Da, P2- Orten (LOCATION ACTUALLOCATION) Umwelt (CONDITION Db, P2-Dc, ACTUALCONDITION) P2-Dd oder Umgebungen (ENVIRONMENT ACTUALENVIRONMENT) zugeordnet (LOCATIONTYPE REQUIREDENVIRONMENT PHYSICALLOCATION ENVIRONMENTALCONTEXT). Tabelle 39: Modellierungskonventionen: P2 - Resource Structure «CapabilityConfiguration» Multipurpose Armed Spacecraft «ResourceRole» «ResourceRole» «Measurement» Raumschiff: Raumschiff Signalaufklärung: v erschlüsselt: Art der 3.2[1] Multifunktionssensor Verbindung \"MF4\"[2] «ResourceRole» «ResourceRole» «ResourceRole» Antrieb: Raketenantrieb Flugobj ektanalyse: Unterkunft: Container, \"RA-2x\"[4] Analysesoftw are[1] groß[*] «ResourceRole» Steuerkonsole Analyst: Client[1] «RequiredEnvironment» «ActualEnvironment» Erdnaher Orbit: Weltraum Abbildung 40: Beispielmodellierung P2 : MASC : Resource Structure Im Beispiel ist der Aufbau des MASC dargestellt. Neben dem eigentlichen Raumschiff mit 4 Raketenantrieben gehören dazu 2 Multifunktionssensoren, eine beliebige Anzahl von Containern als Unterkunftsmodule und eine Software zur Flugobjektanalyse. Das MASC ist für den Einsatz im erdnahen Orbit konzipiert und tauscht Daten mit der Bodenkontrollstation Weltraum aus. 3.2.7.2.2 P2 - Internal Dependencies Der P2 – Internal Dependencies beschreibt die internen Abhängigkeiten der zu betrachtenden Ressource. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die internen Ressourcen ({RESOURCEPERFORMER}) sind bei Bedarf mit P2-Da, P2- Orten (LOCATION ACTUALLOCATION) Umwelt (CONDITION Db, P2-Dc, ACTUALCONDITION) P2-Dd oder Umgebungen (ENVIRONMENT ACTUALENVIRONMENT) zugeordnet (LOCATIONTYPE REQUIREDENVIRONMENT PHYSICALLOCATION ENVIRONMENTALCONTEXT)."
  },
  {
   "id": "P2-MK07",
   "viewpoint": "P2",
   "kind": "package",
-  "text": "Es ist ein Package Physical Resource Specifications/P2/Internal Dependencies angelegt. -"
+  "text": "Es ist ein Package Physical Resource Specifications/P2/Internal Dependencies angelegt."
  },
  {
   "id": "P2-MK08",
@@ -1065,7 +1065,7 @@
   "id": "P2-MK12",
   "viewpoint": "P2",
   "kind": "package",
-  "text": "Es ist ein Package Physical Resource Specifications/P2/External Dependencies angelegt. -"
+  "text": "Es ist ein Package Physical Resource Specifications/P2/External Dependencies angelegt."
  },
  {
   "id": "P2-MK13",
@@ -1083,7 +1083,7 @@
   "id": "P2-MK15",
   "viewpoint": "P2",
   "kind": "diagram",
-  "text": "Die externen Ressourcen ({RESOURCEPERFORMER}) oder Architekturen P2-B, P2-C (RESOURCEARCHITECTURE) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die externen Ressourcen ({RESOURCEPERFORMER}) oder Architekturen P2-B, P2-C (RESOURCEARCHITECTURE) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen"
  },
  {
   "id": "P2-MK16",
@@ -1107,13 +1107,13 @@
   "id": "P2-MK19",
   "viewpoint": "P2",
   "kind": "other",
-  "text": "Bei Bedarf sind die externen Ressourcen ({RESOURCEPERFORMER}) mit dem Ort P2-Da, P2- (ACTUALLOCATION) oder der Umgebung (ACTUALENVIRONMENT) in dem/der sie Dc, P2-Dc, agieren zu verbinden (LOCATIONTYPE REQUIREDENVIRONMENT P2-Dd PHYSICALLOCATION ENVIRONMENTALCONTEXT). Tabelle 41: Modellierungskonventionen: P2 - External Dependencies «DataElement» «CapabilityConfiguration» Positionsdaten Einrichtung Multipurpose Armed Spacecraft «ResourceArchitecture» «ResourceExchange» Bodenkontrollstation Weltraum «DataElement» Steuerungsdaten «ResourceExchange» «ResourceRole» maximale Größe des Unterkunftsmoduls/Containers Einheit Unterkunft: Container, groß[*] durch Verladeeinheit «ResourceArtifact» vorgegeben «ResourceDependency» Verladeeinheit Weltraumbehörde macht «IsAccountableFor» «IsResponsibleFor» Vorgaben «ResourceDependency» «Organization» Weltraumbehörde «IsResponsibleFor» «ActualProjectInforms» «ActualProjectConsults» «IsAccountableFor» «ActualProject» Multipurpose Armed Spacecraft: PBN-Regelv erfahren Abbildung 42: Beispielmodellierung P2 : MASC : External Dependencies Im Beispiel ist der Aufbau des MASC dargestellt. Zusätzlich dazu hat das Raumschiff ebenfalls Datenaustauschbeziehungen wie • eine Abhängigkeitsbeziehung der internen \"Unterkunftsmodule\" zur\" Verladeeinheit\" sowie • eine Abhängigkeitsbeziehung des Raumschiffes zur \"Weltraumbehörde\". Die \"Bodenkontrollstation Weltraum\", die \"Weltraumbehörde\" sowie die \"Verladeeinheit\" sind dabei Ressourcen außerhalb des Projektes MASC. 3.2.7.2.4 P2 - Node Realization Der P2 – Node Realization beschreibt die Zuordnung von Ressourcen zu den durch diese realisierten Aufgabenträgern der Geschäftsarchitktur. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Bei Bedarf sind die externen Ressourcen ({RESOURCEPERFORMER}) mit dem Ort P2-Da, P2- (ACTUALLOCATION) oder der Umgebung (ACTUALENVIRONMENT) in dem/der sie Dc, P2-Dc, agieren zu verbinden (LOCATIONTYPE REQUIREDENVIRONMENT P2-Dd PHYSICALLOCATION ENVIRONMENTALCONTEXT)."
  },
  {
   "id": "P2-MK20",
   "viewpoint": "P2",
   "kind": "package",
-  "text": "Es ist ein Package Physical Resource Specifications/P2/Node Realization angelegt. -"
+  "text": "Es ist ein Package Physical Resource Specifications/P2/Node Realization angelegt."
  },
  {
   "id": "P2-MK21",
@@ -1137,7 +1137,7 @@
   "id": "P2-MK24",
   "viewpoint": "P2",
   "kind": "other",
-  "text": "Die relevanten Ressourcen sind auf dem Diagramm mit den Aufgabenträgern durch welche P2-H diese realisiert werden verbunden (IMPLEMENTS). Hinweis: Dabei kann ein logischer Aufgabenträger von mehreren Ressourcen realisiert werden und eine Ressource kann mehrere logische Aufgabenträger realisieren. Tabelle 42: Modellierungskonventionen: P2 - Node Realization «CapabilityConfiguration» «OperationalArchitecture» Multipurpose Armed Spacecraft Direkte Führung bemanntes Raumschiff «OperationalRole» «ResourceRole» Raumschiff: Bemanntes Signalaufklärung: Aufklärungselement Weltraum[1..4] Multifunktionssensor \"MF4\"[2] «Implements» «OperationalRole» Sensor: Weltraumsensor «ResourceRole» v isuell[1 .. 3] Zugang: Innenschleuse[2..n] «OperationalRole» «Implements» Zugangsmöglichkeit: Schleuse[2..*] «ResourceRole» «OperationalRole» Kontrollstation: Kontrollstation: Bodenkontrollstation Bodenkontrollstation Weltraum[1] Weltraum[1] «Implements» «ResourceRole» «OperationalRole» Unbemanntes Aufklärungssatellit: Unbemanntes Aufklärungselement: Satellit[1] Aufklärungselement Weltraum[1] «Implements» Abbildung 43: Beispielmodellierung P2 : MASC : Node Realization Im Beispiel ist dargestellt, dass das MASC dazu dient, den in der FFF beschriebenen, logischen Rollen- und Aufgabenträger \"Raumschiff\" im Anwendungsfall \"Direkte Führung bemanntes Raumschiff\" umzusetzen. 3.2.7.2.5 P2 - Application Hosting Der P2 – Application Hosting beschreibt die Zuordnung von Anwendungen und genutzter Plattform. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die relevanten Ressourcen sind auf dem Diagramm mit den Aufgabenträgern durch welche P2-H diese realisiert werden verbunden (IMPLEMENTS). Hinweis: Dabei kann ein logischer Aufgabenträger von mehreren Ressourcen realisiert werden und eine Ressource kann mehrere logische Aufgabenträger realisieren."
  },
  {
   "id": "P2-MK25",
@@ -1167,13 +1167,13 @@
   "id": "P2-MK29",
   "viewpoint": "P2",
   "kind": "other",
-  "text": "Die zu beschreibenden Applikationen sind auf dem Diagramm mit den - Infrastrukturelementen auf denen diese betrieben werden verbunden (HOSTEDON). Tabelle 43: Modellierungskonventionen: P2 - Application Hosting «CapabilityConfiguration» Einrichtung Multipurpose Armed Spacecraft «ResourceArchitecture» Rechenzentrum «ResourceRole» «ResourceRole» Steuerkonsole Analyst: Client[1] «HostedOn» Flugobj ektanalyse: Analysesoftw are[1] «HostedOn» Abbildung 44: Beispielmodellierung P2 : MASC : Application Hosting Im Beispiel ist dargestellt, dass die Analysesoftware extern in einem Rechenzentrum sowie intern in einer Steuerkonsole gehostet wird. 3.2.7.3 P7 - Data Model Der P7 – Data Model ordnet alle Datenelemente der Architektur in ein Datenmodell ein. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die zu beschreibenden Applikationen sind auf dem Diagramm mit den - Infrastrukturelementen auf denen diese betrieben werden verbunden (HOSTEDON)."
  },
  {
   "id": "P7-MK01",
   "viewpoint": "P7",
   "kind": "package",
-  "text": "Es ist ein Package Physical Resource Specifications/P7/Data Model angelegt. -"
+  "text": "Es ist ein Package Physical Resource Specifications/P7/Data Model angelegt."
  },
  {
   "id": "P7-MK02",
@@ -1197,7 +1197,7 @@
   "id": "P7-MK05",
   "viewpoint": "P7",
   "kind": "other",
-  "text": "Alle relevanten Datenelemente (DATAELEMENT) sind in das Datenmodell P7-F (DATAMODEL) eingeordnet und werden auf dem Diagramm eingeblendet. Tabelle 44: Modellierungskonventionen: P7 - Data Model «DataModel» Konzeptionelles Datenmodell + Einsatzdaten + Lageinformationsdaten + Objektdaten + Positionsdaten + Sensordaten + Sensornachricht + Sensorrohdaten (geprüft) + Sensorrohdaten (ungeprüft) + Sensorvergleichsmuster + Steuerungsdaten Abbildung 45: Beispielmodellierung P7 : MASC : Data Model Im Beispiel ist dargestellt, dass alle im Rahmen des Lösungvorschlages zum MASC benannten, zu übertragenden Daten in diesem View zum konzeptionellen Datenmodell des Lösungsvorschlages hinzugefügt werden. Neben den Einsatzdaten gehören u.a. ebenfalls Sensordaten und Steuerungsdaten zum dargestellten Datenmodell. 3.2.7.4 P8 - Resource Constraints Im P8 - Resource Constraints werden die Implementierungsvorgaben (ResourceConstraint) für die Ressourcen dargestellt. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Alle relevanten Datenelemente (DATAELEMENT) sind in das Datenmodell P7-F (DATAMODEL) eingeordnet und werden auf dem Diagramm eingeblendet."
  },
  {
   "id": "P8-MK01",
@@ -1251,7 +1251,7 @@
   "id": "P8-MK09",
   "viewpoint": "P8",
   "kind": "other",
-  "text": "Die Implementierungsvorgaben (RESOURCECONSTRAINT) sind mit der P8-H entsprechenden Referenz (REFERENCE DOCUMENTREFERENCE SMEREFERENCE) verbunden (JUSTIFIEDBY) und die Referenzbeziehung ist im Namen der Relation beschrieben. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die Implementierungsvorgaben (RESOURCECONSTRAINT) sind mit der P8-H entsprechenden Referenz (REFERENCE DOCUMENTREFERENCE SMEREFERENCE) verbunden (JUSTIFIEDBY) und die Referenzbeziehung ist im Namen der Relation beschrieben."
  },
  {
   "id": "P8-MK10",
@@ -1263,13 +1263,13 @@
   "id": "P8-MK11",
   "viewpoint": "P8",
   "kind": "classification",
-  "text": "Die Dokumentenreferenz ist mit der Einstufung verbunden (CLASSIFIED). P8-Gb Hinweis: Offene Dokumentenreferenzen sind mit der Einstufung OFFEN gekennzeichnet. Tabelle 45: Modellierungskonventionen: P8 - Resource Constraints «CapabilityConfiguration» «ResourceConstraint» Workshop «SMEReference» Multipurpose Armed Eigenständige 20.06.2022 Interv iew KdoWR Spacecraft Landefähigkeit «Satisfy» «JustifiedBy» Seite 4 «DocumentReference» «Classification» «ResourceConstraint» Absatz 3 Verteidigungskonzept VS-NUR FÜR DEN Redundante Anbindung Weltraum und erdnahes DIENSTGEBRAUCH «Satisfy» «JustifiedBy» Umfeld Seite 5, «Classified» Modul «ResourceConstraint» Absatz 1 Bekämpfung v on Zielen in «ResourceArtifact» mittlerer Entfernung im Weltraumrakete \"WR-2\" «Satisfy» «JustifiedBy» Weltraum Abbildung 46: Beispielmodellierung P8 : MASC : Resource Constraints Im Beispiel ist dargestellt, dass sich aus dem Dokument Verteidigungskonzept Weltraum und erdnahes Umfeld zwei Vorgaben und Rahmenbedingungen ableiten. Das MASC muss gem. Seite 4, Absatz 3 eine redundante Anbindung aufweisen und gemäß Seite 5, Absatz 1 muss die Weltraumrakete Zielen in mittlerer Entfernung im Weltraum bekämpfen können. Zusätzlich zum Genannten geht aus einem Interview KdWR im Rahmen eines Workshops am 22.06.2022 hervor, dass MASC eine eigenständige Landefähigkeit besitzen muss. 3.2.8 Requirement Views Nachfolgend sind die Konventionen für die Views innerhalb der Requirement Perspektive aufgelistet. 3.2.8.1 R2 - Requirements Catalogue Der R2 - Requirements Catalogue ordnet die identifizierten funktionalen und nichtfunktionalen Forderungen in die Struktur des Priorisierten Forderungskatalogs (PFK) ein. Er ist Grundlage für den Export des PFK in das Format des Werkzeuges Require.7. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die Dokumentenreferenz ist mit der Einstufung verbunden (CLASSIFIED). P8-Gb Hinweis: Offene Dokumentenreferenzen sind mit der Einstufung OFFEN gekennzeichnet."
  },
  {
   "id": "R2-MK01",
   "viewpoint": "R2",
   "kind": "package",
-  "text": "Es ist ein Package Requirements/R2/Requirement Catalogue angelegt. -"
+  "text": "Es ist ein Package Requirements/R2/Requirement Catalogue angelegt."
  },
  {
   "id": "R2-MK02",
@@ -1287,7 +1287,7 @@
   "id": "R2-MK04",
   "viewpoint": "R2",
   "kind": "diagram",
-  "text": "Für die Darstellung des Katalogs ist ein Diagramm des Typs R2 - R2-D, R2-E Requirements Catalogue mit dem Namen „R2 : Projektkürzel : Requirements Catalogue (Katalog)“ angelegt welches ausschließlich die Modellierungskonventionen Nummer Modellierungskonvention Verweis Kategorien (ohne dargestellte Forderungen) mit der jeweiligen Zuordnung (PARTOFCATALOGUE) enthält."
+  "text": "Für die Darstellung des Katalogs ist ein Diagramm des Typs R2 - R2-D, R2-E Requirements Catalogue mit dem Namen „R2 : Projektkürzel : Requirements Catalogue (Katalog)“ angelegt welches ausschließlich die Kategorien (ohne dargestellte Forderungen) mit der jeweiligen Zuordnung (PARTOFCATALOGUE) enthält."
  },
  {
   "id": "R2-MK05",
@@ -1305,13 +1305,13 @@
   "id": "R2-MK07",
   "viewpoint": "R2",
   "kind": "other",
-  "text": "Jedes Forderungsdiagramm wird im „R2 : Projektname : Requirements - Catalogue (Katalog)“ als Composite Diagramm mit der entsprechenden Kategorie bzw. dem Diagramm der Kategorie verknüpft. Tabelle 46: Modellierungskonventionen: R2 - Requirement Catalogue «RequirementCatalogue» Forderungskatalog MASC «PartOfCatalogue» «RequirementCategory» Funktionalität «PartOfCategory» «PartOfCategory» «RequirementCategory» Daten «PartOfCategory» «PartOfCategory» «RequirementCategory» Landefähigkeit «PartOfCategory» «PartOfCategory» «RequirementCategory» Operationelle Forderungen «PartOfCategory» «PartOfCatalogue» «PartOfCategory» «RequirementCategory» Standardkonformität «RequirementCategory» Systemintegration «RequirementCategory» Startfähigkeit «RequirementCategory» Bekämpfungsfähigkeit «RequirementCategory» Performance «RequirementCategory» Betrieb «RequirementCategory» «PartOfCategory» Integration in das Gesamtsystem «PartOfCategory» «RequirementCategory» Nutzungsprofil Abbildung 47: Beispielmodellierung R2 : MASC : Requirement Catalogue Im Beispiel ist der \"Forderungskatalog MASC\" mit den zwei Kategorien \"Funktionalität\" und \"Betrieb\" dargestellt. Diese sind weiter unterteilt. 3.2.8.2 R3 - Requirement Dependencies Der R3 - Requirements Dependencies behandelt die Abhängigkeiten und Analyse zwischen Forderungen. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Jedes Forderungsdiagramm wird im „R2 : Projektname : Requirements - Catalogue (Katalog)“ als Composite Diagramm mit der entsprechenden Kategorie bzw. dem Diagramm der Kategorie verknüpft."
  },
  {
   "id": "R3-MK01",
   "viewpoint": "R3",
   "kind": "package",
-  "text": "Es ist ein Package Requirements/R3/Requirement Dependencies angelegt. -"
+  "text": "Es ist ein Package Requirements/R3/Requirement Dependencies angelegt."
  },
  {
   "id": "R3-MK02",
@@ -1359,13 +1359,13 @@
   "id": "R3-MK09",
   "viewpoint": "R3",
   "kind": "other",
-  "text": "Als Ersatz identifizierte Forderungen (FUNCTIONALREQUIREMENTS R3-C NONFUNCTIONALREQUIREMENT) sind miteinander verbunden (REPLACES). Hinweis: Werden mehrere Forderungen durch eine Forderung ersetzt ist dies nur möglich wenn sich die ursprünglichen Forderungen auf gleiche Systembestandteile beziehen. Tabelle 47: Modellierungskonventionen: R3 - Requirement Dependencies Eigenständig landen Die Geschw indigkeit nicht reduzieren Multipurpose Armed Spacecraft 2.0 muss die Möglichkeit bieten, Multipurpose Armed Spacecraft 2.0 eigenständig zu landen. muss die Möglichkeit bieten, die Geschwindigkeit trotz Bekämpfung nicht stark zu reduzieren. «IsDuplicateOf» «ConflictsWith» Autonom landen Die Geschw indigkeit reduzieren Multipurpose Armed Spacecraft 2.0 Das Raumschiff 3.2 muss fähig sein, muss die Möglichkeit bieten, autonom «Requires» die Geschwindigkeit stark zu zu landen. reduzieren. «Replaces» Jederzeit autonom landen können Auf j edem Untergrund landen Das Raumschiff 3.2 muss fähig sein, Das Raumschiff 3.2 muss die jederzeit autonom landen zu können. Möglichkeit bieten, auf jedem «Refines» Untergrund jederzeit autonom zu landen. Abbildung 48: Beispielmodellierung R3 : MASC : Requirement Dependencies Im Beispiel ist dargestellt, dass die Forderung zur Geschwindigkeitsreduktion im Widerspruch stehen (ConflictsWith). Zudem wurde die Forderung nach der autonomen Landung durch eine genauere Forderung ersetzt (Replace). Diese wird durch eine Forderung zum autonomen Landen auf jedem Untergrund verfeinert (Refines). Diese ist aber nur dann erforderlich, wenn die Forderung nach Geschwindigkeitsreduktion erfüllt wird (Requires). Die Forderung nach eigenständiger Landung stellt zudem ein Duplikat zur autonomen Landungsforderung dar (IsDuplicateOf). 3.2.8.3 R7 - Requirement Derivation Der R7 - Requirements Derivation stellt die Ableitung der funktionalen und nichtfunktionalen Forderungen aus operationellen Vorgaben und Rahmenbedingungen (OperationalConstraints) und den dazugehörigen Elementen dar. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Als Ersatz identifizierte Forderungen (FUNCTIONALREQUIREMENTS R3-C NONFUNCTIONALREQUIREMENT) sind miteinander verbunden (REPLACES). Hinweis: Werden mehrere Forderungen durch eine Forderung ersetzt ist dies nur möglich wenn sich die ursprünglichen Forderungen auf gleiche Systembestandteile beziehen."
  },
  {
   "id": "R7-MK01",
   "viewpoint": "R7",
   "kind": "package",
-  "text": "Es ist ein Package Requirements/R7/Requirement Derivation angelegt. -"
+  "text": "Es ist ein Package Requirements/R7/Requirement Derivation angelegt."
  },
  {
   "id": "R7-MK02",
@@ -1383,7 +1383,7 @@
   "id": "R7-MK04",
   "viewpoint": "R7",
   "kind": "diagram",
-  "text": "Die relevanten operationellen Vorgaben und Rahmenbedingungen R7-B (OPERATIONALCONSTRAINT) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen. Modellierungskonventionen Nummer Modellierungskonvention Verweis Hinweis: Forderungen sind nur aus einer operationellen Vorgabe und Rahmenbedingung abzuleiten. Analysen (z.B. DUPLICATEOF) von Forderungen werden im R3 modelliert."
+  "text": "Die relevanten operationellen Vorgaben und Rahmenbedingungen R7-B (OPERATIONALCONSTRAINT) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen."
  },
  {
   "id": "R7-MK05",
@@ -1407,7 +1407,7 @@
   "id": "R7-MK08",
   "viewpoint": "R7",
   "kind": "catalog",
-  "text": "Das Element für das die logische Vorgabe (OPERATIONALCONSTRAINT) gilt - (SUBJECTOFOPERATIONALCONSTRAINT) ist aus dem Modellelementekatalog entnommen (SATISFY). Tabelle 48: Modellierungskonventionen: R7 - Requirement Derivation «SMEReference» Interv iew KdoWR Workshop 22.01.2025 «JustifiedBy» «OperationalConstraint» Auf j edem Untergrund landen Eigenständige Landefähigkeit Das Raumschiff 3.2 muss die «DerivedFrom» Möglichkeit bieten, auf jedem Untergrund jederzeit autonom zu landen. Jederzeit autonom landen können Das Raumschiff 3.2 muss fähig sein, «DerivedFrom» jederzeit autonom landen zu können. Die Geschw indigkeit reduzieren «DerivedFrom» Das Raumschiff 3.2 muss fähig sein, die Geschwindigkeit stark zu reduzieren. «Satisfy» «ToBeRealizedB «OperationalArchitecture» «CapabilityConfiguration» Direkte Führung bemanntes Raumschiff Multipurpose Armed Spacecraft «OperationalRole» «ResourceRole» Raumschiff: Bemanntes Raumschiff: Raumschiff 3.2[1] Aufklärungselement Weltraum «Implements» [1..4] Abbildung 49: Beispielmodellierung R7 : MASC : Requirement Derivation Im Beispiel ist dargestellt, dass sich die Funktionale Forderung „Einsatzbereitschaft gewährleisten“ aus der Vorgabe für die „NTM < 12h“ ableitet. Diese Vorgabe kommt aus einer SME Referenz. Die Vorgabe gilt für den logischen Aufgabenträger „Raumschiff“ im Anwendungsfall „Direkte Führung bemanntes Raumschiff“. Da dieser logische Aufgabenträger durch das MASC realisiert wird, ist die Anforderung durch das Raumschiff zu erbringen. 4 Bezugsdokumente Folgende Dokumente wurden bei der Erstellung dieses Dokument verwendet: 1 „NATO Architecture Framework Version 4”, Version 09.2020 Architecture Capability Team, Consultation, Command & Control Board 2 „A1-450/1-9203 Methode Architektur“, Version 2 PlgABw IV 1 (4) OPArchBw 3 „Grundlagen Methode Architektur gemäß NATO Architecture Framework Version 4“, Version 1.07 ZDigBw II 5 - MethZukE 4 „Leitfaden System- und Servicearchitekturen“, Version 2.0 BAAINBw SIM 2.1 5 „Dokumentation ADMBw“, Version 2025.10 PlgABw IV 1 (1) EAM GDL 6 „Dokumentation Verwendung des ADMBw im SPARX EA“, Version 2.00 ZDigBw II 5 - MethZukE 7 „Unified Architecture Framework (UAF) Domain Metamodel“, Version 1.1 Object Management Group, Inc. (OMG) 8 „A-1500/3 Projektbezogene Bedarfsdeckung und Nutzung“, Version 3 BMVg Rü I 1 9 „A1-1500/3-700 Anforderungsmanagement in der PBN“, Version 1 BAAINBw J3 5 Änderungsprozess Sollten Sie Anregungen und Verbesserungsvorschläge zu Inhalt und Gestaltung dieses Leitfadens haben, würden wir uns freuen, wenn Sie uns Ihre Vorschläge zusenden: PlgABwIV11EAMGDL@bundeswehr.org Innerhalb der Domäne IT-SysBw werden Sie zukünftig hier die Adresse zu einem Issue-Tracker vorfinden. 6 Glossar Begriff Beschreibung/Definition ADMBw Architekturdatenmodell der Bundeswehr AP Analysephase ArAMIS Architektur, Analyse, Managementinformationssysteme ÄV Änderungsvereinbarung BPMN Business Process Model and Notation DMM Domain Metamodell EAB Enterprise Architecture Bebauungsplan EAM Enterprise Architecture Management FFF Fähigkeitslücke und Funktionale Forderung FFFmLV Fähigkeitslücke und Funktionale Forderung mit Lösungsvorschlag GeNu Genehmigung zur Nutzung GP Geschäftsprozess LV Lösungsvorschläge MErK Management von Ergebnissen und Erkenntnissen NAF NATO Architecture Framework PBN Projektbezogenen Bedarfsdeckung und Nutzung PFK Priorisierte Forderungskatalog SMA SPARX Modellierungs Assistent StEKa Standardelementekatalog UAF Unified Architecture Framework UML Unified Modeling Language Table 49: Glossar"
+  "text": "Das Element für das die logische Vorgabe (OPERATIONALCONSTRAINT) gilt - (SUBJECTOFOPERATIONALCONSTRAINT) ist aus dem Modellelementekatalog entnommen (SATISFY)."
  },
  {
   "id": "S1-MK01",
@@ -1431,7 +1431,7 @@
   "id": "S1-MK04",
   "viewpoint": "S1",
   "kind": "other",
-  "text": "Der Name der Services (SERVICESPECIFICATION) sind mit einem Präfix oder Suffix S1-B zu ergänzen. Es wird zwischen drei Ebenen unterschieden: • Ebene 1 IT-Services erhalten das Suffix “Service Bw” (z.B. Platform Service Bw). • Ebene 2 IT-Services erhalten das Suffix “Service” (z.B. Platform Core Service). • Ebene 3 IT-Services erhalten kein Suffix (z.B. Platform Common Core). • IT-Service Module erhalten das Präfix “IT-Service Modul” (z.B. IT-Service Modul GMN 5) Hinweis: Es ist die wesentliche Leistung des IT-Service/IT-Service Modul/IT Service Package aus Nutzersicht in wenigen Sätzen zusammenfassend zu beschreiben (Kurzbeschreibung). Tabelle 27: Modellierungskonventionen: S1 - Service Description «ServiceSpecification» Spacecraft Information Serv ice Bw Der Spacecraft Information Service stellt Funktionalitäten zum Aggregieren, Analysieren und Bwerten von Daten bereit, die von dritten Services erhoben werden. Er verfügt über ein vollwertiges Dash Board zur Entscheidungsunterstützung. Abbildung 28: Beispielmodellierung S1 : MASC : Service Description (Spacecraft Information Service Bw) Im Beispiel ist der Spacecraft Information Service Bw inkl. Beschreibung dargestellt. Es handelt sich um einen Service der Ebene 1 (am Begriff Service Bw am Ende im Namen zu erkennen). 3.2.6.2.2 S1 - Service Taxonomy Im S1 - Service Taxonomy werden die genutzten und bereitgestellten Services in den Zusammenhang (Taxonomy) eingeordnet. Die Modellierung von genutzten und bereitgestellten Services wird über den L2 vorgenommen. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Der Name der Services (SERVICESPECIFICATION) sind mit einem Präfix oder Suffix S1-B zu ergänzen. Es wird zwischen drei Ebenen unterschieden: • Ebene 1 IT-Services erhalten das Suffix “Service Bw” (z.B. Platform Service Bw). • Ebene 2 IT-Services erhalten das Suffix “Service” (z.B. Platform Core Service). • Ebene 3 IT-Services erhalten kein Suffix (z.B. Platform Common Core). • IT-Service Module erhalten das Präfix “IT-Service Modul” (z.B. IT-Service Modul GMN 5) Hinweis: Es ist die wesentliche Leistung des IT-Service/IT-Service Modul/IT Service Package aus Nutzersicht in wenigen Sätzen zusammenfassend zu beschreiben (Kurzbeschreibung)."
  },
  {
   "id": "S1-MK05",
@@ -1443,7 +1443,7 @@
   "id": "S1-MK06",
   "viewpoint": "S1",
   "kind": "diagram",
-  "text": "Die zu beschreibenden Services (SERVICESPECIFICATION) sind auf dem S1-B Modellierungskonventionen Nummer Modellierungskonvention Verweis Diagramm angelegt oder aus dem Modell- oder Standardelementekatalog entnommen."
+  "text": "Die zu beschreibenden Services (SERVICESPECIFICATION) sind auf dem S1-B Diagramm angelegt oder aus dem Modell- oder Standardelementekatalog entnommen."
  },
  {
   "id": "S1-MK07",
@@ -1467,19 +1467,19 @@
   "id": "S1-MK10",
   "viewpoint": "S1",
   "kind": "other",
-  "text": "Die Service Instruction (SERVICESPECIFICATION) ist mit den Services verknüpft. -"
+  "text": "Die Service Instruction (SERVICESPECIFICATION) ist mit den Services verknüpft."
  },
  {
   "id": "S1-MK11",
   "viewpoint": "S1",
   "kind": "tag",
-  "text": "Das TaggedValue abstractionLevel der Services (SERVICESPECIFICATION) ist gemäß - dem Wert des Taxonomieelements gesetzt. Hinweis: Die Angabe des Abstraktionslevel ist notwendig um einen einheitlichen Abstraktionsgrad bei der Beschreibung der inneren Struktur der Services zu gewährleisten und nicht unterschiedliche Abstraktionsebene hinsichtlich der inhaltlichen Beschreibung miteinander zu vermischen Tabelle 28: Modellierungskonventionen: S1 - Service Taxonomy «ServiceSpecification» Core Serv ices Legend FMN Taxonomieelement C3T Taxonomieelement «ServiceGeneralization» «ServiceSpecification» Business Support Serv ice «ServiceGeneralization» «ServiceGeneralization» «ServiceGeneralization» «ServiceSpecification» «ServiceSpecification» «ServiceSpecification» «ServiceSpecification» Geospatial Serv ices Business Support SMC Information Management FMN Serv iceInstruction Serv ices Serv ices (SI) - Space «ServiceSpecification» «ServiceSpecification» «ServiceSpecification» GIS Serv ice Bw Monitoring Serv ice Bw Spacecraft Information Serv ice Bw «ServiceGeneralization» «ServiceGeneralization» «ServiceSpecification» «ServiceSpecification» Spacecraft Information Spacecraft Information Serv ice Bw stationär Serv ice Bw v erlegefähig Abbildung 29: Beispielmodellierung S1 : MASC : Service Taxonomy (Spacecraft Information Service Bw) Im Beispiel ist die Taxonomie des „Spacecraft Information Service“ dargestellt. Es existieren zwei Spezialisierungen: “Spacecraft Information Service stationär” sowie “Spacecraft Information Service verlegefähig”. Der Service „Spacecraft Information Service“ ist der Taxonomie der Servicekategorie Information Management Services zugeordnet. 3.2.6.2.3 S1 - Service Variants Der S1 – Service Varianten erfasst die verschiedenen Varianten eines Service. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Das TaggedValue abstractionLevel der Services (SERVICESPECIFICATION) ist gemäß - dem Wert des Taxonomieelements gesetzt. Hinweis: Die Angabe des Abstraktionslevel ist notwendig um einen einheitlichen Abstraktionsgrad bei der Beschreibung der inneren Struktur der Services zu gewährleisten und nicht unterschiedliche Abstraktionsebene hinsichtlich der inhaltlichen Beschreibung miteinander zu vermischen"
  },
  {
   "id": "S1-MK12",
   "viewpoint": "S1",
   "kind": "package",
-  "text": "Es ist ein Package Service Specifications/S1/IT-Service Varianten angelegt. -"
+  "text": "Es ist ein Package Service Specifications/S1/IT-Service Varianten angelegt."
  },
  {
   "id": "S1-MK13",
@@ -1503,13 +1503,13 @@
   "id": "S1-MK16",
   "viewpoint": "S1",
   "kind": "other",
-  "text": "Alle Servicevarianten (SERVICESPECIFICATION) werden auf dem zugehörigen Service - abgebildet (SERVICESPECIFICATIONGENERALIZATION). Tabelle 29: Modellierungskonventionen: S1 - Service Variants «ServiceSpecification» Spacecraft Information Serv ice Bw «ServiceGeneralization» «ServiceGeneralization» «ServiceSpecification» «ServiceSpecification» Spacecraft Information Spacecraft Information Serv ice Bw stationär Serv ice Bw v erlegefähig Abbildung 30: Beispielmodellierung S1 : MASC : Service Variants (Spacecraft Information Service Bw) Im Beispiel ist ein Auszug der für das MASC relevanten Services dargestellt. Der Fokus liegt dabei auf dem Spacecraft Information Service Bw. Der Spacecraft Information Service wird in den zwei Varianten Spacecraft Information Service Bw verlegfähig & Spacecraft Information Service Bw stationär ausgebracht (sowohl Service als auch Servicevariante werden mit dem Stereotyp SERVICESPECIFICATION modelliert). 3.2.6.3 S2 - Service Structure Der S2 - Service Structure beschreibt die Zusammensetzung des Service aus dritten Services. 3.2.6.3.1 S2 - Service Structure Der S2 - Service Structure beschreibt die Zusammensetzung des Service aus dritten Services. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Alle Servicevarianten (SERVICESPECIFICATION) werden auf dem zugehörigen Service - abgebildet (SERVICESPECIFICATIONGENERALIZATION)."
  },
  {
   "id": "S2-MK01",
   "viewpoint": "S2",
   "kind": "package",
-  "text": "Es ist ein Package Service Specifications/S2/ IT-Service Komposition angelegt. -"
+  "text": "Es ist ein Package Service Specifications/S2/ IT-Service Komposition angelegt."
  },
  {
   "id": "S2-MK02",
@@ -1527,13 +1527,13 @@
   "id": "S2-MK04",
   "viewpoint": "S2",
   "kind": "other",
-  "text": "Alle Services (und ihre Bestandteile (SERVICESPECIFICATIONROLE)) sind auf dem - Diagramm und eingeblendet. Hinweis: Das Konzept des Teilservice ist dann zu nutzen wenn der Gesamtservice ohne den Teilservice nicht deployed werden kann da ein zentraler Bestandteil fehlt. Der Teilservice muss als Serviceinstanz im Gesamtservice ausgebracht werden. Dabei können nur Services einer tieferen Ebene verwendet werden. Services der Ebene 1 dürfen nur aus Services der Ebene 2 komponiert werden. IT-Service-Module dürfen nur aus Ebene 1 Services komponiert werden. Tabelle 30: Modellierungskonventionen: S2 - Service Structure «ServiceSpecification» Spacecraft Information Serv ice Bw «ServiceSpecificationRole» Situation Aw areness Serv ice: Space Situation Aw areness Serv ice[1] «ServiceSpecificationRole» Obj ect Disable Serv ice: Space Obj ect Disable Serv ice[1] Abbildung 31: Beispielmodellierung S2 : MASC : Service Structure (Spacecraft Information Service Bw) Im Beispiel ist der ausgewählte \"Spacecraft Information Service Bw\" dargestellt, welcher sich aus den beiden Teilservices \"Situation Awareness Service\" und \"Object Disable Service\" zusammensetzt. 3.2.6.3.2 S2 - External Service Dependencies Der S2 - External Service Dependencies stellt die Abhängigkeiten des Service dar. Folgende Sicht wird nicht bei der SEF-Modellierung von IT-Servicemodulen erstellt! Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Alle Services (und ihre Bestandteile (SERVICESPECIFICATIONROLE)) sind auf dem - Diagramm und eingeblendet. Hinweis: Das Konzept des Teilservice ist dann zu nutzen wenn der Gesamtservice ohne den Teilservice nicht deployed werden kann da ein zentraler Bestandteil fehlt. Der Teilservice muss als Serviceinstanz im Gesamtservice ausgebracht werden. Dabei können nur Services einer tieferen Ebene verwendet werden. Services der Ebene 1 dürfen nur aus Services der Ebene 2 komponiert werden. IT-Service-Module dürfen nur aus Ebene 1 Services komponiert werden."
  },
  {
   "id": "S2-MK05",
   "viewpoint": "S2",
   "kind": "package",
-  "text": "Es ist ein Package Service Specifications/S2/Serviceabhängigkeiten angelegt. - Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Es ist ein Package Service Specifications/S2/Serviceabhängigkeiten angelegt."
  },
  {
   "id": "S2-MK06",
@@ -1557,13 +1557,13 @@
   "id": "S2-MK09",
   "viewpoint": "S2",
   "kind": "other",
-  "text": "Beschreibende Services (SERVICESPECIFICATION) werden mit ihren ausgehenden S2-E abhängigen Services verbunden (SERVICECONNECTOR). Im Namen des Konnektors ist die Abhängigkeit näher beschrieben. Hinweis: Das Konzept der Serviceabhängigkeit ist dann zu nutzen wenn der Gesamtservice ohne die hier aufgeführte Abhängigkeit nur mit Einschränkungen nutzbar ist. Es werden nur Services der Ebene 1 betrachtet. Tabelle 31: Modellierungskonventionen: S2-Service Dependencies «ServiceSpecification» «ServiceSpecification» Spacecraft Information Serv ice Bw GIS Serv ice Bw nutzt zur «ServiceSpecificationRole» Positionsbestimmung «ServiceSpecificationR... Situation Aw areness Serv ice: «ServiceDependency» Surv eying Serv ice: Space Situation Aw areness Surv eying Serv ice Bw [1] Serv ice[1] «ServiceSpecificationRole» Obj ect Disable Serv ice: Space Obj ect Disable Serv ice[1] «ServiceSpecification» Monitoring Serv ice Bw benötigt Gesundheitsmeldungen «ServiceSpecificationR... Vital Tracking Serv ice: Vital «Measurement» «ServiceDependency» Sign Tracking Bw [1] Mo. bis So, 00:00 Uhr bis 24:00 Uhr: Betriebszeiten / Systemzugangszeiten «Measurement» 100%: Systemtechnische Verfügbarkeit nutzt «ResourceArchitecture» Trägersystem Raumschiff 3.2 «ServiceDependency» Abbildung 32: Beispielmodellierung S2 : MASC : External Service Dependencies (Spacecraft Information Service Bw) Im Beispiel sind einige Abhängigkeiten des Spacecraft Information Service Bw dargestellt. Der Service ist abhängig vom \"GIS-Service Bw\" und vom \"Monitoring Service Bw\", sowie dem Performer \"Bemanntes Aufklärungselement Weltraum\" und der Ressource \"Raumschiff 3.2\". 3.2.6.3.3 S2 - Service Warranty Auf dem S2 - Service Warranties wird die Warranty des Service erfasst. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Beschreibende Services (SERVICESPECIFICATION) werden mit ihren ausgehenden S2-E abhängigen Services verbunden (SERVICECONNECTOR). Im Namen des Konnektors ist die Abhängigkeit näher beschrieben. Hinweis: Das Konzept der Serviceabhängigkeit ist dann zu nutzen wenn der Gesamtservice ohne die hier aufgeführte Abhängigkeit nur mit Einschränkungen nutzbar ist. Es werden nur Services der Ebene 1 betrachtet."
  },
  {
   "id": "S2-MK10",
   "viewpoint": "S2",
   "kind": "package",
-  "text": "Es ist ein Package Service Specifications/S2/Warranties angelegt. -"
+  "text": "Es ist ein Package Service Specifications/S2/Warranties angelegt."
  },
  {
   "id": "S2-MK11",
@@ -1581,19 +1581,19 @@
   "id": "S2-MK13",
   "viewpoint": "S2",
   "kind": "other",
-  "text": "Die Warranty eines Service (MEASUREMENT) sind am Service anzulegen. Diese sind S2-F mit dem jeweiligen Serviceattribut (MEASUREMENTTYPE) zu typisieren. Die Serviceattribute warden vom IT-Service Designer als Standardelemente vorgegeben und bereitgestellt. Ergänzungen von Serviceattributen sind möglich. Hinweis: Sollte eine neue Eigenschaft (MEASUREMENTTYPE) angelegt werden müssen so ist das TaggedValue ITSD-ServiceClass zu pflegen. Hinweis: Sollte eine neue Eigenschaft (MEASUREMENTTYPE) angelegt werden müssen so ist das TaggedValue ITSD-Group zu pflegen. Sollte der Service über Servicevarianten verfügen sind für diese ebenfalls die Attribute zu erfassen. Tabelle 32: Modellierungskonventionen: S2-Service Warranties «ServiceSpecification» Spacecraft Information Serv ice Bw «Measurement» Mo. bis So, 00:00 Uhr bis 24:00 Uhr: Betriebszeiten / Systemzugangszeiten «Measurement» 100%: Systemtechnische Verfügbarkeit «EnvironmentalContext» «ActualEnvironment» Erdnaher Orbit: Weltraum Abbildung 33: Beispielmodellierung S2 : MASC : Service Warranties (Spacecraft Information Service Bw) Im Beispiel sind einige Eigenschaften des Spacecraft Information Service Bw dargestellt. Dem Service sind die Eigenschaften \"Systemtechnische Verfügbarkeit\" mit einem Wert von 100 und Betriebszeiten / Systemzugangseiten von Mo. Bis So., 00:00 bis 24:00 Uhr zugeordnet. 3.2.6.4 S3 - Service Interface / Logische Kontextsicht Der S3 - Service Interfaces bildet die Schnittstellen des Service und die Austauschbeziehungen zu anderen Services ab. Hinweis: Folgende Sicht wird nicht bei der SEF-Modellierung von IT-Servicemodulen erstellt! Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die Warranty eines Service (MEASUREMENT) sind am Service anzulegen. Diese sind S2-F mit dem jeweiligen Serviceattribut (MEASUREMENTTYPE) zu typisieren. Die Serviceattribute warden vom IT-Service Designer als Standardelemente vorgegeben und bereitgestellt. Ergänzungen von Serviceattributen sind möglich. Hinweis: Sollte eine neue Eigenschaft (MEASUREMENTTYPE) angelegt werden müssen so ist das TaggedValue ITSD-ServiceClass zu pflegen. Hinweis: Sollte eine neue Eigenschaft (MEASUREMENTTYPE) angelegt werden müssen so ist das TaggedValue ITSD-Group zu pflegen. Sollte der Service über Servicevarianten verfügen sind für diese ebenfalls die Attribute zu erfassen."
  },
  {
   "id": "S3-MK01",
   "viewpoint": "S3",
   "kind": "package",
-  "text": "Es ist ein Package Service Specifications/S3/Logische Kontextsicht angelegt. -"
+  "text": "Es ist ein Package Service Specifications/S3/Logische Kontextsicht angelegt."
  },
  {
   "id": "S3-MK02",
   "viewpoint": "S3",
   "kind": "diagram",
-  "text": "Für die Darstellung der Service Interfaces ist ein Diagramm des Typs S3 – Service S3-A Interfaces mit dem Namen „S3 : Projektkürzel : Service Interfaces“ angelegt. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Für die Darstellung der Service Interfaces ist ein Diagramm des Typs S3 – Service S3-A Interfaces mit dem Namen „S3 : Projektkürzel : Service Interfaces“ angelegt."
  },
  {
   "id": "S3-MK03",
@@ -1617,13 +1617,13 @@
   "id": "S3-MK06",
   "viewpoint": "S3",
   "kind": "other",
-  "text": "Serviceschnittstellen werden entsprechend all ihrer Austauschbeziehungen S3-H, S3-G miteinander verbunden (SERVICECONNECTOR). Zusätzlich werden jeder Austauschbeziehung die übertragenen Daten (DATAELEMENT) zugewiesen. Hinweis: Es sind die Austauschbeziehungen zwischen den Services der Ebene 1 zu modellieren. Tabelle 33: Modellierungskonventionen: S3 - Service Interfaces «Standard» ISO/IEC 27001 «ConformsTo» übertragen der Sensordaten «ServiceConnector» «ServiceSpecification» «ServiceSpecification» Spacecraft Information «DataElement» Monitoring Serv ice Bw Serv ice Bw «ServicePort» Sensordaten «ServicePort» provided: Healthcare required: Healthcare Maintenance Maintenance Interface[1] Interface[1] «ServiceSpecification» «ServicePort» GIS Serv ice Bw provided: System Maintanance übertragen der Interface[1] Positionsdaten «ServiceConnector» «DataElement» «ServicePort» Positionsdaten required: «ServicePort» provided: «ConformsTo» System Battle Processing Interface Maintanance Interface[1] «Standard» ISO 19115 Abbildung 34: Beispielmodellierung S3 : MASC : Service Interfaces (Spacecraft Information Service Bw) Im Beispiel ist ein Auszug des Architekturmodells zum MASC dargestellt, in welchem der \"Spacecraft Information Service Bw\" Positionsdaten vom \"GIS-Service Bw\" und sendet Sendordaten an den \"Monitoring Service Bw\" empfängt. 3.2.6.5 S4 - Service Functions Der S4 – Service Functions dient der Darstellung der Funktionen, die vom Service zur Verfügung gestellt werden. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Serviceschnittstellen werden entsprechend all ihrer Austauschbeziehungen S3-H, S3-G miteinander verbunden (SERVICECONNECTOR). Zusätzlich werden jeder Austauschbeziehung die übertragenen Daten (DATAELEMENT) zugewiesen. Hinweis: Es sind die Austauschbeziehungen zwischen den Services der Ebene 1 zu modellieren."
  },
  {
   "id": "S4-MK01",
   "viewpoint": "S4",
   "kind": "package",
-  "text": "Es ist ein Package Service Specifications/S4/Servicefunktion angelegt. -"
+  "text": "Es ist ein Package Service Specifications/S4/Servicefunktion angelegt."
  },
  {
   "id": "S4-MK02",
@@ -1647,13 +1647,13 @@
   "id": "S4-MK05",
   "viewpoint": "S4",
   "kind": "other",
-  "text": "Die relevanten Services sind auf dem Diagramm mit den von diesem S4-E bereitgestellten Servicefunktionen verbunden (ISCAPABLETOPERFORM). Tabelle 34: Modellierungskonventionen: S4 - Service Functions «ServiceSpecification» «ServiceFunction» Spacecraft Information bereitstellen Serv ice Bw «IsCapableToPerform» Statusinformationen zum Sauerstoffgehalt «ServiceFunction» bereitstellen «IsCapableToPerform» Statusmeldungen zum Gesamtzustand des Raumschiffs «ServiceFunction» bereitstellen «IsCapableToPerform» Statusinformationen zum Tankinhalt «ServiceFunction» optional bereitstellen «IsCapableToPerform» Waffenstatus «ServiceFunction» v orbereiten «IsCapableToPerform» Zielbekämpfung Abbildung 35: Beispielmodellierung S4 : MASC : Service Functions (Spacecraft Information Service Bw) Im Beispiel ist dargestellt, dass der \"Spacecraft Information Service Bw\" fünf verschiedene Servicefunktionen zur Verfügung stellt. Zu diesen zählen neben dem \"Bereitstellen von Statusinformationen zum Sauerstoffgehalt\", das \"Bereitstellen von Statusmeldungen zum Gesamtzustand des Raumschiffs\" , das \"Bereitstellen von Statusinformationen zum Tankinhalt\", das \"bereitstellen Waffenstatus\" welche eine optionale Servicefunktion sowie das \"vorbereiten Zielbekämpfung\". 3.2.6.6 S7 - Service Interface Parameters Der S7 – Service Interface Parameters beschreibt, welche Servicefunktionen eine Serviceschnittstelle nach außen anbietet. Hinweis: Folgende Sicht wird nicht bei der SEF-Modellierung von IT-Servicemodulen erstellt! Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die relevanten Services sind auf dem Diagramm mit den von diesem S4-E bereitgestellten Servicefunktionen verbunden (ISCAPABLETOPERFORM)."
  },
  {
   "id": "S7-MK01",
   "viewpoint": "S7",
   "kind": "package",
-  "text": "Es ist ein Package Service Specifications/S7/Serviceinterface angelegt. -"
+  "text": "Es ist ein Package Service Specifications/S7/Serviceinterface angelegt."
  },
  {
   "id": "S7-MK02",
@@ -1677,13 +1677,13 @@
   "id": "S7-MK05",
   "viewpoint": "S7",
   "kind": "other",
-  "text": "Die Serviceschnittstellen (SERVICEPORT) sind auf dem Diagramm mit den S7-D bereitgestellten Servicefunktionen (SERVICEFUNCTION) verbunden (PROVIDESSERVICEFUNCTION). Tabelle 35: Modellierungskonventionen: S7 - Service Interface Parameters «ServiceInterface» «ServiceFunction» Healthcare Maintenance Interface bereitstellen «ProvidesServiceFunction» Statusinformationen zum Sauerstoffgehalt «ServiceInterface» «ServiceFunction» System Maintanance Interface bereitstellen Statusinformationen «ProvidesServiceFunction» zum Tankinhalt «ServiceFunction» bereitstellen «ProvidesServiceFunction» Statusmeldungen zum Gesamtzustand des Raumschiffs «ServiceInterface» «ServiceFunction» Battle Processing Interface v orbereiten Zielbekämpfung «ProvidesServiceFunction» «ServiceFunction» bereitstellen Waffenstatus «ProvidesServiceFunction» Abbildung 36: Beispielmodellierung S7 : MASC : Service Interface Parameters (Spacecraft Information Service Bw) Im Beispiel ist dargestellt, dass das SERVICEINTERFACE des Spacecraft Information Interface die gleichen Servicefunktionen nach außen wie der Spacecraft Information Service Bw selber bereitstellt. Zu diesen zählen neben dem Bereitstellen von Statusinformationen zum Sauerstoffgehalt, das Bereitstellen von Statusmeldungen zum Gesamtzustand des Raumschiffs sowie das Bereitstellen von Statusinformationen zum Tankinhalt, welche nach außen angeboten werden. 3.2.6.7 Sr – Service Change Der Sr – Service Change beschreibt, an welchen Services im Rahmen der Servicedokumentation ein Änderungsbedarf besteht. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Die Serviceschnittstellen (SERVICEPORT) sind auf dem Diagramm mit den S7-D bereitgestellten Servicefunktionen (SERVICEFUNCTION) verbunden (PROVIDESSERVICEFUNCTION)."
  },
  {
   "id": "Sr-MK01",
   "viewpoint": "Sr",
   "kind": "package",
-  "text": "Es ist ein Package Service Specifications/Sr/Service Change angelegt. -"
+  "text": "Es ist ein Package Service Specifications/Sr/Service Change angelegt."
  },
  {
   "id": "Sr-MK02",
@@ -1701,19 +1701,19 @@
   "id": "Sr-MK04",
   "viewpoint": "Sr",
   "kind": "diagram",
-  "text": "Jeder Änderungsbedarf (CHANGE) ist auf dem Diagramm angelegt. -"
+  "text": "Jeder Änderungsbedarf (CHANGE) ist auf dem Diagramm angelegt."
  },
  {
   "id": "Sr-MK05",
   "viewpoint": "Sr",
   "kind": "diagram",
-  "text": "Jeder relevante Service (SERVICESPECIFICATION) an dem ein Änderungsbedarf - (CHANGE) besteht ist auf dem Diagramm mit dem entsprechenden Änderungsbedarf verbunden (TRACE). Tabelle 36: Modellierungskonventionen: Sr - Service Roadmap «ServiceSpecification» Am Spacecraft Information Serv ice Bw Spacecraft Information Serv ice Bw soll eine Anpassung der Schnittstellen erfolgen. «trace» Abbildung 37: Beispielmodellierung Sr : MASC : Service Change (Spacecraft Information Service Bw) Im Beispiel ist dargestellt, dass am Spacecraft Information Service Bw eine Anpassung der Schnittstellen erfolgen soll. 3.2.7 Physical Resource Specification Viewpoints Nachfolgend sind die Konventionen für die Views innerhalb der Physical Resource Specification Perspektive aufgelistet. 3.2.7.1 P1 - Resource Types Der P1 - Resource Types klassifiziert die personellen und materiellen Ressourcen untereinander (Taxonomie) und erfasst die einem Service zugeordneten Ressourcen. Der P1 wird als Auszug aus den relevanten Referenzarchitekturen mit dem Startpaket bereitgestellt und ist in der Architektur fortzuschreiben. 3.2.7.1.1 P1 - Resource Types Der P1 - Resource Types ordnet die personellen und materiellen Ressourcen in einen Zusammenhang (Taxonomie) ein. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Jeder relevante Service (SERVICESPECIFICATION) an dem ein Änderungsbedarf - (CHANGE) besteht ist auf dem Diagramm mit dem entsprechenden Änderungsbedarf verbunden (TRACE)."
  },
  {
   "id": "St-MK01",
   "viewpoint": "St",
   "kind": "package",
-  "text": "Es ist ein Package Projektkürzel - Startseite angelegt. -"
+  "text": "Es ist ein Package Projektkürzel - Startseite angelegt."
  },
  {
   "id": "St-MK02",
@@ -1743,7 +1743,7 @@
   "id": "St-MK06",
   "viewpoint": "St",
   "kind": "diagram",
-  "text": "Der Viewpoint (VIEWPOINT) wird durch ein Diagramm vom Typ A2 - Architecture - Products (als Composite Diagram modelliert) mit dem Namen „Viewpointkürzel : Projektkürzel : Übersicht“ verfeinert. Auf dem verfeinerten Diagramm werden als Übersicht alle Views (VIEW) des entsprechenden Viewpoints aufgelistet. Beispiel: „Lr : Projektkürzel : Übersicht“ Tabelle 1: Modellierungskonventionen: Startseite 1 Grundsatz der Richtigkeit, Relevanz, Wirtschaftlichkeit, Klarheit, Vergleichbarkeit und des systematischen Aufbaus Multipurpose Armed Spacecraft (MASC) Behaviour Taxonomy Structure Connectivity Processes States Sequences Information Constraints Roadmap C1 C2 C3 C4 C5 C7 C8 Cr C1 - Capability C2 - Enterprise Taxonomy Vision Capability Enterprise Capability Standard Effects Performance Planning Capability Concepts Taxonomy Vision Dependencies Processes Parameters Assumptions Roadmap C1-S1 S2 S3 S4 S5 S6 S7 S8 Sr S1 S2 - Serv ice Service S1 - Serv ice Structure Service Service Service Service Service Service I/F Service Service Taxonomy Specifications Service Structure Interfaces Functions States Interactions Parameters Policy Roadmap Taxonomy L1 L2 L3 L4 L5 L6 - LogicalL6 L7 L7 - Information L8 - Logical L8 Lr L4 - Logical Sequence Model Constraints Activ ities Logical Node Types Logical Node Logical Logical Logical Information- Logical Lines of L2-L3 Specifications Scenario Interactions Actiivities States Sequence model Constraints Development L4-P4 P1 P2 P3 P5 P6 P7 P8 Pr P6 - Resource P7 - Data Model P8 - Resource Physical P4 Sequence Constraints Resource Resource Resource Resource Resource Data Resource Configuration Resource Types Structure Connectivity Resource States Sequence Model Constraints Management Specifications Functions R2 R3 R7 R8 Rr R7 - R8 - Requirement Requirement Requirements Requirements Requirements Deriv ation Requirements Fulfilment Requirements Requirements Catalogue Dependencies Derivation Fulfilment Realizations A1 A2 A3 A4 A5 A6 A7 A8 Ar A2 - A3 - A6 - Architecture Architecture Architecture Architecture Meta-Data Architecture Products Architecture Correspondence Methodology Architecture Architecture Versions Architecture Standards Architecture Foundation Definitions Products Correspondence Used Status Versions Compliance Roadmap Abbildung 3: Startseite MASC Das Diagramm zeigt eine beispielhafte Startseite der Projektarchitektur MASC. Zur Vereinfachung sind nur vereinzelnd vorhandene Viewpoint-Elemente auf dem entsprechenden Feld des ADMBw- Grid angezeigt. 3.2.2 Viewpoint-Übergreifend Nachfolgend sind die Konventionen vorgegeben, die für alle zu modellierenden Viewpoint gelten. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Der Viewpoint (VIEWPOINT) wird durch ein Diagramm vom Typ A2 - Architecture - Products (als Composite Diagram modelliert) mit dem Namen „Viewpointkürzel : Projektkürzel : Übersicht“ verfeinert. Auf dem verfeinerten Diagramm werden als Übersicht alle Views (VIEW) des entsprechenden Viewpoints aufgelistet. Beispiel: „Lr : Projektkürzel : Übersicht“"
  },
  {
   "id": "VÜ-MK01",
@@ -1755,13 +1755,13 @@
   "id": "VÜ-MK02",
   "viewpoint": "VÜ",
   "kind": "other",
-  "text": "Konkretisierte Elemente ({OBJECTS}) sind klassifiziert. -"
+  "text": "Konkretisierte Elemente ({OBJECTS}) sind klassifiziert."
  },
  {
   "id": "VÜ-MK03",
   "viewpoint": "VÜ",
   "kind": "other",
-  "text": "Bestandteile ({PARTS}) sind typisiert. -"
+  "text": "Bestandteile ({PARTS}) sind typisiert."
  },
  {
   "id": "VÜ-MK04",
@@ -1815,6 +1815,6 @@
   "id": "VÜ-MK12",
   "viewpoint": "VÜ",
   "kind": "finding",
-  "text": "Werden Unstimmigkeiten oder Anpassungen im Werkzeug identifiziert muss eine - Erkenntnis (FINDING) erstellt werden. Das TaggedValue Type der Erkenntnis (FINDING) ist auf Tool gesetzt. Hinweis: Diese Erkenntnis (FINDING) bezieht sich auf die verwendeten Werkzeuge und muss vom entsprechenden Referat (hier: PlgABw IV 1 4) bestätigt und weiter prozessiert werden. Tabelle 2: Modellierungskonventionen: Viewpoint-Übergreifend 3.2.3 Architecture Foundation Nachfolgend sind die Konventionen für die Views innerhalb der Architecture Foundation Perspektive aufgelistet. 3.2.3.1 A1 - Meta-Data Definitions Der A1 - Meta Data Definitions enthält die Metadaten eines Architekturmodells. Unter Metadaten werden hier genau festgelegte Daten verstanden, die eine Identifizierung des Architekturmodells und eine inhaltliche bzw. methodische Klassifizierung ermöglichen. Hinweis: Neben den originären Inhalten des A1 beinhaltet der A1 immer auch die Inhalte des A4 - Methodology Used sowie A5 - Architecture Status. Diese werden innerhalb des A1-Elements „Architectural Description“ als TaggedValues „methodologyUsed“ und „status“ repräsentiert. Modellierungskonventionen Nummer Modellierungskonvention Verweis"
+  "text": "Werden Unstimmigkeiten oder Anpassungen im Werkzeug identifiziert muss eine - Erkenntnis (FINDING) erstellt werden. Das TaggedValue Type der Erkenntnis (FINDING) ist auf Tool gesetzt. Hinweis: Diese Erkenntnis (FINDING) bezieht sich auf die verwendeten Werkzeuge und muss vom entsprechenden Referat (hier: PlgABw IV 1 4) bestätigt und weiter prozessiert werden."
  }
 ]

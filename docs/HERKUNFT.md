@@ -18,6 +18,19 @@ noch aus der Datei neben der HTML; im Fixture wurde der Verweis durch eine
 gleich lange Platzhalter-URL ersetzt. Die SQLite-Struktur und der Modellumfang
 bleiben unverändert. MASC ist als Beispieldatei bewusst enthalten.
 
+**Autorenangaben (04.11.2026):** In `t_object.Author` und `t_diagram.Author`
+standen die Bearbeiter des Modells — Klarnamen, Dienststellen- und Firmenzusätze
+sowie zwei numerische Kennungen (1.654 Objektzeilen, 265 Sichtzeilen, 34
+verschiedene Werte). Diese Felder sind auf den Neutralwert `MASC` gesetzt.
+Struktur, GUIDs, Namen, Tags und der Modellumfang sind unverändert. Ein reines
+`UPDATE` genügt dafür nicht: Die alten Werte bleiben in freigegebenen
+SQLite-Seiten lesbar. Die Datei wird deshalb anschließend per `VACUUM` neu
+geschrieben (12.414.976 -> 10.600.448 B, freie Seiten 138 -> 0). Die
+Neutralisierung ist wiederholbar über
+`python3 scripts/neutralize_model_authors.py <modell.qea>`; `scripts/check_no_model_leak.py`
+bricht ab, wenn erneut ein Autorenwert auftaucht. Die Prüfsumme in
+`packages/core/ci/fixtures_manifest.json` wurde entsprechend aktualisiert.
+
 ## Gebaute Hashes
 
 | Datei | SHA-256 |
