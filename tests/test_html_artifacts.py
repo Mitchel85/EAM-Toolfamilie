@@ -41,13 +41,13 @@ APPS = {
     },
     "html-editor": {
         "product": "EAM Suite",
-        "version": "v8.4",
+        "version": "v8.5",
         "title": "EAM Suite — QEA-Architekturen analysieren, erkunden, bearbeiten &amp; exportieren",
-        "bytes": 1_433_423,
+        "bytes": 1387753,
         "min_size": 1_000_000,
         "max_size": 2_000_000,
-        "markers": ("var EDIT =", "var MERGE", "var ISSUE =", "var DIAG ="),
-        "forbidden": ("window.KI", 'id="tab-ki"'),
+        "markers": ("var EDIT =", "var MERGE", "var ISSUE ="),
+        "forbidden": ("var DIAG =", "BPMN.modus", "part7_bpmn"),
     },
 }
 
