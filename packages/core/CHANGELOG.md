@@ -4,6 +4,18 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.3.1 - 2026-11-04
+
+### EAM Suite
+
+Die Sicht-Renderer- und BPMN-Ansicht aus 3.3.0 ist zurueckgenommen: Die
+EAM Suite zeichnet Sichten nicht mehr selbst. Erhalten bleiben Bearbeiten,
+Zusammenlegen, Notizen und der Issue-Tracker (Stereotyp «Issue», JSON- und
+.qea-Export).
+
+Diese Fassung ist die gueltige Auslieferung; 3.3.0 enthaelt noch die
+BPMN-Ansicht.
+
 ## 3.3.0 - 2026-11-04
 
 ### Wissensbasis
