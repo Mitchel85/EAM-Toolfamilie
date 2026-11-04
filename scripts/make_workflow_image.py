@@ -56,7 +56,7 @@ ZEILEN = [
      ["voll", "voll", "voll", "voll", "teil", "voll", "voll"], "test"),
     ("EAM Suite", "HTML · 8.4 · ohne KI",
      ["nein", "teil", "nein", "teil", "voll", "voll", "voll"], "nein"),
-    ("EAM MDG Parser", "HTML + Python",
+    ("ADMBw Extraktor", "HTML + Python",
      ["voll", "nein", "nein", "nein", "nein", "nein", "nein"], "nein"),
     ("EAM QEA Analyzer", "Open WebUI + MCP",
      ["nein", "nein", "nein", "nein", "teil", "nein", "nein"], "nein"),
@@ -130,7 +130,7 @@ def main() -> int:
               "kein eigener HTML-Viewer; die EAM Suite übernimmt das Ansehen.",
               font=font(17), fill=MUTED)
     draw.text((80, 1056),
-              "EAM MDG Parser: HTML-Variante und Python-Variante (dieselbe Datei wie im Python-ZIP).",
+              "ADMBw Extraktor: HTML-Variante und Python-Variante (dieselbe Datei wie im Python-ZIP).",
               font=font(17), fill=MUTED)
 
     ZIEL.parent.mkdir(parents=True, exist_ok=True)

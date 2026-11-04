@@ -4,6 +4,17 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.3.3 - 2026-11-04
+
+### ADMBw Extraktor
+
+Der MDG-Parser heisst nach aussen ADMBw Extraktor. Umbenannt sind die
+Auslieferungen (ADMBw-Extraktor.html, admbw-extraktor.py), die Titel in der
+Browser-Fassung und die Hinweise in README und Release-Seite.
+
+Die Engine bleibt `mdg_parser.py` und technologieneutral: sie liest jede
+MDG-/UML-Profil-XML. Die Marke steht nur in der Auslieferung.
+
 ## 3.3.2 - 2026-11-04
 
 ### EAM Suite

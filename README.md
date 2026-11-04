@@ -137,10 +137,10 @@ stehen in [docs/ABNAHME.md](docs/ABNAHME.md).
 - **EAM Suite** (eine HTML-Datei, Fassung 8.4) — vorhandene Modelle analysieren, ansehen
   (Explorer, Sichten, Graph, Pfade), mehrere verschmelzen, von Hand bearbeiten und als neue
   `.qea` speichern; ohne MDG-Prüfung, ohne KI, ohne Prosa.
-- **EAM MDG Parser** (HTML-Datei und Python-Skript) — MDG-XML im Browser oder auf der
+- **ADMBw Extraktor** (HTML-Datei und Python-Skript) — MDG-XML im Browser oder auf der
   Kommandozeile durchsuchen und als Regeldateien exportieren; baut kein Modell. Das
   Python-Skript ist dieselbe Datei, die auch im Python-ZIP liegt. Zusätzlich lässt sich der
-  Master-Prompt des ehemaligen ADMBw-Extraktors als optionales Artefakt ausgeben.
+  Master-Prompt der früheren Prompt-Fassung als optionales Artefakt ausgeben.
 - **EAM QEA Analyzer** (Open-WebUI-Tool und MCP-Server) — vorhandene `.qea`-Modelle
   befragen, ohne eigenen HTML-Viewer. Das Open-WebUI-Tool liest die `.qea`; der MCP-Server
   stellt dieselben Abfragen für Open WebUI, Claude Desktop und VS Code bereit.
@@ -149,13 +149,13 @@ Schnellwahl
 - Neues Modell aus Text → EAM AI Suite (für Serien und Server: EAM AI Suite Python)
 - Modell nur ansehen → EAM Suite
 - Modelle zusammenlegen oder von Hand ändern → EAM Suite
-- Regelwerk nachschlagen → EAM MDG Parser
+- Regelwerk nachschlagen → ADMBw Extraktor
 - Modell abfragen (Open WebUI/MCP) → EAM QEA Analyzer
 
 Abgrenzung
 - Nur die beiden AI Suiten können den ganzen Ablauf. HTML und Python sind zwei getrennte
   Umsetzungen derselben Kette.
-- EAM Suite und EAM MDG Parser sind eigenständige Einzelwerkzeuge mit eigenem Quellstand.
+- EAM Suite und ADMBw Extraktor sind eigenständige Einzelwerkzeuge mit eigenem Quellstand.
   Es gibt keinen gemeinsamen UI-Kern.
 - Änderungen wandern nicht automatisch mit: ein Fix in der EAM Suite ist kein Fix in der
   EAM AI Suite — und umgekehrt.
@@ -169,7 +169,7 @@ Abgrenzung
   EAM QEA Analyzer (Open-WebUI-Tool oder MCP-Server).
 - Weitere Werkzeuge der Familie: die Prompt-Werkzeuge EAM-AI-ADMBw-Extractor, -Batch und
   -Script-Maker. Sie arbeiten mit der Wissensbasis aus der MDG; Quellen unter `apps/`.
-  Der ADMBw-Extractor wird nicht ausgeliefert; sein Master-Prompt liegt beim EAM MDG Parser.
+  Die Prompt-Fassung wird nicht mehr ausgeliefert; ihr Master-Prompt liegt im ADMBw Extraktor.
 
 ## Herunterladen
 
@@ -186,9 +186,9 @@ Alle Dateien liegen im öffentlichen Release.
   [EAM-Suite.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.html)
   · für SharePoint:
   [EAM-Suite.aspx](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.aspx)
-- EAM MDG Parser:
-  [EAM-MDG-Parser.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-MDG-Parser.html)
-  · [Python-Variante](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam-mdg-parser.py)
+- ADMBw Extraktor:
+  [ADMBw-Extraktor.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/ADMBw-Extraktor.html)
+  · [Python-Variante](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/admbw-extraktor.py)
 - EAM QEA Analyzer:
   [Open-WebUI-Tool](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam_qea_analyzer_openwebui.py)
   · [MCP-Server](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam-qea-mcp-server.py)
@@ -226,10 +226,10 @@ eam-ai --help
   `prosa_vergleich.py`) liegen als Module im Paket; eigene `eam-ai`-Befehle dafür gibt es
   noch nicht.
 
-### EAM MDG Parser (Python)
+### ADMBw Extraktor (Python)
 
 ```bash
-python eam-mdg-parser.py technologie.xml -o rules.json --check
+python admbw-extraktor.py technologie.xml -o rules.json --check
 ```
 
 Dieselbe Datei liegt als `mdg_parser.py` auch im Python-ZIP; sie wird nicht doppelt gepflegt.

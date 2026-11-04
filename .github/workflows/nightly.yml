@@ -72,8 +72,8 @@ jobs:
             dist/EAM-AI-Suite.aspx \
             dist/EAM-Suite.html \
             dist/EAM-Suite.aspx \
-            dist/EAM-MDG-Parser.html \
-            dist/eam-mdg-parser.py \
+            dist/ADMBw-Extraktor.html \
+            dist/admbw-extraktor.py \
             dist/eam_qea_analyzer_openwebui.py \
             dist/eam-qea-mcp-server.py \
             dist/eam-ai-suite-python-*.zip \

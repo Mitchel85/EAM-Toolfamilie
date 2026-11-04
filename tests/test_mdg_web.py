@@ -1,4 +1,4 @@
-"""Der MDG-Parser bleibt die eigenständige Browser-Fassung.
+"""Der ADMBw Extraktor bleibt die eigenständige Browser-Fassung.
 
 Die Platform liefert den Parser mit Datei-Upload, fünf Ansichten und sechs
 Exporten aus. Der Test hält fest, dass `dist/` wirklich die alte Fassung ist
@@ -13,7 +13,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "apps" / "mdg-web" / "index.html"
-OUT = ROOT / "apps" / "mdg-web" / "dist" / "EAM-MDG-Parser.html"
+OUT = ROOT / "apps" / "mdg-web" / "dist" / "ADMBw-Extraktor.html"
 
 
 PROMPT = ROOT / "apps" / "admbw-extractor" / "ADMBw-Prompt.md"
@@ -21,7 +21,7 @@ PROMPT = ROOT / "apps" / "admbw-extractor" / "ADMBw-Prompt.md"
 
 def test_auslieferung_ist_die_alte_fassung() -> None:
     if not OUT.is_file():
-        pytest.skip("MDG-Parser nicht gebaut")
+        pytest.skip("ADMBw Extraktor nicht gebaut")
     # Der Master-Prompt wird beim Bauen eingesetzt; alles andere ist byte-gleich.
     erwartet = SRC.read_text(encoding="utf-8").replace(
         "{{MASTER_PROMPT}}", PROMPT.read_text(encoding="utf-8").strip("\n"), 1
@@ -40,7 +40,7 @@ def test_auslieferung_ist_die_alte_fassung() -> None:
 def test_master_prompt_ist_downloadbar() -> None:
     """Der Prompt des ehemaligen Extraktors ist optionaler Teil des Parsers."""
     if not OUT.is_file():
-        pytest.skip("MDG-Parser nicht gebaut")
+        pytest.skip("ADMBw Extraktor nicht gebaut")
     text = OUT.read_text(encoding="utf-8")
     assert "downloadPrompt" in text
     assert "ADMBw-Prompt.md" in text

@@ -1,11 +1,11 @@
 {
-  "productName": "EAM MDG Parser",
+  "productName": "ADMBw Extraktor",
   "version": "alt",
   "sourceRepo": "Mitchel85/EAM-ADMBw-MDG-Parser",
   "sourceCommit": "8d9f170",
   "sourceNote": "index.html byte-gleich übernommen",
   "buildScript": "build.py",
   "sourceOutput": "index.html",
-  "output": "EAM-MDG-Parser.html",
+  "output": "ADMBw-Extraktor.html",
   "kind": "standalone"
 }

@@ -34,6 +34,22 @@ from string import Template
 ROOT = Path(__file__).resolve().parents[1]
 
 #: (Quelle im Repo, Zielname in dist/, Produkt, Einstiegshinweis)
+#: Kopfzeilen fuer Auslieferungen, die eine Marke tragen sollen, ohne dass die
+#: Quelle sie enthaelt.
+KOPFZEILE = {
+    "admbw-extraktor.py": (
+        '# ADMBw Extraktor -- MDG-Auswertung\n'
+        '#\n'
+        '# Liest die MDG-Technologie der Bundeswehr und schreibt das Regelwerk\n'
+        '# (Stereotype, Konnektoren, Viewpoints, Tag-Typen, Werkzeugkaesten).\n'
+        '#\n'
+        '# Aufruf:  python3 admbw-extraktor.py <mdg.xml> -o rules.json\n'
+        '#\n'
+        '# Die Engine ist technologieneutral und liest jede MDG-/UML-Profil-XML.\n'
+        '\n'
+    ),
+}
+
 AUSLIEFERUNGEN = [
     (
         "apps/html-suite/dist/EAM-AI-Suite.html",
@@ -66,15 +82,15 @@ AUSLIEFERUNGEN = [
         "Dieselbe App mit englischer Oberfläche; Modellinhalte und Dateiformat bleiben unverändert.",
     ),
     (
-        "apps/mdg-web/dist/EAM-MDG-Parser.html",
-        "EAM-MDG-Parser.html",
-        "EAM-ADMBw-MDG-Parser — eine HTML-Datei",
+        "apps/mdg-web/dist/ADMBw-Extraktor.html",
+        "ADMBw-Extraktor.html",
+        "ADMBw Extraktor — eine HTML-Datei",
         "MDG-XML laden: Stereotype, Topologie, Viewpoints, Tag-Typen und Stereotyp-Tags durchsuchen; sechs Regeldateien exportieren. Offline im Browser.",
     ),
     (
         "packages/rules/mdg_parser.py",
-        "eam-mdg-parser.py",
-        "EAM MDG Parser — Python-Variante",
+        "admbw-extraktor.py",
+        "ADMBw Extraktor — Python-Variante",
         "Dieselbe Datei wie im Python-ZIP: MDG-XML in ein Regelwerk übersetzen; ohne Browser.",
     ),
     (
@@ -269,7 +285,7 @@ ${cards}
     <li><b>Ich habe Text, ein Handbuch, PDF oder ein Bild und will ein Modell bauen.</b> → EAM AI Suite</li>
     <li><b>Ich habe ein Modell und will es verstehen und prüfen.</b> → EAM Suite</li>
     <li><b>Ich will Modelle bearbeiten, verschmelzen oder zurückschreiben.</b> → EAM Suite</li>
-    <li><b>Ich will nur das Regelwerk nachschlagen.</b> → EAM MDG Parser</li>
+    <li><b>Ich will nur das Regelwerk nachschlagen.</b> → ADMBw Extraktor</li>
     <li><b>Ich nutze Open WebUI oder MCP und will ein Modell abfragen.</b> → EAM QEA Analyzer (Open-WebUI-Tool + MCP-Server)</li>
     <li><b>Ich will Kommandozeile, Webdienst oder MCP.</b> → Python-ZIP</li>
     <li><b>Ich will einen eigenen Server.</b> → Container-Image</li>
@@ -356,13 +372,13 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
             slug="suite",
         ),
         _karte(
-            "EAM MDG Parser", "Nachschlagen und exportieren",
+            "ADMBw Extraktor", "Nachschlagen und exportieren",
             "MDG-XML laden: Stereotype, Topologie, Viewpoints, Tag-Typen und Stereotyp-Tags durchsuchen; sechs Regeldateien exportieren. Als HTML im Browser oder als Python-Skript.",
-            "EAM-MDG-Parser.html", "EAM-MDG-Parser.html herunterladen",
+            "ADMBw-Extraktor.html", "ADMBw-Extraktor.html herunterladen",
             ["HTML im Browser öffnen oder Python starten", "MDG-XML laden", "Regeldateien exportieren"],
-            groesse=groesse("EAM-MDG-Parser.html"),
+            groesse=groesse("ADMBw-Extraktor.html"),
             slug="mdg",
-            weitere=[("eam-mdg-parser.py", "Python-Variante herunterladen")],
+            weitere=[("admbw-extraktor.py", "Python-Variante herunterladen")],
         ),
         _karte(
             "EAM QEA Analyzer", "Abfragen",
@@ -427,7 +443,12 @@ def main() -> int:
             continue
         ziel = dist / zielname
         ziel.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(quelle, ziel)
+        if zielname in KOPFZEILE:
+            # Marke nur in der Auslieferung, nicht in der Engine: der Parser
+            # selbst bleibt technologieneutral (tests/test_technology_agnostic).
+            ziel.write_text(KOPFZEILE[zielname] + quelle.read_text(encoding="utf-8"), encoding="utf-8")
+        else:
+            shutil.copyfile(quelle, ziel)
         groesse = f"{ziel.stat().st_size:,}".replace(",", ".")
         zeilen.append(f"| `{zielname}` | {produkt} | {groesse} B | `{sha256(ziel)[:16]}…` |")
         vorhanden.append((zielname, produkt, hinweis))

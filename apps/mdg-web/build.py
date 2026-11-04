@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Liefert den vollständigen MDG-Browser-Parser aus.
+"""Liefert den ADMBw Extraktor (Browser-Fassung) aus.
 
     python3 apps/mdg-web/build.py
 
@@ -21,7 +21,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 SRC = HERE / "index.html"
-OUT = HERE / "dist" / "EAM-MDG-Parser.html"
+OUT = HERE / "dist" / "ADMBw-Extraktor.html"
 PROMPT = HERE.parent / "admbw-extractor" / "ADMBw-Prompt.md"
 PLATZHALTER = "{{MASTER_PROMPT}}"
 

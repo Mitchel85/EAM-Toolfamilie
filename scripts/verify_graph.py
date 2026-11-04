@@ -50,7 +50,7 @@ ARTEFAKTE = {
     "apps/html-suite/dist/EAM-AI-Suite.aspx": "apps/html-suite",
     "apps/html-editor/dist/EAM-Suite.html": "apps/html-editor",
     "apps/html-editor/dist/EAM-Suite.aspx": "apps/html-editor",
-    "apps/mdg-web/dist/EAM-MDG-Parser.html": "apps/mdg-web",
+    "apps/mdg-web/dist/ADMBw-Extraktor.html": "apps/mdg-web",
 }
 
 #: Apps, die die Wissensbasis über Symlinks lesen müssen (keine Kopien).
