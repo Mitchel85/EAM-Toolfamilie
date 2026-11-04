@@ -23,6 +23,7 @@ import base64
 import os
 import re
 import subprocess
+import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(REPO, "src")
@@ -58,6 +59,22 @@ with open(os.path.join(VEND, "sql-wasm.wasm"), "rb") as f:
 assert "window.KI =" in part6, "KI-Modul fehlt!"
 assert "function qeaOpen(" in script_reader, "qeaOpen-Reader fehlt!"
 assert "var ADMBW_DATA =" in script_reader, "ADMBW_DATA fehlt!"
+
+# Der eingebettete Datensatz muss dem Regelwerk entsprechen. Weicht er ab,
+# bricht der Bau -- sonst altert die Einzeldatei still weiter.
+import subprocess as _sp
+_wurzel = os.path.dirname(os.path.dirname(REPO))
+_pruefung = _sp.run(
+    [sys.executable, os.path.join(_wurzel, "scripts", "build_html_data.py"), "--pruefen"],
+    capture_output=True, text=True,
+)
+if _pruefung.returncode != 0:
+    raise SystemExit(
+        "ADMBW_DATA passt nicht zum Regelwerk:\n"
+        + (_pruefung.stdout + _pruefung.stderr).strip()
+        + "\nNeu schreiben: python3 scripts/build_html_data.py --schreiben"
+    )
+print(_pruefung.stdout.strip())
 assert "var STDIMPORT =" in part8, "STDIMPORT-Modul fehlt!"
 assert "var HANDBUCH =" in part9, "HANDBUCH-Modul fehlt!"
 assert "var NL =" in part10, "NL-Modul fehlt!"

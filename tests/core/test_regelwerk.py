@@ -123,3 +123,12 @@ def test_konventionen_dateien_bleiben_unabhaengig(daten: dict) -> None:
     """Die Konventionstexte sind kein Teil des Artefakts, werden aber verwiesen."""
     for key in ("ffmlv", "pbn"):
         assert daten["quellen"]["leitfaeden"][key]["eintraege"] > 0
+
+
+def test_html_suite_daten_entsprechen_dem_regelwerk() -> None:
+    """Die HTML-Suite traegt keinen eigenen, gealterten Regelsatz."""
+    ergebnis = subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "build_html_data.py"), "--pruefen"],
+        cwd=ROOT, capture_output=True, text=True, timeout=120,
+    )
+    assert ergebnis.returncode == 0, ergebnis.stdout + ergebnis.stderr

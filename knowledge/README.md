@@ -58,6 +58,10 @@ python3 scripts/build_regelwerk.py          # Artefakt schreiben
 python3 scripts/build_regelwerk.py --check  # nur prüfen (Exit 1 bei Drift)
 ```
 
+Die HTML-Suite bekommt ihre Referenzdaten beim Bauen: `scripts/build_html_data.py`
+schreibt `ADMBW_DATA` aus diesem Artefakt in `apps/html-suite/src/part0_reader_data.js`.
+Weicht der eingebettete Satz ab, bricht der Bau der Suite ab.
+
 `--check` läuft in der Testsuite (`tests/core/test_regelwerk.py`). Ändert sich
 eine Quelle, ohne dass das Artefakt neu gebaut wurde, wird der Test rot.
 
