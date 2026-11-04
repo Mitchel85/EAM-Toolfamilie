@@ -4,6 +4,36 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.3.0 - 2026-11-04
+
+### Wissensbasis
+
+Ein Artefakt statt drei getrennter Quellen: `knowledge/regelwerk.json` fuehrt
+je Viewpoint zusammen, was die MDG erlaubt, was die Leitfaeden verlangen und
+wie der Model Wizard die Sicht mustert. 54 Viewpoints, jede Aussage mit
+Herkunft, Widersprueche gemeldet statt stillschweigend aufgeloest.
+
+### Leitfaeden
+
+Der bisher fehlende Leitfaden "Projektarchitekturen (PBN) - Anteil Service und
+System" (V2.1) ist ausgewertet: 226 Modellierungskonventionen. Die
+FFfmLV-Konventionen wurden neu aus dem PDF gewonnen (303 Eintraege); dabei
+sind Reste der Verweisspalte aus dem Text verschwunden.
+
+### MDG-Leser
+
+`UIToolboxes` werden gelesen: 53 Werkzeugkaesten mit Stereotyp und
+Metaklasse. Damit ist belegt, welche Elemente eine Sicht vorsieht.
+
+### Model Wizard
+
+Assoziationen der 52 Vorlagen werden aufgeloest statt nur gezaehlt -- beide
+Enden ueber die xmi.id, auch fuer ActionState, Transition und ClassifierRole.
+
+### EAM Suite
+
+Die Fassung mit BPMN-Darstellung ersetzt die vorherige Auslieferung.
+
 ## 3.2.7 - 2026-10-27
 
 ### EAM Suite
