@@ -225,4 +225,15 @@ Weiterlesen
 - [docs/MIGRATION.md](docs/MIGRATION.md) — Migration
 - [docs/ABNAHME.md](docs/ABNAHME.md) — Abnahmelauf und Prüfungen
 
+## Danksagung
+
+Der EAM Analyzer baut auf den Erfahrungen und dem Code von **Markus Schmitz**
+([@schmitze87](https://github.com/schmitze87)) auf — sein Projekt
+[**AAroN (ArAMIS)**](https://github.com/schmitze87/AAroN) hat die QEA-Tabellenstruktur
+von Sparx EA dokumentiert und als Open-Source-Prozessoren verfügbar gemacht. Ohne diese
+Arbeit wäre der Analyzer nicht entstanden: danke dafür. Die QEA-Analyse in
+`apps/mcp/eam_qea_tool.py` ist daraus abgeleitet; der Lizenztext (Apache-2.0) liegt im
+Repository als [`apps/mcp/LICENSE-AAroN.txt`](apps/mcp/LICENSE-AAroN.txt). Details zu
+Rechten Dritter stehen in [NOTICE.md](NOTICE.md).
+
 Lizenz: [LICENSE](LICENSE) · Hinweise zu Drittkomponenten: [NOTICE.md](NOTICE.md)
