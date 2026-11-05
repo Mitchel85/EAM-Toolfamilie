@@ -4,6 +4,14 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.4.1 - 2026-11-05
+
+### BPMN Studio: Kommandozeile
+
+`python -m bpmn.cli` mit vier Befehlen: `pruefen`, `konform`, `export`
+(XML/SVG/PNG) und `extrahieren`. Damit ist die Python-Fassung nicht nur eine
+Bibliothek, sondern ein benutzbares Werkzeug. Test deckt alle vier Befehle ab.
+
 ## 3.4.0 - 2026-11-05
 
 ### Neues Werkzeug: BPMN Studio
