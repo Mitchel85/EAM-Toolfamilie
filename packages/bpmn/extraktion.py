@@ -392,6 +392,7 @@ ROLLEN_KANONISCH = {
 }
 
 #: Pronomen, die ein vorheriges Objekt aufgreifen.
+SUBJEKT_PRONOMEN = {"er", "sie", "es", "wir", "ich"}
 PRONOMEN_OBJEKT = {"ihn", "sie", "es", "ihm", "diesen", "diese", "dieses", "den", "die", "das"}
 
 #: Verben, die eine Nachricht kennzeichnen.
@@ -681,6 +682,17 @@ def _objekt(
                 break
 
     start = verb_index + 1
+    # Inversionssatz: "Danach sendet sie die Rechnung." Das Pronomen ist das
+    # Subjekt, nicht das Objekt -- aber nur ueberspringen, wenn danach noch
+    # Inhalt folgt ("prueft sie" bleibt ohne Objekt).
+    # Nur ueberspringen, wenn danach eine Objektphrase mit Artikel folgt.
+    # "sendet es an den Kunden" behaelt "es": das Pronomen ist das Objekt.
+    if (
+        start + 1 < len(klein)
+        and klein[start] in SUBJEKT_PRONOMEN
+        and klein[start + 1] in ARTIKEL
+    ):
+        start += 1
     # Artikel und ein eingeschobenes Subjekt ueberspringen.
     weitergesucht = True
     while weitergesucht and start < len(klein):
@@ -811,9 +823,12 @@ def _schritt_aus_satz(
     aktion, verb_index, form = verb
     rolle, rolle_sicher = _rolle_im_satz(hauptsatz)
     geerbte_rolle = False
+    pronomen = ""
     if not rolle and letzte_rolle:
         rolle = letzte_rolle
         geerbte_rolle = True
+        treffer = re.search(r"\b(er|sie|es)\b", hauptsatz, re.I)
+        pronomen = treffer.group(1).lower() if treffer else ""
         # Innerhalb desselben Satzes traegt das Subjekt weiter (Koordination);
         # ueber die Satzgrenze hinweg ist es eine Annahme.
         rolle_sicher = folgeklausel
@@ -834,7 +849,11 @@ def _schritt_aus_satz(
         begruendung = f"Passiv ohne Agens: Verb '{form}', Objekt '{objekt}'"
     elif geerbte_rolle and not rolle_sicher:
         sicherheit = UNSICHER
-        begruendung = f"Rolle '{rolle}' aus dem vorigen Satz geerbt"
+        begruendung = (
+            f"Rolle '{rolle}' ueber Pronomen '{pronomen}' aus dem vorigen Satz geerbt"
+            if pronomen
+            else f"Rolle '{rolle}' aus dem vorigen Satz geerbt"
+        )
     elif rolle_sicher:
         sicherheit = SICHER
         begruendung = (

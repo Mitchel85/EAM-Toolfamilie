@@ -618,6 +618,10 @@
     var k = w.map(function (x) { return x.toLowerCase(); });
     var rollenTeile = rolle ? woerter(rolle).map(function (x) { return x.toLowerCase(); }) : [];
     var start = verbIndex + 1;
+    // Inversion: "Danach sendet sie die Rechnung." -- Pronomen ist Subjekt.
+    if (start + 1 < k.length && ['er', 'sie', 'es', 'wir', 'ich'].indexOf(k[start]) >= 0 && ARTIKEL[k[start + 1]]) {
+      start++;
+    }
     var weitergesucht = true;
     while (weitergesucht && start < w.length) {
       weitergesucht = false;

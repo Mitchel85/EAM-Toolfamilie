@@ -282,3 +282,16 @@ def test_auftrag_ohne_treffer_nimmt_den_ganzen_text() -> None:
     ergebnis = extraktion.extrahiere(text, anweisung="extrahiere den Prozess Mondlandung")
     assert len(ergebnis.schritte) >= 1
     assert any("kein passender Abschnitt" in h for h in ergebnis.hinweise)
+
+
+def test_pronomen_als_subjekt_verfaelscht_das_objekt_nicht() -> None:
+    """'Danach sendet sie die Rechnung' -> Objekt 'Rechnung', Rolle geerbt."""
+    text = (
+        "Die Buchhaltung erstellt die Rechnung. Danach sendet sie die Rechnung an den Kunden. "
+        "Anschliessend bucht sie den Zahlungseingang."
+    )
+    schritte = extraktion.extrahiere(text).schritte
+    assert [s.aktion for s in schritte] == ["erstellen", "senden", "buchen"]
+    assert [s.objekt for s in schritte] == ["Rechnung", "Rechnung", "Zahlungseingang"]
+    assert all(s.rolle == "Buchhaltung" for s in schritte)
+    assert any("Pronomen" in s.begruendung for s in schritte[1:])

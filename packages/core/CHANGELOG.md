@@ -4,6 +4,19 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.4.3 - 2026-11-05
+
+### Pronomen in der Prosa-Extraktion
+
+"Danach sendet sie die Rechnung an den Kunden" ergab bisher den Schritt
+"Sie die Rechnung senden". Das Pronomen ist das Subjekt im Inversionssatz,
+nicht das Objekt: es wird uebersprungen, die Rolle aus dem vorigen Satz
+uebernommen und die Begruendung nennt das Pronomen.
+
+- Schrittnamen jetzt "Rechnung senden", "Zahlungseingang buchen"
+- Gleiche Korrektur im HTML-Studio (JS-Port)
+- Test fuer Objekt, Rolle und Begruendung
+
 ## 3.4.2 - 2026-11-05
 
 ### Auftrag bei der Prosa-Extraktion

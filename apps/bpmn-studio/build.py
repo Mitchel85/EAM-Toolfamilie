@@ -36,7 +36,7 @@ REGELN = ROOT / "knowledge" / "bpmn" / "prozess-regeln.json"
 AUSGABE = HERE / "index.html"
 DIST = HERE / "dist" / "BPMN-Studio.html"
 
-VERSION = "3.4.2"
+VERSION = "3.4.3"
 BPMN_JS_VERSION = "18.31.1"
 
 MIME = {

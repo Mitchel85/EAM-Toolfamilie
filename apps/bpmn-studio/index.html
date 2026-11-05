@@ -1828,7 +1828,7 @@ h1 { font-size: 18px; margin: 0; letter-spacing: .2px; }
     <span class="zeichen">B</span>
     <div>
       <h1>BPMN Studio</h1>
-      <p class="unterzeile">ADMBw · BPMN 2.0 · Prozesse extrahieren, prüfen, exportieren · <span id="version">3.4.2</span></p>
+      <p class="unterzeile">ADMBw · BPMN 2.0 · Prozesse extrahieren, prüfen, exportieren · <span id="version">3.4.3</span></p>
     </div>
   </div>
   <div class="werkzeuge" role="toolbar" aria-label="Werkzeuge">
@@ -2925,6 +2925,10 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
     var k = w.map(function (x) { return x.toLowerCase(); });
     var rollenTeile = rolle ? woerter(rolle).map(function (x) { return x.toLowerCase(); }) : [];
     var start = verbIndex + 1;
+    // Inversion: "Danach sendet sie die Rechnung." -- Pronomen ist Subjekt.
+    if (start + 1 < k.length && ['er', 'sie', 'es', 'wir', 'ich'].indexOf(k[start]) >= 0 && ARTIKEL[k[start + 1]]) {
+      start++;
+    }
     var weitergesucht = true;
     while (weitergesucht && start < w.length) {
       weitergesucht = false;
@@ -3343,7 +3347,7 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
       pruefe: pruefe,
       zerlege: zerlege,
       prozessXml: prozessXml,
-      version: '3.4.2'
+      version: '3.4.3'
     };
   }
 
