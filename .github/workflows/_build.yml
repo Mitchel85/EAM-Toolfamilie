@@ -45,6 +45,7 @@ jobs:
           python scripts/build_legacy_app.py apps/html-editor
           python apps/html-editor/build_english.py
           python apps/mdg-web/build.py
+          python apps/bpmn-studio/build.py
 
       - name: Auslieferungsgraph (jede Zelle, jede Kante, jedes Artefakt)
         run: python scripts/verify_graph.py --md dist/GRAPH.md
