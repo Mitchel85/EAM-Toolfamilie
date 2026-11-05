@@ -66,10 +66,12 @@ def _export(args) -> int:
 
 def _extrahieren(args) -> int:
     text = Path(args.datei).read_text(encoding="utf-8")
-    ergebnis = extraktion.extrahiere(text)
+    ergebnis = extraktion.extrahiere(text, anweisung=args.anweisung)
     modell = ergebnis.modell if hasattr(ergebnis, "modell") else ergebnis
     ziel = Path(args.ausgabe)
     ziel.write_text(bpmn_xml.schreibe_text(modell), encoding="utf-8")
+    for hinweis in getattr(ergebnis, "hinweise", []):
+        print(f"hinweis: {hinweis}")
     print(f"geschrieben: {ziel} | {len(modell.knoten)} Knoten, {len(modell.fluesse)} Fluesse")
     return 0
 
@@ -96,6 +98,8 @@ def main(argv: list[str] | None = None) -> int:
     x = unter.add_parser("extrahieren", help="aus Prosa ein Prozessmodell ableiten")
     x.add_argument("datei")
     x.add_argument("-o", "--ausgabe", required=True)
+    x.add_argument("--anweisung", default=None,
+                   help='Auftrag in eigenen Worten, z. B. "extrahiere den Prozess Rechnungslauf"')
     x.set_defaults(funktion=_extrahieren)
 
     args = parser.parse_args(argv)

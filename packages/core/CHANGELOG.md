@@ -4,6 +4,20 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.4.2 - 2026-11-05
+
+### Auftrag bei der Prosa-Extraktion
+
+Neben dem Text laesst sich ein Auftrag mitgeben, etwa "Anbei das Handbuch,
+extrahiere den Prozess Rechnungslauf". Genannt der Auftrag einen Prozess,
+schneidet das Werkzeug genau diesen Abschnitt aus dem Dokument; ohne Treffer
+wird der ganze Text ausgewertet, und der Hinweis sagt das offen.
+
+- HTML-Studio: Feld "Auftrag (optional)" ueber dem Prozesstext
+- Kommandozeile: `--anweisung`
+- KI-Adapter: der Auftrag geht als Vorgabe in die Anfrage
+- Test: Abschnittswahl in Python, Marker im Studio
+
 ## 3.4.1 - 2026-11-05
 
 ### BPMN Studio: Kommandozeile

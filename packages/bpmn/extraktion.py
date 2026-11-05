@@ -1168,15 +1168,101 @@ def _neuer_schrittknoten(
 # --------------------------------------------------------------------------
 
 
-def extrahiere(text: str, prozess_name: str | None = None) -> Extraktion:
-    """Regelbasierte Extraktion: Text hinein, Modell plus Sicherheitsgrade heraus."""
+def extrahiere(
+    text: str,
+    prozess_name: str | None = None,
+    anweisung: str | None = None,
+) -> Extraktion:
+    """Regelbasierte Extraktion: Text hinein, Modell plus Sicherheitsgrade heraus.
+
+    ``anweisung`` ist der Auftrag in eigenen Worten, etwa "anbei Handbuch,
+    extrahiere den Prozess Rechnungslauf". Genannt der Auftrag einen Prozess,
+    wird dieser Abschnitt aus dem Dokument geschnitten; ohne Treffer bleibt der
+    ganze Text die Grundlage. Die Entscheidung steht danach in ``hinweise``.
+    """
     if not isinstance(text, str):
         raise TypeError("text muss eine Zeichenkette sein")
-    schritte = erkenne_schritte(text)
-    name = prozess_name or _prozessname_aus_text(text)
-    extraktion = baue_modell(schritte, name)
-    extraktion.rollen = erkenne_rollen(text, schritte)
-    return extraktion
+    hinweise: list[str] = []
+    arbeits_text = text
+    if anweisung:
+        gesucht = _prozessname_aus_anweisung(anweisung)
+        if gesucht:
+            prozess_name = prozess_name or gesucht
+            abschnitt = _abschnitt_waehlen(text, gesucht)
+            if abschnitt is not None:
+                arbeits_text, zeilen = abschnitt
+                hinweise.append(
+                    f'Auftrag: Abschnitt "{gesucht}" gewaehlt ({zeilen} Zeilen); '
+                    "der uebrige Text wurde nicht ausgewertet."
+                )
+            else:
+                hinweise.append(
+                    f'Auftrag nennt "{gesucht}", im Text aber kein passender '
+                    "Abschnitt gefunden -- ganzer Text ausgewertet."
+                )
+        elif anweisung.strip():
+            hinweise.append("Auftrag ohne Prozessnamen -- ganzer Text ausgewertet.")
+    schritte = erkenne_schritte(arbeits_text)
+    name = prozess_name or _prozessname_aus_text(arbeits_text)
+    ergebnis = baue_modell(schritte, name, hinweise=hinweise)
+    ergebnis.rollen = erkenne_rollen(arbeits_text, schritte)
+    return ergebnis
+
+
+def _prozessname_aus_anweisung(anweisung: str) -> str:
+    """Prozessnamen aus einem Auftragssatz ziehen.
+
+    Erkannt werden Anfuehrungszeichen und die Formen "Prozess X",
+    "Vorgang X", "Verfahren X". Ohne solchen Hinweis bleibt es leer.
+    """
+    text = anweisung.strip()
+    for muster in (
+        r'[\"„“\']([^\"“”\']{3,80})[\"“”\']',
+        r"\b(?:prozess|vorgang|verfahren)\s+([A-Za-zÄÖÜäöüß0-9][\w\-äöüß ]{2,60})",
+    ):
+        treffer = re.search(muster, text, re.IGNORECASE)
+        if treffer:
+            name = treffer.group(1).strip(" .,;:-")
+            name = re.split(r"\s+(?:aus|auszugsweise|bitte|und|sowie)\b", name, maxsplit=1)[0]
+            if len(name) >= 3:
+                return name.strip()
+    return ""
+
+
+def _abschnitt_waehlen(text: str, name: str) -> tuple[str, int] | None:
+    """Schneidet den Abschnitt, dessen Ueberschrift den Namen traegt.
+
+    Eine Ueberschrift ist eine kurze Zeile ohne Satzende. Der Abschnitt reicht
+    bis zur naechsten Ueberschrift derselben Ebene -- angenaehert ueber die
+    Zeilenlaenge, weil Dokumente selten saubere Ebenen mitbringen.
+    """
+    zeilen = _normalisiere(text).split("\n")
+    klein = name.casefold()
+    for i, zeile in enumerate(zeilen):
+        roh = zeile.strip().strip("#*=-–— ")
+        if nicht_ueberschrift(roh) or klein not in roh.casefold():
+            continue
+        grenze = _naechste_ueberschrift(zeilen, i, len(roh))
+        block = [z for z in zeilen[i:grenze] if z.strip()]
+        if len(block) >= 2:
+            return "\n".join(block), len(block)
+    return None
+
+
+def nicht_ueberschrift(zeile: str) -> bool:
+    """Kurze Zeile ohne Satzende gilt als Ueberschrift."""
+    return not zeile or len(zeile) > 90 or zeile.endswith((".", "!", "?", ";"))
+
+
+def _naechste_ueberschrift(zeilen: list[str], start: int, laenge: int) -> int:
+    for j in range(start + 1, len(zeilen)):
+        roh = zeilen[j].strip().strip("#*=-–— ")
+        if not nicht_ueberschrift(roh):
+            continue
+        # Aehnliche Laenge spricht fuer dieselbe Ebene; sehr lange Zeilen sind Text.
+        if abs(len(roh) - laenge) <= max(25, laenge // 2):
+            return j
+    return len(zeilen)
 
 
 def _prozessname_aus_text(text: str) -> str:

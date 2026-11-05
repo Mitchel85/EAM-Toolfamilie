@@ -254,3 +254,31 @@ def test_ki_bricht_bei_kaputter_antwort_ab(ki_an, monkeypatch) -> None:
 
     with pytest.raises(ki.KIAntwortFehler):
         ki.extrahiere_mit_ki("Der Sachbearbeiter prueft den Antrag.")
+
+
+def test_auftrag_waehlt_den_genannten_abschnitt() -> None:
+    """'anbei Handbuch, extrahiere den Prozess X' schneidet genau diesen Abschnitt."""
+    text = (
+        "Handbuch Antraege\n\n"
+        "Prozess Antragsbearbeitung\n"
+        "Der Sachbearbeiter nimmt den Antrag an. Danach prueft die Fachabteilung die Unterlagen.\n\n"
+        "Prozess Rechnungslauf\n"
+        "Die Buchhaltung erstellt die Rechnung. Danach sendet sie die Rechnung an den Kunden.\n"
+        "Anschliessend bucht die Buchhaltung den Zahlungseingang.\n"
+    )
+    ergebnis = extraktion.extrahiere(
+        text, anweisung="Anbei das Handbuch, extrahiere den Prozess Rechnungslauf"
+    )
+    aktionen = [schritt.aktion for schritt in ergebnis.schritte]
+    assert "erstellen" in aktionen
+    assert "senden" in aktionen
+    assert "annehmen" not in aktionen, "Abschnitt Antragsbearbeitung haette nicht zaehlen duerfen"
+    assert ergebnis.modell.name == "Rechnungslauf"
+    assert any("Abschnitt" in h for h in ergebnis.hinweise)
+
+
+def test_auftrag_ohne_treffer_nimmt_den_ganzen_text() -> None:
+    text = "Der Sachbearbeiter prueft den Antrag. Danach erstellt er den Bescheid."
+    ergebnis = extraktion.extrahiere(text, anweisung="extrahiere den Prozess Mondlandung")
+    assert len(ergebnis.schritte) >= 1
+    assert any("kein passender Abschnitt" in h for h in ergebnis.hinweise)

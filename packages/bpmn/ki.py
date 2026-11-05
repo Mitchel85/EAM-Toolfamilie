@@ -234,13 +234,24 @@ def _system_prompt() -> str:
     )
 
 
-def _anfrage_bauen(text: str, konfiguration: Konfiguration) -> dict[str, Any]:
+def _anfrage_bauen(
+    text: str,
+    konfiguration: Konfiguration,
+    anweisung: str | None = None,
+) -> dict[str, Any]:
+    """Anfrage bauen; ein Auftrag geht als Vorgabe mit, nicht als Textersatz."""
+    inhalt = text
+    if anweisung and anweisung.strip():
+        inhalt = (
+            "Auftrag des Nutzers (beachten, aber nichts erfinden, was nicht im "
+            "Text steht):\n" + anweisung.strip() + "\n\nText:\n" + text
+        )
     return {
         "model": konfiguration.modell,
         "temperature": 0,
         "messages": [
             {"role": "system", "content": _system_prompt()},
-            {"role": "user", "content": text},
+            {"role": "user", "content": inhalt},
         ],
         "response_format": {"type": "json_object"},
     }
@@ -329,6 +340,7 @@ def extrahiere_mit_ki(
     text: str,
     prozess_name: str | None = None,
     *,
+    anweisung: str | None = None,
     erlaube_personenbezug: bool = False,
     konfiguration: Konfiguration | None = None,
     opener: Callable[..., Any] | None = None,
@@ -352,7 +364,7 @@ def extrahiere_mit_ki(
     if treffer and not erlaube_personenbezug:
         raise KIDatenschutz(treffer)
 
-    roh = _sende(_anfrage_bauen(text, cfg), cfg, opener=opener)
+    roh = _sende(_anfrage_bauen(text, cfg, anweisung), cfg, opener=opener)
     try:
         antwort = json.loads(roh)
         inhalt = antwort["choices"][0]["message"]["content"]

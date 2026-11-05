@@ -839,9 +839,52 @@
     $('text-dialog').showModal();
   }
 
+  // Auftrag auswerten: "extrahiere den Prozess Rechnungslauf" -> Abschnitt.
+  function abschnittFuerAuftrag(text, auftrag) {
+    var ergebnis = { text: text, name: '', hinweis: '' };
+    if (!auftrag) return ergebnis;
+    var name = '';
+    var zitat = auftrag.match(/["„“']([^"“”']{3,80})["“”']/);
+    if (zitat) name = zitat[1].trim();
+    if (!name) {
+      var form = auftrag.match(/\b(?:prozess|vorgang|verfahren)\s+([A-Za-zÄÖÜäöüß0-9][\w\-äöüß ]{2,60})/i);
+      if (form) name = form[1].replace(/\s+(aus|bitte|und|sowie)\b.*$/i, '').trim();
+    }
+    if (!name) {
+      ergebnis.hinweis = 'Auftrag ohne Prozessnamen — ganzer Text ausgewertet.';
+      return ergebnis;
+    }
+    ergebnis.name = name;
+    var zeilen = text.split('\n');
+    var klein = name.toLowerCase();
+    for (var i = 0; i < zeilen.length; i++) {
+      var roh = zeilen[i].trim().replace(/^[#*=\-–— ]+|[#*=\-–— ]+$/g, '');
+      if (!roh || roh.length > 90 || /[.!?;]$/.test(roh)) continue;
+      if (roh.toLowerCase().indexOf(klein) === -1) continue;
+      var grenze = zeilen.length;
+      for (var j = i + 1; j < zeilen.length; j++) {
+        var kandidat = zeilen[j].trim().replace(/^[#*=\-–— ]+|[#*=\-–— ]+$/g, '');
+        if (!kandidat || kandidat.length > 90 || /[.!?;]$/.test(kandidat)) continue;
+        if (Math.abs(kandidat.length - roh.length) <= Math.max(25, roh.length / 2)) { grenze = j; break; }
+      }
+      var block = zeilen.slice(i, grenze).filter(function (z) { return z.trim(); });
+      if (block.length >= 2) {
+        ergebnis.text = block.join('\n');
+        ergebnis.hinweis = 'Auftrag: Abschnitt "' + name + '" gewählt (' + block.length + ' Zeilen); der übrige Text wurde nicht ausgewertet.';
+        return ergebnis;
+      }
+    }
+    ergebnis.hinweis = 'Auftrag nennt "' + name + '", im Text aber kein passender Abschnitt — ganzer Text ausgewertet.';
+    return ergebnis;
+  }
+
   function textExtrahieren() {
     var text = $('text-eingabe').value.trim();
     if (!text) { $('text-warnung').hidden = false; $('text-warnung').textContent = 'Bitte einen Prozesstext eingeben.'; return; }
+    var auftrag = $('text-auftrag') ? $('text-auftrag').value.trim() : '';
+    var wahl = abschnittFuerAuftrag(text, auftrag);
+    if (wahl.name && !$('text-name').value.trim()) $('text-name').value = wahl.name;
+    text = wahl.text;
     var schritte = zerlege(text);
     if (!schritte.length) {
       $('text-warnung').hidden = false;
@@ -851,7 +894,7 @@
     var xml = prozessXml($('text-name').value, schritte);
     $('text-dialog').close();
     importieren(xml).then(function () {
-      protokoll = ['Aus Text: ' + schritte.length + ' Schritt(e), ' + new Set(schritte.map(function (s) { return s.rolle || 'Bearbeitung'; })).size + ' Rolle(n) als Lanes.'];
+      protokoll = [wahl.hinweis].concat(['Aus Text: ' + schritte.length + ' Schritt(e), ' + new Set(schritte.map(function (s) { return s.rolle || 'Bearbeitung'; })).size + ' Rolle(n) als Lanes.']).filter(function (z) { return !!z; });
       protokolliere('Alle Elemente sind Vorschläge — bitte fachlich prüfen (Sicherheitsgrad "unsicher").');
       zeichneProtokoll();
       $('reiter-protokoll').click();
