@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+"""Einstieg fuer die Kommandozeile im Monorepo: ``eam-ai build ...``.
+
+Die Implementierung liegt in ``packages/core/eam_ai.py``. Dieses Skript setzt
+den Suchpfad, damit der Aufruf ohne Installation funktioniert.
+"""
+
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "packages" / "core"))
+
+from eam_ai import main  # noqa: E402
+
+if __name__ == "__main__":
+    raise SystemExit(main())

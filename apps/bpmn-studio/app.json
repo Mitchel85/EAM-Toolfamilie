@@ -1,0 +1,14 @@
+{
+  "productName": "BPMN Studio",
+  "version": "3.4.3",
+  "sourceRepo": "Mitchel85/eam-platform",
+  "sourceCommit": "eigenbau",
+  "sourceNote": "Eigenentwicklung im Monorepo; bpmn-js 18.31.1 (MIT) gebündelt, keine Laufzeit-Netzabhängigkeit",
+  "buildScript": "build.py",
+  "sourceOutput": "src/index.html",
+  "output": "BPMN-Studio.html",
+  "kind": "standalone",
+  "bundled": {
+    "bpmn-js": "18.31.1"
+  }
+}

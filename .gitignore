@@ -1,0 +1,32 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+dist/
+*.qea.edit-tmp
+/scratch/
+
+# Altwerkzeug-Build schreibt GitHub-Pages-Spiegel; nicht Teil der Auslieferung.
+apps/*/docs/
+
+# Grosse Fixtures liegen im internen Fixture-Store; die Musterarchitektur ist die Ausnahme (versionierte Test-Fixture).
+# Grosse Pruefmodelle bleiben lokal -- Ausnahme: die versionierte oeffentliche Test-Fixture
+# (Pruefsumme in packages/core/ci/fixtures_manifest.json)
+packages/core/fixtures/*.qea
+!packages/core/fixtures/Musterarchitektur_MASC.qea
+
+# Vendor-Kopien der Apps entstehen beim Bauen aus vendor/ (scripts/sync_vendor.py).
+apps/*/vendor/
+
+# Lokale Agent-Arbeitsstaende
+.hermes/
+
+# Testergebnis des Script-Makers: enthaelt absolute Pfade, wird beim Lauf erzeugt
+apps/admbw-script-maker/tests/results.json
+
+# Leitfaden V2.0: Single Source of Truth ist die Verlags-/BMVg-Seite.
+# Im Repo liegen nur die abgeleiteten Regelmodelle (konventionen.json, leitfaden.txt).
+knowledge/leitfaden/*.pdf
+
+# Model-Wizard-Vorlagen (BAAINBw, ADMBw): offizielle Dokumente, kein Redistributions-
+# recht. Bleiben lokal; der Abgleich laeuft nur, wenn das Verzeichnis vorhanden ist.
+knowledge/modelwizard/

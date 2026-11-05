@@ -1,0 +1,6328 @@
+{
+ "schemaVersion": 1,
+ "zweck": "Ein Artefakt fuer alle Pipelines: erlaubt (MDG), gefordert (Leitfaeden), gemustert (Model Wizard) -- je Viewpoint, mit Herkunft.",
+ "quellen": {
+  "mdg": {
+   "datei": "packages/rules/NAFv4-ADMBw-MDG-2026.05.xml",
+   "sha256": "e2e8c69281dcc83ad4382bd1b196c23850a847defb33d0a0ffcb429d747f3643",
+   "version": "2026.05"
+  },
+  "leitfaeden": {
+   "ffmlv": {
+    "id": "ffmlv",
+    "titel": "Leitfaden Architekturen fuer FFFmLV",
+    "version": "2.0",
+    "stand": "2026-04-17",
+    "datei": "knowledge/leitfaden/konventionen.json",
+    "sha256": "84cad7981e4f02973fda152f1d36332f826ffc2c8aa8de1085075f4a89d38f79",
+    "eintraege": 303
+   },
+   "pbn": {
+    "id": "pbn",
+    "titel": "Leitfaden Projektarchitekturen (PBN) - Anteil Service und System",
+    "version": "2.1",
+    "stand": "2026-04-17",
+    "datei": "knowledge/leitfaden/konventionen-pbn.json",
+    "sha256": "d69473b3e3f6742aed7ff95afd61c8886e9f3c3c7feee85581d96026387acb21",
+    "eintraege": 226
+   }
+  },
+  "model_wizard": {
+   "ordner": "knowledge/modelwizard",
+   "vorlagen": 52
+  },
+  "pruefung": {
+   "datei": "knowledge/leitfaden/pruefung.json",
+   "sha256": "e7573e232288b7c5d79d08d0ec04e07822521c16239e95680e8c4852a1e43e9f",
+   "pakete": 43,
+   "sichten": 41,
+   "pflicht": 20
+  }
+ },
+ "summary": {
+  "viewpoints": 54,
+  "mit_mdg": 52,
+  "mit_ffmlv": 31,
+  "mit_pbn": 29,
+  "mit_model_wizard": 52,
+  "nur_im_wizard": 19,
+  "konflikte": 0,
+  "konventionen_ffmlv": 303,
+  "konventionen_pbn": 226,
+  "mdg_stereotype": 180,
+  "mdg_konnektoren": 138,
+  "mdg_toolboxen": 53,
+  "wizard_vorlagen": 52
+ },
+ "viewpoints": {
+  "A1": {
+   "titel": "A1 - Meta-Data Definitions",
+   "gruppe": "Architecture Foundation Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-A1-Toolbox",
+    "elemente": [
+     "ActualProject",
+     "ActualProjectMilestone",
+     "ArchitecturalDescription",
+     "ArchitectureForProject",
+     "ArchitectureMetadata",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DescribedBy",
+     "Expresses",
+     "Finding",
+     "RealizesRecommendation",
+     "Recommendation",
+     "RefersTo",
+     "ResultsFrom",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "ActualProjectDependency",
+      "ActualProject",
+      "ActualProject"
+     ],
+     [
+      "ArchitecturalReference",
+      "ArchitecturalDescription",
+      "ArchitecturalDescription"
+     ],
+     [
+      "ArchitecturalSequence",
+      "ArchitecturalDescription",
+      "ArchitecturalDescription"
+     ],
+     [
+      "ArchitectureForProject",
+      "ActualProject",
+      "ArchitecturalDescription"
+     ],
+     [
+      "Classified",
+      "ArchitecturalDescription",
+      "Classification"
+     ],
+     [
+      "MilestoneDependency",
+      "ActualProjectMilestone",
+      "ActualProjectMilestone"
+     ],
+     [
+      "OwnedMilestone",
+      "ActualProject",
+      "ActualProjectMilestone"
+     ],
+     [
+      "ProjectSequence",
+      "ActualProject",
+      "ActualProject"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 14,
+     "ids": [
+      "A1-MK01",
+      "A1-MK02",
+      "A1-MK03",
+      "A1-MK04",
+      "A1-MK05",
+      "A1-MK06",
+      "A1-MK07",
+      "A1-MK08",
+      "A1-MK09",
+      "A1-MK10",
+      "A1-MK11",
+      "A1-MK12",
+      "A1-MK13",
+      "A1-MK14"
+     ]
+    },
+    "pbn": {
+     "konventionen": 14,
+     "ids": [
+      "A1-MK01",
+      "A1-MK02",
+      "A1-MK03",
+      "A1-MK04",
+      "A1-MK05",
+      "A1-MK06",
+      "A1-MK07",
+      "A1-MK08",
+      "A1-MK09",
+      "A1-MK10",
+      "A1-MK11",
+      "A1-MK12",
+      "A1-MK13",
+      "A1-MK14"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "A1 - Meta-Data Definitions",
+    "elemente": [
+     "CapabilityConfiguration",
+     "Classification",
+     "OperationalArchitecture",
+     "Project"
+    ],
+    "beziehungen": [
+     [
+      "Control",
+      "ResourceRole",
+      "ResourceRole"
+     ],
+     [
+      "ResourceExchange",
+      "ResourceRole",
+      "ResourceRole"
+     ]
+    ],
+    "assoziationen": 5,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "A2": {
+   "titel": "A2 - Architecture Products",
+   "gruppe": "Architecture Foundation Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-A2-Toolbox",
+    "elemente": [
+     "ActualEnterprisePhase",
+     "ActualOrganization",
+     "ActualPerson",
+     "ActualPost",
+     "CompliesViewpoint",
+     "Concern",
+     "ConcernForView",
+     "ConcernForViewpoint",
+     "ConformsTo",
+     "EnterprisePhase",
+     "Finding",
+     "Organization",
+     "Person",
+     "Post",
+     "RealizesRecommendation",
+     "Recommendation",
+     "RefersTo",
+     "Responsibility",
+     "ResultsFrom",
+     "StakeholderConcern",
+     "Standard",
+     "View",
+     "Viewpoint",
+     "ViewpointToStakeholder",
+     "ViewpointsInArchitecturalDescription",
+     "ViewsInArchitecturalDescription",
+     "WholeLifeEnterprise"
+    ],
+    "konnektoren": [
+     [
+      "CompliesViewpoint",
+      "View",
+      "Viewpoint"
+     ],
+     [
+      "ConcernForActualEnterprisePhase",
+      "ActualEnterprisePhase",
+      "Concern"
+     ],
+     [
+      "ConcernForView",
+      "View",
+      "Concern"
+     ],
+     [
+      "ConcernForViewpoint",
+      "Viewpoint",
+      "Concern"
+     ],
+     [
+      "FillsPost",
+      "ActualPerson",
+      "ActualPost"
+     ],
+     [
+      "RatifiedStandards",
+      "ActualOrganization",
+      "Standard"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 22,
+     "ids": [
+      "A2-MK01",
+      "A2-MK02",
+      "A2-MK03",
+      "A2-MK04",
+      "A2-MK05",
+      "A2-MK06",
+      "A2-MK07",
+      "A2-MK08",
+      "A2-MK09",
+      "A2-MK10",
+      "A2-MK11",
+      "A2-MK12",
+      "A2-MK13",
+      "A2-MK14",
+      "A2-MK15",
+      "A2-MK16",
+      "A2-MK17",
+      "A2-MK18",
+      "A2-MK19",
+      "A2-MK20",
+      "A2-MK21",
+      "A2-MK22"
+     ]
+    },
+    "pbn": {
+     "konventionen": 22,
+     "ids": [
+      "A2-MK01",
+      "A2-MK02",
+      "A2-MK03",
+      "A2-MK04",
+      "A2-MK05",
+      "A2-MK06",
+      "A2-MK07",
+      "A2-MK08",
+      "A2-MK09",
+      "A2-MK10",
+      "A2-MK11",
+      "A2-MK12",
+      "A2-MK13",
+      "A2-MK14",
+      "A2-MK15",
+      "A2-MK16",
+      "A2-MK17",
+      "A2-MK18",
+      "A2-MK19",
+      "A2-MK20",
+      "A2-MK21",
+      "A2-MK22"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "A2 - Architecture Products",
+    "elemente": [
+     "Concern",
+     "View",
+     "Viewpoint"
+    ],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "A3": {
+   "titel": "A3 - Architecture Correspondence",
+   "gruppe": "Architecture Foundation Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-A3-Toolbox",
+    "elemente": [
+     "ArchitecturalDescription",
+     "ArchitecturalReference",
+     "ConformsTo",
+     "Finding",
+     "RealizesRecommendation",
+     "Recommendation",
+     "RefersTo",
+     "ResultsFrom",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "ArchitecturalReference",
+      "ArchitecturalDescription",
+      "ArchitecturalDescription"
+     ],
+     [
+      "ArchitecturalSequence",
+      "ArchitecturalDescription",
+      "ArchitecturalDescription"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 5,
+     "ids": [
+      "A3-MK01",
+      "A3-MK02",
+      "A3-MK03",
+      "A3-MK04",
+      "A3-MK05"
+     ]
+    },
+    "pbn": {
+     "konventionen": 5,
+     "ids": [
+      "A3-MK01",
+      "A3-MK02",
+      "A3-MK03",
+      "A3-MK04",
+      "A3-MK05"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "A3 - Architecture Correspondence",
+    "elemente": [],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "A4": {
+   "titel": "A4 - Methodology Used",
+   "gruppe": "Architecture Foundation Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-A1-Toolbox",
+    "elemente": [
+     "ActualProject",
+     "ActualProjectMilestone",
+     "ArchitecturalDescription",
+     "ArchitectureForProject",
+     "ArchitectureMetadata",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DescribedBy",
+     "Expresses",
+     "Finding",
+     "RealizesRecommendation",
+     "Recommendation",
+     "RefersTo",
+     "ResultsFrom",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "ActualProjectDependency",
+      "ActualProject",
+      "ActualProject"
+     ],
+     [
+      "ArchitecturalReference",
+      "ArchitecturalDescription",
+      "ArchitecturalDescription"
+     ],
+     [
+      "ArchitecturalSequence",
+      "ArchitecturalDescription",
+      "ArchitecturalDescription"
+     ],
+     [
+      "ArchitectureForProject",
+      "ActualProject",
+      "ArchitecturalDescription"
+     ],
+     [
+      "Classified",
+      "ArchitecturalDescription",
+      "Classification"
+     ],
+     [
+      "MilestoneDependency",
+      "ActualProjectMilestone",
+      "ActualProjectMilestone"
+     ],
+     [
+      "OwnedMilestone",
+      "ActualProject",
+      "ActualProjectMilestone"
+     ],
+     [
+      "ProjectSequence",
+      "ActualProject",
+      "ActualProject"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "A4 - Methodology Used",
+    "elemente": [],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "A5": {
+   "titel": "A5 - Architecture Status",
+   "gruppe": "Architecture Foundation Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-A1-Toolbox",
+    "elemente": [
+     "ActualProject",
+     "ActualProjectMilestone",
+     "ArchitecturalDescription",
+     "ArchitectureForProject",
+     "ArchitectureMetadata",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DescribedBy",
+     "Expresses",
+     "Finding",
+     "RealizesRecommendation",
+     "Recommendation",
+     "RefersTo",
+     "ResultsFrom",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "ActualProjectDependency",
+      "ActualProject",
+      "ActualProject"
+     ],
+     [
+      "ArchitecturalReference",
+      "ArchitecturalDescription",
+      "ArchitecturalDescription"
+     ],
+     [
+      "ArchitecturalSequence",
+      "ArchitecturalDescription",
+      "ArchitecturalDescription"
+     ],
+     [
+      "ArchitectureForProject",
+      "ActualProject",
+      "ArchitecturalDescription"
+     ],
+     [
+      "Classified",
+      "ArchitecturalDescription",
+      "Classification"
+     ],
+     [
+      "MilestoneDependency",
+      "ActualProjectMilestone",
+      "ActualProjectMilestone"
+     ],
+     [
+      "OwnedMilestone",
+      "ActualProject",
+      "ActualProjectMilestone"
+     ],
+     [
+      "ProjectSequence",
+      "ActualProject",
+      "ActualProject"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "A5 - Architecture Status",
+    "elemente": [],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "A6": {
+   "titel": "A6 - Architecture Version",
+   "gruppe": "Architecture Foundation Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-A6-Toolbox",
+    "elemente": [
+     "ArchitecturalDescription",
+     "ArchitecturalSequence",
+     "ConformsTo",
+     "Finding",
+     "RealizesRecommendation",
+     "Recommendation",
+     "RefersTo",
+     "ResultsFrom",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "ArchitecturalReference",
+      "ArchitecturalDescription",
+      "ArchitecturalDescription"
+     ],
+     [
+      "ArchitecturalSequence",
+      "ArchitecturalDescription",
+      "ArchitecturalDescription"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 6,
+     "ids": [
+      "A6-MK01",
+      "A6-MK02",
+      "A6-MK03",
+      "A6-MK04",
+      "A6-MK05",
+      "A6-MK06"
+     ]
+    },
+    "pbn": {
+     "konventionen": 6,
+     "ids": [
+      "A6-MK01",
+      "A6-MK02",
+      "A6-MK03",
+      "A6-MK04",
+      "A6-MK05",
+      "A6-MK06"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "A6 - Architecture Version",
+    "elemente": [],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "A7": {
+   "titel": "A7 - Architecture Compliance",
+   "gruppe": "Architecture Foundation Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-A7-Toolbox",
+    "elemente": [
+     "ConformsTo",
+     "Finding",
+     "Information",
+     "RealizesRecommendation",
+     "Recommendation",
+     "RefersTo",
+     "ResultsFrom",
+     "SameAs",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 19,
+     "ids": [
+      "A7-MK01",
+      "A7-MK02",
+      "A7-MK03",
+      "A7-MK04",
+      "A7-MK05",
+      "A7-MK06",
+      "A7-MK07",
+      "A7-MK08",
+      "A7-MK09",
+      "A7-MK10",
+      "A7-MK11",
+      "A7-MK12",
+      "A7-MK13",
+      "A7-MK14",
+      "A7-MK15",
+      "A7-MK16",
+      "A7-MK17",
+      "A7-MK18",
+      "A7-MK19"
+     ]
+    },
+    "pbn": {
+     "konventionen": 19,
+     "ids": [
+      "A7-MK01",
+      "A7-MK02",
+      "A7-MK03",
+      "A7-MK04",
+      "A7-MK05",
+      "A7-MK06",
+      "A7-MK07",
+      "A7-MK08",
+      "A7-MK09",
+      "A7-MK10",
+      "A7-MK11",
+      "A7-MK12",
+      "A7-MK13",
+      "A7-MK14",
+      "A7-MK15",
+      "A7-MK16",
+      "A7-MK17",
+      "A7-MK18",
+      "A7-MK19"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "A7 - Architecture Compliance",
+    "elemente": [
+     "OperationalPerformer"
+    ],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "A8": {
+   "titel": "A8 - Standards",
+   "gruppe": "Architecture Foundation Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-A8-Toolbox",
+    "elemente": [
+     "ActualOrganization",
+     "ConformsTo",
+     "Finding",
+     "Protocol",
+     "ProtocolLayer",
+     "Protocolstack",
+     "RatifiedStandards",
+     "RealizesRecommendation",
+     "Recommendation",
+     "RefersTo",
+     "ResultsFrom",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "RatifiedStandards",
+      "ActualOrganization",
+      "Standard"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 4,
+     "ids": [
+      "A8-MK01",
+      "A8-MK02",
+      "A8-MK03",
+      "A8-MK04"
+     ]
+    },
+    "pbn": {
+     "konventionen": 4,
+     "ids": [
+      "A8-MK01",
+      "A8-MK02",
+      "A8-MK03",
+      "A8-MK04"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "A8 - Standards",
+    "elemente": [
+     "Protocol",
+     "Protocolstack",
+     "Standard"
+    ],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "Ar": {
+   "titel": "Ar - Architecture Roadmap",
+   "gruppe": "Architecture Foundation Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-Ar-Toolbox",
+    "elemente": [
+     "ArchitecturalDescription",
+     "ArchitecturalSequence",
+     "ConformsTo",
+     "Finding",
+     "RealizesRecommendation",
+     "Recommendation",
+     "RefersTo",
+     "ResultsFrom",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "ArchitecturalReference",
+      "ArchitecturalDescription",
+      "ArchitecturalDescription"
+     ],
+     [
+      "ArchitecturalSequence",
+      "ArchitecturalDescription",
+      "ArchitecturalDescription"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 4,
+     "ids": [
+      "Ar-MK01",
+      "Ar-MK02",
+      "Ar-MK03",
+      "Ar-MK04"
+     ]
+    },
+    "pbn": {
+     "konventionen": 4,
+     "ids": [
+      "Ar-MK01",
+      "Ar-MK02",
+      "Ar-MK03",
+      "Ar-MK04"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "Ar - Architecture Roadmap",
+    "elemente": [],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "C1": {
+   "titel": "C1 - Capability Taxonomy",
+   "gruppe": "Concept Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-C1-Toolbox",
+    "elemente": [
+     "ActualCondition",
+     "ActualEnvironment",
+     "ActualLocation",
+     "Capability",
+     "CapabilityGeneralization",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "EnvironmentalContext",
+     "Finding",
+     "JustifiedBy",
+     "Measurement",
+     "MeasurementType",
+     "OriginatesFrom",
+     "OwnsMeasurement",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "Standard",
+     "StrategicConstraint"
+    ],
+    "konnektoren": [
+     [
+      "CapabilityDependency",
+      "Capability",
+      "Capability"
+     ],
+     [
+      "CapabilityGeneralization",
+      "Capability",
+      "Capability"
+     ],
+     [
+      "EnvironmentalContext",
+      "Measurement",
+      "ActualCondition"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 10,
+     "ids": [
+      "C1-MK01",
+      "C1-MK02",
+      "C1-MK03",
+      "C1-MK04",
+      "C1-MK05",
+      "C1-MK06",
+      "C1-MK07",
+      "C1-MK08",
+      "C1-MK09",
+      "C1-MK10"
+     ]
+    },
+    "pbn": {
+     "konventionen": 10,
+     "ids": [
+      "C1-MK01",
+      "C1-MK02",
+      "C1-MK03",
+      "C1-MK04",
+      "C1-MK05",
+      "C1-MK06",
+      "C1-MK07",
+      "C1-MK08",
+      "C1-MK09",
+      "C1-MK10"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "C1 - Capability Taxonomy",
+    "elemente": [
+     "Capability"
+    ],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "C1-S1": {
+   "titel": "C1-S1 - Capability to Service Mapping",
+   "gruppe": "Service Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-C1-S1-Toolbox",
+    "elemente": [
+     "Capability",
+     "ConformsTo",
+     "Environment",
+     "EnvironmentalCondition",
+     "Exhibits",
+     "Finding",
+     "RealizesRecommendation",
+     "Recommendation",
+     "RefersTo",
+     "ResultsFrom",
+     "ServiceSpecification",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "CapabilityDependency",
+      "Capability",
+      "Capability"
+     ],
+     [
+      "CapabilityGeneralization",
+      "Capability",
+      "Capability"
+     ],
+     [
+      "EnvironmentalCondition",
+      "Exhibits",
+      "Environment"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ServiceExchange",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ],
+     [
+      "ServiceGeneralization",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "C1-S1 - Capability to Service Mapping",
+    "elemente": [
+     "Capability",
+     "Environment",
+     "ServiceSpecification"
+    ],
+    "beziehungen": [
+     [
+      "Exhibits",
+      "ServiceSpecification",
+      "Capability"
+     ]
+    ],
+    "assoziationen": 2,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "C2": {
+   "titel": "C2 - Enterprise Vision",
+   "gruppe": "Concept Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-C2-Toolbox",
+    "elemente": [
+     "ActualEnduringTask",
+     "ActualEnterprisePhase",
+     "Capability",
+     "CapabilityForTask",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "EnduringTask",
+     "EnterpriseGoal",
+     "EnterprisePhase",
+     "EnterpriseVision",
+     "Environment",
+     "EnvironmentalCondition",
+     "Exhibits",
+     "Finding",
+     "GoalForActualEnterprisePhase",
+     "JustifiedBy",
+     "OperationalArchitecture",
+     "OperationalArchitectureOfEnterprisePhase",
+     "OriginatesFrom",
+     "PhysicalArchitectureOfEnterprisePhase",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "Standard",
+     "StatementTask",
+     "StrategicConstraint",
+     "TemporalPart",
+     "VisionForActualEnterprisePhase",
+     "WholeLifeEnterprise"
+    ],
+    "konnektoren": [
+     [
+      "CapabilityDependency",
+      "Capability",
+      "Capability"
+     ],
+     [
+      "CapabilityForTask",
+      "Capability",
+      "ActualEnduringTask"
+     ],
+     [
+      "CapabilityGeneralization",
+      "Capability",
+      "Capability"
+     ],
+     [
+      "EnvironmentalCondition",
+      "Exhibits",
+      "Environment"
+     ],
+     [
+      "GoalForActualEnterprisePhase",
+      "ActualEnterprisePhase",
+      "EnterpriseGoal"
+     ],
+     [
+      "OperationalArchitectureOfEnterprisePhase",
+      "ActualEnterprisePhase",
+      "OperationalArchitecture"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ],
+     [
+      "StatementTask",
+      "ActualEnterprisePhase",
+      "ActualEnduringTask"
+     ],
+     [
+      "VisionForActualEnterprisePhase",
+      "ActualEnterprisePhase",
+      "EnterpriseVision"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "C2 - Enterprise Vision",
+    "elemente": [
+     "Capability",
+     "EnduringTask",
+     "EnterpriseGoal",
+     "EnterprisePhase",
+     "EnterpriseVision",
+     "Environment",
+     "OperationalArchitecture"
+    ],
+    "beziehungen": [
+     [
+      "CapabilityForTask",
+      "Capability",
+      "EnduringTask"
+     ],
+     [
+      "Exhibits",
+      "ActualEnterprisePhase",
+      "Capability"
+     ]
+    ],
+    "assoziationen": 8,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "C3": {
+   "titel": "C3 - Capability Dependencies",
+   "gruppe": "Concept Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-C3-Toolbox",
+    "elemente": [
+     "Capability",
+     "CapabilityDependency",
+     "CapabilityRole",
+     "CapabilityRoleDependency",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "Finding",
+     "JustifiedBy",
+     "OriginatesFrom",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "Standard",
+     "StrategicConstraint"
+    ],
+    "konnektoren": [
+     [
+      "CapabilityDependency",
+      "Capability",
+      "Capability"
+     ],
+     [
+      "CapabilityGeneralization",
+      "Capability",
+      "Capability"
+     ],
+     [
+      "CapabilityRoleDependency",
+      "CapabilityRole",
+      "CapabilityRole"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "C3 - Capability Dependencies",
+    "elemente": [
+     "Capability"
+    ],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "C4": {
+   "titel": "C4 - Standard Processes",
+   "gruppe": "Concept Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-C4-Toolbox",
+    "elemente": [
+     "ActualEnduringTask",
+     "Capability",
+     "CapabilityForTask",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "EnduringTask",
+     "Finding",
+     "JustifiedBy",
+     "MapsToCapability",
+     "OriginatesFrom",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "Standard",
+     "StandardOperationalActivity",
+     "StrategicConstraint"
+    ],
+    "konnektoren": [
+     [
+      "CapabilityDependency",
+      "Capability",
+      "Capability"
+     ],
+     [
+      "CapabilityForTask",
+      "Capability",
+      "ActualEnduringTask"
+     ],
+     [
+      "CapabilityGeneralization",
+      "Capability",
+      "Capability"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "C4 - Standard Processes",
+    "elemente": [
+     "Capability"
+    ],
+    "beziehungen": [
+     [
+      "CapabilityForTask",
+      "Capability",
+      "ActualEnduringTask"
+     ],
+     [
+      "MapsToCapability",
+      "StandardOperationalActivity",
+      "Capability"
+     ]
+    ],
+    "assoziationen": 8,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "C5": {
+   "titel": "C5 - Effects",
+   "gruppe": "Concept Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-C5-Toolbox",
+    "elemente": [
+     "AchievedEffect",
+     "ActualCondition",
+     "ActualEnduringTask",
+     "ActualEnterprisePhase",
+     "ActualMeasurementSet",
+     "ActualOrganization",
+     "ActualPerson",
+     "ActualPost",
+     "ActualProjectMilestone",
+     "ActualPropertySet",
+     "ActualResource",
+     "Capability",
+     "CapabilityConfiguration",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DesiredEffect",
+     "DocumentReference",
+     "Environment",
+     "EnvironmentalCondition",
+     "Exhibits",
+     "FieldedCapability",
+     "Finding",
+     "JustifiedBy",
+     "Organization",
+     "OriginatesFrom",
+     "Person",
+     "Post",
+     "RealizedDesiredEffect",
+     "RealizesRecommendation",
+     "RealizingAchievedEffect",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServiceSpecification",
+     "Standard",
+     "StandardOperationalActivity",
+     "StrategicConstraint"
+    ],
+    "konnektoren": [
+     [
+      "ActualConditionToActualResource",
+      "ActualResource",
+      "ActualCondition"
+     ],
+     [
+      "ActualResourceNeededByActualProjectMilestone",
+      "ActualResource",
+      "ActualProjectMilestone"
+     ],
+     [
+      "ActualResourceRelationship",
+      "ActualResource",
+      "ActualResource"
+     ],
+     [
+      "ActualResourceToActualProjectMilestone",
+      "ActualResource",
+      "ActualProjectMilestone"
+     ],
+     [
+      "CapabilityDependency",
+      "Capability",
+      "Capability"
+     ],
+     [
+      "CapabilityForTask",
+      "Capability",
+      "ActualEnduringTask"
+     ],
+     [
+      "CapabilityGeneralization",
+      "Capability",
+      "Capability"
+     ],
+     [
+      "EnvironmentalCondition",
+      "Exhibits",
+      "Environment"
+     ],
+     [
+      "FillsPost",
+      "ActualPerson",
+      "ActualPost"
+     ],
+     [
+      "MilestoneDependency",
+      "ActualProjectMilestone",
+      "ActualProjectMilestone"
+     ],
+     [
+      "PropertySetGeneralization",
+      "CapabilityConfiguration",
+      "CapabilityConfiguration"
+     ],
+     [
+      "RatifiedStandards",
+      "ActualOrganization",
+      "Standard"
+     ],
+     [
+      "RealizedDesiredEffect",
+      "AchievedEffect",
+      "DesiredEffect"
+     ],
+     [
+      "RealizingAchievedEffect",
+      "DesiredEffect",
+      "AchievedEffect"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ],
+     [
+      "ServiceExchange",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ],
+     [
+      "ServiceGeneralization",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ],
+     [
+      "StatementTask",
+      "ActualEnterprisePhase",
+      "ActualEnduringTask"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "C5 - Effects",
+    "elemente": [
+     "Project"
+    ],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "C7": {
+   "titel": "C7 - Performance Parameters",
+   "gruppe": "Concept Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-C7-Toolbox",
+    "elemente": [
+     "ActualCondition",
+     "ActualEnvironment",
+     "ActualLocation",
+     "Capability",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "EnvironmentalContext",
+     "Finding",
+     "JustifiedBy",
+     "Measurement",
+     "MeasurementType",
+     "OriginatesFrom",
+     "OwnsMeasurement",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "Standard",
+     "StrategicConstraint"
+    ],
+    "konnektoren": [
+     [
+      "CapabilityDependency",
+      "Capability",
+      "Capability"
+     ],
+     [
+      "CapabilityGeneralization",
+      "Capability",
+      "Capability"
+     ],
+     [
+      "EnvironmentalContext",
+      "Measurement",
+      "ActualCondition"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "C7 - Performance Parameters",
+    "elemente": [
+     "MeasurementType"
+    ],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "C8": {
+   "titel": "C8 - Planning Assumptions",
+   "gruppe": "Concept Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-C8-Toolbox",
+    "elemente": [
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "Finding",
+     "Implements",
+     "JustifiedBy",
+     "OperationalConstraint",
+     "OriginatesFrom",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResourceConstraint",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServicePolicy",
+     "Standard",
+     "StrategicConstraint"
+    ],
+    "konnektoren": [
+     [
+      "JustifiedBy",
+      "OperationalConstraint",
+      "Reference"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 6,
+     "ids": [
+      "C8-MK01",
+      "C8-MK02",
+      "C8-MK03",
+      "C8-MK04",
+      "C8-MK05",
+      "C8-MK06"
+     ]
+    },
+    "pbn": {
+     "konventionen": 6,
+     "ids": [
+      "C8-MK01",
+      "C8-MK02",
+      "C8-MK03",
+      "C8-MK04",
+      "C8-MK05",
+      "C8-MK06"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "C8 - Planning Assumptions",
+    "elemente": [
+     "Capability",
+     "DocumentReference",
+     "StrategicConstraint"
+    ],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "Cr": {
+   "titel": "Cr - Capability Roadmap",
+   "gruppe": "Concept Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-Cr-Toolbox",
+    "elemente": [
+     "ActualProject",
+     "ActualProjectDependency",
+     "ActualProjectMilestone",
+     "ActualResourceNeededByActualProjectMilestone",
+     "ActualResourceToActualProjectMilestone",
+     "Capability",
+     "CapabilityConfiguration",
+     "ConformsTo",
+     "Environment",
+     "EnvironmentalCondition",
+     "Exhibits",
+     "FieldedCapability",
+     "Finding",
+     "MilestoneDependency",
+     "OwnedMilestone",
+     "Project",
+     "ProjectMilestone",
+     "ProjectMilestoneRole",
+     "ProjectMilestoneToProjectTheme",
+     "ProjectSequence",
+     "RealizesRecommendation",
+     "Recommendation",
+     "RefersTo",
+     "RequiredResource",
+     "ResultsFrom",
+     "Standard",
+     "VersionReleased",
+     "VersionWithdrawn"
+    ],
+    "konnektoren": [
+     [
+      "ActualProjectDependency",
+      "ActualProject",
+      "ActualProject"
+     ],
+     [
+      "CapabilityDependency",
+      "Capability",
+      "Capability"
+     ],
+     [
+      "CapabilityGeneralization",
+      "Capability",
+      "Capability"
+     ],
+     [
+      "EnvironmentalCondition",
+      "Exhibits",
+      "Environment"
+     ],
+     [
+      "MilestoneDependency",
+      "ActualProjectMilestone",
+      "ActualProjectMilestone"
+     ],
+     [
+      "OwnedMilestone",
+      "ActualProject",
+      "ActualProjectMilestone"
+     ],
+     [
+      "ProjectSequence",
+      "ActualProject",
+      "ActualProject"
+     ],
+     [
+      "PropertySetGeneralization",
+      "CapabilityConfiguration",
+      "CapabilityConfiguration"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 5,
+     "ids": [
+      "Cr-MK01",
+      "Cr-MK02",
+      "Cr-MK03",
+      "Cr-MK04",
+      "Cr-MK05"
+     ]
+    },
+    "pbn": {
+     "konventionen": 5,
+     "ids": [
+      "Cr-MK01",
+      "Cr-MK02",
+      "Cr-MK03",
+      "Cr-MK04",
+      "Cr-MK05"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "Cr - Capability Roadmap",
+    "elemente": [
+     "Capability",
+     "Environment",
+     "Organization",
+     "Project",
+     "ProjectMilestone"
+    ],
+    "beziehungen": [
+     [
+      "Exhibits",
+      "CapabilityConfiguration",
+      "Capability"
+     ]
+    ],
+    "assoziationen": 1,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "L1": {
+   "titel": "L1 - Node Types",
+   "gruppe": "Logical Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-L1-Toolbox",
+    "elemente": [
+     "ActualCondition",
+     "ActualEnvironment",
+     "ActualLocation",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "Environment",
+     "EnvironmentalCondition",
+     "EnvironmentalContext",
+     "Exhibits",
+     "Finding",
+     "JustifiedBy",
+     "MapsToCapability",
+     "Measurement",
+     "MeasurementType",
+     "OperationalActivity",
+     "OperationalActivityAction",
+     "OperationalConstraint",
+     "OperationalPerformer",
+     "OperationalRole",
+     "OriginatesFrom",
+     "OwnsMeasurement",
+     "PropertySetGeneralization",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "EnvironmentalCondition",
+      "Exhibits",
+      "Environment"
+     ],
+     [
+      "EnvironmentalContext",
+      "Measurement",
+      "ActualCondition"
+     ],
+     [
+      "JustifiedBy",
+      "OperationalConstraint",
+      "Reference"
+     ],
+     [
+      "OperationalExchange",
+      "OperationalActivity",
+      "OperationalActivity"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 5,
+     "ids": [
+      "L1-MK01",
+      "L1-MK02",
+      "L1-MK03",
+      "L1-MK04",
+      "L1-MK05"
+     ]
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "L1 - Node Types",
+    "elemente": [
+     "MeasurementType",
+     "OperationalPerformer"
+    ],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": [
+    "pbn"
+   ]
+  },
+  "L2": {
+   "titel": "L2 - Logical Scenario",
+   "gruppe": "Logical Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-L2-Toolbox",
+    "elemente": [
+     "ActualCondition",
+     "ActualEnvironment",
+     "ActualLocation",
+     "Classification",
+     "Classified",
+     "Condition",
+     "ConformsTo",
+     "DocumentReference",
+     "Energy",
+     "Environment",
+     "EnvironmentalContext",
+     "Finding",
+     "GeoPoliticalExtentType",
+     "InformationElement",
+     "JustifiedBy",
+     "KnownResource",
+     "Location",
+     "LocationType",
+     "Measurement",
+     "MeasurementType",
+     "NaturalResource",
+     "OperationalArchitecture",
+     "OperationalConnector",
+     "OperationalConstraint",
+     "OperationalExchange",
+     "OperationalInterface",
+     "OperationalPerformer",
+     "OperationalPort",
+     "OperationalRole",
+     "OperationalSignal",
+     "Organization",
+     "OriginatesFrom",
+     "OwnsMeasurement",
+     "Person",
+     "PhysicalLocation",
+     "Post",
+     "ProblemDomain",
+     "Project",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "RequiredEnvironment",
+     "ResourceArchitecture",
+     "ResourceArtifact",
+     "Responsibility",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "EnvironmentalContext",
+      "Measurement",
+      "ActualCondition"
+     ],
+     [
+      "HostedOn",
+      "ResourceArchitecture",
+      "ResourceArchitecture"
+     ],
+     [
+      "JustifiedBy",
+      "OperationalConstraint",
+      "Reference"
+     ],
+     [
+      "OperationalConnector",
+      "OperationalPort",
+      "OperationalPort"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 9,
+     "ids": [
+      "L2-MK01",
+      "L2-MK02",
+      "L2-MK03",
+      "L2-MK04",
+      "L2-MK05",
+      "L2-MK06",
+      "L2-MK07",
+      "L2-MK08",
+      "L2-MK09"
+     ]
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "L2 - Logical Scenario",
+    "elemente": [
+     "MeasurementType",
+     "OperationalArchitecture",
+     "OperationalPerformer"
+    ],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": [
+    "pbn"
+   ]
+  },
+  "L2-L3": {
+   "titel": "L2-L3 - Logical Concept",
+   "gruppe": "Logical Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-L2-L3-Toolbox",
+    "elemente": [
+     "ActualCondition",
+     "ActualEnvironment",
+     "ActualLocation",
+     "ArbitraryConnector",
+     "CapabilityConfiguration",
+     "Classification",
+     "Classified",
+     "ConceptRole",
+     "ConformsTo",
+     "DataElement",
+     "DocumentReference",
+     "EnvironmentalContext",
+     "Finding",
+     "HighLevelOperationalConcept",
+     "InformationElement",
+     "JustifiedBy",
+     "Location",
+     "Measurement",
+     "MeasurementType",
+     "NaturalResource",
+     "OperationalArchitecture",
+     "OperationalConstraint",
+     "OperationalPerformer",
+     "Organization",
+     "OriginatesFrom",
+     "OwnsMeasurement",
+     "Person",
+     "Post",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResourceArchitecture",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "Software",
+     "Standard",
+     "System"
+    ],
+    "konnektoren": [
+     [
+      "ArbitraryConnector",
+      "ConceptRole",
+      "ConceptRole"
+     ],
+     [
+      "EnvironmentalContext",
+      "Measurement",
+      "ActualCondition"
+     ],
+     [
+      "HostedOn",
+      "ResourceArchitecture",
+      "ResourceArchitecture"
+     ],
+     [
+      "JustifiedBy",
+      "OperationalConstraint",
+      "Reference"
+     ],
+     [
+      "PropertySetGeneralization",
+      "CapabilityConfiguration",
+      "CapabilityConfiguration"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ],
+     [
+      "SameAs",
+      "Software",
+      "Software"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "L2-L3 - Logical Concept",
+    "elemente": [
+     "InformationElement"
+    ],
+    "beziehungen": [
+     [
+      "",
+      "ConceptRole",
+      "ConceptRole"
+     ]
+    ],
+    "assoziationen": 2,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "L3": {
+   "titel": "L3 - Node Interactions",
+   "gruppe": "Logical Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-L3-Toolbox",
+    "elemente": [
+     "ActualCondition",
+     "ActualEnvironment",
+     "ActualLocation",
+     "CapabilityConfiguration",
+     "Classification",
+     "Classified",
+     "Condition",
+     "ConformsTo",
+     "ConsumedBy",
+     "DocumentReference",
+     "Energy",
+     "Environment",
+     "EnvironmentalContext",
+     "Finding",
+     "GeoPoliticalExtentType",
+     "InformationElement",
+     "InformationRole",
+     "IsCapableToPerform",
+     "JustifiedBy",
+     "KnownResource",
+     "Location",
+     "LocationType",
+     "Measurement",
+     "MeasurementType",
+     "NaturalResource",
+     "OperationalArchitecture",
+     "OperationalConnector",
+     "OperationalConstraint",
+     "OperationalExchange",
+     "OperationalInterface",
+     "OperationalPerformer",
+     "OperationalPort",
+     "OperationalRole",
+     "OperationalSignal",
+     "Organization",
+     "OriginatesFrom",
+     "OwnsMeasurement",
+     "PerformsInContext",
+     "Person",
+     "PhysicalLocation",
+     "Post",
+     "PostRole",
+     "ProblemDomain",
+     "Project",
+     "Provides",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "RequiredEnvironment",
+     "ResourceArchitecture",
+     "ResourceArtifact",
+     "Responsibility",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServiceSpecification",
+     "ServiceSpecificationRole",
+     "Standard",
+     "SubOrganization"
+    ],
+    "konnektoren": [
+     [
+      "ConsumedBy",
+      "ServiceSpecification",
+      "OperationalPerformer"
+     ],
+     [
+      "EnvironmentalContext",
+      "Measurement",
+      "ActualCondition"
+     ],
+     [
+      "HostedOn",
+      "ResourceArchitecture",
+      "ResourceArchitecture"
+     ],
+     [
+      "JustifiedBy",
+      "OperationalConstraint",
+      "Reference"
+     ],
+     [
+      "OperationalConnector",
+      "OperationalPort",
+      "OperationalPort"
+     ],
+     [
+      "PropertySetGeneralization",
+      "CapabilityConfiguration",
+      "CapabilityConfiguration"
+     ],
+     [
+      "Provides",
+      "OperationalPerformer",
+      "ServiceSpecification"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ],
+     [
+      "ServiceExchange",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ],
+     [
+      "ServiceGeneralization",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 6,
+     "ids": [
+      "L3-MK01",
+      "L3-MK02",
+      "L3-MK03",
+      "L3-MK04",
+      "L3-MK05",
+      "L3-MK06"
+     ]
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "L3 - Node Interactions",
+    "elemente": [
+     "InformationElement",
+     "OperationalArchitecture",
+     "OperationalPerformer"
+    ],
+    "beziehungen": [
+     [
+      "OperationalExchange",
+      "OperationalRole",
+      "OperationalRole"
+     ]
+    ],
+    "assoziationen": 5,
+    "rtf": true
+   },
+   "luecken": [
+    "pbn"
+   ]
+  },
+  "L4": {
+   "titel": "L4 - Logical Activities",
+   "gruppe": "Logical Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-L4-Toolbox",
+    "elemente": [
+     "ActivityPerformableUnderCondition",
+     "ActivitySupportsService",
+     "ActsUpon",
+     "ActualCondition",
+     "ActualService",
+     "AffectedActivity",
+     "AffectedResource",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "Consumes",
+     "DocumentReference",
+     "Finding",
+     "GeoPoliticalExtentType",
+     "Implements",
+     "InformationElement",
+     "InformationRole",
+     "IsCapableToPerform",
+     "JustifiedBy",
+     "KnownResource",
+     "NaturalResource",
+     "OperationalActivity",
+     "OperationalActivityAction",
+     "OperationalConstraint",
+     "OperationalExchange",
+     "OperationalPerformer",
+     "OperationalRole",
+     "OperationalSignal",
+     "Organization",
+     "OriginatesFrom",
+     "PaperForm",
+     "PerformsInContext",
+     "Person",
+     "Post",
+     "ProcessGeneralization",
+     "Project",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "RequiredServiceLevel",
+     "ResourceArchitecture",
+     "ResourceArtifact",
+     "Responsibility",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServiceSpecification",
+     "Standard",
+     "StandardOperationalActivity"
+    ],
+    "konnektoren": [
+     [
+      "ActivitySupportsService",
+      "OperationalActivity",
+      "ServiceSpecification"
+     ],
+     [
+      "ConsumedBy",
+      "ServiceSpecification",
+      "OperationalPerformer"
+     ],
+     [
+      "Consumes",
+      "OperationalActivity",
+      "ActualService"
+     ],
+     [
+      "HostedOn",
+      "ResourceArchitecture",
+      "ResourceArchitecture"
+     ],
+     [
+      "JustifiedBy",
+      "OperationalConstraint",
+      "Reference"
+     ],
+     [
+      "OperationalExchange",
+      "OperationalActivity",
+      "OperationalActivity"
+     ],
+     [
+      "Provides",
+      "OperationalPerformer",
+      "ServiceSpecification"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ],
+     [
+      "ServiceExchange",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ],
+     [
+      "ServiceGeneralization",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 20,
+     "ids": [
+      "L4-MK01",
+      "L4-MK02",
+      "L4-MK03",
+      "L4-MK04",
+      "L4-MK05",
+      "L4-MK06",
+      "L4-MK07",
+      "L4-MK08",
+      "L4-MK09",
+      "L4-MK10",
+      "L4-MK11",
+      "L4-MK12",
+      "L4-MK13",
+      "L4-MK14",
+      "L4-MK15",
+      "L4-MK16",
+      "L4-MK17",
+      "L4-MK18",
+      "L4-MK19",
+      "L4-MK20"
+     ]
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "L4 - Logical Activities",
+    "elemente": [
+     "DocumentReference",
+     "InformationElement",
+     "OperationalArchitecture",
+     "OperationalConstraint"
+    ],
+    "beziehungen": [
+     [
+      "",
+      "",
+      ""
+     ],
+     [
+      "",
+      "",
+      "OperationalActivityAction"
+     ],
+     [
+      "",
+      "Gateway",
+      ""
+     ],
+     [
+      "",
+      "Gateway",
+      "OperationalActivityAction"
+     ],
+     [
+      "",
+      "OperationalActivityAction",
+      "Gateway"
+     ],
+     [
+      "",
+      "OperationalActivityAction",
+      "OperationalActivityAction"
+     ],
+     [
+      "Implements",
+      "OperationalActivity",
+      "OperationalActivity"
+     ],
+     [
+      "Implements",
+      "OperationalActivityAction",
+      "OperationalActivityAction"
+     ],
+     [
+      "OperationalExchange",
+      "OperationalActivity",
+      "OperationalActivity"
+     ],
+     [
+      "OperationalExchange",
+      "OperationalRole",
+      "OperationalRole"
+     ],
+     [
+      "PerformsInContext",
+      "OperationalRole",
+      "Lane"
+     ]
+    ],
+    "assoziationen": 22,
+    "rtf": true
+   },
+   "luecken": [
+    "pbn"
+   ]
+  },
+  "L4-P4": {
+   "titel": "L4-P4 - Activity To Function Mapping",
+   "gruppe": "Physical Resource Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-L4-P4-Toolbox",
+    "elemente": [
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "Finding",
+     "Implements",
+     "IsCapableToPerform",
+     "JustifiedBy",
+     "OriginatesFrom",
+     "PerformsInContext",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResourceConstraint",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServiceProvision",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "L4-P4 - Activity to Function Mapping",
+    "elemente": [
+     "ResourceArtifact",
+     "ServiceSpecification"
+    ],
+    "beziehungen": [
+     [
+      "Implements",
+      "Function",
+      "OperationalActivity"
+     ],
+     [
+      "Implements",
+      "Function",
+      "ServiceFunction"
+     ],
+     [
+      "Implements",
+      "ResourceArtifact",
+      "OperationalPerformer"
+     ],
+     [
+      "IsCapableToPerform",
+      "OperationalPerformer",
+      "OperationalActivity"
+     ],
+     [
+      "IsCapableToPerform",
+      "ResourceArtifact",
+      "Function"
+     ],
+     [
+      "IsCapableToPerform",
+      "ServiceSpecification",
+      "ServiceFunction"
+     ],
+     [
+      "ServiceProvision",
+      "ResourceArtifact",
+      "ServiceSpecification"
+     ]
+    ],
+    "assoziationen": 7,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "L5": {
+   "titel": "L5 - Logical States",
+   "gruppe": "Logical Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-L5-Toolbox",
+    "elemente": [
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "Finding",
+     "JustifiedBy",
+     "OperationalArchitecture",
+     "OperationalConstraint",
+     "OperationalPerformer",
+     "OperationalStateDescription",
+     "OriginatesFrom",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "JustifiedBy",
+      "OperationalConstraint",
+      "Reference"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "L5 - Logical States",
+    "elemente": [],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "L6": {
+   "titel": "L6 - Logical Sequence",
+   "gruppe": "Logical Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-L6-Toolbox",
+    "elemente": [
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "Finding",
+     "JustifiedBy",
+     "OperationalConstraint",
+     "OperationalMessage",
+     "OperationalRole",
+     "OriginatesFrom",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServiceMessage",
+     "ServiceSpecificationRole",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "JustifiedBy",
+      "OperationalConstraint",
+      "Reference"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "L6 - Logical Sequence",
+    "elemente": [
+     "InformationElement",
+     "OperationalPerformer",
+     "ServiceSpecification"
+    ],
+    "beziehungen": [
+     [
+      "",
+      "OperationalRole",
+      "OperationalRole"
+     ],
+     [
+      "",
+      "OperationalRole",
+      "ServiceSpecificationRole"
+     ],
+     [
+      "",
+      "ServiceSpecificationRole",
+      "OperationalRole"
+     ]
+    ],
+    "assoziationen": 6,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "L7": {
+   "titel": "L7 - Information Model",
+   "gruppe": "Logical Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-L7-Toolbox",
+    "elemente": [
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DataModel",
+     "DocumentReference",
+     "Finding",
+     "Implements",
+     "InformationElement",
+     "InformationRole",
+     "JustifiedBy",
+     "OperationalConstraint",
+     "OriginatesFrom",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResourceConstraint",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "JustifiedBy",
+      "OperationalConstraint",
+      "Reference"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 8,
+     "ids": [
+      "L7-MK01",
+      "L7-MK02",
+      "L7-MK03",
+      "L7-MK04",
+      "L7-MK05",
+      "L7-MK06",
+      "L7-MK07",
+      "L7-MK08"
+     ]
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "L7 - Information Model",
+    "elemente": [
+     "InformationElement"
+    ],
+    "beziehungen": [
+     [
+      "",
+      "InformationElement",
+      "InformationElement"
+     ],
+     [
+      "Implements",
+      "InformationElement",
+      "InformationElement"
+     ]
+    ],
+    "assoziationen": 5,
+    "rtf": true
+   },
+   "luecken": [
+    "pbn"
+   ]
+  },
+  "L8": {
+   "titel": "L8 - Logical Constraints",
+   "gruppe": "Logical Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-L8-Toolbox",
+    "elemente": [
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "Finding",
+     "Implements",
+     "JustifiedBy",
+     "OperationalConstraint",
+     "OriginatesFrom",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResourceConstraint",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServicePolicy",
+     "Standard",
+     "StrategicConstraint"
+    ],
+    "konnektoren": [
+     [
+      "JustifiedBy",
+      "OperationalConstraint",
+      "Reference"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 11,
+     "ids": [
+      "L8-MK01",
+      "L8-MK02",
+      "L8-MK03",
+      "L8-MK04",
+      "L8-MK05",
+      "L8-MK06",
+      "L8-MK07",
+      "L8-MK08",
+      "L8-MK09",
+      "L8-MK10",
+      "L8-MK11"
+     ]
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "L8 - Logical Constraints",
+    "elemente": [
+     "Classification",
+     "DocumentReference",
+     "OperationalConstraint",
+     "StrategicConstraint"
+    ],
+    "beziehungen": [
+     [
+      "Implements",
+      "OperationalConstraint",
+      "StrategicConstraint"
+     ]
+    ],
+    "assoziationen": 1,
+    "rtf": true
+   },
+   "luecken": [
+    "pbn"
+   ]
+  },
+  "Lr": {
+   "titel": "Lr - Lines of Development",
+   "gruppe": "Logical Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-Lr-Toolbox",
+    "elemente": [
+     "ActualProject",
+     "ActualProjectConsults",
+     "ActualProjectDependency",
+     "ActualProjectInforms",
+     "ActualProjectMilestone",
+     "ActualResourceRelationship",
+     "ArchitecturalDescription",
+     "ArchitectureForProject",
+     "CapabilityConfiguration",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "EnterprisePhase",
+     "Finding",
+     "IsAccountableFor",
+     "IsResponsibleFor",
+     "JustifiedBy",
+     "MilestoneDependency",
+     "OperationalConstraint",
+     "OriginatesFrom",
+     "OwnedMilestone",
+     "Project",
+     "ProjectMilestone",
+     "ProjectMilestoneRole",
+     "ProjectMilestoneToProjectTheme",
+     "ProjectSequence",
+     "ProjectTheme",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "RequiredResource",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServiceSpecification",
+     "Standard",
+     "VersionReleased",
+     "VersionWithdrawn"
+    ],
+    "konnektoren": [
+     [
+      "ActualProjectDependency",
+      "ActualProject",
+      "ActualProject"
+     ],
+     [
+      "ArchitecturalReference",
+      "ArchitecturalDescription",
+      "ArchitecturalDescription"
+     ],
+     [
+      "ArchitecturalSequence",
+      "ArchitecturalDescription",
+      "ArchitecturalDescription"
+     ],
+     [
+      "ArchitectureForProject",
+      "ActualProject",
+      "ArchitecturalDescription"
+     ],
+     [
+      "Classified",
+      "ArchitecturalDescription",
+      "Classification"
+     ],
+     [
+      "JustifiedBy",
+      "OperationalConstraint",
+      "Reference"
+     ],
+     [
+      "MilestoneDependency",
+      "ActualProjectMilestone",
+      "ActualProjectMilestone"
+     ],
+     [
+      "NeedsService",
+      "ActualProject",
+      "ServiceSpecification"
+     ],
+     [
+      "OwnedMilestone",
+      "ActualProject",
+      "ActualProjectMilestone"
+     ],
+     [
+      "ProjectMilestoneToProjectTheme",
+      "ProjectMilestone",
+      "ProjectTheme"
+     ],
+     [
+      "ProjectSequence",
+      "ActualProject",
+      "ActualProject"
+     ],
+     [
+      "PropertySetGeneralization",
+      "CapabilityConfiguration",
+      "CapabilityConfiguration"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ],
+     [
+      "ServiceExchange",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ],
+     [
+      "ServiceGeneralization",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 7,
+     "ids": [
+      "Lr-MK01",
+      "Lr-MK02",
+      "Lr-MK03",
+      "Lr-MK04",
+      "Lr-MK05",
+      "Lr-MK06",
+      "Lr-MK07"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "Lr - Lines of Development",
+    "elemente": [
+     "CapabilityConfiguration",
+     "Project",
+     "ProjectMilestone"
+    ],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv"
+   ]
+  },
+  "P1": {
+   "titel": "P1 - Resource Types",
+   "gruppe": "Physical Resource Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-P1-Toolbox",
+    "elemente": [
+     "ActualCondition",
+     "ActualEnterprisePhase",
+     "ActualEnvironment",
+     "ActualLocation",
+     "ActualResource",
+     "ActualService",
+     "CapabilityConfiguration",
+     "Classification",
+     "Classified",
+     "Competence",
+     "ConformsTo",
+     "DataElement",
+     "DataElementStoredIn",
+     "DocumentReference",
+     "Energy",
+     "EnterprisePhase",
+     "EnvironmentalContext",
+     "Finding",
+     "Forecast",
+     "ForecastPeriod",
+     "FormStoredIn",
+     "Implements",
+     "JustifiedBy",
+     "Measurement",
+     "MeasurementType",
+     "NaturalResource",
+     "Organization",
+     "OriginatesFrom",
+     "OwnsMeasurement",
+     "PaperForm",
+     "Person",
+     "Post",
+     "PropertySetGeneralization",
+     "ProvidedServiceLevel",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "RequiredServiceLevel",
+     "RequiresCompetence",
+     "ResourceArchitecture",
+     "ResourceArtifact",
+     "ResourceConstraint",
+     "ResourceInterface",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServiceProvision",
+     "ServiceSpecification",
+     "Software",
+     "Standard",
+     "System",
+     "Technology"
+    ],
+    "konnektoren": [
+     [
+      "ActualConditionToActualResource",
+      "ActualResource",
+      "ActualCondition"
+     ],
+     [
+      "ActualResourceRelationship",
+      "ActualResource",
+      "ActualResource"
+     ],
+     [
+      "EnvironmentalContext",
+      "Measurement",
+      "ActualCondition"
+     ],
+     [
+      "ForecastPeriod",
+      "Forecast",
+      "ActualEnterprisePhase"
+     ],
+     [
+      "FormStoredIn",
+      "PaperForm",
+      "Software"
+     ],
+     [
+      "HostedOn",
+      "ResourceArchitecture",
+      "ResourceArchitecture"
+     ],
+     [
+      "PhysicalArchitectureOfEnterprisePhase",
+      "ActualEnterprisePhase",
+      "ResourceArchitecture"
+     ],
+     [
+      "PropertySetGeneralization",
+      "CapabilityConfiguration",
+      "CapabilityConfiguration"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ],
+     [
+      "SameAs",
+      "Software",
+      "Software"
+     ],
+     [
+      "ServiceExchange",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ],
+     [
+      "ServiceGeneralization",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ],
+     [
+      "ServiceProvision",
+      "ActualResource",
+      "ActualService"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 12,
+     "ids": [
+      "P1-MK01",
+      "P1-MK02",
+      "P1-MK03",
+      "P1-MK04",
+      "P1-MK05",
+      "P1-MK06",
+      "P1-MK07",
+      "P1-MK08",
+      "P1-MK09",
+      "P1-MK10",
+      "P1-MK11",
+      "P1-MK12"
+     ]
+    },
+    "pbn": {
+     "konventionen": 8,
+     "ids": [
+      "P1-MK01",
+      "P1-MK02",
+      "P1-MK03",
+      "P1-MK04",
+      "P1-MK05",
+      "P1-MK06",
+      "P1-MK07",
+      "P1-MK08"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "P1 - Resource Types",
+    "elemente": [
+     "MeasurementType",
+     "OperationalPerformer",
+     "ResourceArtifact",
+     "ServiceSpecification",
+     "Software",
+     "System"
+    ],
+    "beziehungen": [
+     [
+      "Implements",
+      "ResourceArtifact",
+      "OperationalPerformer"
+     ],
+     [
+      "ServiceProvision",
+      "ActualResource",
+      "ActualService"
+     ]
+    ],
+    "assoziationen": 2,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "P2": {
+   "titel": "P2 - Resource Structure",
+   "gruppe": "Physical Resource Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-P2-Toolbox",
+    "elemente": [
+     "ActualCondition",
+     "ActualEnvironment",
+     "ActualLocation",
+     "ActualProject",
+     "ActualProjectConsults",
+     "ActualProjectInforms",
+     "CapabilityConfiguration",
+     "Classification",
+     "Classified",
+     "Command",
+     "Competence",
+     "CompetenceForRole",
+     "ConformsTo",
+     "Control",
+     "DataElement",
+     "DataRole",
+     "DocumentReference",
+     "Energy",
+     "Environment",
+     "EnvironmentalContext",
+     "Finding",
+     "Function",
+     "GeoPoliticalExtentType",
+     "HostedOn",
+     "Implements",
+     "IsAccountableFor",
+     "IsResponsibleFor",
+     "JustifiedBy",
+     "Location",
+     "LocationType",
+     "Measurement",
+     "MeasurementType",
+     "NaturalResource",
+     "NeedsModificationOf",
+     "NeedsResource",
+     "Organization",
+     "OriginatesFrom",
+     "OwnsMeasurement",
+     "Person",
+     "PhysicalLocation",
+     "Post",
+     "PostRole",
+     "ProjectProvidesFunction",
+     "ProjectSupportActivity",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "RequiredEnvironment",
+     "ResourceArchitecture",
+     "ResourceArtifact",
+     "ResourceConstraint",
+     "ResourceDependency",
+     "ResourceExchange",
+     "ResourceRole",
+     "ResourceToServiceDependency",
+     "Responsible",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServiceProvision",
+     "ServiceSpecification",
+     "ServiceSpecificationRole",
+     "Software",
+     "Standard",
+     "SubOrganization",
+     "System"
+    ],
+    "konnektoren": [
+     [
+      "ActualProjectConsults",
+      "ActualProject",
+      "Organization"
+     ],
+     [
+      "ActualProjectDependency",
+      "ActualProject",
+      "ActualProject"
+     ],
+     [
+      "ActualProjectInforms",
+      "ActualProject",
+      "Organization"
+     ],
+     [
+      "CompetenceForRole",
+      "ResourceRole",
+      "Competence"
+     ],
+     [
+      "EnvironmentalContext",
+      "Measurement",
+      "ActualCondition"
+     ],
+     [
+      "HostedOn",
+      "ResourceArchitecture",
+      "ResourceArchitecture"
+     ],
+     [
+      "IsAccountableFor",
+      "Organization",
+      "ActualProject"
+     ],
+     [
+      "IsResponsibleFor",
+      "Organization",
+      "ActualProject"
+     ],
+     [
+      "NeedsService",
+      "ActualProject",
+      "ServiceSpecification"
+     ],
+     [
+      "ProjectProvidesFunction",
+      "ActualProject",
+      "Function"
+     ],
+     [
+      "ProjectSequence",
+      "ActualProject",
+      "ActualProject"
+     ],
+     [
+      "PropertySetGeneralization",
+      "CapabilityConfiguration",
+      "CapabilityConfiguration"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ],
+     [
+      "SameAs",
+      "Software",
+      "Software"
+     ],
+     [
+      "ServiceExchange",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ],
+     [
+      "ServiceGeneralization",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 29,
+     "ids": [
+      "P2-MK01",
+      "P2-MK02",
+      "P2-MK03",
+      "P2-MK04",
+      "P2-MK05",
+      "P2-MK06",
+      "P2-MK07",
+      "P2-MK08",
+      "P2-MK09",
+      "P2-MK10",
+      "P2-MK11",
+      "P2-MK12",
+      "P2-MK13",
+      "P2-MK14",
+      "P2-MK15",
+      "P2-MK16",
+      "P2-MK17",
+      "P2-MK18",
+      "P2-MK19",
+      "P2-MK20",
+      "P2-MK21",
+      "P2-MK22",
+      "P2-MK23",
+      "P2-MK24",
+      "P2-MK25",
+      "P2-MK26",
+      "P2-MK27",
+      "P2-MK28",
+      "P2-MK29"
+     ]
+    },
+    "pbn": {
+     "konventionen": 17,
+     "ids": [
+      "P2-MK01",
+      "P2-MK02",
+      "P2-MK03",
+      "P2-MK04",
+      "P2-MK05",
+      "P2-MK06",
+      "P2-MK07",
+      "P2-MK08",
+      "P2-MK09",
+      "P2-MK10",
+      "P2-MK11",
+      "P2-MK12",
+      "P2-MK13",
+      "P2-MK14",
+      "P2-MK15",
+      "P2-MK16",
+      "P2-MK17"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "P2 - Resource Structure",
+    "elemente": [
+     "CapabilityConfiguration",
+     "DataElement",
+     "Location",
+     "OperationalArchitecture",
+     "OperationalPerformer",
+     "Project",
+     "ResourceArtifact",
+     "ServiceSpecification"
+    ],
+    "beziehungen": [
+     [
+      "Control",
+      "ResourceRole",
+      "ResourceRole"
+     ],
+     [
+      "Implements",
+      "CapabilityConfiguration",
+      "OperationalRole"
+     ],
+     [
+      "ResourceExchange",
+      "CapabilityConfiguration",
+      "CapabilityConfiguration"
+     ],
+     [
+      "ResourceExchange",
+      "ResourceRole",
+      "ResourceRole"
+     ],
+     [
+      "ServiceProvision",
+      "CapabilityConfiguration",
+      "ServiceSpecification"
+     ]
+    ],
+    "assoziationen": 8,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "P3": {
+   "titel": "P3 - Resource Connectivity",
+   "gruppe": "Physical Resource Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-P3-Toolbox",
+    "elemente": [
+     "ActualCondition",
+     "ActualEnvironment",
+     "ActualLocation",
+     "BoundaryCondition",
+     "CapabilityConfiguration",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "Control",
+     "DataElement",
+     "DataRole",
+     "DocumentReference",
+     "EnvironmentalContext",
+     "Finding",
+     "ImplementsProtocol",
+     "JustifiedBy",
+     "Measurement",
+     "MeasurementType",
+     "OriginatesFrom",
+     "OwnsMeasurement",
+     "Protocol",
+     "ProtocolLayer",
+     "Protocolstack",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResourceArchitecture",
+     "ResourceArtifact",
+     "ResourceConnector",
+     "ResourceConstraint",
+     "ResourceDependency",
+     "ResourceExchange",
+     "ResourceInterface",
+     "ResourcePort",
+     "ResourceRole",
+     "ResourceSignal",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "Software",
+     "Standard",
+     "System"
+    ],
+    "konnektoren": [
+     [
+      "EnvironmentalContext",
+      "Measurement",
+      "ActualCondition"
+     ],
+     [
+      "HostedOn",
+      "ResourceArchitecture",
+      "ResourceArchitecture"
+     ],
+     [
+      "PropertySetGeneralization",
+      "CapabilityConfiguration",
+      "CapabilityConfiguration"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ],
+     [
+      "ResourceConnector",
+      "ResourcePort",
+      "ResourcePort"
+     ],
+     [
+      "SameAs",
+      "Software",
+      "Software"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 6,
+     "ids": [
+      "P3-MK01",
+      "P3-MK02",
+      "P3-MK03",
+      "P3-MK04",
+      "P3-MK05",
+      "P3-MK06"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "P3 - Resource Connectivity",
+    "elemente": [
+     "CapabilityConfiguration",
+     "DataElement",
+     "Protocol",
+     "ResourceArtifact",
+     "ResourceInterface",
+     "ResourcePort",
+     "Software"
+    ],
+    "beziehungen": [
+     [
+      "ResourceConnector",
+      "ResourcePort",
+      "ResourcePort"
+     ],
+     [
+      "ResourceExchange",
+      "ResourceRole",
+      "ResourceRole"
+     ]
+    ],
+    "assoziationen": 6,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv"
+   ]
+  },
+  "P4": {
+   "titel": "P4 - Resource Functions",
+   "gruppe": "Physical Resource Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-P4-Toolbox",
+    "elemente": [
+     "ActualCondition",
+     "ActualEnvironment",
+     "ActualLocation",
+     "AffectedFunctions",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DataElement",
+     "DocumentReference",
+     "EnvironmentalContext",
+     "Finding",
+     "Function",
+     "FunctionAction",
+     "FunctionControlFlow",
+     "FunctionObjectFlow",
+     "FunctionSubject",
+     "IsCapableToPerform",
+     "JustifiedBy",
+     "Measurement",
+     "MeasurementType",
+     "OriginatesFrom",
+     "OwnsMeasurement",
+     "PerformsInContext",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResourceConstraint",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "EnvironmentalContext",
+      "Measurement",
+      "ActualCondition"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "P4 - Resource Functions",
+    "elemente": [
+     "DataElement",
+     "ResourceArtifact",
+     "Software"
+    ],
+    "beziehungen": [
+     [
+      "",
+      "",
+      ""
+     ],
+     [
+      "",
+      "",
+      "FunctionAction"
+     ],
+     [
+      "",
+      "FunctionAction",
+      ""
+     ],
+     [
+      "",
+      "FunctionAction",
+      "FunctionAction"
+     ],
+     [
+      "IsCapableToPerform",
+      "ResourceArtifact",
+      "FunctionAction"
+     ],
+     [
+      "PerformsInContext",
+      "ResourceRole",
+      "FunctionAction"
+     ]
+    ],
+    "assoziationen": 12,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "P5": {
+   "titel": "P5 - Resource States",
+   "gruppe": "Physical Resource Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-P5-Toolbox",
+    "elemente": [
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "Finding",
+     "JustifiedBy",
+     "OriginatesFrom",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResourceConstraint",
+     "ResourceStateDescription",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "P5 - Resource States",
+    "elemente": [],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "P6": {
+   "titel": "P6 - Resource Sequence",
+   "gruppe": "Physical Resource Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-P6-Toolbox",
+    "elemente": [
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "Finding",
+     "JustifiedBy",
+     "OriginatesFrom",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResourceConstraint",
+     "ResourceMessage",
+     "ResourceRole",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServiceMessage",
+     "ServiceSpecificationRole",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "P6 - Resource Sequence",
+    "elemente": [
+     "DataElement",
+     "Post",
+     "ResourceArtifact",
+     "ServiceSpecification"
+    ],
+    "beziehungen": [
+     [
+      "",
+      "PostRole",
+      "ResourceRole"
+     ],
+     [
+      "",
+      "PostRole",
+      "ServiceSpecificationRole"
+     ],
+     [
+      "",
+      "ResourceRole",
+      "PostRole"
+     ],
+     [
+      "",
+      "ResourceRole",
+      "ResourceRole"
+     ],
+     [
+      "",
+      "ResourceRole",
+      "ServiceSpecificationRole"
+     ],
+     [
+      "",
+      "ServiceSpecificationRole",
+      "ResourceRole"
+     ]
+    ],
+    "assoziationen": 7,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "P7": {
+   "titel": "P7 - Data Model",
+   "gruppe": "Physical Resource Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-P7-Toolbox",
+    "elemente": [
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DataElement",
+     "DataModel",
+     "DataRole",
+     "DocumentReference",
+     "Finding",
+     "Implements",
+     "JustifiedBy",
+     "OriginatesFrom",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResourceConstraint",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 5,
+     "ids": [
+      "P7-MK01",
+      "P7-MK02",
+      "P7-MK03",
+      "P7-MK04",
+      "P7-MK05"
+     ]
+    },
+    "pbn": {
+     "konventionen": 10,
+     "ids": [
+      "P7-MK01",
+      "P7-MK02",
+      "P7-MK03",
+      "P7-MK04",
+      "P7-MK05",
+      "P7-MK06",
+      "P7-MK07",
+      "P7-MK08",
+      "P7-MK09",
+      "P7-MK10"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "P7 - Data Model",
+    "elemente": [
+     "DataElement",
+     "InformationElement"
+    ],
+    "beziehungen": [
+     [
+      "",
+      "DataElement",
+      "DataElement"
+     ],
+     [
+      "Implements",
+      "DataElement",
+      "InformationElement"
+     ]
+    ],
+    "assoziationen": 6,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "P8": {
+   "titel": "P8 - Resource Constraints",
+   "gruppe": "Physical Resource Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-P8-Toolbox",
+    "elemente": [
+     "ActualPerson",
+     "ActualPost",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "FillsPost",
+     "Finding",
+     "Implements",
+     "JustifiedBy",
+     "OperationalConstraint",
+     "OriginatesFrom",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResourceConstraint",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServicePolicy",
+     "Standard",
+     "StrategicConstraint"
+    ],
+    "konnektoren": [
+     [
+      "FillsPost",
+      "ActualPerson",
+      "ActualPost"
+     ],
+     [
+      "JustifiedBy",
+      "OperationalConstraint",
+      "Reference"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 11,
+     "ids": [
+      "P8-MK01",
+      "P8-MK02",
+      "P8-MK03",
+      "P8-MK04",
+      "P8-MK05",
+      "P8-MK06",
+      "P8-MK07",
+      "P8-MK08",
+      "P8-MK09",
+      "P8-MK10",
+      "P8-MK11"
+     ]
+    },
+    "pbn": {
+     "konventionen": 8,
+     "ids": [
+      "P8-MK01",
+      "P8-MK02",
+      "P8-MK03",
+      "P8-MK04",
+      "P8-MK05",
+      "P8-MK06",
+      "P8-MK07",
+      "P8-MK08"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "P8 - Resource Constraints",
+    "elemente": [
+     "CapabilityConfiguration",
+     "Classification",
+     "DocumentReference",
+     "OperationalConstraint",
+     "Reference",
+     "ResourceArtifact",
+     "ResourceConstraint",
+     "SMEReference"
+    ],
+    "beziehungen": [
+     [
+      "Implements",
+      "ResourceConstraint",
+      "OperationalConstraint"
+     ]
+    ],
+    "assoziationen": 1,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "Pr": {
+   "titel": "Pr - Configuration Management",
+   "gruppe": "Physical Resource Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-Pr-Toolbox",
+    "elemente": [
+     "ActualProject",
+     "ActualProjectDependency",
+     "ActualProjectMilestone",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "Finding",
+     "JustifiedBy",
+     "MilestoneDependency",
+     "OriginatesFrom",
+     "OwnedMilestone",
+     "Project",
+     "ProjectMilestone",
+     "ProjectMilestoneRole",
+     "ProjectMilestoneToProjectTheme",
+     "ProjectSequence",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "RequiredResource",
+     "ResourceConstraint",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "Standard",
+     "SuccessorOf",
+     "VersionOfConfiguration",
+     "VersionReleased",
+     "VersionSuccession",
+     "VersionWithdrawn",
+     "WholeLifeConfiguration"
+    ],
+    "konnektoren": [
+     [
+      "ActualProjectDependency",
+      "ActualProject",
+      "ActualProject"
+     ],
+     [
+      "MilestoneDependency",
+      "ActualProjectMilestone",
+      "ActualProjectMilestone"
+     ],
+     [
+      "OwnedMilestone",
+      "ActualProject",
+      "ActualProjectMilestone"
+     ],
+     [
+      "ProjectSequence",
+      "ActualProject",
+      "ActualProject"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ],
+     [
+      "VersionSuccession",
+      "VersionOfConfiguration",
+      "VersionOfConfiguration"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "Pr - Configuration Managment",
+    "elemente": [
+     "CapabilityConfiguration",
+     "WholeLifeConfiguration"
+    ],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "R2": {
+   "titel": "R2 - Requirement Catalogue",
+   "gruppe": "Requirement Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-R2-Toolbox",
+    "elemente": [
+     "ConformsTo",
+     "Finding",
+     "FunctionalRequirement",
+     "NonfunctionalRequirement",
+     "PartOfCatalogue",
+     "PartOfCategory",
+     "RealizesRecommendation",
+     "Recommendation",
+     "RefersTo",
+     "RequirementCatalogue",
+     "RequirementCategory",
+     "ResultsFrom",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "PartOfCatalogue",
+      "RequirementCategory",
+      "RequirementCatalogue"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 7,
+     "ids": [
+      "R2-MK01",
+      "R2-MK02",
+      "R2-MK03",
+      "R2-MK04",
+      "R2-MK05",
+      "R2-MK06",
+      "R2-MK07"
+     ]
+    },
+    "pbn": {
+     "konventionen": 3,
+     "ids": [
+      "R2-MK01",
+      "R2-MK02",
+      "R2-MK03"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "R2 - Requirement Catalogue",
+    "elemente": [
+     "RequirementCatalogue",
+     "RequirementCategory"
+    ],
+    "beziehungen": [
+     [
+      "PartOfCatalogue",
+      "RequirementCategory",
+      "RequirementCatalogue"
+     ],
+     [
+      "PartOfCategory",
+      "FunctionalRequirement",
+      "RequirementCategory"
+     ],
+     [
+      "PartOfCategory",
+      "RequirementCategory",
+      "RequirementCategory"
+     ]
+    ],
+    "assoziationen": 16,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "R3": {
+   "titel": "R3 - Requirement Dependencies",
+   "gruppe": "Requirement Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-R3-Toolbox",
+    "elemente": [
+     "ConflictsWith",
+     "ConformsTo",
+     "Finding",
+     "FunctionalRequirement",
+     "IsDuplicateOf",
+     "NonfunctionalRequirement",
+     "RealizesRecommendation",
+     "Recommendation",
+     "RefersTo",
+     "Refines",
+     "Replaces",
+     "Requires",
+     "ResultsFrom",
+     "Standard",
+     "StemsFrom"
+    ],
+    "konnektoren": [
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 9,
+     "ids": [
+      "R3-MK01",
+      "R3-MK02",
+      "R3-MK03",
+      "R3-MK04",
+      "R3-MK05",
+      "R3-MK06",
+      "R3-MK07",
+      "R3-MK08",
+      "R3-MK09"
+     ]
+    },
+    "pbn": {
+     "konventionen": 3,
+     "ids": [
+      "R3-MK01",
+      "R3-MK02",
+      "R3-MK03"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "R3 - Requirement Dependencies",
+    "elemente": [],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "R7": {
+   "titel": "R7 - Requirement Derivation",
+   "gruppe": "Requirement Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-R7-Toolbox",
+    "elemente": [
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DerivedFrom",
+     "DocumentReference",
+     "Finding",
+     "FunctionalRequirement",
+     "Implements",
+     "JustifiedBy",
+     "NonfunctionalRequirement",
+     "OperationalConstraint",
+     "OriginatesFrom",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "Refines",
+     "Requires",
+     "ResourceConstraint",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServicePolicy",
+     "Standard",
+     "ToBeRealizedBy"
+    ],
+    "konnektoren": [
+     [
+      "JustifiedBy",
+      "OperationalConstraint",
+      "Reference"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 8,
+     "ids": [
+      "R7-MK01",
+      "R7-MK02",
+      "R7-MK03",
+      "R7-MK04",
+      "R7-MK05",
+      "R7-MK06",
+      "R7-MK07",
+      "R7-MK08"
+     ]
+    },
+    "pbn": {
+     "konventionen": 6,
+     "ids": [
+      "R7-MK01",
+      "R7-MK02",
+      "R7-MK04",
+      "R7-MK05",
+      "R7-MK06",
+      "R7-MK07"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "R7 - Requirement Derivation",
+    "elemente": [
+     "DocumentReference",
+     "OperationalArchitecture",
+     "OperationalConstraint",
+     "OperationalPerformer",
+     "ResourceArchitecture",
+     "ResourceConstraint",
+     "SMEReference",
+     "System"
+    ],
+    "beziehungen": [
+     [
+      "Implements",
+      "ResourceArchitecture",
+      "OperationalRole"
+     ],
+     [
+      "Implements",
+      "ResourceConstraint",
+      "OperationalConstraint"
+     ],
+     [
+      "PerformsInContext",
+      "OperationalRole",
+      "OperationalActivityAction"
+     ]
+    ],
+    "assoziationen": 4,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "R8": {
+   "titel": "R8 - Requirement Fulfilment",
+   "gruppe": "Requirement Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-R8-Toolbox",
+    "elemente": [
+     "Checks",
+     "ConformsTo",
+     "Evaluates",
+     "Finding",
+     "FitCriterion",
+     "FulfilmentCriterion",
+     "RealizesRecommendation",
+     "Recommendation",
+     "RefersTo",
+     "ResultsFrom",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "Evaluates",
+      "FulfilmentCriterion",
+      "FitCriterion"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 4,
+     "ids": [
+      "R8-MK01",
+      "R8-MK02",
+      "R8-MK03",
+      "R8-MK04"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "R8 - Requirement Fulfilment",
+    "elemente": [
+     "FitCriterion",
+     "FulfilmentCriterion"
+    ],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv"
+   ]
+  },
+  "Rr": {
+   "titel": "Rr - Requirement Realization",
+   "gruppe": "Requirement Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-Rr-Toolbox",
+    "elemente": [
+     "CapabilityConfiguration",
+     "ConformsTo",
+     "Finding",
+     "Function",
+     "Measurement",
+     "MeasurementType",
+     "NaturalResource",
+     "Organization",
+     "Person",
+     "Post",
+     "Protocol",
+     "Protocolstack",
+     "RealiseRequirement",
+     "RealizesRecommendation",
+     "Recommendation",
+     "RefersTo",
+     "ResourceArchitecture",
+     "ResourceArtifact",
+     "ResourceInterface",
+     "ResultsFrom",
+     "ServiceFunction",
+     "ServiceInterface",
+     "ServiceSpecification",
+     "ServiceSpecificationRole",
+     "Software",
+     "Standard",
+     "System"
+    ],
+    "konnektoren": [
+     [
+      "HostedOn",
+      "ResourceArchitecture",
+      "ResourceArchitecture"
+     ],
+     [
+      "PropertySetGeneralization",
+      "CapabilityConfiguration",
+      "CapabilityConfiguration"
+     ],
+     [
+      "ProvidesServiceFunction",
+      "ServiceInterface",
+      "ServiceFunction"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "SameAs",
+      "Software",
+      "Software"
+     ],
+     [
+      "ServiceExchange",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ],
+     [
+      "ServiceGeneralization",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 4,
+     "ids": [
+      "Rr-MK01",
+      "Rr-MK02",
+      "Rr-MK03",
+      "Rr-MK04"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "Rr - Requirement Realization",
+    "elemente": [
+     "ResourceArtifact"
+    ],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv"
+   ]
+  },
+  "S1": {
+   "titel": "S1 - Service Taxonomy",
+   "gruppe": "Service Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-S1-Toolbox",
+    "elemente": [
+     "ActualCondition",
+     "ActualEnvironment",
+     "ActualLocation",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "EnvironmentalContext",
+     "Finding",
+     "JustifiedBy",
+     "Measurement",
+     "MeasurementType",
+     "OriginatesFrom",
+     "OwnsMeasurement",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServiceGeneralization",
+     "ServicePolicy",
+     "ServiceSpecification",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "EnvironmentalContext",
+      "Measurement",
+      "ActualCondition"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ],
+     [
+      "ServiceExchange",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ],
+     [
+      "ServiceGeneralization",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 16,
+     "ids": [
+      "S1-MK01",
+      "S1-MK02",
+      "S1-MK03",
+      "S1-MK04",
+      "S1-MK05",
+      "S1-MK06",
+      "S1-MK07",
+      "S1-MK08",
+      "S1-MK09",
+      "S1-MK10",
+      "S1-MK11",
+      "S1-MK12",
+      "S1-MK13",
+      "S1-MK14",
+      "S1-MK15",
+      "S1-MK16"
+     ]
+    },
+    "pbn": {
+     "konventionen": 11,
+     "ids": [
+      "S1-MK01",
+      "S1-MK02",
+      "S1-MK03",
+      "S1-MK04",
+      "S1-MK05",
+      "S1-MK06",
+      "S1-MK07",
+      "S1-MK08",
+      "S1-MK09",
+      "S1-MK10",
+      "S1-MK11"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "S1 - Service Taxonomy",
+    "elemente": [
+     "ServiceSpecification"
+    ],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "S2": {
+   "titel": "S2 - Service Structure",
+   "gruppe": "Service Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-S2-Toolbox",
+    "elemente": [
+     "ActualCondition",
+     "ActualEnvironment",
+     "ActualLocation",
+     "CapabilityConfiguration",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "EnvironmentalContext",
+     "Finding",
+     "IsAccountableFor",
+     "IsCapableToPerform",
+     "IsResponsibleFor",
+     "JustifiedBy",
+     "Measurement",
+     "MeasurementType",
+     "NaturalResource",
+     "OperationalPerformer",
+     "Organization",
+     "OriginatesFrom",
+     "OwnsMeasurement",
+     "Person",
+     "Post",
+     "ProvidesServiceFunction",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResourceArchitecture",
+     "ResourceArtifact",
+     "ResourceInterface",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServiceDependency",
+     "ServiceFunction",
+     "ServiceInterface",
+     "ServicePolicy",
+     "ServicePort",
+     "ServiceSpecification",
+     "ServiceSpecificationRole",
+     "Software",
+     "Standard",
+     "System"
+    ],
+    "konnektoren": [
+     [
+      "ConsumedBy",
+      "ServiceSpecification",
+      "OperationalPerformer"
+     ],
+     [
+      "EnvironmentalContext",
+      "Measurement",
+      "ActualCondition"
+     ],
+     [
+      "HostedOn",
+      "ResourceArchitecture",
+      "ResourceArchitecture"
+     ],
+     [
+      "PropertySetGeneralization",
+      "CapabilityConfiguration",
+      "CapabilityConfiguration"
+     ],
+     [
+      "Provides",
+      "OperationalPerformer",
+      "ServiceSpecification"
+     ],
+     [
+      "ProvidesServiceFunction",
+      "ServiceInterface",
+      "ServiceFunction"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ],
+     [
+      "SameAs",
+      "Software",
+      "Software"
+     ],
+     [
+      "ServiceConnector",
+      "ServicePort",
+      "ServicePort"
+     ],
+     [
+      "ServiceExchange",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ],
+     [
+      "ServiceGeneralization",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 13,
+     "ids": [
+      "S2-MK01",
+      "S2-MK02",
+      "S2-MK03",
+      "S2-MK04",
+      "S2-MK05",
+      "S2-MK06",
+      "S2-MK07",
+      "S2-MK08",
+      "S2-MK09",
+      "S2-MK10",
+      "S2-MK11",
+      "S2-MK12",
+      "S2-MK13"
+     ]
+    },
+    "pbn": {
+     "konventionen": 9,
+     "ids": [
+      "S2-MK01",
+      "S2-MK02",
+      "S2-MK03",
+      "S2-MK04",
+      "S2-MK05",
+      "S2-MK06",
+      "S2-MK07",
+      "S2-MK08",
+      "S2-MK09"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "S2 - Service Structure",
+    "elemente": [
+     "CapabilityConfiguration",
+     "Environment",
+     "MeasurementType",
+     "OperationalPerformer",
+     "Organization",
+     "ServiceSpecification"
+    ],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "S3": {
+   "titel": "S3 - Service Interfaces",
+   "gruppe": "Service Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-S3-Toolbox",
+    "elemente": [
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DataElement",
+     "DataRole",
+     "DocumentReference",
+     "Finding",
+     "JustifiedBy",
+     "OriginatesFrom",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServiceConnector",
+     "ServiceExchange",
+     "ServiceInterface",
+     "ServicePolicy",
+     "ServicePort",
+     "ServiceSpecification",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ],
+     [
+      "ServiceConnector",
+      "ServicePort",
+      "ServicePort"
+     ],
+     [
+      "ServiceExchange",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ],
+     [
+      "ServiceGeneralization",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 6,
+     "ids": [
+      "S3-MK01",
+      "S3-MK02",
+      "S3-MK03",
+      "S3-MK04",
+      "S3-MK05",
+      "S3-MK06"
+     ]
+    },
+    "pbn": {
+     "konventionen": 5,
+     "ids": [
+      "S3-MK01",
+      "S3-MK02",
+      "S3-MK03",
+      "S3-MK04",
+      "S3-MK05"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "S3 - Service Interfaces",
+    "elemente": [
+     "DataElement",
+     "ServiceInterface",
+     "ServicePort",
+     "ServiceSpecification"
+    ],
+    "beziehungen": [
+     [
+      "",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ],
+     [
+      "ServiceConnector",
+      "ServicePort",
+      "ServicePort"
+     ]
+    ],
+    "assoziationen": 3,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "S4": {
+   "titel": "S4 - Service Functions",
+   "gruppe": "Service Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-S4-Toolbox",
+    "elemente": [
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "Finding",
+     "IsCapableToPerform",
+     "JustifiedBy",
+     "OriginatesFrom",
+     "PerformsInContext",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServiceExchange",
+     "ServiceFunction",
+     "ServiceFunctionAction",
+     "ServicePolicy",
+     "ServiceSpecification",
+     "ServiceSpecificationRole",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ],
+     [
+      "ServiceExchange",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ],
+     [
+      "ServiceGeneralization",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 5,
+     "ids": [
+      "S4-MK01",
+      "S4-MK02",
+      "S4-MK03",
+      "S4-MK04",
+      "S4-MK05"
+     ]
+    },
+    "pbn": {
+     "konventionen": 4,
+     "ids": [
+      "S4-MK01",
+      "S4-MK02",
+      "S4-MK03",
+      "S4-MK04"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "S4 - Service Functions",
+    "elemente": [],
+    "beziehungen": [
+     [
+      "IsCapableToPerform",
+      "ServiceSpecification",
+      "ServiceFunction"
+     ]
+    ],
+    "assoziationen": 1,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "S5": {
+   "titel": "S5 - Service States",
+   "gruppe": "Service Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-S5-Toolbox",
+    "elemente": [
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "Finding",
+     "JustifiedBy",
+     "OriginatesFrom",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServicePolicy",
+     "ServiceSpecification",
+     "ServiceStateDescription",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ],
+     [
+      "ServiceExchange",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ],
+     [
+      "ServiceGeneralization",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "S5 - Service States",
+    "elemente": [
+     "ServiceSpecification"
+    ],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "S6": {
+   "titel": "S6 - Service Interactions",
+   "gruppe": "Service Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-S6-Toolbox",
+    "elemente": [
+     "ConformsTo",
+     "Finding",
+     "OperationalMessage",
+     "OperationalRole",
+     "RealizesRecommendation",
+     "Recommendation",
+     "RefersTo",
+     "ResourceMessage",
+     "ResourceRole",
+     "ResultsFrom",
+     "ServiceExchange",
+     "ServiceMessage",
+     "ServiceSpecificationRole",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "S6 - Service Interactions",
+    "elemente": [
+     "DataElement",
+     "ServiceSpecification"
+    ],
+    "beziehungen": [
+     [
+      "",
+      "ServiceSpecificationRole",
+      "ServiceSpecificationRole"
+     ]
+    ],
+    "assoziationen": 8,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "S7": {
+   "titel": "S7 - Service Interface Parameters",
+   "gruppe": "Service Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-S7-Toolbox",
+    "elemente": [
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "Finding",
+     "JustifiedBy",
+     "OriginatesFrom",
+     "ProvidesServiceFunction",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServiceFunction",
+     "ServiceInterface",
+     "ServicePolicy",
+     "ServiceSpecification",
+     "Standard"
+    ],
+    "konnektoren": [
+     [
+      "ProvidesServiceFunction",
+      "ServiceInterface",
+      "ServiceFunction"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ],
+     [
+      "ServiceExchange",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ],
+     [
+      "ServiceGeneralization",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 5,
+     "ids": [
+      "S7-MK01",
+      "S7-MK02",
+      "S7-MK03",
+      "S7-MK04",
+      "S7-MK05"
+     ]
+    },
+    "pbn": {
+     "konventionen": 4,
+     "ids": [
+      "S7-MK01",
+      "S7-MK02",
+      "S7-MK03",
+      "S7-MK04"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "S7 - Service Interface Parameters",
+    "elemente": [],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "S8": {
+   "titel": "S8 - Service Policy",
+   "gruppe": "Service Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-S8-Toolbox",
+    "elemente": [
+     "ActualCondition",
+     "ActualEnvironment",
+     "ActualLocation",
+     "Classification",
+     "Classified",
+     "ConformsTo",
+     "DocumentReference",
+     "EnvironmentalContext",
+     "Finding",
+     "Implements",
+     "JustifiedBy",
+     "Measurement",
+     "MeasurementType",
+     "OperationalConstraint",
+     "OriginatesFrom",
+     "OwnsMeasurement",
+     "RealizesRecommendation",
+     "Recommendation",
+     "Reference",
+     "RefersTo",
+     "ResourceConstraint",
+     "ResultsFrom",
+     "SMEReference",
+     "Satisfy",
+     "ServicePolicy",
+     "Standard",
+     "StrategicConstraint"
+    ],
+    "konnektoren": [
+     [
+      "EnvironmentalContext",
+      "Measurement",
+      "ActualCondition"
+     ],
+     [
+      "JustifiedBy",
+      "OperationalConstraint",
+      "Reference"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ReplaceStandardElement",
+      "Reference",
+      "Reference"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 0,
+     "ids": []
+    },
+    "pbn": {
+     "konventionen": 0,
+     "ids": []
+    }
+   },
+   "model_wizard": {
+    "vorlage": "S8 - Service Policy",
+    "elemente": [
+     "DocumentReference",
+     "ServicePolicy",
+     "ServiceSpecification",
+     "StrategicConstraint"
+    ],
+    "beziehungen": [
+     [
+      "Implements",
+      "ServicePolicy",
+      "StrategicConstraint"
+     ]
+    ],
+    "assoziationen": 1,
+    "rtf": true
+   },
+   "luecken": [
+    "ffmlv",
+    "pbn"
+   ]
+  },
+  "Sr": {
+   "titel": "Sr - Service Roadmap",
+   "gruppe": "Service Specification Viewpoints",
+   "mdg": {
+    "toolbox": "NAFv4-ADMBw-Sr-Toolbox",
+    "elemente": [
+     "ActualProject",
+     "ActualProjectDependency",
+     "ActualProjectMilestone",
+     "ActualService",
+     "ConformsTo",
+     "Finding",
+     "IsAccountableFor",
+     "IsResponsibleFor",
+     "MilestoneDependency",
+     "NeedsService",
+     "OwnedMilestone",
+     "Project",
+     "ProjectMilestone",
+     "ProjectMilestoneRole",
+     "ProjectMilestoneToProjectTheme",
+     "ProjectSequence",
+     "ProvidedServiceLevel",
+     "RealizesRecommendation",
+     "Recommendation",
+     "RefersTo",
+     "RequiredResource",
+     "RequiredServiceLevel",
+     "ResultsFrom",
+     "ServiceSpecification",
+     "Standard",
+     "VersionReleased",
+     "VersionWithdrawn"
+    ],
+    "konnektoren": [
+     [
+      "ActualProjectDependency",
+      "ActualProject",
+      "ActualProject"
+     ],
+     [
+      "MilestoneDependency",
+      "ActualProjectMilestone",
+      "ActualProjectMilestone"
+     ],
+     [
+      "NeedsService",
+      "ActualProject",
+      "ServiceSpecification"
+     ],
+     [
+      "OwnedMilestone",
+      "ActualProject",
+      "ActualProjectMilestone"
+     ],
+     [
+      "ProjectSequence",
+      "ActualProject",
+      "ActualProject"
+     ],
+     [
+      "RefersTo",
+      "Recommendation",
+      "Finding"
+     ],
+     [
+      "ServiceExchange",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ],
+     [
+      "ServiceGeneralization",
+      "ServiceSpecification",
+      "ServiceSpecification"
+     ]
+    ]
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 5,
+     "ids": [
+      "Sr-MK01",
+      "Sr-MK02",
+      "Sr-MK03",
+      "Sr-MK04",
+      "Sr-MK05"
+     ]
+    },
+    "pbn": {
+     "konventionen": 4,
+     "ids": [
+      "Sr-MK01",
+      "Sr-MK02",
+      "Sr-MK03",
+      "Sr-MK04"
+     ]
+    }
+   },
+   "model_wizard": {
+    "vorlage": "Sr - Service Roadmap",
+    "elemente": [
+     "Organization",
+     "Project",
+     "ServiceSpecification"
+    ],
+    "beziehungen": [],
+    "assoziationen": 0,
+    "rtf": true
+   },
+   "luecken": []
+  },
+  "St": {
+   "titel": "St",
+   "gruppe": "",
+   "mdg": {
+    "toolbox": null,
+    "elemente": [],
+    "konnektoren": []
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 6,
+     "ids": [
+      "St-MK01",
+      "St-MK02",
+      "St-MK03",
+      "St-MK04",
+      "St-MK05",
+      "St-MK06"
+     ]
+    },
+    "pbn": {
+     "konventionen": 6,
+     "ids": [
+      "St-MK01",
+      "St-MK02",
+      "St-MK03",
+      "St-MK04",
+      "St-MK05",
+      "St-MK06"
+     ]
+    }
+   },
+   "model_wizard": null,
+   "luecken": [
+    "mdg",
+    "model-wizard"
+   ]
+  },
+  "VÜ": {
+   "titel": "Viewpoint-übergreifend",
+   "gruppe": "Übergreifend",
+   "mdg": {
+    "toolbox": null,
+    "elemente": [],
+    "konnektoren": []
+   },
+   "leitfaeden": {
+    "ffmlv": {
+     "konventionen": 12,
+     "ids": [
+      "VÜ-MK01",
+      "VÜ-MK02",
+      "VÜ-MK03",
+      "VÜ-MK04",
+      "VÜ-MK05",
+      "VÜ-MK06",
+      "VÜ-MK07",
+      "VÜ-MK08",
+      "VÜ-MK09",
+      "VÜ-MK10",
+      "VÜ-MK11",
+      "VÜ-MK12"
+     ]
+    },
+    "pbn": {
+     "konventionen": 12,
+     "ids": [
+      "VÜ-MK01",
+      "VÜ-MK02",
+      "VÜ-MK03",
+      "VÜ-MK04",
+      "VÜ-MK05",
+      "VÜ-MK06",
+      "VÜ-MK07",
+      "VÜ-MK08",
+      "VÜ-MK09",
+      "VÜ-MK10",
+      "VÜ-MK11",
+      "VÜ-MK12"
+     ]
+    }
+   },
+   "model_wizard": null,
+   "luecken": [
+    "mdg",
+    "model-wizard"
+   ]
+  }
+ },
+ "pruefung": {
+  "packages": [
+   {
+    "code": "St-MK01",
+    "family": "",
+    "path": "{projekt} - Startseite",
+    "viewpoint": "St"
+   },
+   {
+    "code": "A1-MK01",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A1/Meta-Data Definitions",
+    "viewpoint": "A1"
+   },
+   {
+    "code": "A2-MK01",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A2 - Stakeholder",
+    "viewpoint": "A2"
+   },
+   {
+    "code": "A2-MK08",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A2/Concerns",
+    "viewpoint": "A2"
+   },
+   {
+    "code": "A2-MK15",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A2/Viewpoints",
+    "viewpoint": "A2"
+   },
+   {
+    "code": "A3-MK01",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A3/Architecture Correspondence",
+    "viewpoint": "A3"
+   },
+   {
+    "code": "A6-MK01",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A6/Architecture Version",
+    "viewpoint": "A6"
+   },
+   {
+    "code": "A7-MK01",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A7/Architecture Compliance",
+    "viewpoint": "A7"
+   },
+   {
+    "code": "A7-MK07",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A7/Findings and Recommendations",
+    "viewpoint": "A7"
+   },
+   {
+    "code": "A7-MK17",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A7/Compliance Statement",
+    "viewpoint": "A7"
+   },
+   {
+    "code": "A8-MK01",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/A8/Standards",
+    "viewpoint": "A8"
+   },
+   {
+    "code": "Ar-MK01",
+    "family": "Architecture Foundation",
+    "path": "Architecture Foundation/Ar/Architecture Roadmap",
+    "viewpoint": "Ar"
+   },
+   {
+    "code": "C1-MK01",
+    "family": "Concepts",
+    "path": "Concepts/C1/Capability Taxonomy",
+    "viewpoint": "C1"
+   },
+   {
+    "code": "C8-MK01",
+    "family": "Concepts",
+    "path": "Concepts/C8/Planning Assumptions",
+    "viewpoint": "C8"
+   },
+   {
+    "code": "Cr-MK01",
+    "family": "Concepts",
+    "path": "Concepts/Cr/Capability Roadmap",
+    "viewpoint": "Cr"
+   },
+   {
+    "code": "L1-MK01",
+    "family": "Logical Specifications",
+    "path": "Logical Specifications/L1/Node Types",
+    "viewpoint": "L1"
+   },
+   {
+    "code": "L2-MK01",
+    "family": "Logical Specifications",
+    "path": "Logical Specifications/L2/Logical Nodes",
+    "viewpoint": "L2"
+   },
+   {
+    "code": "L2-MK05",
+    "family": "Logical Specifications",
+    "path": "Logical Specifications/L2/Logical Scenario",
+    "viewpoint": "L2"
+   },
+   {
+    "code": "L3-MK01",
+    "family": "Logical Specifications",
+    "path": "Logical Specifications/L3/Node Interaction",
+    "viewpoint": "L3"
+   },
+   {
+    "code": "L4-MK01",
+    "family": "Logical Specifications",
+    "path": "Logical Specifications/L4/Logical Activities",
+    "viewpoint": "L4"
+   },
+   {
+    "code": "L7-MK01",
+    "family": "Logical Specifications",
+    "path": "Logical Specifications/L7/Information Model",
+    "viewpoint": "L7"
+   },
+   {
+    "code": "L8-MK01",
+    "family": "Logical Specifications",
+    "path": "Logical Specifications/L8/Logical Constraints",
+    "viewpoint": "L8"
+   },
+   {
+    "code": "S1-MK01",
+    "family": "Service Specifications",
+    "path": "Service Specifications/S1/Charakterisierung - Service Description",
+    "viewpoint": "S1"
+   },
+   {
+    "code": "S1-MK12",
+    "family": "Service Specifications",
+    "path": "Service Specifications/S1/IT-Service Varianten",
+    "viewpoint": "S1"
+   },
+   {
+    "code": "S2-MK01",
+    "family": "Service Specifications",
+    "path": "Service Specifications/S2/IT-Service Komposition",
+    "viewpoint": "S2"
+   },
+   {
+    "code": "S2-MK05",
+    "family": "Service Specifications",
+    "path": "Service Specifications/S2/Serviceabhängigkeiten",
+    "viewpoint": "S2"
+   },
+   {
+    "code": "S2-MK10",
+    "family": "Service Specifications",
+    "path": "Service Specifications/S2/Warranties",
+    "viewpoint": "S2"
+   },
+   {
+    "code": "S3-MK01",
+    "family": "Service Specifications",
+    "path": "Service Specifications/S3/Logische Kontextsicht",
+    "viewpoint": "S3"
+   },
+   {
+    "code": "S4-MK01",
+    "family": "Service Specifications",
+    "path": "Service Specifications/S4/Servicefunktion",
+    "viewpoint": "S4"
+   },
+   {
+    "code": "S7-MK01",
+    "family": "Service Specifications",
+    "path": "Service Specifications/S7/Serviceinterface",
+    "viewpoint": "S7"
+   },
+   {
+    "code": "Sr-MK01",
+    "family": "Service Specifications",
+    "path": "Service Specifications/Sr/Service Change",
+    "viewpoint": "Sr"
+   },
+   {
+    "code": "P1-MK01",
+    "family": "Physical Resource Specifications",
+    "path": "Physical Resource Specifications/P1/Resource Types",
+    "viewpoint": "P1"
+   },
+   {
+    "code": "P1-MK07",
+    "family": "Physical Resource Specifications",
+    "path": "Physical Resource Specifications/P1/Service Provision",
+    "viewpoint": "P1"
+   },
+   {
+    "code": "P2-MK01",
+    "family": "Physical Resource Specifications",
+    "path": "Physical Resource Specifications/P2/Resource Structure",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P2-MK07",
+    "family": "Physical Resource Specifications",
+    "path": "Physical Resource Specifications/P2/Internal Dependencies",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P2-MK12",
+    "family": "Physical Resource Specifications",
+    "path": "Physical Resource Specifications/P2/External Dependencies",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P2-MK20",
+    "family": "Physical Resource Specifications",
+    "path": "Physical Resource Specifications/P2/Node Realization",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P2-MK25",
+    "family": "Physical Resource Specifications",
+    "path": "Physical Resource Specifications/P2/Application Hosting",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P7-MK01",
+    "family": "Physical Resource Specifications",
+    "path": "Physical Resource Specifications/P7/Data Model",
+    "viewpoint": "P7"
+   },
+   {
+    "code": "P8-MK01",
+    "family": "Physical Resource Specifications",
+    "path": "Physical Resource Specifications/P8/Resource Constraint Realization",
+    "viewpoint": "P8"
+   },
+   {
+    "code": "R2-MK01",
+    "family": "Requirements",
+    "path": "Requirements/R2/Requirement Catalogue",
+    "viewpoint": "R2"
+   },
+   {
+    "code": "R3-MK01",
+    "family": "Requirements",
+    "path": "Requirements/R3/Requirement Dependencies",
+    "viewpoint": "R3"
+   },
+   {
+    "code": "R7-MK01",
+    "family": "Requirements",
+    "path": "Requirements/R7/Requirement Derivation",
+    "viewpoint": "R7"
+   }
+  ],
+  "diagrams": [
+   {
+    "code": "St-MK02",
+    "diagram_type": "A2 - Architecture Products",
+    "name": "Startseite {projekt}",
+    "package": "{projekt} - Startseite",
+    "viewpoint": "St"
+   },
+   {
+    "code": "A1-MK02",
+    "diagram_type": "A1 - Meta-Data Definitions",
+    "name": "A1 : {projekt} : Meta-Data Definitions",
+    "package": "Architecture Foundation/A1/Meta-Data Definitions",
+    "viewpoint": "A1"
+   },
+   {
+    "code": "A2-MK02",
+    "diagram_type": "A2 - Architecture Products",
+    "name": "A2 : {projekt} : Stakeholder",
+    "package": "Architecture Foundation/A2 - Stakeholder",
+    "viewpoint": "A2"
+   },
+   {
+    "code": "A2-MK09",
+    "diagram_type": "A2 - Architecture Products",
+    "name": "A2 : {projekt} : Concerns",
+    "package": "Architecture Foundation/A2/Concerns",
+    "viewpoint": "A2"
+   },
+   {
+    "code": "A2-MK16",
+    "diagram_type": "A2 - Architecture Products",
+    "name": "A2 : {projekt} : Viewpoints",
+    "package": "Architecture Foundation/A2/Viewpoints",
+    "viewpoint": "A2"
+   },
+   {
+    "code": "A6-MK02",
+    "diagram_type": "A6 - Architecture Version",
+    "name": "A6 : {projekt} : Architecture Versions",
+    "package": "Architecture Foundation/A6/Architecture Version",
+    "viewpoint": "A6"
+   },
+   {
+    "code": "A7-MK02",
+    "diagram_type": "A7 - Architecture Compliance",
+    "name": "A7 : {projekt} : Architecture Compliance",
+    "package": "Architecture Foundation/A7/Architecture Compliance",
+    "viewpoint": "A7"
+   },
+   {
+    "code": "A7-MK08",
+    "diagram_type": "A7 - Architecture Compliance",
+    "name": "A7 : {projekt} : Findings and Recommendations",
+    "package": "Architecture Foundation/A7/Findings and Recommendations",
+    "viewpoint": "A7"
+   },
+   {
+    "code": "A7-MK18",
+    "diagram_type": "A7 - Architecture Compliance",
+    "name": "A7 : {projekt} : Compliance Statement",
+    "package": "Architecture Foundation/A7/Compliance Statement",
+    "viewpoint": "A7"
+   },
+   {
+    "code": "A8-MK02",
+    "diagram_type": "A8 - Standards",
+    "name": "A8 : {projekt} : Standards",
+    "package": "Architecture Foundation/A8/Standards",
+    "viewpoint": "A8"
+   },
+   {
+    "code": "Ar-MK02",
+    "diagram_type": "Ar - Architecture Roadmap",
+    "name": "Ar : {projekt} : Architecture Roadmap",
+    "package": "Architecture Foundation/Ar/Architecture Roadmap",
+    "viewpoint": "Ar"
+   },
+   {
+    "code": "C1-MK02",
+    "diagram_type": "C1 - Capability Taxonomy",
+    "name": "C1 : {projekt} : Funktionale Bausteine",
+    "package": "Concepts/C1/Capability Taxonomy",
+    "viewpoint": "C1"
+   },
+   {
+    "code": "C1-MK04",
+    "diagram_type": "C1 - Capability Taxonomy",
+    "name": "C1 : {projekt} : NATO Capability Codes",
+    "package": "Concepts/C1/Capability Taxonomy",
+    "viewpoint": "C1"
+   },
+   {
+    "code": "C1-MK06",
+    "diagram_type": "C1 - Capability Taxonomy",
+    "name": "C1 : {projekt} : Fähigkeitsforderungen",
+    "package": "Concepts/C1/Capability Taxonomy",
+    "viewpoint": "C1"
+   },
+   {
+    "code": "C1-MK08",
+    "diagram_type": "C1 - Capability Taxonomy",
+    "name": "C1 : {projekt} : EU Priorities",
+    "package": "Concepts/C1/Capability Taxonomy",
+    "viewpoint": "C1"
+   },
+   {
+    "code": "Cr-MK02",
+    "diagram_type": "Cr - Capability Roadmap",
+    "name": "Cr : {projekt} : Capability Roadmap",
+    "package": "Concepts/Cr/Capability Roadmap",
+    "viewpoint": "Cr"
+   },
+   {
+    "code": "L1-MK02",
+    "diagram_type": "L1 - Node Types",
+    "name": "L1 : {projekt} : Node Types",
+    "package": "Logical Specifications/L1/Node Types",
+    "viewpoint": "L1"
+   },
+   {
+    "code": "L2-MK02",
+    "diagram_type": "L2 - Logical Scenario",
+    "name": "L2 : {projekt} : Logical Nodes",
+    "package": "Logical Specifications/L2/Logical Nodes",
+    "viewpoint": "L2"
+   },
+   {
+    "code": "L2-MK05",
+    "diagram_type": "L2 - Logical Scenario",
+    "name": "L2 : {projekt} : Logical Scenario",
+    "package": "Logical Specifications/L2/Logical Scenario",
+    "viewpoint": "L2"
+   },
+   {
+    "code": "L3-MK02",
+    "diagram_type": "L3 - Node Interactions",
+    "name": "L3 : {projekt} : Node Interaction",
+    "package": "Logical Specifications/L3/Node Interaction",
+    "viewpoint": "L3"
+   },
+   {
+    "code": "L4-MK02",
+    "diagram_type": "L4 - Logical Activities",
+    "name": "L4 : {projekt} : Hierarchie",
+    "package": "Logical Specifications/L4/Logical Activities",
+    "viewpoint": "L4"
+   },
+   {
+    "code": "L7-MK02",
+    "diagram_type": "L7 - Information Model",
+    "name": "L7 : {projekt} : Information Model",
+    "package": "Logical Specifications/L7/Information Model",
+    "viewpoint": "L7"
+   },
+   {
+    "code": "L8-MK02",
+    "diagram_type": "L8 - Logical Constraints",
+    "name": "L8 : {projekt} : Logical Constraints",
+    "package": "Logical Specifications/L8/Logical Constraints",
+    "viewpoint": "L8"
+   },
+   {
+    "code": "S1-MK13",
+    "diagram_type": "S1 - Service Taxonomy",
+    "name": "S1 : {projekt} : Service Variants",
+    "package": "Service Specifications/S1/IT-Service Varianten",
+    "viewpoint": "S1"
+   },
+   {
+    "code": "S2-MK06",
+    "diagram_type": "S2 - Service Structure",
+    "name": "S2 : {projekt} : External Service Dependencies",
+    "package": "Service Specifications/S2/Serviceabhängigkeiten",
+    "viewpoint": "S2"
+   },
+   {
+    "code": "S2-MK11",
+    "diagram_type": "S2 - Service Structure",
+    "name": "S2 : {projekt} : Service Warranties",
+    "package": "Service Specifications/S2/Warranties",
+    "viewpoint": "S2"
+   },
+   {
+    "code": "S3-MK02",
+    "diagram_type": "S3 - Service Interfaces",
+    "name": "S3 : {projekt} : Service Interfaces",
+    "package": "Service Specifications/S3/Logische Kontextsicht",
+    "viewpoint": "S3"
+   },
+   {
+    "code": "S4-MK02",
+    "diagram_type": "S4 - Service Functions",
+    "name": "S4 : {projekt} : Service Functions",
+    "package": "Service Specifications/S4/Servicefunktion",
+    "viewpoint": "S4"
+   },
+   {
+    "code": "S7-MK02",
+    "diagram_type": "S7 - Service Interface Parameters",
+    "name": "S7 : {projekt} : Service Interface Parameters",
+    "package": "Service Specifications/S7/Serviceinterface",
+    "viewpoint": "S7"
+   },
+   {
+    "code": "Sr-MK02",
+    "diagram_type": "Sr - Service Roadmap",
+    "name": "Sr : {projekt} : Service Change",
+    "package": "Service Specifications/Sr/Service Change",
+    "viewpoint": "Sr"
+   },
+   {
+    "code": "P1-MK02",
+    "diagram_type": "P1 - Resource Types",
+    "name": "P1 : {projekt} : Resource Types",
+    "package": "Physical Resource Specifications/P1/Resource Types",
+    "viewpoint": "P1"
+   },
+   {
+    "code": "P1-MK08",
+    "diagram_type": "P1 - Resource Types",
+    "name": "P1 : {projekt} : Service Provision",
+    "package": "Physical Resource Specifications/P1/Service Provision",
+    "viewpoint": "P1"
+   },
+   {
+    "code": "P2-MK02",
+    "diagram_type": "P2 - Resource Structure",
+    "name": "P2 : {projekt} : Resource Structure",
+    "package": "Physical Resource Specifications/P2/Resource Structure",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P2-MK08",
+    "diagram_type": "P2 - Resource Structure",
+    "name": "P2 : {projekt} : Internal Dependencies",
+    "package": "Physical Resource Specifications/P2/Internal Dependencies",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P2-MK13",
+    "diagram_type": "P2 - Resource Structure",
+    "name": "P2 : {projekt} : External Dependencies",
+    "package": "Physical Resource Specifications/P2/External Dependencies",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P2-MK21",
+    "diagram_type": "P2 - Resource Structure",
+    "name": "P2 : {projekt} : Node Realization",
+    "package": "Physical Resource Specifications/P2/Node Realization",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P2-MK26",
+    "diagram_type": "P2 - Resource Structure",
+    "name": "P2 : {projekt} : Application Hosting",
+    "package": "Physical Resource Specifications/P2/Application Hosting",
+    "viewpoint": "P2"
+   },
+   {
+    "code": "P8-MK02",
+    "diagram_type": "P8 - Resource Constraints",
+    "name": "P8 : {projekt} : Resource Constraint",
+    "package": "Physical Resource Specifications/P8/Resource Constraint Realization",
+    "viewpoint": "P8"
+   },
+   {
+    "code": "R2-MK02",
+    "diagram_type": "R2 - Requirement Catalogue",
+    "name": "R2 : {projekt} : Requirement Catalogue",
+    "package": "Requirements/R2/Requirement Catalogue",
+    "viewpoint": "R2"
+   },
+   {
+    "code": "R3-MK02",
+    "diagram_type": "R3 - Requirement Dependencies",
+    "name": "R3 : {projekt} : Requirements Dependencies",
+    "package": "Requirements/R3/Requirement Dependencies",
+    "viewpoint": "R3"
+   },
+   {
+    "code": "R7-MK02",
+    "diagram_type": "R7 - Requirement Derivation",
+    "name": "R7 : {projekt} : Requirements Derivation",
+    "package": "Requirements/R7/Requirement Derivation",
+    "viewpoint": "R7"
+   }
+  ],
+  "pflicht": {
+   "A1": [
+    "Classification"
+   ],
+   "A2": [
+    "Concern",
+    "View",
+    "Viewpoint"
+   ],
+   "A8": [
+    "Standard"
+   ],
+   "C1": [
+    "Capability"
+   ],
+   "Cr": [
+    "Capability"
+   ],
+   "L1": [
+    "OperationalPerformer"
+   ],
+   "L2": [
+    "OperationalArchitecture",
+    "OperationalPerformer"
+   ],
+   "L3": [
+    "OperationalArchitecture"
+   ],
+   "L4": [
+    "OperationalArchitecture"
+   ],
+   "L7": [
+    "InformationElement"
+   ],
+   "L8": [
+    "Classification",
+    "DocumentReference",
+    "OperationalConstraint",
+    "StrategicConstraint"
+   ],
+   "P1": [
+    "ServiceSpecification"
+   ],
+   "P2": [
+    "Location"
+   ],
+   "P8": [
+    "Classification",
+    "DocumentReference",
+    "OperationalConstraint",
+    "Reference",
+    "ResourceConstraint",
+    "SMEReference"
+   ],
+   "R2": [
+    "RequirementCatalogue",
+    "RequirementCategory"
+   ],
+   "R7": [
+    "OperationalConstraint"
+   ],
+   "S1": [
+    "ServiceSpecification"
+   ],
+   "S2": [
+    "MeasurementType",
+    "ServiceSpecification"
+   ],
+   "S3": [
+    "DataElement",
+    "ServiceInterface",
+    "ServicePort",
+    "ServiceSpecification"
+   ],
+   "Sr": [
+    "ServiceSpecification"
+   ]
+  }
+ },
+ "konflikte": []
+}

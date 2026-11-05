@@ -1,0 +1,24 @@
+[
+  {
+    "id": "req:CapabilityZeigtDienst",
+    "stereotype": "Capability",
+    "connector": "Exhibits",
+    "role": "source",
+    "minimum": 1,
+    "message": "Jede Faehigkeit muss mindestens eine Dienstbeschreibung zeigen."
+  },
+  {
+    "id": "req:SystemHatPort",
+    "stereotype": "System",
+    "connector": "Provides",
+    "role": "source",
+    "minimum": 1
+  },
+  {
+    "id": "req:DienstWirdGenutzt",
+    "stereotype": "ServiceSpecification",
+    "connector": "ActivitySupportsService",
+    "role": "target",
+    "minimum": 1
+  }
+]

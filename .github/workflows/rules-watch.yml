@@ -1,0 +1,76 @@
+name: regelwerk-waechter
+
+# Prüft die amtliche Quelle (BAAINBw, „Methode Architektur") auf ein neues
+# Regelwerk. Bei Änderung: Übernahme mit PII-Neutralisierung, Weiterreichen
+# der Wissensbasis, Branch `rules/auto-update` und PR. Niemals ein direkter
+# Commit auf main — die CI prüft den Branch wie überall sonst.
+#
+# Hinweis: PRs, die mit dem eingebauten GITHUB_TOKEN entstehen, starten keine
+# weiteren Workflow-Läufe (GitHub-Sicherheitsregel). Wer die CI auf dem Branch
+# automatisch sehen will, hinterlegt ein Token als Geheimnis `REGELWERK_TOKEN`;
+# ohne Geheimnis läuft die CI beim Zusammenführen.
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: regelwerk-waechter
+  cancel-in-progress: true
+
+jobs:
+  pruefen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Amtliche Quelle prüfen
+        id: pruefen
+        run: |
+          set +e
+          python3 scripts/regelwerk_update.py --pruefen
+          code=$?
+          set -e
+          if [ "$code" -eq 2 ]; then
+            echo "neu=ja" >> "$GITHUB_OUTPUT"
+          else
+            echo "neu=nein" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Regelwerk übernehmen
+        if: steps.pruefen.outputs.neu == 'ja'
+        run: python3 scripts/regelwerk_update.py --uebernehmen --protokoll "$RUNNER_TEMP/regelwerk-protokoll.md"
+
+      - name: Branch und Pull Request
+        if: steps.pruefen.outputs.neu == 'ja'
+        env:
+          GH_TOKEN: ${{ secrets.REGELWERK_TOKEN || github.token }}
+        run: |
+          set -eu
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "Übernahme brachte keine Änderung — abgeschlossen."
+            exit 0
+          fi
+          git switch -C rules/auto-update
+          git add -A
+          git commit -m "Regelwerk: amtliche Quelle übernommen (Wächter)"
+          git push -f origin rules/auto-update
+          if gh pr view rules/auto-update >/dev/null 2>&1; then
+            gh pr edit rules/auto-update --body-file "$RUNNER_TEMP/regelwerk-protokoll.md"
+          else
+            gh pr create \
+              --head rules/auto-update \
+              --title "Regelwerk: amtliche Quelle übernommen" \
+              --body-file "$RUNNER_TEMP/regelwerk-protokoll.md"
+          fi

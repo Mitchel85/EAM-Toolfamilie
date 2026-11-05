@@ -1,0 +1,16 @@
+{
+  "name": "eam-admbw-extractor",
+  "version": "2.4.0",
+  "private": true,
+  "description": "EAM AI ADMBw Extractor — Prosa zu Stereotypen und Beziehungen",
+  "main": "index.html",
+  "files": [
+    "**/*"
+  ],
+  "dependencies": {
+    "@mitchel85/eam-rules": "*"
+  },
+  "overrides": {
+    "mdg_parser.py": "./packages/rules/mdg_parser.py"
+  }
+}

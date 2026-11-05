@@ -1,0 +1,2123 @@
+[
+ {
+  "id": "St-MK01",
+  "viewpoint": "St",
+  "kind": "package",
+  "text": "Es ist ein Package Projektkürzel - Startseite angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "St-MK02",
+  "viewpoint": "St",
+  "kind": "diagram",
+  "text": "Für die Darstellung der Startseite ist ein Diagramm vom Typ A2 - Architecture Products mit dem Namen \"Startseite Projektkürzel\" angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "St-MK03",
+  "viewpoint": "St",
+  "kind": "diagram",
+  "text": "Die Startseite ist als Standarddiagramm (model default) gesetzt. Hinweis: Hierdurch wird beim Öffnen des Architekturmodells automatisch die Startseite angezeigt.",
+  "verweis": "-"
+ },
+ {
+  "id": "St-MK04",
+  "viewpoint": "St",
+  "kind": "diagram",
+  "text": "Es ist ein Bild des ADMBw Grids auf dem Diagramm angelegt. Hinweis: Das Bild wird über das Startpaket bereitgestellt",
+  "verweis": "-"
+ },
+ {
+  "id": "St-MK05",
+  "viewpoint": "St",
+  "kind": "diagram",
+  "text": "Die Viewpoints (VIEWPOINT) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen und auf das zugehörige Feld (hier: Viewpoint) des ADMBw Grids gezogen.",
+  "verweis": "-"
+ },
+ {
+  "id": "St-MK06",
+  "viewpoint": "St",
+  "kind": "diagram",
+  "text": "Der Viewpoint (VIEWPOINT) wird durch ein Diagramm vom Typ A2 - Architecture Products (als Composite Diagram modelliert) mit dem Namen „Viewpointkürzel : Projektkürzel : Übersicht“ verfeinert. Auf dem verfeinerten Diagramm werden als Übersicht alle Views (VIEW) des entsprechenden Viewpoints aufgelistet. Beispiel: „Lr : Projektkürzel : Übersicht“",
+  "verweis": "-"
+ },
+ {
+  "id": "VÜ-MK01",
+  "viewpoint": "VÜ",
+  "kind": "element",
+  "text": "Jedes Element ist im Notes-Feld mit einer Beschreibung versehen. Bei der Verwendung von Typen ({ASSETROLE}) ist keine Beschreibung notwendig. Hinweis: Standardelemente werden nicht ergänzt.",
+  "verweis": "-"
+ },
+ {
+  "id": "VÜ-MK02",
+  "viewpoint": "VÜ",
+  "kind": "element",
+  "text": "Konkretisierte Elemente ({OBJECTS}) sind klassifiziert.",
+  "verweis": "-"
+ },
+ {
+  "id": "VÜ-MK03",
+  "viewpoint": "VÜ",
+  "kind": "other",
+  "text": "Bestandteile ({PARTS}) sind typisiert.",
+  "verweis": "-"
+ },
+ {
+  "id": "VÜ-MK04",
+  "viewpoint": "VÜ",
+  "kind": "other",
+  "text": "Bei der Verwendung von Bestandteilen ({ASSETROLE}) sind Multiplizitäten gesetzt.",
+  "verweis": "-"
+ },
+ {
+  "id": "VÜ-MK05",
+  "viewpoint": "VÜ",
+  "kind": "diagram",
+  "text": "Feststellungen bzw. Erkenntnisse (FINDING) sind auf dem entsprechenden Diagramm angelegt und mit dem entsprechenden Element ({ELEMENT}) verbunden (RESULTFROM). Die Feststellung ist mit einer Empfehlung / Verbesserungsvorschlag (RECOMMENDATION) verbunden (REFERSTO).",
+  "verweis": "-"
+ },
+ {
+  "id": "VÜ-MK06",
+  "viewpoint": "VÜ",
+  "kind": "diagram",
+  "text": "Offene Klärungspunkte sind als Anmerkung (ISSUE) auf dem entsprechenden Diagramm angelegt. Hinweis: Anmerkungen sind bis zu dem Abschluss des Architekturmodells aufzulösen. Kann eine Anmerkung nicht gelöst werden wird aus diesem eine Erkenntnis (FINDING) gemacht. Alle Feststellungen sind auf dem Diagramm „A7 : Projektkürzel : Findings and Recommendations“ angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "VÜ-MK07",
+  "viewpoint": "VÜ",
+  "kind": "diagram",
+  "text": "Zur Wahrung der Übersichtlichkeit sind mehrere Diagramme des Diagrammtyps angelegt. - Die Strukturierung ist im Namen des Diagramms als Klammerbegriff aufgenommen. Beispiel: „L2 : Projektkürzel : Logical Nodes (Sensor)“ oder „L2 : Projektkürzel : Logical Nodes (Weltraumsensor visuell Measurements)“.",
+  "verweis": ""
+ },
+ {
+  "id": "VÜ-MK08",
+  "viewpoint": "VÜ",
+  "kind": "element",
+  "text": "Werden neue Elemente für den Standardelementekatalog benötigt oder müssen vorhandene - Elemente angepasst oder gelöscht werden muss eine Erkenntnis (FINDING) erstellt werden. Das TaggedValue Type der Erkenntnis (FINDING) ist auf Method gesetzt. Hinweis: Diese Erkenntnis (FINDING) bezieht sich auf die Methode und muss vom entsprechenden Referat (hier: PlgABw IV 1 4) bestätigt und weiter prozessiert werden.",
+  "verweis": ""
+ },
+ {
+  "id": "VÜ-MK09",
+  "viewpoint": "VÜ",
+  "kind": "other",
+  "text": "Werden Unstimmigkeiten oder Anpassungen in der Methode identifiziert muss eine - Erkenntnis (FINDING) erstellt werden. Das TaggedValue Type der Erkenntnis (FINDING) ist auf Method gesetzt. Hinweis: Diese Erkenntnis (FINDING) bezieht sich auf die verwendete Methode und muss vom entsprechenden Referat (hier: PlgABw IV 1 3) bestätigt und weiter prozessiert werden.",
+  "verweis": ""
+ },
+ {
+  "id": "VÜ-MK10",
+  "viewpoint": "VÜ",
+  "kind": "diagram",
+  "text": "Sind nicht genügend Informationen für eine Darstellung in einem Diagramm gegeben muss - ein Finding (FINDING) erstellt werden.",
+  "verweis": ""
+ },
+ {
+  "id": "VÜ-MK11",
+  "viewpoint": "VÜ",
+  "kind": "other",
+  "text": "Werden mehr Viewpoints als in der Leistungsbeschreibung enthalten modelliert muss eine - Erkenntnis (FINDING) erstellt werden. Das TaggedValue Type der Erkenntnis (FINDING) ist auf Subject gesetzt. Hinweis: Diese Erkenntnis (FINDING) bezieht sich auf den Inhalt und muss vom Aufgabensteller bestätigt und weiter prozessiert werden.",
+  "verweis": ""
+ },
+ {
+  "id": "VÜ-MK12",
+  "viewpoint": "VÜ",
+  "kind": "other",
+  "text": "Werden Unstimmigkeiten oder Anpassungen im Werkzeug identifiziert muss eine - Erkenntnis (FINDING) erstellt werden. Das TaggedValue Type der Erkenntnis (FINDING) ist auf Tool gesetzt. Hinweis: Diese Erkenntnis (FINDING) bezieht sich auf die verwendeten Werkzeuge und muss vom entsprechenden Referat (hier: PlgABw IV 1 4) bestätigt und weiter prozessiert werden.",
+  "verweis": ""
+ },
+ {
+  "id": "A1-MK01",
+  "viewpoint": "A1",
+  "kind": "package",
+  "text": "Es ist ein Package Architectural Foundation/A1/Meta-Data Definitions angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "A1-MK02",
+  "viewpoint": "A1",
+  "kind": "diagram",
+  "text": "Für die Darstellung der Architekturbeschreibung ist ein Diagramm vom Typ A1 - MetaData Definitions mit dem Namen \"A1 : Projektkürzel : Meta-Data Definitions\" angelegt.",
+  "verweis": "A1-A"
+ },
+ {
+  "id": "A1-MK03",
+  "viewpoint": "A1",
+  "kind": "diagram",
+  "text": "Die Architekturbeschreibung (ARCHITECTURALDESCRIPTION) ist auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen. Hinweis: Der Name der Architekturbeschreibung enthält „Projektkürzel – Art der",
+  "verweis": "A1-B"
+ },
+ {
+  "id": "A1-MK04",
+  "viewpoint": "A1",
+  "kind": "other",
+  "text": "Die nachfolgenden TaggedValues der Architekturbeschreibung sind zu befüllen: • Abstraktionsebene (AbstractionLevel) • Mitprüfende Organisation (approvalAuthority) • Mitprüfungsdatum (approvalDate) • Architekt (architect) • Organisation des Architekten (creatingOrganization) • Abschlussdatum (dateCompleted) • Genutztes Framework (framework) • Genutzte Methode (methodologyUsed) • Zweck (purpose) • Status (status) • Art der Architektur [Ist/Soll] (toBe) • Genutztes Tool (toolsUsed) • Version (version)",
+  "verweis": "A1-E"
+ },
+ {
+  "id": "A1-MK05",
+  "viewpoint": "A1",
+  "kind": "diagram",
+  "text": "Die für die Architekturmodellierung verantwortlichen Projekte (ACTUALPROJECT) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen. Hinweis: Die verantwortlichen Projekte sind aus dem EAB entnommen.",
+  "verweis": "A1-Ba"
+ },
+ {
+  "id": "A1-MK06",
+  "viewpoint": "A1",
+  "kind": "diagram",
+  "text": "Die für die Architekturmodellierung verantwortlichen Projekte (ACTUALPROJECT) sind auf dem Diagramm mit der Architekturbeschreibung (ARCHITECTURALDESCRIPTION) verbunden (ARCHITECTUREFORPROJECT).",
+  "verweis": "A1-Bc"
+ },
+ {
+  "id": "A1-MK07",
+  "viewpoint": "A1",
+  "kind": "diagram",
+  "text": "Die für das Rüstungsprojekt relevanten Projektmeilensteine (ACTUALPROJECTMILESTONE) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "A1-Bb"
+ },
+ {
+  "id": "A1-MK08",
+  "viewpoint": "A1",
+  "kind": "diagram",
+  "text": "Die für die Architektur relevanten Projektmeilensteine (ACTUALPROJECTMILESTONE) sind auf dem Diagramm mit der Architekturbeschreibung (ARCHITECTURALDESCRIPTION) verbunden (ARCHITECTUREFORPROJECT).",
+  "verweis": "A1-Bc"
+ },
+ {
+  "id": "A1-MK09",
+  "viewpoint": "A1",
+  "kind": "element",
+  "text": "Es sind die für die Architektur genutzten Standards (STANDARD) (Domäne Planungskategorie Dimension Architekturebene Architekturtyp Architekturart und Framework) aus dem Standardelementekatalog (ArchRepoBw META) entnommen.",
+  "verweis": "A1-Ca"
+ },
+ {
+  "id": "A1-MK10",
+  "viewpoint": "A1",
+  "kind": "diagram",
+  "text": "Die für die Architektur genutzten Standards (STANDARD) sind auf dem Diagramm mit der Architekturbeschreibung (ARCHITECTURALDESCRIPTION) verbunden (CONFORMSTO).",
+  "verweis": "A1-Cb"
+ },
+ {
+  "id": "A1-MK11",
+  "viewpoint": "A1",
+  "kind": "element",
+  "text": "Die Einstufung der Architektur (CLASSIFICATION) ist aus dem Standardelementekatalog entnommen.",
+  "verweis": "A1-Da"
+ },
+ {
+  "id": "A1-MK12",
+  "viewpoint": "A1",
+  "kind": "diagram",
+  "text": "Die Einstufung der Architektur ist auf dem Diagramm mit der Architekturbeschreibung (ARCHITECTURALDESCRIPTION) verbunden (CLASSIFIED).",
+  "verweis": "A1-Db"
+ },
+ {
+  "id": "A1-MK13",
+  "viewpoint": "A1",
+  "kind": "diagram",
+  "text": "Alle Modellelemente Diagramme und Verzeichnisse des Modells sind der Architekturbeschreibung (ARCHITECTURALDESCRIPTION) untergeordnet.",
+  "verweis": "-"
+ },
+ {
+  "id": "A1-MK14",
+  "viewpoint": "A1",
+  "kind": "other",
+  "text": "Alle projektbezogenen Abkürzungen Akronyme und Begriffe sind im Glossar (GLOSSARY) des Architekturmodells hinterlegt.",
+  "verweis": "A1-F"
+ },
+ {
+  "id": "A2-MK01",
+  "viewpoint": "A2",
+  "kind": "package",
+  "text": "Es ist ein Package Architectural Foundation/A2 - Stakeholder angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "A2-MK02",
+  "viewpoint": "A2",
+  "kind": "diagram",
+  "text": "Für die Darstellung der Stakeholder ist ein Diagramm vom Typ A2 - Architecture Products mit dem Namen \"A2 : Projektkürzel : Stakeholder\" angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "A2-MK03",
+  "viewpoint": "A2",
+  "kind": "diagram",
+  "text": "Die Stakeholder (ACTUALORGANIZATION ACTUALPOST ACTUALPERSON) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "A2-C"
+ },
+ {
+  "id": "A2-MK04",
+  "viewpoint": "A2",
+  "kind": "diagram",
+  "text": "Die Analysebedarfe (CONCERN) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "A2-D"
+ },
+ {
+  "id": "A2-MK05",
+  "viewpoint": "A2",
+  "kind": "diagram",
+  "text": "Die Viewpoints (VIEWPOINT) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "A2-F"
+ },
+ {
+  "id": "A2-MK06",
+  "viewpoint": "A2",
+  "kind": "diagram",
+  "text": "Die vom Stakeholder (STAKEHOLDER) geäußerten Analysebedarfe (CONCERN) sind auf dem Diagramm mit dem entsprechenden Stakeholder verbunden (STAKEHOLDERCONCERN).",
+  "verweis": "A2-E"
+ },
+ {
+  "id": "A2-MK07",
+  "viewpoint": "A2",
+  "kind": "diagram",
+  "text": "Die für den Stakeholder (STAKEHOLDER) relevanten Viewpoints (VIEWPOINT) sind auf dem Diagramm mit dem entsprechenden Stakeholder verbunden (VIEWPOINTTOSTAKEHOLDER).",
+  "verweis": "A2-H"
+ },
+ {
+  "id": "A2-MK08",
+  "viewpoint": "A2",
+  "kind": "package",
+  "text": "Es ist ein Package Architectural Foundation/A2/Concerns angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "A2-MK09",
+  "viewpoint": "A2",
+  "kind": "package",
+  "text": "Für die Darstellung des Analysebedarfs ist ein Diagramm des Typs A2 - Architecture Products mit dem Namen „A2 : Projektkürzel : Concerns“ in dem Package angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "A2-MK10",
+  "viewpoint": "A2",
+  "kind": "diagram",
+  "text": "Die Stakeholder (ACTUALORGANIZATION ACTUALPOST ACTUALPERSON) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "A2-C"
+ },
+ {
+  "id": "A2-MK11",
+  "viewpoint": "A2",
+  "kind": "diagram",
+  "text": "Die Analysebedarfe (CONCERN) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "A2-D"
+ },
+ {
+  "id": "A2-MK12",
+  "viewpoint": "A2",
+  "kind": "diagram",
+  "text": "Die Phasen (ACTUALENTERPRISEPHASE) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "A2-Da"
+ },
+ {
+  "id": "A2-MK13",
+  "viewpoint": "A2",
+  "kind": "diagram",
+  "text": "Die Analysebedarfe (CONCERN) sind bei Bedarf mit der Phase (ENTERPRISEPHASE) in der diese von Relevanz sind auf dem Diagramm verbunden (CONCERNFORENTERPRISEPHASE).",
+  "verweis": "A2-Db"
+ },
+ {
+  "id": "A2-MK14",
+  "viewpoint": "A2",
+  "kind": "diagram",
+  "text": "Die vom Stakeholder (STAKEHOLDER) geäußerten Analysebedarfe (CONCERN) sind auf dem Diagramm mit dem entsprechenden Stakeholder verbunden",
+  "verweis": "A2-E"
+ },
+ {
+  "id": "A2-MK15",
+  "viewpoint": "A2",
+  "kind": "package",
+  "text": "Es ist ein Package Architectural Foundation/A2/Viewpoints angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "A2-MK16",
+  "viewpoint": "A2",
+  "kind": "package",
+  "text": "Für die Darstellung der Views und Viewpoints ist ein Diagramm des Typs A2 - Architecture Products mit dem Namen „A2 : Projektkürzel : Viewpoints“ in dem Package angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "A2-MK17",
+  "viewpoint": "A2",
+  "kind": "diagram",
+  "text": "Die Viewpoints (VIEWPOINT) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "A2-F"
+ },
+ {
+  "id": "A2-MK18",
+  "viewpoint": "A2",
+  "kind": "diagram",
+  "text": "Die Views (VIEW) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "A2-I"
+ },
+ {
+  "id": "A2-MK19",
+  "viewpoint": "A2",
+  "kind": "diagram",
+  "text": "Die Analysebedarfe (CONCERN) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "A2-D"
+ },
+ {
+  "id": "A2-MK20",
+  "viewpoint": "A2",
+  "kind": "diagram",
+  "text": "Alle verwendeten Viewpoints (VIEWPOINT) sind auf dem Diagramm mit den adressierten Analysebedarfen (CONCERN) verbunden (CONCERNFORVIEWPOINT).",
+  "verweis": "A2-G"
+ },
+ {
+  "id": "A2-MK21",
+  "viewpoint": "A2",
+  "kind": "diagram",
+  "text": "Alle verwendeten Views (VIEW) sind auf dem Diagramm mit den adressierten Analysebedarfen (CONCERN) verbunden (CONCERNFORVIEW).",
+  "verweis": "A2-Ja"
+ },
+ {
+  "id": "A2-MK22",
+  "viewpoint": "A2",
+  "kind": "diagram",
+  "text": "Die Elemente mit dem Stereotypen View/Viewpoint (VIEW VIEWPOINT) sind mit dem jeweilig zugehörigen Diagramm als Composite-Diagram verknüpft. Hinweis: Dieser Schritt ist für die Views erst sinnvoll durchführbar wenn die Views im Rahmen der Architekturarbeit erstellt sind.",
+  "verweis": "-"
+ },
+ {
+  "id": "A3-MK01",
+  "viewpoint": "A3",
+  "kind": "package",
+  "text": "Es ist ein Package Architectural Foundation/A3/Architecture Correspondence angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "A3-MK02",
+  "viewpoint": "A3",
+  "kind": "diagram",
+  "text": "Für die Darstellung der betrachteten Architekturen ist ein Diagramm vom Typ A3 - Architecture Correspondence dem Namen \"A3 : Projektkürzel : Architecture Correspondence\" angelegt.",
+  "verweis": "A3-A"
+ },
+ {
+  "id": "A3-MK03",
+  "viewpoint": "A3",
+  "kind": "diagram",
+  "text": "Die Architekturbeschreibung (ARCHITECTURALDESCRIPTION) ist auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "A3-B"
+ },
+ {
+  "id": "A3-MK04",
+  "viewpoint": "A3",
+  "kind": "diagram",
+  "text": "Inhaltlich abhängige Architekturbeschreibungen (ARCHITECTURALDESCRIPTION) sind auf dem Diagramm angelegt.",
+  "verweis": "A3-B"
+ },
+ {
+  "id": "A3-MK05",
+  "viewpoint": "A3",
+  "kind": "diagram",
+  "text": "Die Abhängigkeit zwischen Architekturbeschreibungen (ARCHITECTURALDESCRIPTION) ist auf dem Diagramm durch eine Relation (ARCHITECTURALREFERENCE) zur abhängigen Architekturbeschreibung dargestellt. Hinweis: Jede Abhängigkeit ist im Namens-Feld mit einer Beschreibung zu versehen.",
+  "verweis": "A3-C"
+ },
+ {
+  "id": "A6-MK01",
+  "viewpoint": "A6",
+  "kind": "package",
+  "text": "Es ist ein Package Architecture Foundation/A6/Architecture Version angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "A6-MK02",
+  "viewpoint": "A6",
+  "kind": "diagram",
+  "text": "Für die Darstellung der Versionen ist ein Diagramm des Typs A6 - Architecture Versions mit dem Namen „A6 : Projektkürzel : Architecture Versions“ angelegt. Jede Version kann in einer eigenen Architekturbeschreibung (ARCHITECTURALDESCRIPTION) innerhalb desselben Diagrammes näher beschrieben werden.",
+  "verweis": "A6-A"
+ },
+ {
+  "id": "A6-MK03",
+  "viewpoint": "A6",
+  "kind": "diagram",
+  "text": "Die Architekturbeschreibung (ARCHITECTURALDESCRIPTION) ist auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "A6-B"
+ },
+ {
+  "id": "A6-MK04",
+  "viewpoint": "A6",
+  "kind": "diagram",
+  "text": "Vorversionen der Architekturbeschreibungen (ARCHITECTURALDESCRIPTION) sind auf dem Diagramm angelegt oder aus dem Standardelementekatalog entnommen.",
+  "verweis": "-"
+ },
+ {
+  "id": "A6-MK05",
+  "viewpoint": "A6",
+  "kind": "other",
+  "text": "Das TaggedValue Version ist bei der Architekturbeschreibung mit einer Vorversion (ARCHITECTURALDESCRIPTION) gesetzt.",
+  "verweis": "A6-C"
+ },
+ {
+  "id": "A6-MK06",
+  "viewpoint": "A6",
+  "kind": "diagram",
+  "text": "Die betrachtende Architekturbeschreibung (ARCHITECTURALDESCRIPTION) ist auf dem Diagramm mit den Vorversionen der Architekturbeschreibungen verbunden (ARCHITECTURALSEQUENCE).",
+  "verweis": "A6-D"
+ },
+ {
+  "id": "A7-MK01",
+  "viewpoint": "A7",
+  "kind": "package",
+  "text": "Es ist ein Package Architecture Foundation/A7/Architecture Compliance angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "A7-MK02",
+  "viewpoint": "A7",
+  "kind": "package",
+  "text": "Für die Darstellung der gleichbedeutenden Elemente ist ein Diagramm des Typs A7 - Architecture Compliance mit dem Namen „A7 : Projektkürzel : Architecture Compliance“ in dem Package angelegt.",
+  "verweis": "A7-A"
+ },
+ {
+  "id": "A7-MK03",
+  "viewpoint": "A7",
+  "kind": "element",
+  "text": "Die gleichbedeutenden Elemente sind aus dem Modellelementekatalog entnommen.",
+  "verweis": "A7-B"
+ },
+ {
+  "id": "A7-MK04",
+  "viewpoint": "A7",
+  "kind": "diagram",
+  "text": "Gleichbedeutende Elemente sind auf dem Diagramm miteinander verbunden (SAMEAS).",
+  "verweis": "A7-C"
+ },
+ {
+  "id": "A7-MK05",
+  "viewpoint": "A7",
+  "kind": "diagram",
+  "text": "Die Abweichungen der gleichbedeutenden Elemente sind in Textform (INFORMATION) auf dem Diagramm angelegt.",
+  "verweis": "A7-D"
+ },
+ {
+  "id": "A7-MK06",
+  "viewpoint": "A7",
+  "kind": "diagram",
+  "text": "Die gleichbedeutenden Elemente sind auf dem Diagramm mit den entsprechenden Beschreibungstexten zu den jeweiligen Abweichungen verbunden (NOTELINK).",
+  "verweis": "A7-E"
+ },
+ {
+  "id": "A7-MK17",
+  "viewpoint": "A7",
+  "kind": "package",
+  "text": "Es ist ein Package Architecture Foundation/A7/Compliance Statement angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "A7-MK18",
+  "viewpoint": "A7",
+  "kind": "package",
+  "text": "Für die Darstellung der Konformitätserklärung ist ein Diagramm des Typs A7 - Architecture Compliance mit dem Namen „A7 : Projektkürzel : Compliance Statement“ in dem Package angelegt.",
+  "verweis": "A7-A"
+ },
+ {
+  "id": "A7-MK19",
+  "viewpoint": "A7",
+  "kind": "diagram",
+  "text": "Das Compliance Statement (INFORMATION) ist auf dem Diagramm angelegt. Hinweis: Das Compliance Statement ist als Text formuliert und enthält mindestens eine Aussage dazu dass alle Vorgaben eingehalten wurden. Nicht eingehaltene Vorgaben sind aufgeführt begründet und im Vorfeld mit der methodisch begleitenden Stelle abgestimmt.",
+  "verweis": "A7-L"
+ },
+ {
+  "id": "A7-MK07",
+  "viewpoint": "A7",
+  "kind": "package",
+  "text": "Es ist ein Package Architecture Foundation/A7/Findings and Recommendations angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "A7-MK08",
+  "viewpoint": "A7",
+  "kind": "package",
+  "text": "Für die Darstellung der Erkenntnisse und Empfehlungen ist ein Diagramm des Typs A7 - Architecture Compliance mit dem Namen „A7 : Projektkürzel : Findings and Recommendations“ in dem Package angelegt.",
+  "verweis": "A7-A"
+ },
+ {
+  "id": "A7-MK09",
+  "viewpoint": "A7",
+  "kind": "element",
+  "text": "Die Erkenntnisse (FINDING) sind aus dem Modellelementekatalog entnommen.",
+  "verweis": "A7-F"
+ },
+ {
+  "id": "A7-MK10",
+  "viewpoint": "A7",
+  "kind": "other",
+  "text": "Das TaggedValue Type ist bei allen Erkenntnissen (FINDING) gesetzt.",
+  "verweis": "A7-H"
+ },
+ {
+  "id": "A7-MK11",
+  "viewpoint": "A7",
+  "kind": "element",
+  "text": "Die Empfehlungen (RECOMMENDATION) sind aus dem Modellelementekatalog entnommen.",
+  "verweis": "A7-I"
+ },
+ {
+  "id": "A7-MK12",
+  "viewpoint": "A7",
+  "kind": "other",
+  "text": "Das TaggedValue Type ist bei allen Empfehlungen (RECOMMENDATION) gesetzt.",
+  "verweis": "A7-K"
+ },
+ {
+  "id": "A7-MK13",
+  "viewpoint": "A7",
+  "kind": "element",
+  "text": "Die Ursachen der Erkenntnis sind aus dem Modellelementekatalog entnommen.",
+  "verweis": "A7-B"
+ },
+ {
+  "id": "A7-MK14",
+  "viewpoint": "A7",
+  "kind": "diagram",
+  "text": "Eine Erkenntnis (FINDING) ist auf dem Diagramm mit einer Empfehlung (RECOMMENDATION) verbunden (REFERSTO).",
+  "verweis": "A7-J"
+ },
+ {
+  "id": "A7-MK15",
+  "viewpoint": "A7",
+  "kind": "diagram",
+  "text": "Eine Erkenntnis (FINDING) ist auf dem Diagramm mit der Ursache der Erkenntnis verbunden (RESULTSFROM).",
+  "verweis": "A7-G"
+ },
+ {
+  "id": "A7-MK16",
+  "viewpoint": "A7",
+  "kind": "element",
+  "text": "Eine ggf. erfolgte Umsetzung einer Empfehlung (RECOMMENDATION) kann durch Zuordnung (REALIZESRECOMMENDATION) eines Architekturelementes ausgedrückt werden.",
+  "verweis": "-"
+ },
+ {
+  "id": "A8-MK01",
+  "viewpoint": "A8",
+  "kind": "package",
+  "text": "Es ist ein Package Architecture Foundation/A8/Standards angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "A8-MK02",
+  "viewpoint": "A8",
+  "kind": "package",
+  "text": "Für die Darstellung der Standards ist ein Diagramm des Typs A8 - Standards mit dem Namen mit dem Namen \"A8 : Projektkürzel : Standards\" in dem Package angelegt.",
+  "verweis": "A8-A"
+ },
+ {
+  "id": "A8-MK03",
+  "viewpoint": "A8",
+  "kind": "diagram",
+  "text": "Die (im Projektkontext) relevanten und verwendeten Standards (STANDARD) sind auf dem Diagramm angelegt.",
+  "verweis": "A8-B"
+ },
+ {
+  "id": "A8-MK04",
+  "viewpoint": "A8",
+  "kind": "diagram",
+  "text": "Für alle (im Projektkontext) relevanten Standards (STANDARD) ist die ratifizierende Stelle als zuständige Organisation (ACTUALORGANIZATION) angegeben und auf dem Diagramm eingeblendet.",
+  "verweis": "A8-D, A8-E"
+ },
+ {
+  "id": "Ar-MK01",
+  "viewpoint": "Ar",
+  "kind": "package",
+  "text": "Es ist ein Package Architectural Foundation/Ar/Architecture Roadmap angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "Ar-MK02",
+  "viewpoint": "Ar",
+  "kind": "package",
+  "text": "Für die Darstellung der Roadmap ist ein Diagramm vom Typ Ar - Architecture Roadmap mit dem Namen \"Ar : Projektkürzel : Architecture Roadmap\" in dem Package angelegt.",
+  "verweis": "Ar-A"
+ },
+ {
+  "id": "Ar-MK03",
+  "viewpoint": "Ar",
+  "kind": "diagram",
+  "text": "Die Architekturbeschreibungen (ARCHITECTURALDESCRIPTION) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "Ar-B"
+ },
+ {
+  "id": "Ar-MK04",
+  "viewpoint": "Ar",
+  "kind": "diagram",
+  "text": "Die Architekturbeschreibung (ARCHITECTURALDESCRIPTION) für die PLANModellerstellung ist vollständig ausgefüllt und die Informationen auf dem Diagramm dargestellt. Die Architekturbeschreibungen sind entsprechend der zeitlichen Abfolge in Beziehung gesetzt (ARCHITECTURALSEQUENCE).",
+  "verweis": "Ar-C"
+ },
+ {
+  "id": "C1-MK01",
+  "viewpoint": "C1",
+  "kind": "package",
+  "text": "Es ist ein Package Concepts/C1/Capability Taxonomy angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "C1-MK02",
+  "viewpoint": "C1",
+  "kind": "package",
+  "text": "Für die Darstellung der Funktionalen Bausteine ist ein Diagramm vom Typ C1 - Capability Taxonomy mit dem Namen \"C1 : Projektkürzel : Funktionale Bausteine\" in dem Package angelegt.",
+  "verweis": "C1-A"
+ },
+ {
+  "id": "C1-MK03",
+  "viewpoint": "C1",
+  "kind": "diagram",
+  "text": "Die relevanten Funktionalen Bausteine (CAPABILITY) sind aus dem Standardelementekatalog entnommen und auf das Diagramm gezogen. Hinweis: Es werden keine neuen Funktionale Bausteine angelegt sondern ausschließlich Funktionale Bausteine aus dem Standardelementekatalog verwendet. Sollten die benötigten Fähigkeiten nicht vorhanden sein wird eine Erkenntnis (FINDING) angelegt und Verbindung mit der methodisch begleitenden Stelle aufgenommen.",
+  "verweis": "C1-B"
+ },
+ {
+  "id": "C1-MK04",
+  "viewpoint": "C1",
+  "kind": "diagram",
+  "text": "Für die Darstellung der NATO Targets ist ein Diagramm vom Typ C1 - Capability Taxonomy mit dem Namen \"C1 : Projektkürzel : NATO Capability Codes\" in dem",
+  "verweis": "C1-A"
+ },
+ {
+  "id": "C1-MK05",
+  "viewpoint": "C1",
+  "kind": "diagram",
+  "text": "Die NATO Capability Codes (CAPABILITY) sind aus dem Standardelementekatalog entnommen und auf das Diagramm gezogen. Hinweis: Es werden keine neuen NATO Capability Codes angelegt sondern ausschließlich NATO Capability Codes aus dem Standardelementekatalog verwendet. Sollten die benötigten Fähigkeiten nicht vorhanden sein wird eine Erkenntnis (FINDING) angelegt und Verbindung mit der methodisch begleitenden Stelle aufgenommen.",
+  "verweis": "C1-B"
+ },
+ {
+  "id": "C1-MK06",
+  "viewpoint": "C1",
+  "kind": "package",
+  "text": "Für die Darstellung der Fähigkeitsforderungen ist ein Diagramm vom Typ C1 - Capability Taxonomy mit dem Namen \"C1 : Projektkürzel : Fähigkeitsforderungen\" in dem Package angelegt.",
+  "verweis": "C1-A"
+ },
+ {
+  "id": "C1-MK07",
+  "viewpoint": "C1",
+  "kind": "diagram",
+  "text": "Die Fähigkeitsforderungen (CAPABILITY) sind aus dem Standardelementekatalog entnommen und auf das Diagramm gezogen. Hinweis: Es werden keine neuen Fähigkeitsforderungen angelegt sondern ausschließlich Fähigkeitsforderungen aus dem Standardelementekatalog verwendet. Sollten die benötigten Fähigkeiten nicht vorhanden sein wird eine Erkenntnis (FINDING) angelegt und Verbindung mit der methodisch begleitenden Stelle aufgenommen.",
+  "verweis": "C1-B"
+ },
+ {
+  "id": "C1-MK08",
+  "viewpoint": "C1",
+  "kind": "package",
+  "text": "Für die Darstellung der EU Priorities ist ein Diagramm vom Typ C1 - Capability Taxonomy mit dem Namen \"C1 : Projektkürzel : EU Priorities\" in dem Package angelegt.",
+  "verweis": "C1-A"
+ },
+ {
+  "id": "C1-MK09",
+  "viewpoint": "C1",
+  "kind": "diagram",
+  "text": "Die EU Priorities Bausteine (CAPABILITY) sind aus dem Standardelementekatalog entnommen und auf das Diagramm gezogen. Hinweis: Es werden keine neuen EU Priorities Bausteine angelegt sondern ausschließlich EU Priorites Bausteine aus dem Standardelementekatalog verwendet. Sollten die benötigten Fähigkeiten nicht vorhanden sein wird eine Erkenntnis (FINDING) angelegt und Verbindung mit der methodisch begleitenden Stelle aufgenommen.",
+  "verweis": "C1-B"
+ },
+ {
+  "id": "C1-MK10",
+  "viewpoint": "C1",
+  "kind": "other",
+  "text": "Für alle Fähigkeiten (CAPABILITY) ist insofern vorhanden die nächsthöhere TaxonomieEbene mit eingeblendet.",
+  "verweis": "C1-B"
+ },
+ {
+  "id": "C8-MK01",
+  "viewpoint": "C8",
+  "kind": "package",
+  "text": "Es ist ein Package Concepts/C8/Planning Assumptions angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "C8-MK02",
+  "viewpoint": "C8",
+  "kind": "package",
+  "text": "Für die Darstellung der strategischen Vorgaben ist für jede relevante Fähigkeit ein eigenständiges Diagramm vom Typ C8 - Planning Assumptions mit dem Namen \"C8 : Projektkürzel : Fähigkeitsname\" in dem Package angelegt.",
+  "verweis": "C8-A"
+ },
+ {
+  "id": "C8-MK03",
+  "viewpoint": "C8",
+  "kind": "diagram",
+  "text": "Die Fähigkeiten (CAPABILITY) sind aus dem Standardelementekatalog entnommen und auf das Diagramm gezogen. Hinweis: Es werden keine neuen Fähigkeiten angelegt sondern ausschließlich Fähigkeiten aus dem Standardelementekatalog verwendet. Sollten die benötigten Fähigkeiten nicht vorhanden sein wird ein Klärungsbedarf (FINDING) angelegt und Verbindung mit der verantwortlichen Stelle aufgenommen.",
+  "verweis": "C8-B"
+ },
+ {
+  "id": "C8-MK04",
+  "viewpoint": "C8",
+  "kind": "diagram",
+  "text": "Für jede Fähigkeit mit einer strategischen Begründung (STRATEGICCONSTRAINT) ist diese Begründung auf dem Diagramm vom Typ C8 - Planning Assumptions mit dem Namen \"C8 : Projektkürzel : Fähigkeitsname\" angelegt.",
+  "verweis": "C8-C"
+ },
+ {
+  "id": "C8-MK05",
+  "viewpoint": "C8",
+  "kind": "other",
+  "text": "Die Fähigkeiten (CAPABILITY) sind den strategischen Vorgaben und Rahmenbedingungen (STRATEGICCONSTRAINT) zugeordnet.",
+  "verweis": "C8-D"
+ },
+ {
+  "id": "C8-MK06",
+  "viewpoint": "C8",
+  "kind": "connector",
+  "text": "Jede strategische Vorgabe und Rahmenbedingung (STRATEGICCONSTRAINT) ist durch eine Referenz (REFERENCE DOCUMENTREFERENCE SMEREFERENCE) begründet. Die Referenzbeziehung ist näher beschrieben oder die strategische Vorgabe ist aus einer anderen strategischen Vorgabe abgeleitet. Ist eine Dokumentenreferenz eingestuft ist die Einstufung (CLASSIFICATION) der Dokumentenreferenz zugeordnet.",
+  "verweis": "C8-E, C8Ea, C8-Eb, C8-F"
+ },
+ {
+  "id": "Cr-MK01",
+  "viewpoint": "Cr",
+  "kind": "package",
+  "text": "Es ist ein Package Concepts/Cr /Capability Roadmap angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "Cr-MK02",
+  "viewpoint": "Cr",
+  "kind": "package",
+  "text": "Für die Darstellung der Beziehung zwischen den Ressourcen und den Fähigkeiten ist ein Diagramm vom Typ Cr - Capability Roadmap mit dem Namen \"Cr : Projektkürzel : Capability Roadmap\" in dem Package angelegt.",
+  "verweis": "Cr-A"
+ },
+ {
+  "id": "Cr-MK03",
+  "viewpoint": "Cr",
+  "kind": "diagram",
+  "text": "Die relevanten Fähigkeiten (CAPABILITY) sind aus dem Standardelementekatalog entnommen und auf das Diagramm gezogen. Hinweis: Es werden keine neuen Fähigkeiten angelegt sondern ausschließlich Fähigkeiten aus dem Standardelementekatalog verwendet. Sollten die benötigten Fähigkeiten nicht vorhanden sein wird eine Erkenntnis (FINDING) angelegt und Verbindung mit der verantwortlichen Stelle aufgenommen.",
+  "verweis": "Cr-B"
+ },
+ {
+  "id": "Cr-MK04",
+  "viewpoint": "Cr",
+  "kind": "diagram",
+  "text": "Die dargelegten Fähigkeitskonfigurationen (CAPABILITYCONFIGURATION) sind aus dem Modellelementekatalog entnommen oder werden sofern nicht vorhanden auf dem Diagramm neu angelegt.",
+  "verweis": "Cr-C"
+ },
+ {
+  "id": "Cr-MK05",
+  "viewpoint": "Cr",
+  "kind": "diagram",
+  "text": "Die Fähigkeiten sind auf dem Diagramm mit den entsprechenden Fähigkeitskonfigurationen verbunden (EXHIBITS). Hinweis: Die Auswirkungen auf die Fähigkeitsentwicklung sind im Namen der Relation zwischen Ressource und Fähigkeit vermerkt.",
+  "verweis": "Cr-D"
+ },
+ {
+  "id": "L1-MK01",
+  "viewpoint": "L1",
+  "kind": "package",
+  "text": "Es ist ein Package Logical Specifications/L1/Node Types angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "L1-MK02",
+  "viewpoint": "L1",
+  "kind": "package",
+  "text": "Für die Darstellung der logischen Aufgabenträger ist ein Diagramm des Typs L1 - Node Types mit dem Namen „L1 : Projektkürzel : Node Types“ in dem Package angelegt.",
+  "verweis": "L1-A"
+ },
+ {
+  "id": "L1-MK03",
+  "viewpoint": "L1",
+  "kind": "diagram",
+  "text": "Die relevanten logischen Aufgabenträger (OPERATIONALPERFORMER) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "L1-B"
+ },
+ {
+  "id": "L1-MK04",
+  "viewpoint": "L1",
+  "kind": "element",
+  "text": "Für alle logischen Aufgabenträger (OPERATIONALPERFORMER) ist die nächsthöhere L1-C Taxonomie-Ebene mit eingeblendet und neu generierte logische Aufgabenträger sind in die Taxonomie einsortiert (PROPERTYSETGENERALISATION). Hinweis: Es werden immer alle nächsthöheren Taxonomie-Ebenen bis Ebene 0 gemäß Abstraktionsebene eingeblendet. Es werden keine neuen logischen Aufgabenträger angelegt sondern ausschließlich logische Aufgabenträger aus dem Standardelementekatalog verwendet. Sollten die benötigten logischen Aufgabenträger nicht vorhanden sein wird ein Klärungsbedarf (FINDING) angelegt und Verbindung mit der verantwortlichen Stelle aufgenommen.",
+  "verweis": ""
+ },
+ {
+  "id": "L1-MK05",
+  "viewpoint": "L1",
+  "kind": "element",
+  "text": "Das TaggedValue abstractionLevel der Aufgabenträger (OPERATIONALPERFORMER) - ist gemäß dem Wert des Taxonomieelements gesetzt. Hinweis: Die Angabe des Abstraktionslevel ist notwendig um einen einheitlichen Abstraktionsgrad bei der Beschreibung der inneren Struktur der Aufgabeträger zu gewährleisten und nicht unterschiedliche Abstraktionsebene hinsichtlich der inhaltlichen Beschreibung miteinander zu vermischen.",
+  "verweis": ""
+ },
+ {
+  "id": "L2-MK01",
+  "viewpoint": "L2",
+  "kind": "package",
+  "text": "Es ist ein Package Logical Specifications/L2/Logical Nodes angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "L2-MK02",
+  "viewpoint": "L2",
+  "kind": "package",
+  "text": "Für die Darstellung der Anwendungsfälle ist ein Diagramm des Typs L2 - Logical Scenario mit dem Namen „L2 : Projektkürzel : Logical Nodes“ im Package angelegt",
+  "verweis": "L2-A"
+ },
+ {
+  "id": "L2-MK03",
+  "viewpoint": "L2",
+  "kind": "diagram",
+  "text": "Die relevanten Aufgabenträger (OPERATIONALPERFORMER) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "L2-B"
+ },
+ {
+  "id": "L2-MK04",
+  "viewpoint": "L2",
+  "kind": "diagram",
+  "text": "Die Bestandteile der relevanten Aufgabenträger (OPERATIONALROLE MEASUREMENTS) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen. Hinweis: Die internen Beziehungen sind ausgeblendet.",
+  "verweis": "L2-C, L2-D, L2-E"
+ },
+ {
+  "id": "L2-MK05",
+  "viewpoint": "L2",
+  "kind": "package",
+  "text": "Es ist ein Package Logical Specifications/L2/Logical Scenario angelegt. Für die Darstellung der Anwendungsfälle ist ein Diagramm des Typs L2 - Logical Scenario mit dem Namen „L2 : Projektkürzel : Logical Scenario“ im Package angelegt.",
+  "verweis": "L2-A"
+ },
+ {
+  "id": "L2-MK06",
+  "viewpoint": "L2",
+  "kind": "diagram",
+  "text": "Die relevanten Anwendungsfälle (OPERATIONALARCHITECTURE) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "L2-B"
+ },
+ {
+  "id": "L2-MK07",
+  "viewpoint": "L2",
+  "kind": "diagram",
+  "text": "Die Bestandteile der relevanten Anwendungsfälle (OPERATIONALROLE MEASUREMENT) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen. Hinweis: Die internen Beziehungen sind ausgeblendet.",
+  "verweis": "L2-C, L2-D, L2-E"
+ },
+ {
+  "id": "L2-MK08",
+  "viewpoint": "L2",
+  "kind": "element",
+  "text": "Den Anwendungsfällen (OPERATIONALARCHITECTURE) Aufgabenträgern (OPERATIONALPERFORMER) und Eigenschaften (MEASUREMENT) sind bei Bedarf L2-H, L2-I, Orte (LOCATION ACTUALLOCATION) Umwelt (CONDITION ACTUALCONDITION) oder Umgebungen (ENVIRONMENT ACTUALENVIRONMENT) zugeordnet (LOCATIONTYPE REQUIREDENVIRONMENT PHYSICALLOCATION ENVIRONMENTALCONTEXT). Hinweis: Sind keine passenden Elemente hierfür im Standardelementekatalog vorhanden sind diese im L2 neu angelegt.",
+  "verweis": "L2-F, L2-G, L2-J, L2-K, L2-L, L2-M"
+ },
+ {
+  "id": "L2-MK09",
+  "viewpoint": "L2",
+  "kind": "element",
+  "text": "Den Anwendungsfällen Aufgabenträgern und Eigenschaften sind bei Bedarf Services (SERVICESPECIFICATION) zugeordnet (CONSUMEDBY). Hinweis: Es werden keine neuen Services angelegt sondern ausschließlich aus dem Standardelementekatalog verwendet. Sollte der gesuchte Service nicht vorhanden sein wird ein Klärungsbedarf (FINDING) angelegt und Verbindung mit der methodisch begleitenden Stelle aufgenommen.",
+  "verweis": "-"
+ },
+ {
+  "id": "L3-MK01",
+  "viewpoint": "L3",
+  "kind": "package",
+  "text": "Es ist ein Package Logical Specifications/L3/ Node Interaction angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "L3-MK02",
+  "viewpoint": "L3",
+  "kind": "package",
+  "text": "Für die Darstellung der Austauschbeziehungen ist ein Diagramm vom Typ L3 - Node Interaction mit dem Namen „L3 : Projektkürzel : Node Interaction“ in dem Package angelegt.",
+  "verweis": "L3-A"
+ },
+ {
+  "id": "L3-MK03",
+  "viewpoint": "L3",
+  "kind": "diagram",
+  "text": "Die relevanten Anwendungsfälle (OPERATIONALARCHITECTURE) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen. Hinweis: Es werden die in L2 - Logical Scenario und L2 - Logical Nodes definierten Strukturen (Anwendungsfall logischer Aufgabenträger) verwendet.",
+  "verweis": "L3-B"
+ },
+ {
+  "id": "L3-MK04",
+  "viewpoint": "L3",
+  "kind": "diagram",
+  "text": "Die Bestandteile der relevanten Anwendungsfälle (OPERATIONALROLE MEASUREMENT) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog gezogen.",
+  "verweis": "L3-C"
+ },
+ {
+  "id": "L3-MK05",
+  "viewpoint": "L3",
+  "kind": "diagram",
+  "text": "Die Bestandteile des Anwendungsfalls (OPERATIONALROLE) die Informationen untereinander übertragen sind über eine Austauschbeziehung auf dem Diagramm miteinander verbunden (OPERATIONALEXCHANGE).",
+  "verweis": "L3-D"
+ },
+ {
+  "id": "L3-MK06",
+  "viewpoint": "L3",
+  "kind": "connector",
+  "text": "Die Austauschbeziehungen werden mit den zu übertragenden Elementen verbunden ({EXCHANGEITEM}). Hinweis: Dabei können auch mehrere Elemente mit einer Austauschbeziehung übertragen werden.",
+  "verweis": "L3-E"
+ },
+ {
+  "id": "L4-MK01",
+  "viewpoint": "L4",
+  "kind": "package",
+  "text": "Es ist ein Package Logical Specifications/L4/Logical Activities angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "L4-MK02",
+  "viewpoint": "L4",
+  "kind": "package",
+  "text": "Für die Darstellung der Aktivitäten ist ein Diagramm vom Typ L4 - Logical Activities mit dem Namen „L4 : Projektkürzel : Hierarchie“ in dem Package angelegt.",
+  "verweis": "L4-A"
+ },
+ {
+  "id": "L4-MK03",
+  "viewpoint": "L4",
+  "kind": "diagram",
+  "text": "Die relevanten Aktivitäten (OPERATIONALACTIVITY) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "L4-B"
+ },
+ {
+  "id": "L4-MK04",
+  "viewpoint": "L4",
+  "kind": "diagram",
+  "text": "Potenzielle Referenzprozesse (STANDARDOPERATIONALACTIVITY) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "L4-B"
+ },
+ {
+  "id": "L4-MK05",
+  "viewpoint": "L4",
+  "kind": "diagram",
+  "text": "Alle Aktivitäten (OPERATIONALACTIVITY) die einen Referenzprozess (STANDARDOPERATIONALACTIVITY) 1:1 umsetzen sind auf dem Diagramm mit diesem verbunden (IMPLEMENTS).",
+  "verweis": "L4-Bc"
+ },
+ {
+  "id": "L4-MK06",
+  "viewpoint": "L4",
+  "kind": "element",
+  "text": "Das TaggedValue abstractionLevel ist gemäß dem Wert des Taxonomieelements gesetzt. Hinweis: Die Angabe des Abstraktionslevel ist notwendig um einen einheitlichen Abstraktionsgrad bei der Beschreibung der inneren Struktur der Anwendungsfälle Aufgabeträger und Prozesse zu gewährleisten und nicht unterschiedliche Abstraktionsebene hinsichtlich der inhaltlichen Beschreibung miteinander zu vermischen.",
+  "verweis": "-"
+ },
+ {
+  "id": "L4-MK07",
+  "viewpoint": "L4",
+  "kind": "other",
+  "text": "Die relevanten Aktivitäten (OPERATIONALACTIVITY) können über ein Business Process Diagram (als Composite Diagram modelliert) verfeinert werden welches den Namen der Aktivität trägt.",
+  "verweis": "L4-Bd"
+ },
+ {
+  "id": "L4-MK08",
+  "viewpoint": "L4",
+  "kind": "diagram",
+  "text": "Das Business Process Diagram ist als BPMN-Kollaborationsdiagramm ausgeführt. Der betrachtete Anwendungsfall (OPERATIONALARCHITECTURE) ist aus dem Modellelementekatalog entnommen und auf das Diagramm gezogen.",
+  "verweis": "L4-I"
+ },
+ {
+  "id": "L4-MK09",
+  "viewpoint": "L4",
+  "kind": "diagram",
+  "text": "Die Pools und Lanes werden mit dem Anwendungsfall und den Aufgabenträgern (OPERATIONALPERFORMER) typisiert. Hinweis: Die Verwendung eines Prozessdiagramms ohne Pools und Lanes ist als Ausnahmen zulässig muss aber mit dem begleitenden Referat abgestimmt und im Modell dokumentiert sein (A7). Hinweis Benamung: Die Benennung der Lanes entspricht den Aufgabenträgern. Soll ein Prozess in einem Pool abgebildet werden darf dieser nach dem Prozess benannt werden.",
+  "verweis": "L4-C"
+ },
+ {
+  "id": "L4-MK10",
+  "viewpoint": "L4",
+  "kind": "connector",
+  "text": "Die Pools und Lanes sind über den betrachteten Anwendungsfall (OPERATIONALARCHITECTURE) mit Aufgabenträgern verbunden (PERFORMSINCONTEXT).",
+  "verweis": "-"
+ },
+ {
+  "id": "L4-MK11",
+  "viewpoint": "L4",
+  "kind": "element",
+  "text": "Die relevanten Aktionen (OPERATIONALACTIVITYACTION) und Prozesselemente (STARTEVENT ENDEVENT GATEWAY etc.) des Business Process Diagram sind angelegt.",
+  "verweis": "L4-D, L4-F, L4-E"
+ },
+ {
+  "id": "L4-MK12",
+  "viewpoint": "L4",
+  "kind": "element",
+  "text": "Alle Aktionen (OPERATIONALACTIVITYACTION) und Prozesselemente (STARTEVENT ENDEVENT GATEWAY etc.) des Business Process Diagram sind innerhalb der Lanes (falls vorhanden) oder des Pools zu modellieren.",
+  "verweis": "L4-D, L4-E, L4-F"
+ },
+ {
+  "id": "L4-MK13",
+  "viewpoint": "L4",
+  "kind": "element",
+  "text": "Bei allen Prozesselementen (OPERATIONALACTIVITYACTION STARTEVENT ENDEVENT GATEWAY etc.) ist der entsprechende \"type\" gesetzt und eingeblendet.",
+  "verweis": "-"
+ },
+ {
+  "id": "L4-MK14",
+  "viewpoint": "L4",
+  "kind": "diagram",
+  "text": "Alle Aktionen (OPERATIONALACTIVITYACTION) sind über das Behavior mit der entsprechenden Aktivität (OPERATIONALACTIVITY) typisiert und verfügen über einen aussagefähigen Namen. Hinweis: Die Hierarchie bildet sich über die Zuordnung von Aktivitäten zu einzelnen Diagrammen und nicht über Relationen ab.",
+  "verweis": "L4-E"
+ },
+ {
+  "id": "L4-MK15",
+  "viewpoint": "L4",
+  "kind": "connector",
+  "text": "Alle Aktionen (OPERATIONALACTIVITYACTION) und Prozesselemente (STARTEVENT ENDEVENT GATEWAY etc.) des Business Process Diagram die prozessual abhängig sind sind über einen Kontrollfluss (CONTROLFLOW)verbunden. Hinweis: Verzweigungen und Zusammenführungen des Kontrollflusses erfolgen immer über Gateways. Die Zusammenführung erfolgt durch den Gateway-Typen der für die Verzweigung verwendet wurde.",
+  "verweis": "L4-G, L4-H"
+ },
+ {
+  "id": "L4-MK16",
+  "viewpoint": "L4",
+  "kind": "diagram",
+  "text": "Jeder ausmodellierte Pool verfügt über einen abgeschlossenen Prozess (mind. STARTEVENT OPERATIONALACTIVITYACTION ENDEVENT). Hinweis: zugeklappte Pools des BPMN-Kollaborationsdiagramms enthalten keine Elemente alle Beziehungen gehen hier an den Pool.",
+  "verweis": "L4-H, L4-G"
+ },
+ {
+  "id": "L4-MK17",
+  "viewpoint": "L4",
+  "kind": "other",
+  "text": "Jede Aktion (OPERATIONALACTIVITYACTION) ist mit einem Trigger (Eingangssignal(e) bzw. -information(en)) und einem Ergebnis (Ausgangssignal(e) bzw. - information(en)) versehen. Diese sind als „Conveyed Items“ (EXCHANGEITEM) mit dem Kontrollfluss (OPERATIONALCONTROLFLOW) verknüpft. Das „Mitschleppen“ der „Conveyed Items“ über Gateways etc. bis zur empfangenden Aktion ist nicht erforderlich.",
+  "verweis": "-"
+ },
+ {
+  "id": "L4-MK18",
+  "viewpoint": "L4",
+  "kind": "other",
+  "text": "Muss vor der Ausführung einer Aktion (OPERATIONALACTIVITYACTION) eine bestimmte Bedingung erfüllt sein ist ein Zwischenereignis (INTERMEDIATEEVENT) in den Kontrollfluss einzufügen entsprechend zu typisieren und aussagekräftig zu benennen.",
+  "verweis": "-"
+ },
+ {
+  "id": "L4-MK19",
+  "viewpoint": "L4",
+  "kind": "other",
+  "text": "Alle Aktionen (OPERATIONALACTIVITYACTION) die aus einem Referenzprozessschritt abgeleitet sind sind mit diesem verknüpft (IMPLEMENTS).",
+  "verweis": "L4-Ha"
+ },
+ {
+  "id": "L4-MK20",
+  "viewpoint": "L4",
+  "kind": "element",
+  "text": "Der Informationsaustausch zwischen Pools erfolgt über eine speziellen Kontrollfluss (OPERATIONALMESSAGEFLOW). Analog zum Kontrollfluss (OPERATIONALCONTROLFLOW) werden hier „Conveyed Items“ (EXCHANGEITEM) zugewiesen. Der Notwendigkeit des Empfangs eines solchen Elementes vor einer Aktion stellt eine besondere Bedingung dar und ist mit einem Zwischenereignis (INTERMEDIATEEVENT) zu modellieren.",
+  "verweis": "-"
+ },
+ {
+  "id": "L7-MK01",
+  "viewpoint": "L7",
+  "kind": "package",
+  "text": "Es ist ein Package Logical Specifications/L7/Information Model angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "L7-MK02",
+  "viewpoint": "L7",
+  "kind": "diagram",
+  "text": "Für die Darstellung der Zusammenhänge der Informationen ist ein Diagramm vom Typ L7 - Information Model mit dem Namen \"L7 : Projektkürzel : Information Model\" angelegt.",
+  "verweis": "L7-A"
+ },
+ {
+  "id": "L7-MK03",
+  "viewpoint": "L7",
+  "kind": "diagram",
+  "text": "Die relevanten Informationen (INFORMATIONELEMENT) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog gezogen.",
+  "verweis": "L7-D"
+ },
+ {
+  "id": "L7-MK04",
+  "viewpoint": "L7",
+  "kind": "element",
+  "text": "Die relevanten Einstufungen (CLASSIFICATION) sind aus dem Standardelementekatalog entnommen.",
+  "verweis": "L7-H"
+ },
+ {
+  "id": "L7-MK05",
+  "viewpoint": "L7",
+  "kind": "connector",
+  "text": "Die Informationen (INFORMATIONELEMENT) sind mit der Einstufung verbunden (CLASSIFIED). Hinweis: Offene Informationen sind mit der Einstufung OFFEN gekennzeichnet.",
+  "verweis": "L7-I"
+ },
+ {
+  "id": "L7-MK06",
+  "viewpoint": "L7",
+  "kind": "diagram",
+  "text": "Alle Informationen (INFORMATIONELEMENT) sind je nach Art der Zusammenhänge mittels Relationen auf dem Diagramm miteinander verknüpft und die Relationen eingeblendet (GENERALIZATION AGGREGATION COMPOSITION).",
+  "verweis": "L7-E"
+ },
+ {
+  "id": "L7-MK07",
+  "viewpoint": "L7",
+  "kind": "element",
+  "text": "Alle Informationen (INFORMATIONELEMENT) sind in einem konzeptionellen Datenmodell (DATAMODEL) eingeordnet. Bei Bedarf sind die Informationen zusätzlich in einem logischen Datenmodell eingeordnet.",
+  "verweis": "L7-F"
+ },
+ {
+  "id": "L7-MK08",
+  "viewpoint": "L7",
+  "kind": "element",
+  "text": "Das TaggedValue abstractionLevel der Informationen (INFORMATIONELEMENT) ist",
+  "verweis": "-"
+ },
+ {
+  "id": "L8-MK01",
+  "viewpoint": "L8",
+  "kind": "package",
+  "text": "Es ist ein Package Logical Specifications/L8/Logical Constraints angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "L8-MK02",
+  "viewpoint": "L8",
+  "kind": "diagram",
+  "text": "Für die Darstellung der operationellen Vorgaben und Rahmenbedingungen ist ein Diagramm des Typs L8 - Logical Constraints mit dem Namen „L8 : Projektkürzel : Logical Constraints“ angelegt.",
+  "verweis": "L8-A"
+ },
+ {
+  "id": "L8-MK03",
+  "viewpoint": "L8",
+  "kind": "diagram",
+  "text": "Die relevanten operationellen Vorgaben und Rahmenbedingungen (OPERATIONALCONSTRAINTS) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "L8-B"
+ },
+ {
+  "id": "L8-MK04",
+  "viewpoint": "L8",
+  "kind": "diagram",
+  "text": "Die Elemente für die eine Vorgabe gilt (SUBJECTOFOPERATIONALCONSTRAINT) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "L8-C"
+ },
+ {
+  "id": "L8-MK05",
+  "viewpoint": "L8",
+  "kind": "diagram",
+  "text": "Die Elemente für die eine Vorgabe gilt (SUBJECTOFOPERATIONALCONSTRAINT) sind auf dem Diagramm mit den entsprechenden operationellen Vorgaben und Rahmenbedingungen verbunden (SATISFY).",
+  "verweis": "L8-D"
+ },
+ {
+  "id": "L8-MK06",
+  "viewpoint": "L8",
+  "kind": "diagram",
+  "text": "Die begründenden Referenzen Dokumente oder Wissensträger (REFERENCE DOCUMENTREFERENCE SMEREFERENCE) für die operationellen Vorgaben und Rahmenbedingungen (OPERATIONALCONSTRAINT) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen",
+  "verweis": "L8-G"
+ },
+ {
+  "id": "L8-MK07",
+  "viewpoint": "L8",
+  "kind": "element",
+  "text": "Ist eine operationelle Vorgabe und Rahmenbedingung (OPERATIONALCONSTRAINT) aus einer anderen Vorgabe (STRATEGICCONSTRAINT OPERATIONALCONSTRAINT SERVICEPOLICY RESOURCECONSTRAINT) abgeleitet ist diese aus dem Modellelementekatalog entnommen.",
+  "verweis": "P8-B, S8-B, C8-C"
+ },
+ {
+  "id": "L8-MK08",
+  "viewpoint": "L8",
+  "kind": "connector",
+  "text": "Die operationellen Vorgaben und Rahmenbedingungen (OPERATIONALCONSTRAINT) die sich aus einer anderen Vorgabe ableiten (STRATEGICCONSTRAINT OPERATIONALCONSTRAINT SERVICEPOLICY RESOURCECONSTRAINT) sind mit den entsprechenden Vorgaben verbunden (IMPLEMENTS).",
+  "verweis": "L8-F"
+ },
+ {
+  "id": "L8-MK09",
+  "viewpoint": "L8",
+  "kind": "connector",
+  "text": "Die operationellen Vorgaben und Rahmenbedingungen (OPERATIONALCONSTRAINT) sind mit der entsprechenden Referenz verbunden (JUSTIFIEDBY) und die Referenzbeziehung ist im Namen der Relation beschrieben.",
+  "verweis": "L8-H"
+ },
+ {
+  "id": "L8-MK10",
+  "viewpoint": "L8",
+  "kind": "element",
+  "text": "Die relevanten Einstufungen (CLASSIFICATION) sind aus dem Standardelementekatalog entnommen.",
+  "verweis": "L8-Ga"
+ },
+ {
+  "id": "L8-MK11",
+  "viewpoint": "L8",
+  "kind": "connector",
+  "text": "Die Dokumentenreferenz ist mit der Einstufung verbunden (CLASSIFIED). Hinweis: Offene Dokumentenreferenzen sind mit der Einstufung OFFEN gekennzeichnet.",
+  "verweis": "L8-Gb"
+ },
+ {
+  "id": "S1-MK01",
+  "viewpoint": "S1",
+  "kind": "package",
+  "text": "Es ist ein Package Service Specifications/S1/Charakterisierung - Service Description angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "S1-MK02",
+  "viewpoint": "S1",
+  "kind": "diagram",
+  "text": "Für die Darstellung der Services ist ein Diagramm des Typs S1 - Service Taxonomy mit dem Namen „S1 : Projektkürzel : Service Description“ angelegt",
+  "verweis": "S1-A"
+ },
+ {
+  "id": "S1-MK03",
+  "viewpoint": "S1",
+  "kind": "diagram",
+  "text": "Die zu beschreibenden Services (SERVICESPECIFICATION) sind auf dem Diagramm angelegt oder aus dem Modelloder Standardelementekatalog entnommen.",
+  "verweis": "S1-B"
+ },
+ {
+  "id": "S1-MK04",
+  "viewpoint": "S1",
+  "kind": "package",
+  "text": "Der Name der Services (SERVICESPECIFICATION) sind mit einem Präfix oder Suffix zu ergänzen. Es wird zwischen drei Ebenen unterschieden: • Ebene 1 IT-Services erhalten das Suffix “Service Bw” (z.B. Platform Service Bw). • Ebene 2 IT-Services erhalten das Suffix “Service” (z.B. Platform Core Service). • Ebene 3 IT-Services erhalten kein Suffix (z.B. Platform Common Core). • IT-Service Module erhalten das Präfix “IT-Service Modul” (z.B. IT-Service Modul GMN 5) Hinweis: Es ist die wesentliche Leistung des IT-Service/IT-Service Modul/IT Service Package aus Nutzersicht in wenigen Sätzen zusammenfassend zu beschreiben (Kurzbeschreibung).",
+  "verweis": "S1-B"
+ },
+ {
+  "id": "S1-MK05",
+  "viewpoint": "S1",
+  "kind": "diagram",
+  "text": "Für die Darstellung der Services (SERVICESPECIFICATION) ist ein Diagramm des Typs S1 - Service Taxonomy mit dem Namen „S1 : Projektkürzel : Service Taxonomy“ angelegt.",
+  "verweis": "S1-A"
+ },
+ {
+  "id": "S1-MK06",
+  "viewpoint": "S1",
+  "kind": "other",
+  "text": "Die zu beschreibenden Services (SERVICESPECIFICATION) sind auf dem",
+  "verweis": "S1-B"
+ },
+ {
+  "id": "S1-MK07",
+  "viewpoint": "S1",
+  "kind": "other",
+  "text": "Für alle Services (SERVICESPECIFICATION) ist mindestens insofern vorhanden die nächsthöhere Taxonomie-Ebene mit angezeigt (SERVICEGENERALIZATION).",
+  "verweis": "S1-C"
+ },
+ {
+  "id": "S1-MK08",
+  "viewpoint": "S1",
+  "kind": "connector",
+  "text": "Der zu beschreibende Service wird mit der Servicekategorie verbunden (SERVICEGENERALIZATION).",
+  "verweis": "S1-D"
+ },
+ {
+  "id": "S1-MK09",
+  "viewpoint": "S1",
+  "kind": "element",
+  "text": "Die FMN-Service Instruction (SERVICESPECIFICATION) ist aus dem Standardelementekatalog entnommen. Hinweis: Die Service Instructions werden nicht neu angelegt. Sollte die gesuchte Service Instruction nicht vorhanden sein ist eine Erkenntnis (FINDING) angelegt und Verbindung mit der methodisch begleitenden Stelle aufzunehmen.",
+  "verweis": "-"
+ },
+ {
+  "id": "S1-MK10",
+  "viewpoint": "S1",
+  "kind": "other",
+  "text": "Die Service Instruction (SERVICESPECIFICATION) ist mit den Services verknüpft.",
+  "verweis": "-"
+ },
+ {
+  "id": "S1-MK11",
+  "viewpoint": "S1",
+  "kind": "element",
+  "text": "Das TaggedValue abstractionLevel der Services (SERVICESPECIFICATION) ist gemäß dem Wert des Taxonomieelements gesetzt. Hinweis: Die Angabe des Abstraktionslevel ist notwendig um einen einheitlichen Abstraktionsgrad bei der Beschreibung der inneren Struktur der Services zu gewährleisten und nicht unterschiedliche Abstraktionsebene hinsichtlich der inhaltlichen Beschreibung miteinander zu vermischen",
+  "verweis": "-"
+ },
+ {
+  "id": "S1-MK12",
+  "viewpoint": "S1",
+  "kind": "package",
+  "text": "Es ist ein Package Service Specifications/S1/IT-Service Varianten angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "S1-MK13",
+  "viewpoint": "S1",
+  "kind": "package",
+  "text": "Für die Darstellung der Services ist ein Diagramm des Typs S1 - Service Taxonomy mit dem Namen „S1 : Projektkürzel : Service Variants“ in dem Package angelegt.",
+  "verweis": "S1-A"
+ },
+ {
+  "id": "S1-MK14",
+  "viewpoint": "S1",
+  "kind": "diagram",
+  "text": "Die zu beschreibenden Services (SERVICESPECIFICATION) sind auf dem Diagramm angelegt oder aus dem Modelloder Standardelementekatalog entnommen",
+  "verweis": "S1-B"
+ },
+ {
+  "id": "S1-MK15",
+  "viewpoint": "S1",
+  "kind": "other",
+  "text": "Sofern der Service über eine oder mehrere Servicevarianten (SERVICESPECIFICATION) verfügt sind diese anzulegen und mit einem Namen und einer Beschreibung zu versehen.",
+  "verweis": "-"
+ },
+ {
+  "id": "S1-MK16",
+  "viewpoint": "S1",
+  "kind": "other",
+  "text": "Alle Servicevarianten (SERVICESPECIFICATION) werden auf dem zugehörigen Service abgebildet (SERVICESPECIFICATIONGENERALIZATION).",
+  "verweis": "-"
+ },
+ {
+  "id": "S2-MK01",
+  "viewpoint": "S2",
+  "kind": "package",
+  "text": "Es ist ein Package Service Specifications/S2/ IT-Service Komposition angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "S2-MK02",
+  "viewpoint": "S2",
+  "kind": "diagram",
+  "text": "Für die Darstellung der Servicezusammensetzung ist ein Diagramm des Typs S2 – Service Structure mit dem Namen „S2 : Projektkürzel : Service Structure“ angelegt.",
+  "verweis": "S2-A"
+ },
+ {
+  "id": "S2-MK03",
+  "viewpoint": "S2",
+  "kind": "diagram",
+  "text": "Die relevanten Services (SERVICESPECIFICATION) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "S2-B"
+ },
+ {
+  "id": "S2-MK04",
+  "viewpoint": "S2",
+  "kind": "diagram",
+  "text": "Alle Services (und ihre Bestandteile (SERVICESPECIFICATIONROLE)) sind auf dem Diagramm und eingeblendet. Hinweis: Das Konzept des Teilservice ist dann zu nutzen wenn der Gesamtservice ohne den Teilservice nicht deployed werden kann da ein zentraler Bestandteil fehlt. Der Teilservice muss als Serviceinstanz im Gesamtservice ausgebracht werden. Dabei können nur Services einer tieferen Ebene verwendet werden. Services der Ebene 1 dürfen nur aus Services der Ebene 2 komponiert werden. IT-Service-Module dürfen nur aus Ebene 1 Services komponiert werden.",
+  "verweis": "-"
+ },
+ {
+  "id": "S2-MK05",
+  "viewpoint": "S2",
+  "kind": "package",
+  "text": "Es ist ein Package Service Specifications/S2/Serviceabhängigkeiten angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "S2-MK06",
+  "viewpoint": "S2",
+  "kind": "diagram",
+  "text": "Für die Darstellung der externe Serviceabhängigkeiten ist ein Diagramm des Typs S2 – Service Structure mit dem Namen „S2 : Projektkürzel : External Service Dependencies“ in dem Diagramm angelegt.",
+  "verweis": "S2-A"
+ },
+ {
+  "id": "S2-MK07",
+  "viewpoint": "S2",
+  "kind": "diagram",
+  "text": "Die relevanten Services (SERVICESPECIFICATION) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "S2-B"
+ },
+ {
+  "id": "S2-MK08",
+  "viewpoint": "S2",
+  "kind": "diagram",
+  "text": "Abhängige Services (SERVICESPECIFICATION) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "S2-D"
+ },
+ {
+  "id": "S2-MK09",
+  "viewpoint": "S2",
+  "kind": "connector",
+  "text": "Beschreibende Services (SERVICESPECIFICATION) werden mit ihren ausgehenden abhängigen Services verbunden (SERVICECONNECTOR). Im Namen des Konnektors ist die Abhängigkeit näher beschrieben. Hinweis: Das Konzept der Serviceabhängigkeit ist dann zu nutzen wenn der Gesamtservice ohne die hier aufgeführte Abhängigkeit nur mit Einschränkungen nutzbar ist. Es werden nur Services der Ebene 1 betrachtet.",
+  "verweis": "S2-E"
+ },
+ {
+  "id": "S2-MK10",
+  "viewpoint": "S2",
+  "kind": "package",
+  "text": "Es ist ein Package Service Specifications/S2/Warranties angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "S2-MK11",
+  "viewpoint": "S2",
+  "kind": "diagram",
+  "text": "Für die Darstellung der Service Warranties ist ein Diagramm des Typs S2 – Service Structure mit dem Namen „S2 : Projektkürzel : Service Warranties“ angelegt.",
+  "verweis": "S2-A"
+ },
+ {
+  "id": "S2-MK12",
+  "viewpoint": "S2",
+  "kind": "diagram",
+  "text": "Die relevanten Services (SERVICESPECIFICATION) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "S2-B"
+ },
+ {
+  "id": "S2-MK13",
+  "viewpoint": "S2",
+  "kind": "element",
+  "text": "Die Warranty eines Service (MEASUREMENT) sind am Service anzulegen. Diese sind mit dem jeweiligen Serviceattribut (MEASUREMENTTYPE) zu typisieren. Die Serviceattribute warden vom IT-Service Designer als Standardelemente vorgegeben und bereitgestellt. Ergänzungen von Serviceattributen sind möglich. Hinweis: Sollte eine neue Eigenschaft (MEASUREMENTTYPE) angelegt werden müssen so ist das TaggedValue ITSD-ServiceClass zu pflegen. Hinweis: Sollte eine neue Eigenschaft (MEASUREMENTTYPE) angelegt werden müssen so ist das TaggedValue ITSD-Group zu pflegen. Sollte der Service über Servicevarianten verfügen sind für diese ebenfalls die Attribute zu erfassen.",
+  "verweis": "S2-F"
+ },
+ {
+  "id": "S3-MK01",
+  "viewpoint": "S3",
+  "kind": "package",
+  "text": "Es ist ein Package Service Specifications/S3/Logische Kontextsicht angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "S3-MK02",
+  "viewpoint": "S3",
+  "kind": "diagram",
+  "text": "Für die Darstellung der Service Interfaces ist ein Diagramm des Typs S3 – Service Interfaces mit dem Namen „S3 : Projektkürzel : Service Interfaces“ angelegt.",
+  "verweis": "S3-A"
+ },
+ {
+  "id": "S3-MK03",
+  "viewpoint": "S3",
+  "kind": "diagram",
+  "text": "Die relevanten Services (SERVICESPECIFICATION) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "S3-B"
+ },
+ {
+  "id": "S3-MK04",
+  "viewpoint": "S3",
+  "kind": "other",
+  "text": "Die genutzten Schnittstellen (SERVICEPORT) sind der entsprechenden Ressource (SERVICESPECIFICATION) zugewiesen und typisiert (SERVICEINTERFACE). Hinweis: Schnittstellen die der Service bereitstellt werden mit „provided“ bezeichnet. Schnittstellen die der Service nutzt werden mit „required“ bezeichnet. Einer Schnittstelle wird immer eine Multiplizität von 1 zugewiesen.",
+  "verweis": "S3-C"
+ },
+ {
+  "id": "S3-MK05",
+  "viewpoint": "S3",
+  "kind": "diagram",
+  "text": "Abhängige Services die mit dem zu beschreibenden Service Daten austauscht sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "S3-F"
+ },
+ {
+  "id": "S3-MK06",
+  "viewpoint": "S3",
+  "kind": "connector",
+  "text": "Serviceschnittstellen werden entsprechend all ihrer Austauschbeziehungen miteinander verbunden (SERVICECONNECTOR). Zusätzlich werden jeder Austauschbeziehung die übertragenen Daten (DATAELEMENT) zugewiesen. Hinweis: Es sind die Austauschbeziehungen zwischen den Services der Ebene 1 zu modellieren.",
+  "verweis": "S3-H, S3-G"
+ },
+ {
+  "id": "S4-MK01",
+  "viewpoint": "S4",
+  "kind": "package",
+  "text": "Es ist ein Package Service Specifications/S4/Servicefunktion angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "S4-MK02",
+  "viewpoint": "S4",
+  "kind": "diagram",
+  "text": "Für die Darstellung der Servicefunktionen ist ein Diagramm des Typs S4 – Service Functions mit dem Namen „S4 : Projektkürzel : Service Functions“ angelegt.",
+  "verweis": "S4-A"
+ },
+ {
+  "id": "S4-MK03",
+  "viewpoint": "S4",
+  "kind": "diagram",
+  "text": "Die relevanten Services (SERVICESPECIFICATION) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "S4-B"
+ },
+ {
+  "id": "S4-MK04",
+  "viewpoint": "S4",
+  "kind": "package",
+  "text": "Die relevanten Servicefunktionen (SERVICEFUNCTION) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen. Hinweis: Sollte der Service über optionale Servicefunktionen verfügen sind diese im Diagramm S4: Projektname : Service Functions – optional (Servicename) im Package S4/Servicefunktion - optional (optional) zu erfassen. Am Konnektor ISCAPABLETOPERFORM wird im Namensfeld „optional“ vermerkt. Das TaggedValue ITSD_UtilityUsage ist gesetzt.",
+  "verweis": "S4-C"
+ },
+ {
+  "id": "S4-MK05",
+  "viewpoint": "S4",
+  "kind": "diagram",
+  "text": "Die relevanten Services sind auf dem Diagramm mit den von diesem bereitgestellten Servicefunktionen verbunden (ISCAPABLETOPERFORM).",
+  "verweis": "S4-E"
+ },
+ {
+  "id": "S7-MK01",
+  "viewpoint": "S7",
+  "kind": "package",
+  "text": "Es ist ein Package Service Specifications/S7/Serviceinterface angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "S7-MK02",
+  "viewpoint": "S7",
+  "kind": "package",
+  "text": "Für die Darstellung der Servicedokumentation ist ein Diagramm des Typs S7 – Service Interface Parameters mit dem Namen „S7 : Projektkürzel : Service Interface Parameters“ in dem Package angelegt.",
+  "verweis": "S7-A"
+ },
+ {
+  "id": "S7-MK03",
+  "viewpoint": "S7",
+  "kind": "diagram",
+  "text": "Die relevante Serviceschnittstellen (SERVICEINTERFACE) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "S7-B"
+ },
+ {
+  "id": "S7-MK04",
+  "viewpoint": "S7",
+  "kind": "diagram",
+  "text": "Die bereitgestellten Servicefunktionen (SERVICEFUNCTION) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "S7-C"
+ },
+ {
+  "id": "S7-MK05",
+  "viewpoint": "S7",
+  "kind": "diagram",
+  "text": "Die Serviceschnittstellen (SERVICEPORT) sind auf dem Diagramm mit den bereitgestellten Servicefunktionen (SERVICEFUNCTION) verbunden (PROVIDESSERVICEFUNCTION).",
+  "verweis": "S7-D"
+ },
+ {
+  "id": "Sr-MK01",
+  "viewpoint": "Sr",
+  "kind": "package",
+  "text": "Es ist ein Package Service Specifications/Sr/Service Change angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "Sr-MK02",
+  "viewpoint": "Sr",
+  "kind": "package",
+  "text": "Für die Darstellung der Servicedokumentation ist ein Diagramm des Typs Sr – Service Roadmap mit dem Namen „Sr : Projektkürzel : Service Change“ in dem Package angelegt.",
+  "verweis": "Sr-A"
+ },
+ {
+  "id": "Sr-MK03",
+  "viewpoint": "Sr",
+  "kind": "diagram",
+  "text": "Die relevanten Services an dem ein Änderungsbedarf besteht (SERVICESPECIFICATION) sind auf dem Diagramm angelegt oder aus dem Modelloder Standardelementekatalog entnommen.",
+  "verweis": "Sr-E"
+ },
+ {
+  "id": "Sr-MK04",
+  "viewpoint": "Sr",
+  "kind": "diagram",
+  "text": "Jeder Änderungsbedarf (CHANGE) ist auf dem Diagramm angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "Sr-MK05",
+  "viewpoint": "Sr",
+  "kind": "diagram",
+  "text": "Jeder relevante Service (SERVICESPECIFICATION) an dem ein Änderungsbedarf (CHANGE) besteht ist auf dem Diagramm mit dem entsprechenden Änderungsbedarf verbunden (TRACE).",
+  "verweis": "-"
+ },
+ {
+  "id": "P1-MK01",
+  "viewpoint": "P1",
+  "kind": "package",
+  "text": "Es ist ein Package Physical Resource Specifications/P1/Resource Types angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "P1-MK02",
+  "viewpoint": "P1",
+  "kind": "package",
+  "text": "Für die Darstellung der Ressourcen ist ein Diagramm des Typs P1 - Resource Types mit dem Namen „P1 : Projektkürzel : Resource Types“ in dem Package angelegt",
+  "verweis": "P1-A"
+ },
+ {
+  "id": "P1-MK03",
+  "viewpoint": "P1",
+  "kind": "diagram",
+  "text": "Die relevanten Ressourcen ({RESOURCEPERFORMER}) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "P1-B"
+ },
+ {
+  "id": "P1-MK04",
+  "viewpoint": "P1",
+  "kind": "other",
+  "text": "Für alle Ressourcen ({RESOURCEPERFORMER}) ist die nächsthöhere TaxonomieEbene mit eingeblendet und neu generierte Ressourcen sind in die Taxonomie einsortiert (PROPERTYSETGENERALISATION).",
+  "verweis": "P1-D"
+ },
+ {
+  "id": "P1-MK05",
+  "viewpoint": "P1",
+  "kind": "diagram",
+  "text": "Für jede Ressource ({RESOURCEPERFORMER}) die über vorhandene Prognosen (FORECAST) mit einer Phase (ACTUALENTERPRISEPHASE) zuordnet werden kann ist diese Phase auf dem Diagramm angelegt oder aus dem Katalog auf das Diagramm gezogen.",
+  "verweis": "P1-G"
+ },
+ {
+  "id": "P1-MK06",
+  "viewpoint": "P1",
+  "kind": "other",
+  "text": "Die Ressource ({RESOURCEPERFORMER}) ist der Phase für welche die vorhandene Prognose gilt zugeordnet (FORECAST).",
+  "verweis": "P1-H, P1-I"
+ },
+ {
+  "id": "P1-MK07",
+  "viewpoint": "P1",
+  "kind": "package",
+  "text": "Es ist ein Package Physical Resource Specifications/P1/Service Provision angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "P1-MK08",
+  "viewpoint": "P1",
+  "kind": "diagram",
+  "text": "Für die Darstellung der Ressourcenzuordnung zu einem Service ist ein Diagramm des Typs P1 - Resource Types mit dem Namen „P1 : Projektkürzel : Service Provision“ angelegt.",
+  "verweis": "P1-A"
+ },
+ {
+  "id": "P1-MK09",
+  "viewpoint": "P1",
+  "kind": "diagram",
+  "text": "Die zu beschreibenden Services (SERVICESPECIFICATION) aus dem Modelloder Standardelementekatalog und auf das Diagramm gezogen.",
+  "verweis": "P1-E"
+ },
+ {
+  "id": "P1-MK10",
+  "viewpoint": "P1",
+  "kind": "diagram",
+  "text": "Die zuzuordnenden Ressourcen ({RESOURCEPERFORMER}) sind auf dem Diagramm angelegt oder aus dem Modelloder Standardelementekatalog entnommen.",
+  "verweis": "P1-B"
+ },
+ {
+  "id": "P1-MK11",
+  "viewpoint": "P1",
+  "kind": "diagram",
+  "text": "Die zu beschreibenden Services (SERVICESPECIFICATION) sind mit der entsprechenden Ressource auf dem Diagramm mit verbunden (SERVICEPROVISION).",
+  "verweis": "P1-F"
+ },
+ {
+  "id": "P1-MK12",
+  "viewpoint": "P1",
+  "kind": "element",
+  "text": "Das TaggedValue abstractionLevel der Ressourcen ({RESOURCEPERFORMER}) ist gemäß dem Wert des Taxonomieelements gesetzt. Hinweis: Die Angabe des Abstraktionslevel ist notwendig um einen einheitlichen Abstraktionsgrad bei der Beschreibung der inneren Struktur der Ressourcen zu gewährleisten und nicht unterschiedliche Abstraktionsebene hinsichtlich der inhaltlichen Beschreibung miteinander zu vermischen.",
+  "verweis": "-"
+ },
+ {
+  "id": "P2-MK01",
+  "viewpoint": "P2",
+  "kind": "package",
+  "text": "Es ist ein Package Physical Resource Specifications/P2/Resource Structure angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "P2-MK02",
+  "viewpoint": "P2",
+  "kind": "diagram",
+  "text": "Für die Darstellung der Ressourcen ist ein Diagramm des Typs P2 - Resource Structure mit dem Namen „P2 : Projektkürzel : Resource",
+  "verweis": "P2-A"
+ },
+ {
+  "id": "P2-MK03",
+  "viewpoint": "P2",
+  "kind": "diagram",
+  "text": "Die Bestandteile der relevanten Aufgabenträger (RESOURCEROLE MEASUREMENTS) P2 sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen. Hinweis: Die internen Beziehungen sind ausgeblendet.",
+  "verweis": "-B"
+ },
+ {
+  "id": "P2-MK04",
+  "viewpoint": "P2",
+  "kind": "diagram",
+  "text": "Die relevanten Ressourcen ({RESOURCEPERFORMER}) oder Architekturen (RESOURCEARCHITECTURE) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "P2-B"
+ },
+ {
+  "id": "P2-MK05",
+  "viewpoint": "P2",
+  "kind": "other",
+  "text": "Das TaggedValue roleKind ist gesetzt.",
+  "verweis": "P2-C, P2-D, P2-L"
+ },
+ {
+  "id": "P2-MK06",
+  "viewpoint": "P2",
+  "kind": "other",
+  "text": "Die internen Ressourcen ({RESOURCEPERFORMER}) sind bei Bedarf mit Orten (LOCATION ACTUALLOCATION) Umwelt (CONDITION ACTUALCONDITION) oder Umgebungen (ENVIRONMENT ACTUALENVIRONMENT) zugeordnet (LOCATIONTYPE REQUIREDENVIRONMENT PHYSICALLOCATION ENVIRONMENTALCONTEXT).",
+  "verweis": "P2-Da, P2Db, P2-Dc, P2-Dd"
+ },
+ {
+  "id": "P2-MK07",
+  "viewpoint": "P2",
+  "kind": "package",
+  "text": "Es ist ein Package Physical Resource Specifications/P2/Internal Dependencies angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "P2-MK08",
+  "viewpoint": "P2",
+  "kind": "package",
+  "text": "Für die Darstellung der Ressourcen ist ein Diagramm des Typs P2 - Resource Structure mit dem Namen „P2 : Projektkürzel : Internal Dependencies“ in dem Package angelegt.",
+  "verweis": "P2-A"
+ },
+ {
+  "id": "P2-MK09",
+  "viewpoint": "P2",
+  "kind": "diagram",
+  "text": "Die relevanten Ressourcen ({RESOURCEPERFORMER}) oder Architekturen (RESOURCEARCHITECTURE) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "P2-B"
+ },
+ {
+  "id": "P2-MK10",
+  "viewpoint": "P2",
+  "kind": "diagram",
+  "text": "Die Bestandteile der relevanten Ressourcen (RESOURCEROLE MEASUREMENTS) sind - auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": ""
+ },
+ {
+  "id": "P2-MK11",
+  "viewpoint": "P2",
+  "kind": "connector",
+  "text": "Das TaggedValue roleKind ist gesetzt. Die internen Beziehungen sind eingeblendet.",
+  "verweis": "P2-C, P2-D"
+ },
+ {
+  "id": "P2-MK12",
+  "viewpoint": "P2",
+  "kind": "diagram",
+  "text": "Die Bestandteile der relevanten Ressourcen (RESOURCEROLE) welche Ressourcen untereinander übertragen sind über einen Ressourcenfluss auf dem Diagramm mit einander verbunden (RESOURCEEXCHANGE). Hinweis: Bestandteile (RESOURCEROLE MEASUREMENT) die keine Ressourcen untereinander übertragen können ausgeblendet werden.",
+  "verweis": "P2-E"
+ },
+ {
+  "id": "P2-MK13",
+  "viewpoint": "P2",
+  "kind": "connector",
+  "text": "Die Ressourcenflüsse werden mit den zu übertragenden Elementen (CONVEYEDITEM) verbunden. Hinweis: Dabei können auch mehrere Elemente mit einem Ressourcenfluss übertragen werden.",
+  "verweis": "P2-F"
+ },
+ {
+  "id": "P2-MK14",
+  "viewpoint": "P2",
+  "kind": "diagram",
+  "text": "Die relevanten Ressourcen ({RESOURCEPERFORMER}) oder Architekturen (RESOURCEARCHITECTURE) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "P2-B"
+ },
+ {
+  "id": "P2-MK15",
+  "viewpoint": "P2",
+  "kind": "diagram",
+  "text": "Die externen Ressourcen ({RESOURCEPERFORMER}) oder Architekturen (RESOURCEARCHITECTURE) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen",
+  "verweis": "P2-B, P2-C"
+ },
+ {
+  "id": "P2-MK16",
+  "viewpoint": "P2",
+  "kind": "connector",
+  "text": "Die relevanten Ressourcen ({RESOURCEPERFORMER}) die Beziehungen mit externen Ressourcen besitzen sind über Abhängigkeiten verbunden (RESOURCEDEPENDENCY).",
+  "verweis": "P2-K"
+ },
+ {
+  "id": "P2-MK17",
+  "viewpoint": "P2",
+  "kind": "diagram",
+  "text": "Die relevanten Ressourcen ({RESOURCEPERFORMER}) die Daten mit externen Ressourcen übertragen sind über einen Ressourcenfluss auf dem Diagramm miteinander verbunden (RESOURCEEXCHANGE).",
+  "verweis": "P2-E"
+ },
+ {
+  "id": "P2-MK18",
+  "viewpoint": "P2",
+  "kind": "connector",
+  "text": "Die Ressourcenflüsse werden mit den zu übertragenden Elementen (CONVEYEDITEM) verbunden. Hinweis: Dabei können auch mehrere Elemente mit einem Ressourcenfluss übertragen werden.",
+  "verweis": "P2-F"
+ },
+ {
+  "id": "P2-MK19",
+  "viewpoint": "P2",
+  "kind": "other",
+  "text": "Bei Bedarf sind die externen Ressourcen ({RESOURCEPERFORMER}) mit dem Ort (ACTUALLOCATION) oder der Umgebung (ACTUALENVIRONMENT) in dem/der sie agieren zu verbinden (LOCATIONTYPE REQUIREDENVIRONMENT PHYSICALLOCATION ENVIRONMENTALCONTEXT).",
+  "verweis": "P2-Da, P2Dc, P2-Dc, P2-Dd"
+ },
+ {
+  "id": "P2-MK20",
+  "viewpoint": "P2",
+  "kind": "package",
+  "text": "Es ist ein Package Physical Resource Specifications/P2/Node Realization angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "P2-MK21",
+  "viewpoint": "P2",
+  "kind": "package",
+  "text": "Für die Darstellung der Ressourcen ist ein Diagramm des Typs P2 - Resource Structure mit dem Namen „P2 : Projektkürzel : Node Realization“ in dem Package angelegt.",
+  "verweis": "P2-A"
+ },
+ {
+  "id": "P2-MK22",
+  "viewpoint": "P2",
+  "kind": "other",
+  "text": "Die logischen Aufgabenträger ({OPERATIONALAGENT}) oder Rollen (OPERATIONALROLE) welche durch eine Ressource ({RESOURCEPERFORMER}) realisiert werden sind eingeblendet.",
+  "verweis": "P2-G"
+ },
+ {
+  "id": "P2-MK23",
+  "viewpoint": "P2",
+  "kind": "diagram",
+  "text": "Die relevanten Ressourcen ({RESOURCEPERFORMER}) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "P2-B"
+ },
+ {
+  "id": "P2-MK24",
+  "viewpoint": "P2",
+  "kind": "diagram",
+  "text": "Die relevanten Ressourcen sind auf dem Diagramm mit den Aufgabenträgern durch welche P2-H diese realisiert werden verbunden (IMPLEMENTS). Hinweis: Dabei kann ein logischer Aufgabenträger von mehreren Ressourcen realisiert werden und eine Ressource kann mehrere logische Aufgabenträger realisieren.",
+  "verweis": ""
+ },
+ {
+  "id": "P2-MK25",
+  "viewpoint": "P2",
+  "kind": "package",
+  "text": "Es ist ein Package Physical Resource Specifications/P2/Application Hosting angelegt.",
+  "verweis": "P2-P"
+ },
+ {
+  "id": "P2-MK26",
+  "viewpoint": "P2",
+  "kind": "package",
+  "text": "Für die Darstellung der Ressourcen ist ein Diagramm des Typs P2 - Resource Structure mit dem Namen „P2 : Projektkürzel : Application Hosting“ in dem Package angelegt.",
+  "verweis": "P2-A"
+ },
+ {
+  "id": "P2-MK27",
+  "viewpoint": "P2",
+  "kind": "diagram",
+  "text": "Die zu beschreibenden Applikationen (SOFTWARE) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen. Hinweis: Dabei können die zu beschreibenden Applikationen als Bestandteil eines Systems vorkommen (RESOURCEROLE).",
+  "verweis": "P2-B"
+ },
+ {
+  "id": "P2-MK28",
+  "viewpoint": "P2",
+  "kind": "diagram",
+  "text": "Die relevanten Infrastrukturelemente ({RESOURCEPERFORMER}) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "P2-B, P2-C"
+ },
+ {
+  "id": "P2-MK29",
+  "viewpoint": "P2",
+  "kind": "diagram",
+  "text": "Die zu beschreibenden Applikationen sind auf dem Diagramm mit den Infrastrukturelementen auf denen diese betrieben werden verbunden (HOSTEDON).",
+  "verweis": "-"
+ },
+ {
+  "id": "P7-MK01",
+  "viewpoint": "P7",
+  "kind": "package",
+  "text": "Es ist ein Package Physical Resource Specifications/P7/Data Model angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "P7-MK02",
+  "viewpoint": "P7",
+  "kind": "diagram",
+  "text": "Für die Darstellung der Datenelemente ist ein Diagramm des Typs P7 –Data Model mit dem Namen „P7 : Projektkürzel : Data Model“ angelegt.",
+  "verweis": "P7-A"
+ },
+ {
+  "id": "P7-MK03",
+  "viewpoint": "P7",
+  "kind": "other",
+  "text": "Das TaggedValue kind ist auf physical gesetzt und eingeblendet.",
+  "verweis": "P7-E"
+ },
+ {
+  "id": "P7-MK04",
+  "viewpoint": "P7",
+  "kind": "diagram",
+  "text": "Das Datenmodell (DATAMODEL) ist auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "-"
+ },
+ {
+  "id": "P7-MK05",
+  "viewpoint": "P7",
+  "kind": "diagram",
+  "text": "Alle relevanten Datenelemente (DATAELEMENT) sind in das Datenmodell (DATAMODEL) eingeordnet und werden auf dem Diagramm eingeblendet.",
+  "verweis": "P7-F"
+ },
+ {
+  "id": "P8-MK01",
+  "viewpoint": "P8",
+  "kind": "package",
+  "text": "Es ist ein Package Physical Resource Specifications/P8/Resource Constraint Realization angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "P8-MK02",
+  "viewpoint": "P8",
+  "kind": "diagram",
+  "text": "Für die Darstellung der Vorgaben und Rahmenbedingungen ist ein Diagramm des Typs P8 - Resource Constraint mit dem Namen „P8 : Projektkürzel : Resource Constraint“ angelegt.",
+  "verweis": "P8-A"
+ },
+ {
+  "id": "P8-MK03",
+  "viewpoint": "P8",
+  "kind": "diagram",
+  "text": "Die relevanten Implementierungsvorgaben (RESOURCECONSTRAINT) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "P8-B"
+ },
+ {
+  "id": "P8-MK04",
+  "viewpoint": "P8",
+  "kind": "diagram",
+  "text": "Die Elemente für die eine Implementierungsvorgabe (RESOURCECONSTRAINT) gilt (SUBJECTOFRESOURCECONSTRAINT) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "P8-C"
+ },
+ {
+  "id": "P8-MK05",
+  "viewpoint": "P8",
+  "kind": "diagram",
+  "text": "Die Elemente für die eine Implementierungsvorgabe (RESOURCECONSTRAINT) gilt (SUBJECTOFRESOURCECONSTRAINT) sind auf dem Diagramm mit den entsprechenden Implementierungsvorgaben verbunden (SATISFY).",
+  "verweis": "P8-D"
+ },
+ {
+  "id": "P8-MK06",
+  "viewpoint": "P8",
+  "kind": "diagram",
+  "text": "Die begründenden Referenzen Dokumente oder Wissensträger (REFERENCE DOCUMENTREFERENCE SMEREFERENCE) für die Implementierungsvorgaben (RESOURCECONSTRAINT) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "P8-G"
+ },
+ {
+  "id": "P8-MK07",
+  "viewpoint": "P8",
+  "kind": "diagram",
+  "text": "Ist eine Implementierungsvorgabe (RESOURCECONSTRAINT) aus einer anderen Vorgabe (STRATEGICCONSTRAINT SERVICEPOLICY OPERATIONALCONSTRAINT) abgeleitet ist diese aus dem Modellelementekatalog entnommen und auf das Diagramm gezogen.",
+  "verweis": "L8-B, S8-B, C8-B"
+ },
+ {
+  "id": "P8-MK08",
+  "viewpoint": "P8",
+  "kind": "connector",
+  "text": "Die operationellen Vorgaben und Rahmenbedingungen (OPERATIONALCONSTRAINT) die sich aus einer anderen Vorgabe ableiten sind mit den entsprechenden Vorgaben verbunden (IMPLEMENTS).",
+  "verweis": "P8-F"
+ },
+ {
+  "id": "P8-MK09",
+  "viewpoint": "P8",
+  "kind": "connector",
+  "text": "Die Implementierungsvorgaben (RESOURCECONSTRAINT) sind mit der entsprechenden Referenz (REFERENCE DOCUMENTREFERENCE SMEREFERENCE) verbunden (JUSTIFIEDBY) und die Referenzbeziehung ist im Namen der Relation beschrieben.",
+  "verweis": "P8-H"
+ },
+ {
+  "id": "P8-MK10",
+  "viewpoint": "P8",
+  "kind": "element",
+  "text": "Die relevanten Einstufungen (CLASSIFICATION) sind aus dem Standardelementekatalog P entnommen.",
+  "verweis": "8-Ga"
+ },
+ {
+  "id": "P8-MK11",
+  "viewpoint": "P8",
+  "kind": "connector",
+  "text": "Die Dokumentenreferenz ist mit der Einstufung verbunden (CLASSIFIED). Hinweis: Offene Dokumentenreferenzen sind mit der Einstufung OFFEN gekennzeichnet.",
+  "verweis": "P8-Gb"
+ },
+ {
+  "id": "R2-MK01",
+  "viewpoint": "R2",
+  "kind": "package",
+  "text": "Es ist ein Package Requirements/R2/Requirement Catalogue angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "R2-MK02",
+  "viewpoint": "R2",
+  "kind": "diagram",
+  "text": "Für die Darstellung des Forderungskatalogs ist ein Diagramm des Typs R2 - Requirement Catalogue mit dem Namen „R2 : Projektkürzel : Requirement Catalogue“ angelegt.",
+  "verweis": "R2-A"
+ },
+ {
+  "id": "R2-MK03",
+  "viewpoint": "R2",
+  "kind": "diagram",
+  "text": "Der relevante Forderungskatalog (REQUIREMENTCATALOGUE) und die entsprechenden Forderungskategorien (REQUIREMENTCATEGORY) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "R2-B, R2-C"
+ },
+ {
+  "id": "R2-MK04",
+  "viewpoint": "R2",
+  "kind": "diagram",
+  "text": "Für die Darstellung des Katalogs ist ein Diagramm des Typs R2 - Requirements Catalogue mit dem Namen „R2 : Projektkürzel : Requirements Catalogue (Katalog)“ angelegt welches ausschließlich die",
+  "verweis": "R2-D, R2-E"
+ },
+ {
+  "id": "R2-MK05",
+  "viewpoint": "R2",
+  "kind": "diagram",
+  "text": "Die relevanten Forderungen (FUNCTIONALREQUIREMENT NONFUNCTIONALREQUIREMENT) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog auf das Diagramm gezogen.",
+  "verweis": "R2-F"
+ },
+ {
+  "id": "R2-MK06",
+  "viewpoint": "R2",
+  "kind": "diagram",
+  "text": "Für jede Kategorie welche Forderungen enthält ist ein eigenständiges Diagramm angelegt und die Forderungen sind entsprechend mit den Kategorien verbunden (PARTOFCATEGORY). Thematisch zusammenhängende Kategorien können auf einem Diagramm dargestellt werden.",
+  "verweis": "R2-G"
+ },
+ {
+  "id": "R2-MK07",
+  "viewpoint": "R2",
+  "kind": "diagram",
+  "text": "Jedes Forderungsdiagramm wird im „R2 : Projektname : Requirements Catalogue (Katalog)“ als Composite Diagramm mit der entsprechenden Kategorie bzw. dem Diagramm der Kategorie verknüpft.",
+  "verweis": "-"
+ },
+ {
+  "id": "R3-MK01",
+  "viewpoint": "R3",
+  "kind": "package",
+  "text": "Es ist ein Package Requirements/R3/Requirement Dependencies angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "R3-MK02",
+  "viewpoint": "R3",
+  "kind": "diagram",
+  "text": "Für die Darstellung der Forderungen ist ein Diagramm des Typs R3 - Requirements Dependencies mit dem Namen „R3 : Projektkürzel : Requirements Dependencies“ angelegt.",
+  "verweis": "R3-A"
+ },
+ {
+  "id": "R3-MK03",
+  "viewpoint": "R3",
+  "kind": "diagram",
+  "text": "Die relevanten Forderungen (FUNCTIONALREQUIREMENTS NONFUNCTIONALREQUIREMENT) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "R3-B"
+ },
+ {
+  "id": "R3-MK04",
+  "viewpoint": "R3",
+  "kind": "connector",
+  "text": "Alle Forderungen (FUNCTIONALREQUIREMENTS NONFUNCTIONALREQUIREMENT) sind je nach Art der Abhängigkeit miteinander verknüpft und die Relationen eingeblendet. Es sind nur Forderungen mit bestehenden Abhängigkeiten eingeblendet.",
+  "verweis": "R3-C"
+ },
+ {
+  "id": "R3-MK05",
+  "viewpoint": "R3",
+  "kind": "connector",
+  "text": "Als Duplikate identifizierte Forderungen (FUNCTIONALREQUIREMENTS NONFUNCTIONALREQUIREMENT) sind miteinander verbunden (DUPLICATEOF).",
+  "verweis": "R3-C"
+ },
+ {
+  "id": "R3-MK06",
+  "viewpoint": "R3",
+  "kind": "connector",
+  "text": "Als Spezialisierungen identifizierte Forderungen (FUNCTIONALREQUIREMENTS NONFUNCTIONALREQUIREMENT) sind miteinander verbunden (REFINES).",
+  "verweis": "R3-C"
+ },
+ {
+  "id": "R3-MK07",
+  "viewpoint": "R3",
+  "kind": "connector",
+  "text": "Als widersprüchlich identifizierte Forderungen (FUNCTIONALREQUIREMENTS NONFUNCTIONALREQUIREMENT) sind miteinander verbunden (CONFLICTSWITH).",
+  "verweis": "R3-C"
+ },
+ {
+  "id": "R3-MK08",
+  "viewpoint": "R3",
+  "kind": "connector",
+  "text": "Als Folgeforderungen identifizierte Forderungen (FUNCTIONALREQUIREMENTS NONFUNCTIONALREQUIREMENT) sind miteinander verbunden (REQUIRES).",
+  "verweis": "R3-C"
+ },
+ {
+  "id": "R3-MK09",
+  "viewpoint": "R3",
+  "kind": "connector",
+  "text": "Als Ersatz identifizierte Forderungen (FUNCTIONALREQUIREMENTS NONFUNCTIONALREQUIREMENT) sind miteinander verbunden (REPLACES). Hinweis: Werden mehrere Forderungen durch eine Forderung ersetzt ist dies nur möglich wenn sich die ursprünglichen Forderungen auf gleiche Systembestandteile beziehen.",
+  "verweis": "R3-C"
+ },
+ {
+  "id": "R7-MK01",
+  "viewpoint": "R7",
+  "kind": "package",
+  "text": "Es ist ein Package Requirements/R7/Requirement Derivation angelegt.",
+  "verweis": "-"
+ },
+ {
+  "id": "R7-MK02",
+  "viewpoint": "R7",
+  "kind": "diagram",
+  "text": "Für die Darstellung der Ableitung ist ein Diagramm des Typs R7 - Requirements Derivation mit dem Namen „R7 : Projektkürzel : Requirements Derivation“ angelegt.",
+  "verweis": "R7-A"
+ },
+ {
+  "id": "R7-MK03",
+  "viewpoint": "R7",
+  "kind": "diagram",
+  "text": "Die relevanten Anforderungen (FUNCTIONALREQUIREMENT NONFUNCTIONALREQUIREMENT) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "R7-C"
+ },
+ {
+  "id": "R7-MK04",
+  "viewpoint": "R7",
+  "kind": "diagram",
+  "text": "Die relevanten operationellen Vorgaben und Rahmenbedingungen (OPERATIONALCONSTRAINT) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "R7-B"
+ },
+ {
+  "id": "R7-MK05",
+  "viewpoint": "R7",
+  "kind": "diagram",
+  "text": "Die Elemente die dazu vorgesehen sind die Forderung zu realisieren (RESOURCEPERFOMER) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+  "verweis": "R7-B, R7-F"
+ },
+ {
+  "id": "R7-MK06",
+  "viewpoint": "R7",
+  "kind": "other",
+  "text": "Die Forderungen (REQUIREMENT) Ressourcen (RESOURCEPERFORMER) und die TaggedValues der Forderungen sind gemäß der Satzschablone aus Require.7 (SAMIT) befüllt.",
+  "verweis": "R7-D"
+ },
+ {
+  "id": "R7-MK07",
+  "viewpoint": "R7",
+  "kind": "connector",
+  "text": "Das Systemelement der Forderung (Subjekt) entspricht der verbundenen CAPABILITYCONFIGURATION und RESOURCEROLE. Eine Forderung kann nur von einem Systemelement realisiert werden. Hinweis: Falls eine RESOURCEROLE innerhalb einer CAPABILITYCONFIGURATION mehrfach verwendet wird empfiehlt es sich im Namen der RESOURCEROLE noch einen zusätzlichen Identifier aufzunehmen um die Ressource eindeutig zu identifizieren. Dadurch wird das Subjekt mit ArAMIS SMA / Require.7 eindeutig benannt. Beispiel: Server: Mit Identifier: „Server - Front-End“ und „Server – Back-End“",
+  "verweis": "R7-F, R7-G"
+ },
+ {
+  "id": "R7-MK08",
+  "viewpoint": "R7",
+  "kind": "element",
+  "text": "Das Element für das die logische Vorgabe (OPERATIONALCONSTRAINT) gilt (SUBJECTOFOPERATIONALCONSTRAINT) ist aus dem Modellelementekatalog entnommen (SATISFY).",
+  "verweis": "-"
+ }
+]

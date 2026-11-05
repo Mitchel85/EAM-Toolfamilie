@@ -1,0 +1,11 @@
+{
+  "name": "eam-admbw-extractor-html",
+  "version": "2.0.0",
+  "private": true,
+  "description": "ADMBw Extraktor — MDG-Auswertung im Browser",
+  "main": "index.html",
+  "files": [
+    "**/*"
+  ],
+  "dependencies": {}
+}

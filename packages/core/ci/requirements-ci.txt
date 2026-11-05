@@ -1,0 +1,5 @@
+# Testwerkzeuge der Pipeline. Der Kern selbst hat keine Abhaengigkeiten.
+# Gepinnt, damit der Testlauf reproduzierbar bleibt; Installation passiert im
+# CI-Job einmalig ueber den Paketindex, die Tests selbst laufen ohne Netz
+# (ci/sitecustomize.py sperrt sie).
+pytest==9.1.1

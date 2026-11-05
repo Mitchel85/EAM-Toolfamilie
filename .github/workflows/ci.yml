@@ -1,0 +1,13 @@
+name: ci
+
+# Jeder Push und jeder Pull Request laufen durch denselben Ablauf wie ein
+# Release — er steht in `_build.yml` und wird hier nur aufgerufen.
+
+on:
+  push:
+    branches: [main, 'rebuild/**']
+  pull_request:
+
+jobs:
+  pruefen:
+    uses: ./.github/workflows/_build.yml

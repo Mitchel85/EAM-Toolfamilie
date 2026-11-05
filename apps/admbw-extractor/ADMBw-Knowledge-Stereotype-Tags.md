@@ -1,0 +1,1 @@
+../../knowledge/admbw-knowledge-stereotype-tags.md

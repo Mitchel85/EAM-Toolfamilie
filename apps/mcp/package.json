@@ -1,0 +1,19 @@
+{
+  "name": "eam-mcp",
+  "version": "2.4.0",
+  "private": true,
+  "description": "EAM AI QEA Analyzer — Modelleinbindung für Chat- und Agentenwerkzeuge (MCP)",
+  "main": "index.html",
+  "files": [
+    "**/*"
+  ],
+  "dependencies": {
+    "@mitchel85/eam-core": "*"
+  },
+  "overrides": {
+    "eam_ai.py": "./packages/core/eam_ai.py",
+    "xmi_reader.py": "./packages/core/xmi_reader.py",
+    "xmi_writer.py": "./packages/core/xmi_writer.py",
+    "json_batch.py": "./packages/core/json_batch.py"
+  }
+}

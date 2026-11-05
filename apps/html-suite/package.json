@@ -1,0 +1,14 @@
+{
+  "name": "eam-ai-suite",
+  "version": "9.1.0",
+  "private": true,
+  "description": "EAM AI Suite — eigenständige HTML-Auslieferung aus dem Altwerkzeug",
+  "main": "dist/EAM-AI-Suite.html",
+  "files": [
+    "**/*"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@mitchel85/eam-vendor": "*"
+  }
+}

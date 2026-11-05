@@ -1,0 +1,3602 @@
+{
+  "connectors": [],
+  "diagrams": [],
+  "elements": [
+    {
+      "ea_type": "Note",
+      "name": "Beispielarchitektur",
+      "notes": "Architektur Projektarchitektur -- aus dem Regelwerk erzeugtes Geruest.",
+      "package": "Projektarchitektur/Startseite Projektarchitektur",
+      "stereotype": "ArchitectureMetadata"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Startseite Projektarchitektur",
+      "notes": "Startansicht des Modells.",
+      "package": "Projektarchitektur/Startseite Projektarchitektur",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "A1 - Meta-Data Definitions",
+      "notes": "Architectures, particularly large ones, usually require meta-data tags to aid with searching and discovery.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A1",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Meta-Data Definitions",
+      "notes": "Sicht A1 - Meta-Data Definitions.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A1",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "A2 - Architecture Products",
+      "notes": "The A2 Viewpoint specifies the structure of an architecture, and the products that describe the architecture. Each product may correspond to an architecture view. This viewpoint also traces the architectures onto the Enterprise Phases they correspond to (see also C2 – Enterprise Vision) and identifies the key stakeholders, their concerns and the products that address those concerns (from ISO/IEC/IEEE Standards).",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A2",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Architecture Products",
+      "notes": "Sicht A2 - Architecture Products.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A2",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "A3 - Architecture Correspondence",
+      "notes": "ISO/IEC/IEEE42010 introduces the idea of architecture correspondence and correspondence rules. Quoting from ISO/IEC/IEEE 42010; “A correspondence defines a relation between AD (Architecture Description) elements. Correspondences are used to express architecture relations of interest within an architecture description (or between architecture descriptions). Correspondences can be governed by correspondence rules. Correspondence rules are used to enforce relations within an architecture description (or between architecture descriptions).”",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A3",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Architecture Correspondence",
+      "notes": "Sicht A3 - Architecture Correspondence.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A3",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "A4 - Methodology Used",
+      "notes": "The A4 Viewpoint specifies the methodology used for the architecting activities. This methodology is described in NAFv4 Chapter 2. The content of the A4 viewpoint can also be modeled in the A1 viewpoint.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A4",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Methodology Used",
+      "notes": "Sicht A4 - Methodology Used.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A4",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "A5 - Architecture Status",
+      "notes": "Since NAFv3.0, it has been possible to assign version numbers to views and specify their approval dates. In NAFv4.0, this is integrated with the meta-model’s generic project and milestone approach so that architecture releases are tracked against the architecture delivery project. The content of the A5 viewpoint can also be modeled in the A1 viewpoint.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A5",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Architecture Status",
+      "notes": "Sicht A5 - Architecture Status.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A5",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "A6 - Architecture Version",
+      "notes": "Where the A5 Viewpoint shows the current version number and approval status for the architecture, the A6 Viewpoint shows the complete history of the architecture.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A6",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Architecture Version",
+      "notes": "Sicht A6 - Architecture Version.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A6",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "A7 - Architecture Compliance",
+      "notes": "The A7 Viewpoint gives the overall specification of architecture meta-data.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A7",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Architecture Compliance",
+      "notes": "Sicht A7 - Architecture Compliance.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A7",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "A8 - Standards",
+      "notes": "The A8 Viewpoint encompasses both technical and non-technical standards. The standards specified in the A8 view can be applied across the architecture to a variety of structural and behavioural elements. Standards are essential to the coherent running of businesses and to the delivery of reliable, interoperable systems.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A8",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Standards",
+      "notes": "Sicht A8 - Standards.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A8",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Ar - Architecture Roadmap",
+      "notes": "The Ar Viewpoint shows the history of the architecture project as well as its future direction.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/Ar",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Architecture Roadmap",
+      "notes": "Sicht Ar - Architecture Roadmap.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/Ar",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "C1 - Capability Taxonomy",
+      "notes": "The C1 Viewpoint specifies all the capabilities that are referenced throughout one or more architectures – i.e. one C1 may provide the definitive list of capabilities for a number of logical and resource architectures. The capabilities may be organised into specialisation hierarchies (taxonomies). Measures of Effectiveness (MoE) may be specified for each capability. Note that MoEs are inherited down a capability taxonomy.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C1",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Capability Taxonomy",
+      "notes": "Sicht C1 - Capability Taxonomy.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C1",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "C2 - Enterprise Vision",
+      "notes": "The purpose of the C2 Viewpoint is to provide a strategic context for the capabilities described in the architecture and to specify the scope for the architecture. The C2 Viewpoint is high-level and describes the vision, goals, enduring tasks and capabilities using terminology that is easily understood by non-technical readers.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C2",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Enterprise Vision",
+      "notes": "Sicht C2 - Enterprise Vision.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C2",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "C3 - Capability Dependencies",
+      "notes": "The C3 Viewpoint is intended to provide a means of analysing the dependencies between capabilities and between capability clusters. The composition of capabilities (into clusters) is logical and the purpose of the clusters is to guide enterprise management.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C3",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Capability Dependencies",
+      "notes": "Sicht C3 - Capability Dependencies.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C3",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "C4 - Standard Processes",
+      "notes": "The C4 Viewpoint specifies Standard Operational Activities that can be re-used across multiple logical architectures (e.g. in L4, Logical Activities).",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C4",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Standard Processes",
+      "notes": "Sicht C4 - Standard Processes.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C4",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "C5 - Effects",
+      "notes": "The purpose of the C5 Viewpoint is to describe the operational effect of the capabilities, activities and services according to the expected goals. The C5 Viewpoint is high-level description that should be easily understood by non-technical readers.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C5",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Effects",
+      "notes": "Sicht C5 - Effects.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C5",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "C7 - Performance Parameters",
+      "notes": "In the C7 Viewpoint the capability requirements (and existing capabilities) can be expressed in terms of Measures of Effectiveness (MoEs). These are high-level metrics used to judge the level of capability.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C7",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Performance Parameters",
+      "notes": "Sicht C7 - Performance Parameters.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C7",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "C8 - Planning Assumptions",
+      "notes": "The C8 Viewpoint is concerned with identification and description of assumptions that have been made for the implementation of capabilities. Assumptions can be expressed by means of requirements.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C8",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Planning Assumptions",
+      "notes": "Sicht C8 - Planning Assumptions.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C8",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Cr - Capability Roadmap",
+      "notes": "The Cr Viewpont supports the Capability Audit process by providing a method to identify gaps or duplications in capability provision. Cr indicates capability increments, which are derived from delivery milestones within acquisition projects.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/Cr",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Capability Roadmap",
+      "notes": "Sicht Cr - Capability Roadmap.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/Cr",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L1 - Node Types",
+      "notes": "The L1 Viewpoint defines all of the Nodes that will appear in a Logical Architecture. Nodes are elements of capability assembled and orchestrated in the Logical Architecture (see L2 - Logical Scenario and L4 - Logical Activities views). The levels of capability provided by each node are expressed as Measures of Performance (MoPs) and these may be dependent on the environments in which the Node is required to operate.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L1",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Node Types",
+      "notes": "Sicht L1 - Node Types.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L1",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L2 - Logical Scenario",
+      "notes": "The L2 Viewpoint specifies Nodes (elements of capability) in context of each other. The context is usually expressed in terms of the information that flows between the nodes (e.g. the information flow requirements between capabilities in a given scenario) but may also be flows of materiel, human resource or energy.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L2",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Logical Scenario",
+      "notes": "Sicht L2 - Logical Scenario.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L2",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L2-L3 - Logical Concept",
+      "notes": "The L2-L3 Viewpoint is concerned with providing an executive level, scenario-based communication of the architecture purpose, scope and content.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L2-L3",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Logical Concept",
+      "notes": "Sicht L2-L3 - Logical Concept.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L2-L3",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L3 - Node Interactions",
+      "notes": "L3 is used to provide further detail of the interoperability requirements associated with the operational capability of interest. The focus is on logical flows that cross the capability boundary. Although the primary purpose of the L3 Viewpoint is to specify information exchanges, the L3 may also list flows of materiel, energy and human resources.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L3",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Node Interactions",
+      "notes": "Sicht L3 - Node Interactions.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L3",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L4 - Logical Activities",
+      "notes": "The L4 Viewpoint describes the operational activities that are being conducted within the mission or scenario. These activities are defined at a logical, solution-neutral level so as to enable different solutions in the physical layer. The L4 Viewpoint describes the activities associated with the logical architecture, as well as the:",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L4",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Logical Activities",
+      "notes": "Sicht L4 - Logical Activities.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L4",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L5 - Logical States",
+      "notes": "The L5 Viewpoint specifies the typical states a node may have and the possible transitions between those states (i.e. changes of state). Triggers for state changes may also be defined. Actions may be associated with a given state or with the transition between states in response to stimuli (e.g. triggers and events).",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L5",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Logical States",
+      "notes": "Sicht L5 - Logical States.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L5",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L6 - Logical Sequence",
+      "notes": "Operational Event-Trace Descriptions, sometimes called sequence diagrams, event scenarios or timing diagrams, allow the tracing of interactions between nodes in a scenario or critical sequence of events. The node interactions usually correspond to flows of information but may describe flows of energy, materiel or people specified in the L2, Logical Scenario.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L6",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Logical Sequence",
+      "notes": "Sicht L6 - Logical Sequence.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L6",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L7 - Information Model",
+      "notes": "The L7 Viewpoint is used to document the business information. It describes the information that can be exchanged along the logical flows in the architecture, specified in L3 Node Interactions.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L7",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Information Model",
+      "notes": "Sicht L7 - Information Model.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L7",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L8 - Logical Constraints",
+      "notes": "The L8 Viewpoint is used to constrain the logical architecture without forcing a particular solution. L8 is used for rules which are not expressed as behavioural models, interactions or measures of effectiveness, i.e. they are textual statements of requirements that constrain the architecture.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L8",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Logical Constraints",
+      "notes": "Sicht L8 - Logical Constraints.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L8",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Lr - Lines of Development",
+      "notes": "The Lr Viewpoint is primarily intended to support the acquisition process across multiple projects or programmes, highlighting dependencies the logical dependencies between capabilities, projects and the integration of all lines of development to achieve a successfully integrated military capability. Use of the Lr Viewpoint should support the management of capability delivery and be aligned with Cr, Capability Roadmap.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/Lr",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Lines of Development",
+      "notes": "Sicht Lr - Lines of Development.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/Lr",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "C1-S1 - Capability to Service Mapping",
+      "notes": "A C1-S1 Viewpoint presents a simple mapping of services to capabilities, showing which services contribute to which capability.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/C1-S1",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Capability to Service Mapping",
+      "notes": "Sicht C1-S1 - Capability to Service Mapping.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/C1-S1",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "S1 - Service Taxonomy",
+      "notes": "The purpose of the S1 Viewpoint is to provide a governance structure for a Service-Oriented Architecture. Along with S3, Service Interfaces, it specifies a standard library of service specifications for an enterprise, to which service implementers are expected to conform.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S1",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Service Taxonomy",
+      "notes": "Sicht S1 - Service Taxonomy.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S1",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "S2 - Service Structure",
+      "notes": "The S2 Viewpoint is concerned with identification and description of how services are structured to create a higher-aggregated service. To provide highlevel views, dependencies to other services, nodes and resources as well as service interfaces and service functions can be represented.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S2",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Service Structure",
+      "notes": "Sicht S2 - Service Structure.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S2",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "S3 - Service Interfaces",
+      "notes": "The S3 Viewpoint is concerned with the identification and definition of service interfaces.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S3",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Service Interfaces",
+      "notes": "Sicht S3 - Service Interfaces.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S3",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "S4 - Service Functions",
+      "notes": "The S4 Viewpoint is the key behavioural specification for services. Equivalent in nature to L4, Logical Activities and P4, Resources Functions, it specifies a set of functions that a service implementation is expected to perform. Implementation of that behaviour is represented in P4, Resource Functions, and L4-P4, Activity to Function Mapping.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S4",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Service Functions",
+      "notes": "Sicht S4 - Service Functions.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S4",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "S5 - Service States",
+      "notes": "The S5 Viewpoint is a specification of the allowable states of a service, and the possible transitions between them. This specification constrains how implementations of the service will behave.  It is, though, generally considered a good practice to make services stateless - i.e. consumers of a service are not aware of what state the service is in.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S5",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Service States",
+      "notes": "Sicht S5 - Service States.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S5",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "S6 - Service Interactions",
+      "notes": "Service Interaction Descriptions, sometimes called sequence diagrams, event scenarios or timing diagrams, allow the tracing of interactions between services in a composition or critical sequence of events.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S6",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Service Interactions",
+      "notes": "Sicht S6 - Service Interactions.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S6",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "S7 - Service Interface Parameters",
+      "notes": "Specifies the interfaces that a service provides and uses, defines which services are compatible with which other services.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S7",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Service Interface Parameters",
+      "notes": "Sicht S7 - Service Interface Parameters.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S7",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "S8 - Service Policy",
+      "notes": "The S8 Viewpoint specifies constraints against services to which implementations must conform.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S8",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Service Policy",
+      "notes": "Sicht S8 - Service Policy.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S8",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Sr - Service Roadmap",
+      "notes": "The Sr Viewpoint supports the Service Audit process by providing a method to identify gaps or duplications in service provision. Sr indicates service lifetime evolutions, which are derived from delivery milestones within acquisition projects.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/Sr",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Service Roadmap",
+      "notes": "Sicht Sr - Service Roadmap.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/Sr",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "P1 - Resource Types",
+      "notes": "The P1 Viewpoint collects together all the Resource Types in the architecture together with a depiction of their performance characteristics. P1 also provides a summary of the technologies and competencies that impact on the Resources that constitute the architecture.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P1",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Resource Types",
+      "notes": "Sicht P1 - Resource Types.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P1",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "P2 - Resource Structure",
+      "notes": "The P2 Viewpoint links together the operational and physical architecture viewpoints by depicting how types of Resource are structured and interact to realize the logical architecture specified in L2, Logical Scenario. The P2 Viewpoint may represent the realization of a requirement specified in a L2 (i.e. in a “to-be” architecture) and so there may be many alternative Resource viewpoint suites that could realize the operational requirement. Alternatively, in an “as-is” architecture, a L2 may just be a simplified, logical representation of the P2 Viewpoint to allow communication of key information flows to non-technical stakeholders.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P2",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Resource Structure",
+      "notes": "Sicht P2 - Resource Structure.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P2",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "P3 - Resource Connectivity",
+      "notes": "The networks and pathways documented in a P3 Viewpoint represent the physical implementation of the logical flows identified in a L2, Logical Scenario, or L3, Node Interactions View.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P3",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Resource Connectivity",
+      "notes": "Sicht P3 - Resource Connectivity.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P3",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "P4 - Resource Functions",
+      "notes": "The Functionality Description provides detailed information regarding the allocation of functions to resources, and flows between Resource Functions. The P4 Viewpoint is the Physical Resource counterpart to the L4 Logical Activities Viewpoint.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P4",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Resource Functions",
+      "notes": "Sicht P4 - Resource Functions.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P4",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "P5 - Resource States",
+      "notes": "The P5 Viewpoint identifies the states a Resource can be, the allowable changes between those states, and the stimuli (e.g. triggers and events) that cause the state changes.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P5",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Resource States",
+      "notes": "Sicht P5 - Resource States.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P5",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "P6 - Resource Sequence",
+      "notes": "The P6 Viewpoint is valuable for moving to the next level of detail from the initial solution design, to help define a sequence of functions and Resource Interactions, and to ensure that each participating Resource or Port has the necessary information, at the right time, in order to perform its assigned functionality.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P6",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Resource Sequence",
+      "notes": "Sicht P6 - Resource Sequence.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P6",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "P7 - Data Model",
+      "notes": "The P7 Viewpoint is one of the architectural products closest to actual system design in the NAF. It is used to describe how the information represented in the L7 Logical Data Model Viewpoint is implemented.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P7",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Data Model",
+      "notes": "Sicht P7 - Data Model.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P7",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "P8 - Resource Constraints",
+      "notes": "The P8 Viewpoint describes constraints on the Resources, Resource Functions, data and communications that make up a Physical Architecture.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P8",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Resource Constraints",
+      "notes": "Sicht P8 - Resource Constraints.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P8",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Pr - Configuration Management",
+      "notes": "The Pr Viewpoint provides an overview of how Resource Assets change over time (note that NAF v3.1 only allowed for Capability Configurations whereas now this is opened up to all Resource Types). It shows the structure of different versions of Resource Assets (usually Capability Configurations or Service Implementations) mapped against a timeline.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/Pr",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Configuration Management",
+      "notes": "Sicht Pr - Configuration Management.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/Pr",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L4-P4 - Activity To Function Mapping",
+      "notes": "The L4-P4 Viewpoint depicts the mapping of Resource Functions (and optionally, the resources that provide them) to operational activities and/or service functions. For operational activities it thus identifies the transformation of an operational need into a purposeful action performed by a system or solution. For service functions it provides the link between the services used at the operational level and the specific Resource Functions provided by the resources supporting the services.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/L4-P4",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Activity To Function Mapping",
+      "notes": "Sicht L4-P4 - Activity To Function Mapping.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/L4-P4",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "R2 - Requirement Catalogue",
+      "notes": "The R2 represents a catalog of requirements in the architectural model. For this purpose, categories can be created in which the functional and non-functional requirements can be grouped.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Anforderungen/R2",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Requirement Catalogue",
+      "notes": "Sicht R2 - Requirement Catalogue.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Anforderungen/R2",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "R3 - Requirement Dependencies",
+      "notes": "The R3 is used to show dependencies between different requirements.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Anforderungen/R3",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Requirement Dependencies",
+      "notes": "Sicht R3 - Requirement Dependencies.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Anforderungen/R3",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "R7 - Requirement Derivation",
+      "notes": "The R7 assigns functional and non-functional requirements to the demanding architectural elements. In addition, information about the planned realization can be shown.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Anforderungen/R7",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Requirement Derivation",
+      "notes": "Sicht R7 - Requirement Derivation.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Anforderungen/R7",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "R8 - Requirement Fulfilment",
+      "notes": "The R8 is used to determine and map acceptance and evaluation criteria for the individual functional and non-functional requirements.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Anforderungen/R8",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Requirement Fulfilment",
+      "notes": "Sicht R8 - Requirement Fulfilment.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Anforderungen/R8",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Rr - Requirement Realization",
+      "notes": "In the Rr, requirements are assigned to the realizing architectural elements.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Anforderungen/Rr",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Requirement Realization",
+      "notes": "Sicht Rr - Requirement Realization.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Anforderungen/Rr",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Object",
+      "name": "Achiever",
+      "notes": "An ActualResource, ActualProject or ActualEnterprisePhase that can deliver a DesiredEffect.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Achiever",
+      "stereotype": "Achiever"
+    },
+    {
+      "ea_type": "Object",
+      "name": "ActualCondition",
+      "notes": "An individual describing an actual situation with respect to circumstances under which an OperationalActivity, Function or ServiceFunction can be performed.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualCondition",
+      "stereotype": "ActualCondition"
+    },
+    {
+      "ea_type": "Object",
+      "name": "ActualEnduringTask",
+      "notes": "An actual undertaking recognized by an enterprise as being essential to achieving its goals - i.e. a strategic specification of what the enterprise does.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualEnduringTask",
+      "stereotype": "ActualEnduringTask"
+    },
+    {
+      "ea_type": "Object",
+      "name": "ActualEnterprisePhase",
+      "notes": "The ActualState that describes the phase of an Enterprise endeavor.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualEnterprisePhase",
+      "stereotype": "ActualEnterprisePhase"
+    },
+    {
+      "ea_type": "Object",
+      "name": "ActualEnvironment",
+      "notes": "The ActualState that describes the circumstances of an Environment.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualEnvironment",
+      "stereotype": "ActualEnvironment"
+    },
+    {
+      "ea_type": "Object",
+      "name": "ActualLocation",
+      "notes": "The ActualState that describes a physical location, for example using text to provide an address, Geo-coordinates, etc.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualLocation",
+      "stereotype": "ActualLocation"
+    },
+    {
+      "ea_type": "Slot",
+      "name": "ActualMeasurement",
+      "notes": "An actual value that is applied to a Measurement.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualMeasurement",
+      "stereotype": "ActualMeasurement"
+    },
+    {
+      "ea_type": "Object",
+      "name": "ActualMeasurementSet",
+      "notes": "A set of ActualMeasurements.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualMeasurementSet",
+      "stereotype": "ActualMeasurementSet"
+    },
+    {
+      "ea_type": "Object",
+      "name": "ActualOrganization",
+      "notes": "An actual formal or informal organizational unit, e.g. \"Driving and Vehicle Licensing Agency\", \"UAF team Alpha\".",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualOrganization",
+      "stereotype": "ActualOrganization"
+    },
+    {
+      "ea_type": "Object",
+      "name": "ActualOrganizationalResource",
+      "notes": "Abstract element for an ActualOrganization, ActualPerson or ActualPost.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualOrganizationalResource",
+      "stereotype": "ActualOrganizationalResource"
+    },
+    {
+      "ea_type": "Slot",
+      "name": "ActualOrganizationRole",
+      "notes": "An ActualOrganizationalResource that is applied to a ResourceRole.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualOrganizationRole",
+      "stereotype": "ActualOrganizationRole"
+    },
+    {
+      "ea_type": "Object",
+      "name": "ActualPerson",
+      "notes": "An individual human being.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualPerson",
+      "stereotype": "ActualPerson"
+    },
+    {
+      "ea_type": "Object",
+      "name": "ActualPost",
+      "notes": "An actual, specific post, an instance of a Post \"type\" - e.g., \"President of the United States of America.\" where the Post would be president.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualPost",
+      "stereotype": "ActualPost"
+    },
+    {
+      "ea_type": "Object",
+      "name": "ActualProject",
+      "notes": "A time-limited endeavor to provide a specific set of ActualResource that meet specific Capability needs.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualProject",
+      "stereotype": "ActualProject"
+    },
+    {
+      "ea_type": "Object",
+      "name": "ActualProjectMilestone",
+      "notes": "An event with a start date in a ActualProject from which progress is measured.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualProjectMilestone",
+      "stereotype": "ActualProjectMilestone"
+    },
+    {
+      "ea_type": "Slot",
+      "name": "ActualProjectMilestoneRole",
+      "notes": "An ActualProjectMilestone that is applied to a ProjectMilestoneRole.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualProjectMilestoneRole",
+      "stereotype": "ActualProjectMilestoneRole"
+    },
+    {
+      "ea_type": "Object",
+      "name": "ActualPropertySet",
+      "notes": "A set or collection of Actual properties.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualPropertySet",
+      "stereotype": "ActualPropertySet"
+    },
+    {
+      "ea_type": "Object",
+      "name": "ActualResource",
+      "notes": "Role in an Organisation, where the role carries the authority to undertake a function - through the ActualOrganizationalResource given the role has the responsibility.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualResource",
+      "stereotype": "ActualResource"
+    },
+    {
+      "ea_type": "Slot",
+      "name": "ActualResourceRole",
+      "notes": "An instance of a ResourcePerformer.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualResourceRole",
+      "stereotype": "ActualResourceRole"
+    },
+    {
+      "ea_type": "Object",
+      "name": "ActualResponsibleResource",
+      "notes": "An abstract type grouping responsible OrganizationalResources.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualResponsibleResource",
+      "stereotype": "ActualResponsibleResource"
+    },
+    {
+      "ea_type": "Object",
+      "name": "ActualService",
+      "notes": "An individual ServiceSpecification.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualService",
+      "stereotype": "ActualService"
+    },
+    {
+      "ea_type": "Slot",
+      "name": "ActualServiceSpecificationRole",
+      "notes": "An instance of a ServiceSpecification in context of a ServiceSpecification.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualServiceSpecificationRole",
+      "stereotype": "ActualServiceSpecificationRole"
+    },
+    {
+      "ea_type": "Object",
+      "name": "ActualState",
+      "notes": "Abstract element that applies temporal extent to a set of elements realized as Instance Specifications.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualState",
+      "stereotype": "ActualState"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Architecture",
+      "notes": "An abstract type that represents a generic architecture. Subtypes are OperationalArchitecture and ResourceArchitecture.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Architecture",
+      "stereotype": "Architecture"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Asset",
+      "notes": "Asset as applied to Security views, an abstract type that indicates the types of elements that can be considered as a subject for security analysis.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Asset",
+      "stereotype": "Asset"
+    },
+    {
+      "ea_type": "Part",
+      "name": "AssetRole",
+      "notes": "AssetRole as applied to Security views, an abstract element that indicates the type of elements  that can be considered as a subject for security analysis in the particular context (currently no security viewpoints in the framework).",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/AssetRole",
+      "stereotype": "AssetRole"
+    },
+    {
+      "ea_type": "Activity",
+      "name": "BusinessProcess",
+      "notes": "An abstract type that represents a behavior or process (i.e. a Function or OperationalActivity) that can be performed by a Performer.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/BusinessProcess",
+      "stereotype": "BusinessProcess"
+    },
+    {
+      "ea_type": "Requirement",
+      "name": "BWRequirement",
+      "notes": "Abstract base class for requirements.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/BWRequirement",
+      "stereotype": "BWRequirement"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Capability",
+      "notes": "A high level specification of the enterprise's ability to execute a specified course of action.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Capability",
+      "stereotype": "Capability"
+    },
+    {
+      "ea_type": "Class",
+      "name": "CapabilityConfiguration",
+      "notes": "A composite structure representing the physical and human resources (and their interactions) in an enterprise, assembled to meet a capability).",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/CapabilityConfiguration",
+      "stereotype": "CapabilityConfiguration"
+    },
+    {
+      "ea_type": "Part",
+      "name": "CapabilityRole",
+      "notes": "A high level specification of the enterprise's ability to execute a specified course of action.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/CapabilityRole",
+      "stereotype": "CapabilityRole"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Classification",
+      "notes": "Classification according to STANAG 1059.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Classification",
+      "stereotype": "Classification"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Competence",
+      "notes": "A specific set of abilities defined by knowledge, skills and aptitude.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Competence",
+      "stereotype": "Competence"
+    },
+    {
+      "ea_type": "Part",
+      "name": "ConceptRole",
+      "notes": "Usage of a ConceptItem in the context of a HighLevelOperationalConcept.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ConceptRole",
+      "stereotype": "ConceptRole"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Concern",
+      "notes": "Interest in an EnterprisePhase (EnterprisePhase is synonym for System in ISO 42010) relevant to one or more of its stakeholders.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Concern",
+      "stereotype": "Concern"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Condition",
+      "notes": "A type that defines the Location, Environment and/or GeoPoliticalExtent.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Condition",
+      "stereotype": "Condition"
+    },
+    {
+      "ea_type": "Class",
+      "name": "DataElement",
+      "notes": "A formalized representation of data that is managed by or exchanged between resources.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/DataElement",
+      "stereotype": "DataElement"
+    },
+    {
+      "ea_type": "Part",
+      "name": "DataRole",
+      "notes": "A usage of DataElement that exists in the context of an ResourceAsset. It also allows the representation of the whole-part aggregation of DataElements.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/DataRole",
+      "stereotype": "DataRole"
+    },
+    {
+      "ea_type": "Class",
+      "name": "DocumentReference",
+      "notes": "The element describes a regulation, instruction or a general document.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/DocumentReference",
+      "stereotype": "DocumentReference"
+    },
+    {
+      "ea_type": "Class",
+      "name": "EnduringTask",
+      "notes": "A type of template behavior recognized by an enterprise as being essential to achieving its goals - i.e. a template for a strategic specification of what the enterprise does.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/EnduringTask",
+      "stereotype": "EnduringTask"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Energy",
+      "notes": "A representation of any kind of energy.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Energy",
+      "stereotype": "Energy"
+    },
+    {
+      "ea_type": "Class",
+      "name": "EnterpriseGoal",
+      "notes": "A statement about a state or condition of the enterprise to be brought about or sustained through appropriate Means. An EnterpriseGoal amplifies an EnterpriseVision that is, it indicates what must be satisfied on a continuing basis to effectively attain the EnterpriseVision.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/EnterpriseGoal",
+      "stereotype": "EnterpriseGoal"
+    },
+    {
+      "ea_type": "Class",
+      "name": "EnterprisePhase",
+      "notes": "A current or future state of the wholeLifeEnterprise or another EnterprisePhase.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/EnterprisePhase",
+      "stereotype": "EnterprisePhase"
+    },
+    {
+      "ea_type": "Class",
+      "name": "EnterpriseVision",
+      "notes": "A Vision describes the future state of the enterprise, without regard to how it is to be achieved.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/EnterpriseVision",
+      "stereotype": "EnterpriseVision"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Environment",
+      "notes": "A definition of the environmental factors in which something exists or functions. The definition of an Environment element can be further defined using EnvironmentKind.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Environment",
+      "stereotype": "Environment"
+    },
+    {
+      "ea_type": "Class",
+      "name": "EnvironmentProperty",
+      "notes": "A property of an Environment that is typed by a Condition.  The kinds of Condition that can be represented are Location, GeoPoliticalExtentType and Environment.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/EnvironmentProperty",
+      "stereotype": "EnvironmentProperty"
+    },
+    {
+      "ea_type": "Object",
+      "name": "FieldedCapability",
+      "notes": "An individual, fully-realized capability.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/FieldedCapability",
+      "stereotype": "FieldedCapability"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Finding",
+      "notes": "An ascertainment made in the model, which relates to the methodology used, the subject under consideration, the tool or something else.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Finding",
+      "stereotype": "Finding"
+    },
+    {
+      "ea_type": "Class",
+      "name": "FitCriterion",
+      "notes": "This element represents an acceptance criterion for a functional or non-functional requirement.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/FitCriterion",
+      "stereotype": "FitCriterion"
+    },
+    {
+      "ea_type": "Class",
+      "name": "FulfilmentCriterion",
+      "notes": "This element represents a criterion for evaluating the degree of implementation of a functional or non-functional requirement.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/FulfilmentCriterion",
+      "stereotype": "FulfilmentCriterion"
+    },
+    {
+      "ea_type": "Activity",
+      "name": "Function",
+      "notes": "An Activity which is specified in the context to the ResourcePerformer (human or machine) that IsCapableToPerform it.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Function",
+      "stereotype": "Function"
+    },
+    {
+      "ea_type": "Action",
+      "name": "FunctionAction",
+      "notes": "A call of a Function indicating that the Function is performed by a ResourceRole in a specific context.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/FunctionAction",
+      "stereotype": "FunctionAction"
+    },
+    {
+      "ea_type": "Requirement",
+      "name": "FunctionalRequirement",
+      "notes": "The element represents a functional requirement (what should the system / software be able to do?).",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/FunctionalRequirement",
+      "stereotype": "FunctionalRequirement"
+    },
+    {
+      "ea_type": "DataType",
+      "name": "GeoPoliticalExtentType",
+      "notes": "A geospatial extent whose boundaries are defined by declaration or agreement by political parties.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/GeoPoliticalExtentType",
+      "stereotype": "GeoPoliticalExtentType"
+    },
+    {
+      "ea_type": "Class",
+      "name": "HighLevelOperationalConcept",
+      "notes": "Describes the Resources and Locations required to meet an operational scenario from an integrated systems point of view. It is used to communicate overall quantitative and qualitative system characteristics to stakeholders",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/HighLevelOperationalConcept",
+      "stereotype": "HighLevelOperationalConcept"
+    },
+    {
+      "ea_type": "Class",
+      "name": "InformationElement",
+      "notes": "An item of information that flows between OperationalPerformers and is produced and consumed by the OperationalActivities that the OperationalPerformers are capable to perform (see IsCapableToPerform).",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/InformationElement",
+      "stereotype": "InformationElement"
+    },
+    {
+      "ea_type": "Part",
+      "name": "InformationRole",
+      "notes": "A usage of InformationElement that exists in the context of an OperationalAsset. It also allows the representation of the whole-part aggregation of InformationElements.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/InformationRole",
+      "stereotype": "InformationRole"
+    },
+    {
+      "ea_type": "Lifeline",
+      "name": "InteractionRole",
+      "notes": "An abstract type that represents an individual participant in the InteractionScenario.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/InteractionRole",
+      "stereotype": "InteractionRole"
+    },
+    {
+      "ea_type": "Class",
+      "name": "KnownResource",
+      "notes": "Asserts that a known ResourcePerformer constrains the implementation of the OperationalPerformer that plays the role in the LogicalArchitecture.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/KnownResource",
+      "stereotype": "KnownResource"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Location",
+      "notes": "A specification of the generic area in which a LocationHolder is required to be located.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Location",
+      "stereotype": "Location"
+    },
+    {
+      "ea_type": "Part",
+      "name": "Measurement",
+      "notes": "A property of an element representing something in the physical world, expressed in amounts of a unit of measure.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Measurement",
+      "stereotype": "Measurement"
+    },
+    {
+      "ea_type": "Class",
+      "name": "MeasurementType",
+      "notes": "A type of a property representing something in the physical world, expressed in amounts of a unit of measure.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/MeasurementType",
+      "stereotype": "MeasurementType"
+    },
+    {
+      "ea_type": "Class",
+      "name": "NaturalResource",
+      "notes": "Type of physical resource that occurs in nature.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/NaturalResource",
+      "stereotype": "NaturalResource"
+    },
+    {
+      "ea_type": "Requirement",
+      "name": "NonfunctionalRequirement",
+      "notes": "The element represents a non-functional requirement (how should the system / software be able to do something?).",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/NonfunctionalRequirement",
+      "stereotype": "NonfunctionalRequirement"
+    },
+    {
+      "ea_type": "Activity",
+      "name": "OperationalActivity",
+      "notes": "An Activity that captures a logical process, specified independently of how the process is carried out.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalActivity",
+      "stereotype": "OperationalActivity"
+    },
+    {
+      "ea_type": "Action",
+      "name": "OperationalActivityAction",
+      "notes": "A call of an OperationalActivity in the context of another OperationalActivity.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalActivityAction",
+      "stereotype": "OperationalActivityAction"
+    },
+    {
+      "ea_type": "Class",
+      "name": "OperationalAgent",
+      "notes": "An abstract type grouping Operational Architecture and Operational Performer.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalAgent",
+      "stereotype": "OperationalAgent"
+    },
+    {
+      "ea_type": "Class",
+      "name": "OperationalArchitecture",
+      "notes": "A type used to denote a model of the Architecture, described from the Operational perspective.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalArchitecture",
+      "stereotype": "OperationalArchitecture"
+    },
+    {
+      "ea_type": "Class",
+      "name": "OperationalAsset",
+      "notes": "An abstract element used to group the elements of OperationalAgent and InformationElement allowing them to own InformationRoles.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalAsset",
+      "stereotype": "OperationalAsset"
+    },
+    {
+      "ea_type": "Class",
+      "name": "OperationalConstraint",
+      "notes": "A Rule governing a logical architectural element i.e. OperationalPerformer, OperationalActivity, InformationElement etc.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalConstraint",
+      "stereotype": "OperationalConstraint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "OperationalInterface",
+      "notes": "A declaration that specifies a contract between the OperationalPerformer it is related to, and any other OperationalPerformers it can interact with.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalInterface",
+      "stereotype": "OperationalInterface"
+    },
+    {
+      "ea_type": "Operation",
+      "name": "OperationalMethod",
+      "notes": "behavioral feature of a OperationalPerformer whose behavior is specified in an OperationalActivity.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalMethod",
+      "stereotype": "OperationalMethod"
+    },
+    {
+      "ea_type": "Parameter",
+      "name": "OperationalParameter",
+      "notes": "A type that represents inputs and outputs of an OperationalActivity. It is typed by an OperationalExchangeItem.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalParameter",
+      "stereotype": "OperationalParameter"
+    },
+    {
+      "ea_type": "Class",
+      "name": "OperationalPerformer",
+      "notes": "A logical entity that IsCapableToPerform OperationalActivities which produce, consume and process Resources.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalPerformer",
+      "stereotype": "OperationalPerformer"
+    },
+    {
+      "ea_type": "Port",
+      "name": "OperationalPort",
+      "notes": "An interaction point for an OperationalAgent through which it can interact with the outside environment and which is defined by an OperationalInterface.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalPort",
+      "stereotype": "OperationalPort"
+    },
+    {
+      "ea_type": "Part",
+      "name": "OperationalRole",
+      "notes": "Usage of a OperationalPerformer or OperationalArchitecture in the context of another OperationalPerformer or OperationalArchitecture. Creates a whole-part relationship.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalRole",
+      "stereotype": "OperationalRole"
+    },
+    {
+      "ea_type": "Signal",
+      "name": "OperationalSignal",
+      "notes": "An item of information that flows between OperationalPerformers and is produced and consumed by the OperationalActivities that the OperationalPerformers are capable of performing (see IsCapableToPerform).",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalSignal",
+      "stereotype": "OperationalSignal"
+    },
+    {
+      "ea_type": "Part",
+      "name": "OperationalSignalProperty",
+      "notes": "A property of an OperationalSignal typed by OperationalExchangeItem. It enables OperationalExchangeItem e.g. InformationElement to be passed as arguments of the OperationalSignal.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalSignalProperty",
+      "stereotype": "OperationalSignalProperty"
+    },
+    {
+      "ea_type": "Class",
+      "name": "OperationalStateDescription",
+      "notes": "A state machine describing the behavior of a OperationalPerformer, depicting how the OperationalPerformer responds to various events and the actions.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalStateDescription",
+      "stereotype": "OperationalStateDescription"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Organization",
+      "notes": "A group of OrganizationalResources (Persons, Posts, Organizations and Responsibilities) associated for a particular purpose.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Organization",
+      "stereotype": "Organization"
+    },
+    {
+      "ea_type": "Class",
+      "name": "OrganizationalResource",
+      "notes": "An abstract type for Organization, Person Post and Responsibility.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OrganizationalResource",
+      "stereotype": "OrganizationalResource"
+    },
+    {
+      "ea_type": "Class",
+      "name": "PaperForm",
+      "notes": "Form is a digitized or digitizable document, for example a scanned document.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/PaperForm",
+      "stereotype": "PaperForm"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Person",
+      "notes": "A type of a human being used to define the characteristics that need to be described for ActualPersons (e.g. properties such as address, telephone number, nationality, etc).",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Person",
+      "stereotype": "Person"
+    },
+    {
+      "ea_type": "Class",
+      "name": "PhysicalResource",
+      "notes": "An abstract type defining physical resources (i.e. OrganizationalResource, ResourceArtifact and NaturalResource).",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/PhysicalResource",
+      "stereotype": "PhysicalResource"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Post",
+      "notes": "A type of job title or position that a person can fill (e.g. Lawyer, Solution Architect, Machine Operator or Chief Executive Officer).",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Post",
+      "stereotype": "Post"
+    },
+    {
+      "ea_type": "Part",
+      "name": "PostRole",
+      "notes": "A usage of a post in the context of another OrganizationalResource. Creates a whole-part relationship.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/PostRole",
+      "stereotype": "PostRole"
+    },
+    {
+      "ea_type": "Part",
+      "name": "ProblemDomain",
+      "notes": "A property associated with a logical architecture, used to specify the scope of the problem.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ProblemDomain",
+      "stereotype": "ProblemDomain"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Project",
+      "notes": "A type that describes types of time-limited endeavours that are required to meet one or more Capability needs.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Project",
+      "stereotype": "Project"
+    },
+    {
+      "ea_type": "Class",
+      "name": "ProjectMilestone",
+      "notes": "A type of event in a Project by which progress is measured.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ProjectMilestone",
+      "stereotype": "ProjectMilestone"
+    },
+    {
+      "ea_type": "Part",
+      "name": "ProjectMilestoneRole",
+      "notes": "The role played by a ProjectMilestone in the context of a Project.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ProjectMilestoneRole",
+      "stereotype": "ProjectMilestoneRole"
+    },
+    {
+      "ea_type": "Part",
+      "name": "ProjectRole",
+      "notes": "Usage of a Project in the context of another Project. Creates a whole-part relationship.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ProjectRole",
+      "stereotype": "ProjectRole"
+    },
+    {
+      "ea_type": "Slot",
+      "name": "ProjectStatus",
+      "notes": "The status (i.e. level of progress) of a ProjectTheme for an ActualProject at the time of the ActualProjectMilestone.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ProjectStatus",
+      "stereotype": "ProjectStatus"
+    },
+    {
+      "ea_type": "Part",
+      "name": "ProjectTheme",
+      "notes": "A property of a ProjectMilestone that captures an aspect by which the progress of ActualProjects may be measured.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ProjectTheme",
+      "stereotype": "ProjectTheme"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Protocol",
+      "notes": "A Standard for communication over a network. Protocols may be composite, represented as a ProtocolStack made up of ProtocolLayers.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Protocol",
+      "stereotype": "Protocol"
+    },
+    {
+      "ea_type": "Part",
+      "name": "ProtocolLayer",
+      "notes": "Usage of a Protocol in the context of another Protocol. Creates a whole-part relationship.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ProtocolLayer",
+      "stereotype": "ProtocolLayer"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Protocolstack",
+      "notes": "A sub type of Protocol that contains the ProtocolLayers, defining a complete stack.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Protocolstack",
+      "stereotype": "Protocolstack"
+    },
+    {
+      "ea_type": "Object",
+      "name": "ProvidedServiceLevel",
+      "notes": "A sub type of ActualService that details a specific service level delivered by the provider.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ProvidedServiceLevel",
+      "stereotype": "ProvidedServiceLevel"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Recommendation",
+      "notes": "Need for action from a finding.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Recommendation",
+      "stereotype": "Recommendation"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Reference",
+      "notes": "Element describes all types of references.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Reference",
+      "stereotype": "Reference"
+    },
+    {
+      "ea_type": "Object",
+      "name": "RequiredServiceLevel",
+      "notes": "A sub type of ActualService that details a specific service level required of the provider.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/RequiredServiceLevel",
+      "stereotype": "RequiredServiceLevel"
+    },
+    {
+      "ea_type": "Class",
+      "name": "RequirementCatalogue",
+      "notes": "Element represents a catalog of requirements, which consists of different categories (RequirementCategory) of functional and non-functional requirements.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/RequirementCatalogue",
+      "stereotype": "RequirementCatalogue"
+    },
+    {
+      "ea_type": "Class",
+      "name": "RequirementCategory",
+      "notes": "Element represents a category of a catalog of requirements.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/RequirementCategory",
+      "stereotype": "RequirementCategory"
+    },
+    {
+      "ea_type": "Class",
+      "name": "ResourceArchitecture",
+      "notes": "A type used to denote a model of the Architecture, described from the ResourcePerformer perspective.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceArchitecture",
+      "stereotype": "ResourceArchitecture"
+    },
+    {
+      "ea_type": "Class",
+      "name": "ResourceArtifact",
+      "notes": "A type of man-made object that contains no human beings (i.e. satellite, radio, petrol, gasoline, etc.).",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceArtifact",
+      "stereotype": "ResourceArtifact"
+    },
+    {
+      "ea_type": "Class",
+      "name": "ResourceAsset",
+      "notes": "An abstract element used to group the elements of ResourcePerformer and DataElement allowing them to own DataRoles",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceAsset",
+      "stereotype": "ResourceAsset"
+    },
+    {
+      "ea_type": "Class",
+      "name": "ResourceConstraint",
+      "notes": "A rule governing the structural or functional aspects of an implementation.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceConstraint",
+      "stereotype": "ResourceConstraint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "ResourceInterface",
+      "notes": "A declaration that specifies a contract between the ResourcePerformers it is related to and any other ResourcePerformers it can interact with. It is also intended to be an implementation of a specification of an Interface in the Business and/or Service layer.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceInterface",
+      "stereotype": "ResourceInterface"
+    },
+    {
+      "ea_type": "Operation",
+      "name": "ResourceMethod",
+      "notes": "A behavioral feature of a ResourcePerformer whose behavior is specified in a Function.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceMethod",
+      "stereotype": "ResourceMethod"
+    },
+    {
+      "ea_type": "Class",
+      "name": "ResourceMitigation",
+      "notes": "A set of measures intended to implement an OperationalMitigation. Comprises a subset of activities that are performed in mitigation of the risk to protect the asset that is the subject of risk (ResourceRole) at the physical level. In the case of a Risk applicable to security, the form of activity is a SecurityControl or an EnhancedSecurityControl, otherwise it is a Function.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceMitigation",
+      "stereotype": "ResourceMitigation"
+    },
+    {
+      "ea_type": "Parameter",
+      "name": "ResourceParameter",
+      "notes": "A type that represents inputs and outputs of an Function. It is typed by a ResourceInteractionItem.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceParameter",
+      "stereotype": "ResourceParameter"
+    },
+    {
+      "ea_type": "Class",
+      "name": "ResourcePerformer",
+      "notes": "An abstract grouping of elements that can perform Functions.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourcePerformer",
+      "stereotype": "ResourcePerformer"
+    },
+    {
+      "ea_type": "Port",
+      "name": "ResourcePort",
+      "notes": "An interaction point for a ResourcePerformer through which it can interact with the outside environment and which is defined by a ResourceInterface.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourcePort",
+      "stereotype": "ResourcePort"
+    },
+    {
+      "ea_type": "Part",
+      "name": "ResourceRole",
+      "notes": "Usage of a ResourcePerformer in the context of another ResourcePerformer. Creates a whole-part relationship.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceRole",
+      "stereotype": "ResourceRole"
+    },
+    {
+      "ea_type": "Signal",
+      "name": "ResourceSignal",
+      "notes": "A property of an element representing something in the physical world, expressed in amounts of a unit of measure.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceSignal",
+      "stereotype": "ResourceSignal"
+    },
+    {
+      "ea_type": "Part",
+      "name": "ResourceSignalProperty",
+      "notes": "A property of an ResourceSignal typed by ResourceExchangeItem. It enables ResourceExchangeItem e.g. DataElement to be passed as arguments of the ResourceSignal.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceSignalProperty",
+      "stereotype": "ResourceSignalProperty"
+    },
+    {
+      "ea_type": "StateMachine",
+      "name": "ResourceStateDescription",
+      "notes": "A state machine describing the behavior of a ResourcePerformer, depicting how the ResourcePerformer responds to various events and the actions.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceStateDescription",
+      "stereotype": "ResourceStateDescription"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Responsibility",
+      "notes": "The type of duty required of a Person or Organization.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Responsibility",
+      "stereotype": "Responsibility"
+    },
+    {
+      "ea_type": "Constraint",
+      "name": "Rule",
+      "notes": "An abstract type for all types of constraint (i.e. an OperationalConstraint could detail the rules of accountancy best practice).",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Rule",
+      "stereotype": "Rule"
+    },
+    {
+      "ea_type": "Constraint",
+      "name": "SecurityConstraint",
+      "notes": "A type of rule that captures a formal statement to define security laws, regulations, guidances, and policy. Element is not used in the current version of the framework and reserved for future developments.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/SecurityConstraint",
+      "stereotype": "SecurityConstraint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "SecurityEnclave",
+      "notes": "Collection of information systems connected by one or more internal networks under the control of a single authority and security policy. The systems may be structured by physical proximity or by function, independent of location.  Element is not used in the current version of the framework and reserved for future developments.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/SecurityEnclave",
+      "stereotype": "SecurityEnclave"
+    },
+    {
+      "ea_type": "Activity",
+      "name": "SecurityProcess",
+      "notes": "The security-related procedure that satisfies the security control requirement. Element is not used in the current version of the framework and reserved for future developments.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/SecurityProcess",
+      "stereotype": "SecurityProcess"
+    },
+    {
+      "ea_type": "Activity",
+      "name": "ServiceFunction",
+      "notes": "An Activity that describes the abstract behavior of ServiceSpecifications, regardless of the actual implementation.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServiceFunction",
+      "stereotype": "ServiceFunction"
+    },
+    {
+      "ea_type": "Action",
+      "name": "ServiceFunctionAction",
+      "notes": "A call of a ServiceFunction in the context of another ServiceFunction.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServiceFunctionAction",
+      "stereotype": "ServiceFunctionAction"
+    },
+    {
+      "ea_type": "Class",
+      "name": "ServiceInterface",
+      "notes": "A contract that defines the ServiceMethods and ServiceMessageHandlers that the ServiceSpecification realizes.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServiceInterface",
+      "stereotype": "ServiceInterface"
+    },
+    {
+      "ea_type": "Operation",
+      "name": "ServiceMethod",
+      "notes": "A behavioral feature of a ServiceSpecification whose behavior is specified in a ServiceFunction.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServiceMethod",
+      "stereotype": "ServiceMethod"
+    },
+    {
+      "ea_type": "Parameter",
+      "name": "ServiceParameter",
+      "notes": "A type that represents inputs and outputs of a ServiceFunction, represents inputs and outputs of a ServiceSpecification.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServiceParameter",
+      "stereotype": "ServiceParameter"
+    },
+    {
+      "ea_type": "Class",
+      "name": "ServicePolicy",
+      "notes": "A constraint governing the use of one or more ServiceSpecifications.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServicePolicy",
+      "stereotype": "ServicePolicy"
+    },
+    {
+      "ea_type": "Port",
+      "name": "ServicePort",
+      "notes": "An interaction point for a ServiceSpecification through which it can interact with the outside environment and which is defined by a ServiceInterface.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServicePort",
+      "stereotype": "ServicePort"
+    },
+    {
+      "ea_type": "Class",
+      "name": "ServiceSpecification",
+      "notes": "The specification of a set of functionality provided one element for the use of others.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServiceSpecification",
+      "stereotype": "ServiceSpecification"
+    },
+    {
+      "ea_type": "Part",
+      "name": "ServiceSpecificationRole",
+      "notes": "An assertion that a ServiceSecification calls upon another ServiceSpecification in order to deliver its stated functionality.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServiceSpecificationRole",
+      "stereotype": "ServiceSpecificationRole"
+    },
+    {
+      "ea_type": "StateMachine",
+      "name": "ServiceStateDescription",
+      "notes": "A state machine descripting the behavior of a ServiceSpecification, depicting how the ServiceSpecification responds to various events and the actions.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServiceStateDescription",
+      "stereotype": "ServiceStateDescription"
+    },
+    {
+      "ea_type": "Class",
+      "name": "SMEReference",
+      "notes": "Element stands for a result of a workshop or expert knowledge.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/SMEReference",
+      "stereotype": "SMEReference"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Software",
+      "notes": "A sub-type of ResourceArtifact that specifies an executable computer program.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Software",
+      "stereotype": "Software"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Standard",
+      "notes": "A ratified and peer-reviewed specification that is used to guide or constrain the architecture. A Standard may be applied to any element in the architecture.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Standard",
+      "stereotype": "Standard"
+    },
+    {
+      "ea_type": "Activity",
+      "name": "StandardOperationalActivity",
+      "notes": "A sub-type of OperationalActivity that is a standard operating procedure.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/StandardOperationalActivity",
+      "stereotype": "StandardOperationalActivity"
+    },
+    {
+      "ea_type": "StateMachine",
+      "name": "StateDescription",
+      "notes": "An abstract type that represents a state machine (i.e. an OperationalStateDescription or ResourceStateDescription), depicting how the Asset responds to various events and the actions.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/StateDescription",
+      "stereotype": "StateDescription"
+    },
+    {
+      "ea_type": "Class",
+      "name": "StrategicConstraint",
+      "notes": "A Rule governing a capability.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/StrategicConstraint",
+      "stereotype": "StrategicConstraint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "SubjectOfForecast",
+      "notes": "An abstract type grouping elements that can be the subject of a Forecast.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/SubjectOfForecast",
+      "stereotype": "SubjectOfForecast"
+    },
+    {
+      "ea_type": "Part",
+      "name": "SubOrganization",
+      "notes": "A type of a human being used to define the characteristics that need to be described for ActualPersons (e.g. properties such as address, telephone number, nationality, etc).",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/SubOrganization",
+      "stereotype": "SubOrganization"
+    },
+    {
+      "ea_type": "Class",
+      "name": "System",
+      "notes": "An integrated set of elements, subsystems, or assemblies that accomplish a defined objective. These elements include products (hardware, software, firmware), processes, people, information, techniques, facilities, services, and other support elements (INCOSE SE Handbook V4, 2015).",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/System",
+      "stereotype": "System"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Technology",
+      "notes": "A sub type of ResourceArtifact that indicates a technology domain, i.e. nuclear, mechanical, electronic, mobile telephony etc.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Technology",
+      "stereotype": "Technology"
+    },
+    {
+      "ea_type": "Part",
+      "name": "TemporalPart",
+      "notes": "A current or future state of the wholeLifeEnterprise or another EnterprisePhase.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/TemporalPart",
+      "stereotype": "TemporalPart"
+    },
+    {
+      "ea_type": "Part",
+      "name": "VersionOfConfiguration",
+      "notes": "A property of a WholeLifeConfiguration, used in version control of a VersionedElement. It asserts that a VersionedElement is a version of a WholeLifeConfiguration.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/VersionOfConfiguration",
+      "stereotype": "VersionOfConfiguration"
+    },
+    {
+      "ea_type": "Class",
+      "name": "View",
+      "notes": "An architecture view expresses the architecture of the system-of-interest in accordance with an architecture viewpoint (or simply, viewpoint). [ISO/IEC/IEEE 42010:2011(E)].",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/View",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Viewpoint",
+      "notes": "An architecture viewpoint frames (to formulate or construct in a particular style or language) one or more concerns. A concern can be framed by more than one viewpoint.  [ISO/IEC/IEEE 42010:2011(E)].",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Viewpoint",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "WholeLifeConfiguration",
+      "notes": "A set of VersionedElements.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/WholeLifeConfiguration",
+      "stereotype": "WholeLifeConfiguration"
+    },
+    {
+      "ea_type": "Class",
+      "name": "WholeLifeEnterprise",
+      "notes": "A WholeLifeEnterprise is a purposeful endeavor of any size involving people, organizations and supporting systems. It is made up of TemporalParts and StructuralParts.",
+      "package": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/WholeLifeEnterprise",
+      "stereotype": "WholeLifeEnterprise"
+    },
+    {
+      "ea_type": "Class",
+      "name": "A1 - Meta-Data Definitions",
+      "notes": "Architectures, particularly large ones, usually require meta-data tags to aid with searching and discovery.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A1",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Meta-Data Definitions",
+      "notes": "Sicht A1 - Meta-Data Definitions.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A1",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "A2 - Architecture Products",
+      "notes": "The A2 Viewpoint specifies the structure of an architecture, and the products that describe the architecture. Each product may correspond to an architecture view. This viewpoint also traces the architectures onto the Enterprise Phases they correspond to (see also C2 – Enterprise Vision) and identifies the key stakeholders, their concerns and the products that address those concerns (from ISO/IEC/IEEE Standards).",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A2",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Architecture Products",
+      "notes": "Sicht A2 - Architecture Products.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A2",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "A3 - Architecture Correspondence",
+      "notes": "ISO/IEC/IEEE42010 introduces the idea of architecture correspondence and correspondence rules. Quoting from ISO/IEC/IEEE 42010; “A correspondence defines a relation between AD (Architecture Description) elements. Correspondences are used to express architecture relations of interest within an architecture description (or between architecture descriptions). Correspondences can be governed by correspondence rules. Correspondence rules are used to enforce relations within an architecture description (or between architecture descriptions).”",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A3",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Architecture Correspondence",
+      "notes": "Sicht A3 - Architecture Correspondence.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A3",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "A4 - Methodology Used",
+      "notes": "The A4 Viewpoint specifies the methodology used for the architecting activities. This methodology is described in NAFv4 Chapter 2. The content of the A4 viewpoint can also be modeled in the A1 viewpoint.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A4",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Methodology Used",
+      "notes": "Sicht A4 - Methodology Used.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A4",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "A5 - Architecture Status",
+      "notes": "Since NAFv3.0, it has been possible to assign version numbers to views and specify their approval dates. In NAFv4.0, this is integrated with the meta-model’s generic project and milestone approach so that architecture releases are tracked against the architecture delivery project. The content of the A5 viewpoint can also be modeled in the A1 viewpoint.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A5",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Architecture Status",
+      "notes": "Sicht A5 - Architecture Status.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A5",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "A6 - Architecture Version",
+      "notes": "Where the A5 Viewpoint shows the current version number and approval status for the architecture, the A6 Viewpoint shows the complete history of the architecture.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A6",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Architecture Version",
+      "notes": "Sicht A6 - Architecture Version.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A6",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "A7 - Architecture Compliance",
+      "notes": "The A7 Viewpoint gives the overall specification of architecture meta-data.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A7",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Architecture Compliance",
+      "notes": "Sicht A7 - Architecture Compliance.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A7",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "A8 - Standards",
+      "notes": "The A8 Viewpoint encompasses both technical and non-technical standards. The standards specified in the A8 view can be applied across the architecture to a variety of structural and behavioural elements. Standards are essential to the coherent running of businesses and to the delivery of reliable, interoperable systems.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A8",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Standards",
+      "notes": "Sicht A8 - Standards.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A8",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Ar - Architecture Roadmap",
+      "notes": "The Ar Viewpoint shows the history of the architecture project as well as its future direction.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Ar",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Architecture Roadmap",
+      "notes": "Sicht Ar - Architecture Roadmap.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Ar",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Business Process",
+      "notes": "Business Process",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Business Process",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Business Process",
+      "notes": "Sicht Business Process.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Business Process",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "C1 - Capability Taxonomy",
+      "notes": "The C1 Viewpoint specifies all the capabilities that are referenced throughout one or more architectures – i.e. one C1 may provide the definitive list of capabilities for a number of logical and resource architectures. The capabilities may be organised into specialisation hierarchies (taxonomies). Measures of Effectiveness (MoE) may be specified for each capability. Note that MoEs are inherited down a capability taxonomy.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C1",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Capability Taxonomy",
+      "notes": "Sicht C1 - Capability Taxonomy.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C1",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "C1-S1 - Capability to Service Mapping",
+      "notes": "A C1-S1 Viewpoint presents a simple mapping of services to capabilities, showing which services contribute to which capability.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C1-S1",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Capability to Service Mapping",
+      "notes": "Sicht C1-S1 - Capability to Service Mapping.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C1-S1",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "C2 - Enterprise Vision",
+      "notes": "The purpose of the C2 Viewpoint is to provide a strategic context for the capabilities described in the architecture and to specify the scope for the architecture. The C2 Viewpoint is high-level and describes the vision, goals, enduring tasks and capabilities using terminology that is easily understood by non-technical readers.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C2",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Enterprise Vision",
+      "notes": "Sicht C2 - Enterprise Vision.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C2",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "C3 - Capability Dependencies",
+      "notes": "The C3 Viewpoint is intended to provide a means of analysing the dependencies between capabilities and between capability clusters. The composition of capabilities (into clusters) is logical and the purpose of the clusters is to guide enterprise management.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C3",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Capability Dependencies",
+      "notes": "Sicht C3 - Capability Dependencies.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C3",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "C4 - Standard Processes",
+      "notes": "The C4 Viewpoint specifies Standard Operational Activities that can be re-used across multiple logical architectures (e.g. in L4, Logical Activities).",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C4",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Standard Processes",
+      "notes": "Sicht C4 - Standard Processes.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C4",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "C5 - Effects",
+      "notes": "The purpose of the C5 Viewpoint is to describe the operational effect of the capabilities, activities and services according to the expected goals. The C5 Viewpoint is high-level description that should be easily understood by non-technical readers.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C5",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Effects",
+      "notes": "Sicht C5 - Effects.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C5",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "C7 - Performance Parameters",
+      "notes": "In the C7 Viewpoint the capability requirements (and existing capabilities) can be expressed in terms of Measures of Effectiveness (MoEs). These are high-level metrics used to judge the level of capability.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C7",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Performance Parameters",
+      "notes": "Sicht C7 - Performance Parameters.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C7",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "C8 - Planning Assumptions",
+      "notes": "The C8 Viewpoint is concerned with identification and description of assumptions that have been made for the implementation of capabilities. Assumptions can be expressed by means of requirements.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C8",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Planning Assumptions",
+      "notes": "Sicht C8 - Planning Assumptions.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C8",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Cr - Capability Roadmap",
+      "notes": "The Cr Viewpont supports the Capability Audit process by providing a method to identify gaps or duplications in capability provision. Cr indicates capability increments, which are derived from delivery milestones within acquisition projects.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Cr",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Capability Roadmap",
+      "notes": "Sicht Cr - Capability Roadmap.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Cr",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L1 - Node Types",
+      "notes": "The L1 Viewpoint defines all of the Nodes that will appear in a Logical Architecture. Nodes are elements of capability assembled and orchestrated in the Logical Architecture (see L2 - Logical Scenario and L4 - Logical Activities views). The levels of capability provided by each node are expressed as Measures of Performance (MoPs) and these may be dependent on the environments in which the Node is required to operate.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L1",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Node Types",
+      "notes": "Sicht L1 - Node Types.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L1",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L2 - Logical Scenario",
+      "notes": "The L2 Viewpoint specifies Nodes (elements of capability) in context of each other. The context is usually expressed in terms of the information that flows between the nodes (e.g. the information flow requirements between capabilities in a given scenario) but may also be flows of materiel, human resource or energy.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L2",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Logical Scenario",
+      "notes": "Sicht L2 - Logical Scenario.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L2",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L2-L3 - Logical Concept",
+      "notes": "The L2-L3 Viewpoint is concerned with providing an executive level, scenario-based communication of the architecture purpose, scope and content.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L2-L3",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Logical Concept",
+      "notes": "Sicht L2-L3 - Logical Concept.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L2-L3",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L3 - Node Interactions",
+      "notes": "L3 is used to provide further detail of the interoperability requirements associated with the operational capability of interest. The focus is on logical flows that cross the capability boundary. Although the primary purpose of the L3 Viewpoint is to specify information exchanges, the L3 may also list flows of materiel, energy and human resources.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L3",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Node Interactions",
+      "notes": "Sicht L3 - Node Interactions.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L3",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L4 - Logical Activities",
+      "notes": "The L4 Viewpoint describes the operational activities that are being conducted within the mission or scenario. These activities are defined at a logical, solution-neutral level so as to enable different solutions in the physical layer. The L4 Viewpoint describes the activities associated with the logical architecture, as well as the:",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L4",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Logical Activities",
+      "notes": "Sicht L4 - Logical Activities.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L4",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L4-P4 - Activity To Function Mapping",
+      "notes": "The L4-P4 Viewpoint depicts the mapping of Resource Functions (and optionally, the resources that provide them) to operational activities and/or service functions. For operational activities it thus identifies the transformation of an operational need into a purposeful action performed by a system or solution. For service functions it provides the link between the services used at the operational level and the specific Resource Functions provided by the resources supporting the services.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L4-P4",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Activity To Function Mapping",
+      "notes": "Sicht L4-P4 - Activity To Function Mapping.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L4-P4",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L5 - Logical States",
+      "notes": "The L5 Viewpoint specifies the typical states a node may have and the possible transitions between those states (i.e. changes of state). Triggers for state changes may also be defined. Actions may be associated with a given state or with the transition between states in response to stimuli (e.g. triggers and events).",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L5",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Logical States",
+      "notes": "Sicht L5 - Logical States.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L5",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L6 - Logical Sequence",
+      "notes": "Operational Event-Trace Descriptions, sometimes called sequence diagrams, event scenarios or timing diagrams, allow the tracing of interactions between nodes in a scenario or critical sequence of events. The node interactions usually correspond to flows of information but may describe flows of energy, materiel or people specified in the L2, Logical Scenario.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L6",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Logical Sequence",
+      "notes": "Sicht L6 - Logical Sequence.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L6",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L7 - Information Model",
+      "notes": "The L7 Viewpoint is used to document the business information. It describes the information that can be exchanged along the logical flows in the architecture, specified in L3 Node Interactions.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L7",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Information Model",
+      "notes": "Sicht L7 - Information Model.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L7",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "L8 - Logical Constraints",
+      "notes": "The L8 Viewpoint is used to constrain the logical architecture without forcing a particular solution. L8 is used for rules which are not expressed as behavioural models, interactions or measures of effectiveness, i.e. they are textual statements of requirements that constrain the architecture.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L8",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Logical Constraints",
+      "notes": "Sicht L8 - Logical Constraints.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L8",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Lr - Lines of Development",
+      "notes": "The Lr Viewpoint is primarily intended to support the acquisition process across multiple projects or programmes, highlighting dependencies the logical dependencies between capabilities, projects and the integration of all lines of development to achieve a successfully integrated military capability. Use of the Lr Viewpoint should support the management of capability delivery and be aligned with Cr, Capability Roadmap.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Lr",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Lines of Development",
+      "notes": "Sicht Lr - Lines of Development.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Lr",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "P1 - Resource Types",
+      "notes": "The P1 Viewpoint collects together all the Resource Types in the architecture together with a depiction of their performance characteristics. P1 also provides a summary of the technologies and competencies that impact on the Resources that constitute the architecture.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P1",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Resource Types",
+      "notes": "Sicht P1 - Resource Types.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P1",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "P2 - Resource Structure",
+      "notes": "The P2 Viewpoint links together the operational and physical architecture viewpoints by depicting how types of Resource are structured and interact to realize the logical architecture specified in L2, Logical Scenario. The P2 Viewpoint may represent the realization of a requirement specified in a L2 (i.e. in a “to-be” architecture) and so there may be many alternative Resource viewpoint suites that could realize the operational requirement. Alternatively, in an “as-is” architecture, a L2 may just be a simplified, logical representation of the P2 Viewpoint to allow communication of key information flows to non-technical stakeholders.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P2",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Resource Structure",
+      "notes": "Sicht P2 - Resource Structure.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P2",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "P3 - Resource Connectivity",
+      "notes": "The networks and pathways documented in a P3 Viewpoint represent the physical implementation of the logical flows identified in a L2, Logical Scenario, or L3, Node Interactions View.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P3",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Resource Connectivity",
+      "notes": "Sicht P3 - Resource Connectivity.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P3",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "P4 - Resource Functions",
+      "notes": "The Functionality Description provides detailed information regarding the allocation of functions to resources, and flows between Resource Functions. The P4 Viewpoint is the Physical Resource counterpart to the L4 Logical Activities Viewpoint.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P4",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Resource Functions",
+      "notes": "Sicht P4 - Resource Functions.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P4",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "P5 - Resource States",
+      "notes": "The P5 Viewpoint identifies the states a Resource can be, the allowable changes between those states, and the stimuli (e.g. triggers and events) that cause the state changes.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P5",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Resource States",
+      "notes": "Sicht P5 - Resource States.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P5",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "P6 - Resource Sequence",
+      "notes": "The P6 Viewpoint is valuable for moving to the next level of detail from the initial solution design, to help define a sequence of functions and Resource Interactions, and to ensure that each participating Resource or Port has the necessary information, at the right time, in order to perform its assigned functionality.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P6",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Resource Sequence",
+      "notes": "Sicht P6 - Resource Sequence.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P6",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "P7 - Data Model",
+      "notes": "The P7 Viewpoint is one of the architectural products closest to actual system design in the NAF. It is used to describe how the information represented in the L7 Logical Data Model Viewpoint is implemented.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P7",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Data Model",
+      "notes": "Sicht P7 - Data Model.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P7",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "P8 - Resource Constraints",
+      "notes": "The P8 Viewpoint describes constraints on the Resources, Resource Functions, data and communications that make up a Physical Architecture.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P8",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Resource Constraints",
+      "notes": "Sicht P8 - Resource Constraints.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P8",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Pr - Configuration Management",
+      "notes": "The Pr Viewpoint provides an overview of how Resource Assets change over time (note that NAF v3.1 only allowed for Capability Configurations whereas now this is opened up to all Resource Types). It shows the structure of different versions of Resource Assets (usually Capability Configurations or Service Implementations) mapped against a timeline.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Pr",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Configuration Management",
+      "notes": "Sicht Pr - Configuration Management.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Pr",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "R2 - Requirement Catalogue",
+      "notes": "The R2 represents a catalog of requirements in the architectural model. For this purpose, categories can be created in which the functional and non-functional requirements can be grouped.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/R2",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Requirement Catalogue",
+      "notes": "Sicht R2 - Requirement Catalogue.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/R2",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "R3 - Requirement Dependencies",
+      "notes": "The R3 is used to show dependencies between different requirements.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/R3",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Requirement Dependencies",
+      "notes": "Sicht R3 - Requirement Dependencies.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/R3",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "R7 - Requirement Derivation",
+      "notes": "The R7 assigns functional and non-functional requirements to the demanding architectural elements. In addition, information about the planned realization can be shown.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/R7",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Requirement Derivation",
+      "notes": "Sicht R7 - Requirement Derivation.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/R7",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "R8 - Requirement Fulfilment",
+      "notes": "The R8 is used to determine and map acceptance and evaluation criteria for the individual functional and non-functional requirements.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/R8",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Requirement Fulfilment",
+      "notes": "Sicht R8 - Requirement Fulfilment.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/R8",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Rr - Requirement Realization",
+      "notes": "In the Rr, requirements are assigned to the realizing architectural elements.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Rr",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Requirement Realization",
+      "notes": "Sicht Rr - Requirement Realization.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Rr",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "S1 - Service Taxonomy",
+      "notes": "The purpose of the S1 Viewpoint is to provide a governance structure for a Service-Oriented Architecture. Along with S3, Service Interfaces, it specifies a standard library of service specifications for an enterprise, to which service implementers are expected to conform.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S1",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Service Taxonomy",
+      "notes": "Sicht S1 - Service Taxonomy.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S1",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "S2 - Service Structure",
+      "notes": "The S2 Viewpoint is concerned with identification and description of how services are structured to create a higher-aggregated service. To provide highlevel views, dependencies to other services, nodes and resources as well as service interfaces and service functions can be represented.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S2",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Service Structure",
+      "notes": "Sicht S2 - Service Structure.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S2",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "S3 - Service Interfaces",
+      "notes": "The S3 Viewpoint is concerned with the identification and definition of service interfaces.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S3",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Service Interfaces",
+      "notes": "Sicht S3 - Service Interfaces.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S3",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "S4 - Service Functions",
+      "notes": "The S4 Viewpoint is the key behavioural specification for services. Equivalent in nature to L4, Logical Activities and P4, Resources Functions, it specifies a set of functions that a service implementation is expected to perform. Implementation of that behaviour is represented in P4, Resource Functions, and L4-P4, Activity to Function Mapping.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S4",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Service Functions",
+      "notes": "Sicht S4 - Service Functions.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S4",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "S5 - Service States",
+      "notes": "The S5 Viewpoint is a specification of the allowable states of a service, and the possible transitions between them. This specification constrains how implementations of the service will behave.  It is, though, generally considered a good practice to make services stateless - i.e. consumers of a service are not aware of what state the service is in.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S5",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Service States",
+      "notes": "Sicht S5 - Service States.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S5",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "S6 - Service Interactions",
+      "notes": "Service Interaction Descriptions, sometimes called sequence diagrams, event scenarios or timing diagrams, allow the tracing of interactions between services in a composition or critical sequence of events.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S6",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Service Interactions",
+      "notes": "Sicht S6 - Service Interactions.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S6",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "S7 - Service Interface Parameters",
+      "notes": "Specifies the interfaces that a service provides and uses, defines which services are compatible with which other services.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S7",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Service Interface Parameters",
+      "notes": "Sicht S7 - Service Interface Parameters.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S7",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "S8 - Service Policy",
+      "notes": "The S8 Viewpoint specifies constraints against services to which implementations must conform.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S8",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Service Policy",
+      "notes": "Sicht S8 - Service Policy.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S8",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Sr - Service Roadmap",
+      "notes": "The Sr Viewpoint supports the Service Audit process by providing a method to identify gaps or duplications in service provision. Sr indicates service lifetime evolutions, which are derived from delivery milestones within acquisition projects.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Sr",
+      "stereotype": "Viewpoint"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Service Roadmap",
+      "notes": "Sicht Sr - Service Roadmap.",
+      "package": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Sr",
+      "stereotype": "View"
+    },
+    {
+      "ea_type": "Class",
+      "name": "Projektarchitektur",
+      "notes": "Abkuerzung fuer das Projekt Projektarchitektur.",
+      "package": "Projektarchitektur/Projektarchitektur - Glossar/Abkürzungsverzeichnis",
+      "stereotype": "DocumentReference"
+    }
+  ],
+  "ir_version": 1,
+  "meta": {
+    "skeleton": {
+      "backend": "regelwerk-architektur",
+      "catalogStereotypes": 147,
+      "elements": 360,
+      "kind": "masc-struktur",
+      "packages": 264,
+      "root": "Projektarchitektur",
+      "viewpoints": 53,
+      "viewpointsMitVolume": 52
+    }
+  },
+  "packages": [
+    {
+      "notes": "Architekturmodell nach NAFv4-ADMBw (Geruest).",
+      "path": "Projektarchitektur"
+    },
+    {
+      "notes": "Einstiegsseite des Modells.",
+      "path": "Projektarchitektur/Startseite Projektarchitektur"
+    },
+    {
+      "notes": "Projektarchitektur, nach Viewpoint-Familien geordnet.",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur"
+    },
+    {
+      "notes": "Viewpoint-Familie Architekturauftrag.",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag"
+    },
+    {
+      "notes": "A1 - Meta-Data Definitions",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A1"
+    },
+    {
+      "notes": "A2 - Architecture Products",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A2"
+    },
+    {
+      "notes": "A3 - Architecture Correspondence",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A3"
+    },
+    {
+      "notes": "A4 - Methodology Used",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A4"
+    },
+    {
+      "notes": "A5 - Architecture Status",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A5"
+    },
+    {
+      "notes": "A6 - Architecture Version",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A6"
+    },
+    {
+      "notes": "A7 - Architecture Compliance",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A7"
+    },
+    {
+      "notes": "A8 - Standards",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/A8"
+    },
+    {
+      "notes": "Ar - Architecture Roadmap",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Architekturauftrag/Ar"
+    },
+    {
+      "notes": "Viewpoint-Familie Geschäftsarchitektur.",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur"
+    },
+    {
+      "notes": "C1 - Capability Taxonomy",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C1"
+    },
+    {
+      "notes": "C2 - Enterprise Vision",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C2"
+    },
+    {
+      "notes": "C3 - Capability Dependencies",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C3"
+    },
+    {
+      "notes": "C4 - Standard Processes",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C4"
+    },
+    {
+      "notes": "C5 - Effects",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C5"
+    },
+    {
+      "notes": "C7 - Performance Parameters",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C7"
+    },
+    {
+      "notes": "C8 - Planning Assumptions",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/C8"
+    },
+    {
+      "notes": "Cr - Capability Roadmap",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/Cr"
+    },
+    {
+      "notes": "L1 - Node Types",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L1"
+    },
+    {
+      "notes": "L2 - Logical Scenario",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L2"
+    },
+    {
+      "notes": "L2-L3 - Logical Concept",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L2-L3"
+    },
+    {
+      "notes": "L3 - Node Interactions",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L3"
+    },
+    {
+      "notes": "L4 - Logical Activities",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L4"
+    },
+    {
+      "notes": "L5 - Logical States",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L5"
+    },
+    {
+      "notes": "L6 - Logical Sequence",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L6"
+    },
+    {
+      "notes": "L7 - Information Model",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L7"
+    },
+    {
+      "notes": "L8 - Logical Constraints",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/L8"
+    },
+    {
+      "notes": "Lr - Lines of Development",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Geschäftsarchitektur/Lr"
+    },
+    {
+      "notes": "Viewpoint-Familie Servicearchitektur.",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur"
+    },
+    {
+      "notes": "C1-S1 - Capability to Service Mapping",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/C1-S1"
+    },
+    {
+      "notes": "S1 - Service Taxonomy",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S1"
+    },
+    {
+      "notes": "S2 - Service Structure",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S2"
+    },
+    {
+      "notes": "S3 - Service Interfaces",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S3"
+    },
+    {
+      "notes": "S4 - Service Functions",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S4"
+    },
+    {
+      "notes": "S5 - Service States",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S5"
+    },
+    {
+      "notes": "S6 - Service Interactions",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S6"
+    },
+    {
+      "notes": "S7 - Service Interface Parameters",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S7"
+    },
+    {
+      "notes": "S8 - Service Policy",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/S8"
+    },
+    {
+      "notes": "Sr - Service Roadmap",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Servicearchitektur/Sr"
+    },
+    {
+      "notes": "Viewpoint-Familie Systemarchitektur.",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur"
+    },
+    {
+      "notes": "P1 - Resource Types",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P1"
+    },
+    {
+      "notes": "P2 - Resource Structure",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P2"
+    },
+    {
+      "notes": "P3 - Resource Connectivity",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P3"
+    },
+    {
+      "notes": "P4 - Resource Functions",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P4"
+    },
+    {
+      "notes": "P5 - Resource States",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P5"
+    },
+    {
+      "notes": "P6 - Resource Sequence",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P6"
+    },
+    {
+      "notes": "P7 - Data Model",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P7"
+    },
+    {
+      "notes": "P8 - Resource Constraints",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/P8"
+    },
+    {
+      "notes": "Pr - Configuration Management",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/Pr"
+    },
+    {
+      "notes": "L4-P4 - Activity To Function Mapping",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Systemarchitektur/L4-P4"
+    },
+    {
+      "notes": "Viewpoint-Familie Anforderungen.",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Anforderungen"
+    },
+    {
+      "notes": "R2 - Requirement Catalogue",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Anforderungen/R2"
+    },
+    {
+      "notes": "R3 - Requirement Dependencies",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Anforderungen/R3"
+    },
+    {
+      "notes": "R7 - Requirement Derivation",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Anforderungen/R7"
+    },
+    {
+      "notes": "R8 - Requirement Fulfilment",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Anforderungen/R8"
+    },
+    {
+      "notes": "Rr - Requirement Realization",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Anforderungen/Rr"
+    },
+    {
+      "notes": "Je Element-Stereotyp ein Paket mit dessen Definition.",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog"
+    },
+    {
+      "notes": "Stereotyp Achiever (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Achiever"
+    },
+    {
+      "notes": "Stereotyp ActualCondition (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualCondition"
+    },
+    {
+      "notes": "Stereotyp ActualEnduringTask (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualEnduringTask"
+    },
+    {
+      "notes": "Stereotyp ActualEnterprisePhase (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualEnterprisePhase"
+    },
+    {
+      "notes": "Stereotyp ActualEnvironment (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualEnvironment"
+    },
+    {
+      "notes": "Stereotyp ActualLocation (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualLocation"
+    },
+    {
+      "notes": "Stereotyp ActualMeasurement (Slot).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualMeasurement"
+    },
+    {
+      "notes": "Stereotyp ActualMeasurementSet (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualMeasurementSet"
+    },
+    {
+      "notes": "Stereotyp ActualOrganization (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualOrganization"
+    },
+    {
+      "notes": "Stereotyp ActualOrganizationalResource (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualOrganizationalResource"
+    },
+    {
+      "notes": "Stereotyp ActualOrganizationRole (Slot).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualOrganizationRole"
+    },
+    {
+      "notes": "Stereotyp ActualPerson (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualPerson"
+    },
+    {
+      "notes": "Stereotyp ActualPost (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualPost"
+    },
+    {
+      "notes": "Stereotyp ActualProject (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualProject"
+    },
+    {
+      "notes": "Stereotyp ActualProjectMilestone (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualProjectMilestone"
+    },
+    {
+      "notes": "Stereotyp ActualProjectMilestoneRole (Slot).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualProjectMilestoneRole"
+    },
+    {
+      "notes": "Stereotyp ActualPropertySet (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualPropertySet"
+    },
+    {
+      "notes": "Stereotyp ActualResource (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualResource"
+    },
+    {
+      "notes": "Stereotyp ActualResourceRole (Slot).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualResourceRole"
+    },
+    {
+      "notes": "Stereotyp ActualResponsibleResource (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualResponsibleResource"
+    },
+    {
+      "notes": "Stereotyp ActualService (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualService"
+    },
+    {
+      "notes": "Stereotyp ActualServiceSpecificationRole (Slot).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualServiceSpecificationRole"
+    },
+    {
+      "notes": "Stereotyp ActualState (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ActualState"
+    },
+    {
+      "notes": "Stereotyp Architecture (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Architecture"
+    },
+    {
+      "notes": "Stereotyp Asset (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Asset"
+    },
+    {
+      "notes": "Stereotyp AssetRole (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/AssetRole"
+    },
+    {
+      "notes": "Stereotyp BusinessProcess (Activity).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/BusinessProcess"
+    },
+    {
+      "notes": "Stereotyp BWRequirement (Requirement).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/BWRequirement"
+    },
+    {
+      "notes": "Stereotyp Capability (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Capability"
+    },
+    {
+      "notes": "Stereotyp CapabilityConfiguration (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/CapabilityConfiguration"
+    },
+    {
+      "notes": "Stereotyp CapabilityRole (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/CapabilityRole"
+    },
+    {
+      "notes": "Stereotyp Classification (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Classification"
+    },
+    {
+      "notes": "Stereotyp Competence (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Competence"
+    },
+    {
+      "notes": "Stereotyp ConceptRole (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ConceptRole"
+    },
+    {
+      "notes": "Stereotyp Concern (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Concern"
+    },
+    {
+      "notes": "Stereotyp Condition (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Condition"
+    },
+    {
+      "notes": "Stereotyp DataElement (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/DataElement"
+    },
+    {
+      "notes": "Stereotyp DataRole (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/DataRole"
+    },
+    {
+      "notes": "Stereotyp DocumentReference (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/DocumentReference"
+    },
+    {
+      "notes": "Stereotyp EnduringTask (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/EnduringTask"
+    },
+    {
+      "notes": "Stereotyp Energy (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Energy"
+    },
+    {
+      "notes": "Stereotyp EnterpriseGoal (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/EnterpriseGoal"
+    },
+    {
+      "notes": "Stereotyp EnterprisePhase (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/EnterprisePhase"
+    },
+    {
+      "notes": "Stereotyp EnterpriseVision (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/EnterpriseVision"
+    },
+    {
+      "notes": "Stereotyp Environment (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Environment"
+    },
+    {
+      "notes": "Stereotyp EnvironmentProperty (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/EnvironmentProperty"
+    },
+    {
+      "notes": "Stereotyp FieldedCapability (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/FieldedCapability"
+    },
+    {
+      "notes": "Stereotyp Finding (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Finding"
+    },
+    {
+      "notes": "Stereotyp FitCriterion (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/FitCriterion"
+    },
+    {
+      "notes": "Stereotyp FulfilmentCriterion (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/FulfilmentCriterion"
+    },
+    {
+      "notes": "Stereotyp Function (Activity).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Function"
+    },
+    {
+      "notes": "Stereotyp FunctionAction (Action).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/FunctionAction"
+    },
+    {
+      "notes": "Stereotyp FunctionalRequirement (Requirement).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/FunctionalRequirement"
+    },
+    {
+      "notes": "Stereotyp GeoPoliticalExtentType (DataType).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/GeoPoliticalExtentType"
+    },
+    {
+      "notes": "Stereotyp HighLevelOperationalConcept (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/HighLevelOperationalConcept"
+    },
+    {
+      "notes": "Stereotyp InformationElement (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/InformationElement"
+    },
+    {
+      "notes": "Stereotyp InformationRole (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/InformationRole"
+    },
+    {
+      "notes": "Stereotyp InteractionRole (Lifeline).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/InteractionRole"
+    },
+    {
+      "notes": "Stereotyp KnownResource (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/KnownResource"
+    },
+    {
+      "notes": "Stereotyp Location (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Location"
+    },
+    {
+      "notes": "Stereotyp Measurement (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Measurement"
+    },
+    {
+      "notes": "Stereotyp MeasurementType (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/MeasurementType"
+    },
+    {
+      "notes": "Stereotyp NaturalResource (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/NaturalResource"
+    },
+    {
+      "notes": "Stereotyp NonfunctionalRequirement (Requirement).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/NonfunctionalRequirement"
+    },
+    {
+      "notes": "Stereotyp OperationalActivity (Activity).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalActivity"
+    },
+    {
+      "notes": "Stereotyp OperationalActivityAction (Action).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalActivityAction"
+    },
+    {
+      "notes": "Stereotyp OperationalAgent (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalAgent"
+    },
+    {
+      "notes": "Stereotyp OperationalArchitecture (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalArchitecture"
+    },
+    {
+      "notes": "Stereotyp OperationalAsset (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalAsset"
+    },
+    {
+      "notes": "Stereotyp OperationalConstraint (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalConstraint"
+    },
+    {
+      "notes": "Stereotyp OperationalInterface (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalInterface"
+    },
+    {
+      "notes": "Stereotyp OperationalMethod (Operation).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalMethod"
+    },
+    {
+      "notes": "Stereotyp OperationalParameter (Parameter).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalParameter"
+    },
+    {
+      "notes": "Stereotyp OperationalPerformer (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalPerformer"
+    },
+    {
+      "notes": "Stereotyp OperationalPort (Port).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalPort"
+    },
+    {
+      "notes": "Stereotyp OperationalRole (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalRole"
+    },
+    {
+      "notes": "Stereotyp OperationalSignal (Signal).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalSignal"
+    },
+    {
+      "notes": "Stereotyp OperationalSignalProperty (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalSignalProperty"
+    },
+    {
+      "notes": "Stereotyp OperationalStateDescription (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OperationalStateDescription"
+    },
+    {
+      "notes": "Stereotyp Organization (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Organization"
+    },
+    {
+      "notes": "Stereotyp OrganizationalResource (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/OrganizationalResource"
+    },
+    {
+      "notes": "Stereotyp PaperForm (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/PaperForm"
+    },
+    {
+      "notes": "Stereotyp Person (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Person"
+    },
+    {
+      "notes": "Stereotyp PhysicalResource (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/PhysicalResource"
+    },
+    {
+      "notes": "Stereotyp Post (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Post"
+    },
+    {
+      "notes": "Stereotyp PostRole (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/PostRole"
+    },
+    {
+      "notes": "Stereotyp ProblemDomain (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ProblemDomain"
+    },
+    {
+      "notes": "Stereotyp Project (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Project"
+    },
+    {
+      "notes": "Stereotyp ProjectMilestone (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ProjectMilestone"
+    },
+    {
+      "notes": "Stereotyp ProjectMilestoneRole (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ProjectMilestoneRole"
+    },
+    {
+      "notes": "Stereotyp ProjectRole (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ProjectRole"
+    },
+    {
+      "notes": "Stereotyp ProjectStatus (Slot).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ProjectStatus"
+    },
+    {
+      "notes": "Stereotyp ProjectTheme (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ProjectTheme"
+    },
+    {
+      "notes": "Stereotyp Protocol (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Protocol"
+    },
+    {
+      "notes": "Stereotyp ProtocolLayer (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ProtocolLayer"
+    },
+    {
+      "notes": "Stereotyp Protocolstack (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Protocolstack"
+    },
+    {
+      "notes": "Stereotyp ProvidedServiceLevel (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ProvidedServiceLevel"
+    },
+    {
+      "notes": "Stereotyp Recommendation (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Recommendation"
+    },
+    {
+      "notes": "Stereotyp Reference (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Reference"
+    },
+    {
+      "notes": "Stereotyp RequiredServiceLevel (Object).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/RequiredServiceLevel"
+    },
+    {
+      "notes": "Stereotyp RequirementCatalogue (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/RequirementCatalogue"
+    },
+    {
+      "notes": "Stereotyp RequirementCategory (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/RequirementCategory"
+    },
+    {
+      "notes": "Stereotyp ResourceArchitecture (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceArchitecture"
+    },
+    {
+      "notes": "Stereotyp ResourceArtifact (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceArtifact"
+    },
+    {
+      "notes": "Stereotyp ResourceAsset (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceAsset"
+    },
+    {
+      "notes": "Stereotyp ResourceConstraint (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceConstraint"
+    },
+    {
+      "notes": "Stereotyp ResourceInterface (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceInterface"
+    },
+    {
+      "notes": "Stereotyp ResourceMethod (Operation).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceMethod"
+    },
+    {
+      "notes": "Stereotyp ResourceMitigation (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceMitigation"
+    },
+    {
+      "notes": "Stereotyp ResourceParameter (Parameter).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceParameter"
+    },
+    {
+      "notes": "Stereotyp ResourcePerformer (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourcePerformer"
+    },
+    {
+      "notes": "Stereotyp ResourcePort (Port).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourcePort"
+    },
+    {
+      "notes": "Stereotyp ResourceRole (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceRole"
+    },
+    {
+      "notes": "Stereotyp ResourceSignal (Signal).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceSignal"
+    },
+    {
+      "notes": "Stereotyp ResourceSignalProperty (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceSignalProperty"
+    },
+    {
+      "notes": "Stereotyp ResourceStateDescription (StateMachine).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ResourceStateDescription"
+    },
+    {
+      "notes": "Stereotyp Responsibility (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Responsibility"
+    },
+    {
+      "notes": "Stereotyp Rule (Constraint).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Rule"
+    },
+    {
+      "notes": "Stereotyp SecurityConstraint (Constraint).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/SecurityConstraint"
+    },
+    {
+      "notes": "Stereotyp SecurityEnclave (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/SecurityEnclave"
+    },
+    {
+      "notes": "Stereotyp SecurityProcess (Activity).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/SecurityProcess"
+    },
+    {
+      "notes": "Stereotyp ServiceFunction (Activity).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServiceFunction"
+    },
+    {
+      "notes": "Stereotyp ServiceFunctionAction (Action).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServiceFunctionAction"
+    },
+    {
+      "notes": "Stereotyp ServiceInterface (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServiceInterface"
+    },
+    {
+      "notes": "Stereotyp ServiceMethod (Operation).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServiceMethod"
+    },
+    {
+      "notes": "Stereotyp ServiceParameter (Parameter).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServiceParameter"
+    },
+    {
+      "notes": "Stereotyp ServicePolicy (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServicePolicy"
+    },
+    {
+      "notes": "Stereotyp ServicePort (Port).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServicePort"
+    },
+    {
+      "notes": "Stereotyp ServiceSpecification (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServiceSpecification"
+    },
+    {
+      "notes": "Stereotyp ServiceSpecificationRole (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServiceSpecificationRole"
+    },
+    {
+      "notes": "Stereotyp ServiceStateDescription (StateMachine).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/ServiceStateDescription"
+    },
+    {
+      "notes": "Stereotyp SMEReference (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/SMEReference"
+    },
+    {
+      "notes": "Stereotyp Software (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Software"
+    },
+    {
+      "notes": "Stereotyp Standard (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Standard"
+    },
+    {
+      "notes": "Stereotyp StandardOperationalActivity (Activity).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/StandardOperationalActivity"
+    },
+    {
+      "notes": "Stereotyp StateDescription (StateMachine).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/StateDescription"
+    },
+    {
+      "notes": "Stereotyp StrategicConstraint (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/StrategicConstraint"
+    },
+    {
+      "notes": "Stereotyp SubjectOfForecast (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/SubjectOfForecast"
+    },
+    {
+      "notes": "Stereotyp SubOrganization (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/SubOrganization"
+    },
+    {
+      "notes": "Stereotyp System (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/System"
+    },
+    {
+      "notes": "Stereotyp Technology (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Technology"
+    },
+    {
+      "notes": "Stereotyp TemporalPart (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/TemporalPart"
+    },
+    {
+      "notes": "Stereotyp VersionOfConfiguration (Part).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/VersionOfConfiguration"
+    },
+    {
+      "notes": "Stereotyp View (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/View"
+    },
+    {
+      "notes": "Stereotyp Viewpoint (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/Viewpoint"
+    },
+    {
+      "notes": "Stereotyp WholeLifeConfiguration (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/WholeLifeConfiguration"
+    },
+    {
+      "notes": "Stereotyp WholeLifeEnterprise (Class).",
+      "path": "Projektarchitektur/Projektarchitektur - Idealtypische Architektur/Modellelementekatalog/WholeLifeEnterprise"
+    },
+    {
+      "notes": "Alle Viewpoints der Technologie.",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)"
+    },
+    {
+      "notes": "A1 - Meta-Data Definitions",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A1"
+    },
+    {
+      "notes": "A2 - Architecture Products",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A2"
+    },
+    {
+      "notes": "A3 - Architecture Correspondence",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A3"
+    },
+    {
+      "notes": "A4 - Methodology Used",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A4"
+    },
+    {
+      "notes": "A5 - Architecture Status",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A5"
+    },
+    {
+      "notes": "A6 - Architecture Version",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A6"
+    },
+    {
+      "notes": "A7 - Architecture Compliance",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A7"
+    },
+    {
+      "notes": "A8 - Standards",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/A8"
+    },
+    {
+      "notes": "Ar - Architecture Roadmap",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Ar"
+    },
+    {
+      "notes": "Business Process",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Business Process"
+    },
+    {
+      "notes": "C1 - Capability Taxonomy",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C1"
+    },
+    {
+      "notes": "C1-S1 - Capability to Service Mapping",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C1-S1"
+    },
+    {
+      "notes": "C2 - Enterprise Vision",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C2"
+    },
+    {
+      "notes": "C3 - Capability Dependencies",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C3"
+    },
+    {
+      "notes": "C4 - Standard Processes",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C4"
+    },
+    {
+      "notes": "C5 - Effects",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C5"
+    },
+    {
+      "notes": "C7 - Performance Parameters",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C7"
+    },
+    {
+      "notes": "C8 - Planning Assumptions",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/C8"
+    },
+    {
+      "notes": "Cr - Capability Roadmap",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Cr"
+    },
+    {
+      "notes": "L1 - Node Types",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L1"
+    },
+    {
+      "notes": "L2 - Logical Scenario",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L2"
+    },
+    {
+      "notes": "L2-L3 - Logical Concept",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L2-L3"
+    },
+    {
+      "notes": "L3 - Node Interactions",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L3"
+    },
+    {
+      "notes": "L4 - Logical Activities",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L4"
+    },
+    {
+      "notes": "L4-P4 - Activity To Function Mapping",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L4-P4"
+    },
+    {
+      "notes": "L5 - Logical States",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L5"
+    },
+    {
+      "notes": "L6 - Logical Sequence",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L6"
+    },
+    {
+      "notes": "L7 - Information Model",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L7"
+    },
+    {
+      "notes": "L8 - Logical Constraints",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/L8"
+    },
+    {
+      "notes": "Lr - Lines of Development",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Lr"
+    },
+    {
+      "notes": "P1 - Resource Types",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P1"
+    },
+    {
+      "notes": "P2 - Resource Structure",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P2"
+    },
+    {
+      "notes": "P3 - Resource Connectivity",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P3"
+    },
+    {
+      "notes": "P4 - Resource Functions",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P4"
+    },
+    {
+      "notes": "P5 - Resource States",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P5"
+    },
+    {
+      "notes": "P6 - Resource Sequence",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P6"
+    },
+    {
+      "notes": "P7 - Data Model",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P7"
+    },
+    {
+      "notes": "P8 - Resource Constraints",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/P8"
+    },
+    {
+      "notes": "Pr - Configuration Management",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Pr"
+    },
+    {
+      "notes": "R2 - Requirement Catalogue",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/R2"
+    },
+    {
+      "notes": "R3 - Requirement Dependencies",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/R3"
+    },
+    {
+      "notes": "R7 - Requirement Derivation",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/R7"
+    },
+    {
+      "notes": "R8 - Requirement Fulfilment",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/R8"
+    },
+    {
+      "notes": "Rr - Requirement Realization",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Rr"
+    },
+    {
+      "notes": "S1 - Service Taxonomy",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S1"
+    },
+    {
+      "notes": "S2 - Service Structure",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S2"
+    },
+    {
+      "notes": "S3 - Service Interfaces",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S3"
+    },
+    {
+      "notes": "S4 - Service Functions",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S4"
+    },
+    {
+      "notes": "S5 - Service States",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S5"
+    },
+    {
+      "notes": "S6 - Service Interactions",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S6"
+    },
+    {
+      "notes": "S7 - Service Interface Parameters",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S7"
+    },
+    {
+      "notes": "S8 - Service Policy",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/S8"
+    },
+    {
+      "notes": "Sr - Service Roadmap",
+      "path": "Projektarchitektur/Viewpoints (Gesamtgefüge)/Sr"
+    },
+    {
+      "notes": "Begriffe des Modells.",
+      "path": "Projektarchitektur/Projektarchitektur - Glossar"
+    },
+    {
+      "notes": "Abkuerzungen.",
+      "path": "Projektarchitektur/Projektarchitektur - Glossar/Abkürzungsverzeichnis"
+    }
+  ],
+  "technology": {
+    "name": "NAFv4-ADMBw",
+    "profile": "NAFv4-ADMBw",
+    "version": "2026.05"
+  }
+}

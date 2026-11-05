@@ -1,0 +1,108 @@
+{
+  "ir_version": 1,
+  "technology": {
+    "profile": "Beispielprofil",
+    "name": "Synthetisches Beispiel-MDG",
+    "version": "1.0"
+  },
+  "meta": {
+    "zweck": "Rein synthetisches Mini-Modell fuer Tests. Keine echten Modelle, keine Personendaten."
+  },
+  "packages": [
+    {
+      "path": "Beispielmodell",
+      "notes": "Wurzelpaket des synthetischen Beispiels."
+    },
+    {
+      "path": "Beispielmodell/Komponenten",
+      "notes": "Enthaelt die synthetischen Komponenten."
+    },
+    {
+      "path": "Beispielmodell/Schnittstellen",
+      "stereotype": "ArchitecturalDescription",
+      "notes": "Enthaelt die synthetischen Schnittstellen."
+    }
+  ],
+  "elements": [
+    {
+      "package": "Beispielmodell/Komponenten",
+      "name": "Komponente A",
+      "stereotype": "System",
+      "ea_type": "Class",
+      "notes": "Synthetische Komponente A.",
+      "tags": {
+        "Herkunft": "synthetisch",
+        "Reifegrad": "2"
+      }
+    },
+    {
+      "package": "Beispielmodell/Komponenten",
+      "name": "Komponente B",
+      "stereotype": "System",
+      "ea_type": "Class",
+      "notes": "Synthetische Komponente B.",
+      "tags": {
+        "Herkunft": "synthetisch"
+      }
+    },
+    {
+      "package": "Beispielmodell/Komponenten",
+      "name": "Dienst C",
+      "stereotype": "ServiceSpecification",
+      "ea_type": "Class",
+      "notes": "Synthetischer Dienst C.",
+      "tags": {
+        "Herkunft": "synthetisch",
+        "Verfuegbarkeit": "99.5"
+      }
+    },
+    {
+      "package": "Beispielmodell/Schnittstellen",
+      "name": "Schnittstelle X",
+      "stereotype": "ServicePort",
+      "ea_type": "Port",
+      "notes": "Synthetische Schnittstelle X."
+    },
+    {
+      "package": "Beispielmodell/Schnittstellen",
+      "name": "Schnittstelle Y",
+      "stereotype": "ServicePort",
+      "ea_type": "Port",
+      "notes": "Synthetische Schnittstelle Y.",
+      "tags": {
+        "Richtung": "eingehend"
+      }
+    }
+  ],
+  "connectors": [
+    {
+      "source": "Beispielmodell/Komponenten::Komponente A",
+      "target": "Beispielmodell/Schnittstellen::Schnittstelle X",
+      "stereotype": "Provides",
+      "ea_type": "Dependency"
+    },
+    {
+      "source": "Beispielmodell/Komponenten::Komponente A",
+      "target": "Beispielmodell/Komponenten::Komponente B",
+      "stereotype": "Satisfy",
+      "ea_type": "Dependency",
+      "notes": "Synthetische Anforderungsbeziehung.",
+      "tags": {
+        "Begruendung": "synthetisch"
+      }
+    },
+    {
+      "source": "Beispielmodell/Komponenten::Dienst C",
+      "target": "Beispielmodell/Schnittstellen::Schnittstelle Y",
+      "stereotype": "Consumes",
+      "ea_type": "Dependency"
+    },
+    {
+      "source": "Beispielmodell/Komponenten::Komponente B",
+      "target": "Beispielmodell/Schnittstellen::Schnittstelle Y",
+      "stereotype": "Realisation",
+      "ea_type": "Realisation"
+    }
+  ],
+  "diagrams": []
+}

@@ -1,0 +1,14 @@
+{
+  "name": "eam-suite",
+  "version": "8.4.0",
+  "private": true,
+  "description": "EAM Suite — eigenständige HTML-Auslieferung aus dem Altwerkzeug",
+  "main": "dist/EAM-Suite.html",
+  "files": [
+    "**/*"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@mitchel85/eam-vendor": "*"
+  }
+}

@@ -1,0 +1,1350 @@
+{
+  "schemaVersion": "1.0",
+  "zweck": "Regelgrundlage fuer BMC (BPMN-Werkzeug der EAM-Toolfamilie): Abbildung BPMN-Element -> ADMBw-Stereotyp der MDG 2026.05, L4-Modellierungskonventionen des Leitfadens FFfmLV 2.0 und die daraus pruefbaren Regeln.",
+  "stand": "2026-11-04",
+  "quellen": {
+    "stereotype": {
+      "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+      "release": "2026.05",
+      "sha256": "f03851ff9daa21360a236a44ed5fd40577d7dcc76fabfb3bbf301a73b1c0d325"
+    },
+    "mdg": {
+      "datei": "packages/rules/NAFv4-ADMBw-MDG-2026.05.xml",
+      "sha256": "e2e8c69281dcc83ad4382bd1b196c23850a847defb33d0a0ffcb429d747f3643"
+    },
+    "konventionen": {
+      "datei": "knowledge/leitfaden/konventionen.json",
+      "sha256": "84cad7981e4f02973fda152f1d36332f826ffc2c8aa8de1085075f4a89d38f79"
+    },
+    "regelwerk": {
+      "datei": "knowledge/regelwerk.json",
+      "sha256": "639271916f35e67c8ee19ccc649675ac3806d0695ff55d0aa4e5248ba0d42671"
+    }
+  },
+  "l4Sicht": {
+    "titel": "L4 - Logical Activities",
+    "toolbox": "NAFv4-ADMBw-L4-Toolbox",
+    "elemente": [
+      "ActivityPerformableUnderCondition",
+      "ActivitySupportsService",
+      "ActsUpon",
+      "ActualCondition",
+      "ActualService",
+      "AffectedActivity",
+      "AffectedResource",
+      "Classification",
+      "Classified",
+      "ConformsTo",
+      "Consumes",
+      "DocumentReference",
+      "Finding",
+      "GeoPoliticalExtentType",
+      "Implements",
+      "InformationElement",
+      "InformationRole",
+      "IsCapableToPerform",
+      "JustifiedBy",
+      "KnownResource",
+      "NaturalResource",
+      "OperationalActivity",
+      "OperationalActivityAction",
+      "OperationalConstraint",
+      "OperationalExchange",
+      "OperationalPerformer",
+      "OperationalRole",
+      "OperationalSignal",
+      "Organization",
+      "OriginatesFrom",
+      "PaperForm",
+      "PerformsInContext",
+      "Person",
+      "Post",
+      "ProcessGeneralization",
+      "Project",
+      "RealizesRecommendation",
+      "Recommendation",
+      "Reference",
+      "RefersTo",
+      "RequiredServiceLevel",
+      "ResourceArchitecture",
+      "ResourceArtifact",
+      "Responsibility",
+      "ResultsFrom",
+      "SMEReference",
+      "Satisfy",
+      "ServiceSpecification",
+      "Standard",
+      "StandardOperationalActivity"
+    ],
+    "konventionen": [
+      "L4-MK01",
+      "L4-MK02",
+      "L4-MK03",
+      "L4-MK04",
+      "L4-MK05",
+      "L4-MK06",
+      "L4-MK07",
+      "L4-MK08",
+      "L4-MK09",
+      "L4-MK10",
+      "L4-MK11",
+      "L4-MK12",
+      "L4-MK13",
+      "L4-MK14",
+      "L4-MK15",
+      "L4-MK16",
+      "L4-MK17",
+      "L4-MK18",
+      "L4-MK19",
+      "L4-MK20"
+    ],
+    "herkunft": "knowledge/regelwerk.json:viewpoints.L4"
+  },
+  "stereotype": {
+    "OperationalActivity": {
+      "name": "OperationalActivity",
+      "appliesTo": [
+        "Activity"
+      ],
+      "abstract": false,
+      "parents": [
+        "BusinessProcess"
+      ],
+      "konkreteNachfahren": [
+        "SecurityProcess",
+        "StandardOperationalActivity"
+      ],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=OperationalActivity]"
+      }
+    },
+    "OperationalActivityAction": {
+      "name": "OperationalActivityAction",
+      "appliesTo": [
+        "Action"
+      ],
+      "abstract": false,
+      "parents": [
+        "MeasurableElement"
+      ],
+      "konkreteNachfahren": [],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=OperationalActivityAction]"
+      }
+    },
+    "OperationalControlFlow": {
+      "name": "OperationalControlFlow",
+      "appliesTo": [
+        "ControlFlow"
+      ],
+      "abstract": false,
+      "parents": [
+        "OperationalActivityEdge"
+      ],
+      "konkreteNachfahren": [],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=OperationalControlFlow]"
+      }
+    },
+    "OperationalMessageFlow": {
+      "name": "OperationalMessageFlow",
+      "appliesTo": [
+        "ControlFlow"
+      ],
+      "abstract": false,
+      "parents": [
+        "BPMN2.0::MessageFlow"
+      ],
+      "konkreteNachfahren": [],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=OperationalMessageFlow]"
+      }
+    },
+    "OperationalObjectFlow": {
+      "name": "OperationalObjectFlow",
+      "appliesTo": [
+        "ObjectFlow"
+      ],
+      "abstract": false,
+      "parents": [
+        "OperationalActivityEdge"
+      ],
+      "konkreteNachfahren": [],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=OperationalObjectFlow]"
+      }
+    },
+    "OperationalActivityEdge": {
+      "name": "OperationalActivityEdge",
+      "appliesTo": [],
+      "abstract": true,
+      "parents": [
+        "ProcessEdge"
+      ],
+      "konkreteNachfahren": [
+        "OperationalControlFlow",
+        "OperationalObjectFlow"
+      ],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=OperationalActivityEdge]"
+      }
+    },
+    "OperationalExchange": {
+      "name": "OperationalExchange",
+      "appliesTo": [
+        "InformationFlow"
+      ],
+      "abstract": false,
+      "parents": [
+        "Exchange"
+      ],
+      "konkreteNachfahren": [],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=OperationalExchange]"
+      }
+    },
+    "OperationalExchangeItem": {
+      "name": "OperationalExchangeItem",
+      "appliesTo": [],
+      "abstract": true,
+      "parents": [
+        "ExchangeItem"
+      ],
+      "konkreteNachfahren": [
+        "GeoPoliticalExtentType",
+        "InformationElement",
+        "InformationRole",
+        "OperationalSignal",
+        "ResourcePerformer",
+        "KnownResource",
+        "PhysicalResource",
+        "Energy",
+        "NaturalResource",
+        "OrganizationalResource",
+        "Organization",
+        "Person"
+      ],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=OperationalExchangeItem]"
+      }
+    },
+    "ExchangeItem": {
+      "name": "ExchangeItem",
+      "appliesTo": [],
+      "abstract": true,
+      "parents": [],
+      "konkreteNachfahren": [
+        "OperationalExchangeItem",
+        "GeoPoliticalExtentType",
+        "InformationElement",
+        "InformationRole",
+        "OperationalSignal",
+        "ResourcePerformer",
+        "KnownResource",
+        "PhysicalResource",
+        "Energy",
+        "NaturalResource",
+        "OrganizationalResource",
+        "Organization"
+      ],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=ExchangeItem]"
+      }
+    },
+    "OperationalPerformer": {
+      "name": "OperationalPerformer",
+      "appliesTo": [
+        "Class"
+      ],
+      "abstract": false,
+      "parents": [
+        "OperationalAgent"
+      ],
+      "konkreteNachfahren": [
+        "KnownResource"
+      ],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=OperationalPerformer]"
+      }
+    },
+    "OperationalAgent": {
+      "name": "OperationalAgent",
+      "appliesTo": [
+        "Class"
+      ],
+      "abstract": true,
+      "parents": [
+        "CapableElement"
+      ],
+      "konkreteNachfahren": [
+        "OperationalArchitecture",
+        "OperationalPerformer",
+        "KnownResource"
+      ],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=OperationalAgent]"
+      }
+    },
+    "OperationalArchitecture": {
+      "name": "OperationalArchitecture",
+      "appliesTo": [
+        "Class"
+      ],
+      "abstract": false,
+      "parents": [
+        "Architecture"
+      ],
+      "konkreteNachfahren": [],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=OperationalArchitecture]"
+      }
+    },
+    "OperationalRole": {
+      "name": "OperationalRole",
+      "appliesTo": [
+        "Part"
+      ],
+      "abstract": false,
+      "parents": [
+        "AssetRole"
+      ],
+      "konkreteNachfahren": [
+        "ProblemDomain"
+      ],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=OperationalRole]"
+      }
+    },
+    "InformationElement": {
+      "name": "InformationElement",
+      "appliesTo": [
+        "Class"
+      ],
+      "abstract": false,
+      "parents": [
+        "OperationalAsset"
+      ],
+      "konkreteNachfahren": [],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=InformationElement]"
+      }
+    },
+    "InformationRole": {
+      "name": "InformationRole",
+      "appliesTo": [
+        "Part"
+      ],
+      "abstract": false,
+      "parents": [
+        "AssetRole"
+      ],
+      "konkreteNachfahren": [],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=InformationRole]"
+      }
+    },
+    "OperationalSignal": {
+      "name": "OperationalSignal",
+      "appliesTo": [
+        "Signal"
+      ],
+      "abstract": false,
+      "parents": [
+        "OperationalExchangeItem"
+      ],
+      "konkreteNachfahren": [],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=OperationalSignal]"
+      }
+    },
+    "BusinessProcess": {
+      "name": "BusinessProcess",
+      "appliesTo": [
+        "Activity"
+      ],
+      "abstract": true,
+      "parents": [
+        "Achiever"
+      ],
+      "konkreteNachfahren": [
+        "Function",
+        "SecurityProcess",
+        "OperationalActivity",
+        "StandardOperationalActivity",
+        "ServiceFunction"
+      ],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=BusinessProcess]"
+      }
+    },
+    "StandardOperationalActivity": {
+      "name": "StandardOperationalActivity",
+      "appliesTo": [
+        "Activity"
+      ],
+      "abstract": false,
+      "parents": [
+        "Achiever"
+      ],
+      "konkreteNachfahren": [],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=StandardOperationalActivity]"
+      }
+    },
+    "Implements": {
+      "name": "Implements",
+      "appliesTo": [
+        "Abstraction"
+      ],
+      "abstract": false,
+      "parents": [
+        "MeasurableElement"
+      ],
+      "konkreteNachfahren": [],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=Implements]"
+      }
+    },
+    "PerformsInContext": {
+      "name": "PerformsInContext",
+      "appliesTo": [
+        "Abstraction"
+      ],
+      "abstract": false,
+      "parents": [
+        "MeasurableElement"
+      ],
+      "konkreteNachfahren": [],
+      "herkunft": {
+        "datei": "apps/admbw-extractor/ADMBw-Stereotypes.json",
+        "release": "2026.05",
+        "quelle": "NAFv4-ADMBw",
+        "feld": "stereotypes[name=PerformsInContext]"
+      }
+    }
+  },
+  "metaconstraints": {
+    "OperationalControlFlow": {
+      "source": [
+        "BPMN2.0::Gateway",
+        "BPMN2.0::IntermediateEvent",
+        "BPMN2.0::StartEvent",
+        "NAFv4-ADMBw::OperationalActivityAction"
+      ],
+      "target": [
+        "BPMN2.0::EndEvent",
+        "BPMN2.0::Gateway",
+        "BPMN2.0::IntermediateEvent",
+        "NAFv4-ADMBw::OperationalActivityAction"
+      ]
+    },
+    "OperationalMessageFlow": {
+      "source": [
+        "BPMN2.0::IntermediateEvent",
+        "BPMN2.0::Lane",
+        "BPMN2.0::Pool",
+        "NAFv4-ADMBw::OperationalActivityAction"
+      ],
+      "target": [
+        "BPMN2.0::IntermediateEvent",
+        "BPMN2.0::Lane",
+        "BPMN2.0::Pool",
+        "NAFv4-ADMBw::OperationalActivityAction"
+      ]
+    },
+    "OperationalObjectFlow": {
+      "source": [
+        "BPMN2.0::Gateway",
+        "BPMN2.0::IntermediateEvent",
+        "BPMN2.0::StartEvent",
+        "NAFv4-ADMBw::OperationalActivityAction"
+      ],
+      "target": [
+        "BPMN2.0::EndEvent",
+        "BPMN2.0::Gateway",
+        "BPMN2.0::IntermediateEvent",
+        "NAFv4-ADMBw::OperationalActivityAction"
+      ]
+    }
+  },
+  "elementtypen": {
+    "start_event": {
+      "bpmn": "startEvent",
+      "admbw": null,
+      "sicherheit": "kein-stereotyp",
+      "begruendung": "BPMN-Standardereignis. Die MDG 2026.05 fuehrt kein Stereotyp fuer Startereignisse; der Leitfaden nennt STARTEVENT nur als Prozesselement.",
+      "konventionen": [
+        "L4-MK11",
+        "L4-MK12",
+        "L4-MK13",
+        "L4-MK16"
+      ],
+      "quelle": [
+        "leitfaden:L4-MK11",
+        "admbw-stereotypes:ohne-treffer"
+      ],
+      "admbwVorhanden": false
+    },
+    "end_event": {
+      "bpmn": "endEvent",
+      "admbw": null,
+      "sicherheit": "kein-stereotyp",
+      "begruendung": "BPMN-Standardereignis ohne ADMBw-Stereotyp in der MDG 2026.05.",
+      "konventionen": [
+        "L4-MK11",
+        "L4-MK12",
+        "L4-MK13",
+        "L4-MK16"
+      ],
+      "quelle": [
+        "leitfaden:L4-MK11",
+        "admbw-stereotypes:ohne-treffer"
+      ],
+      "admbwVorhanden": false
+    },
+    "intermediate_catch_event": {
+      "bpmn": "intermediateCatchEvent",
+      "admbw": null,
+      "sicherheit": "kein-stereotyp",
+      "begruendung": "Fuer L4-MK18 vorgesehen (Bedingung vor einer Aktion). Kein eigenes ADMBw-Stereotyp; die MDG nennt BPMN2.0::IntermediateEvent nur als erlaubtes Ende von OperationalControlFlow und OperationalMessageFlow.",
+      "konventionen": [
+        "L4-MK13",
+        "L4-MK15",
+        "L4-MK18",
+        "L4-MK20"
+      ],
+      "quelle": [
+        "leitfaden:L4-MK18",
+        "mdg:OperationalControlFlow"
+      ],
+      "admbwVorhanden": false
+    },
+    "intermediate_throw_event": {
+      "bpmn": "intermediateThrowEvent",
+      "admbw": null,
+      "sicherheit": "kein-stereotyp",
+      "begruendung": "Wie das empfangende Zwischenereignis: BPMN-Standard ohne ADMBw-Stereotyp.",
+      "konventionen": [
+        "L4-MK13",
+        "L4-MK15",
+        "L4-MK18"
+      ],
+      "quelle": [
+        "leitfaden:L4-MK18",
+        "admbw-stereotypes:ohne-treffer"
+      ],
+      "admbwVorhanden": false
+    },
+    "task": {
+      "bpmn": "task",
+      "admbw": "OperationalActivityAction",
+      "sicherheit": "belegt",
+      "begruendung": "L4-MK14 verlangt, dass Aktionen (OPERATIONALACTIVITYACTION) ueber das Behavior mit der Aktivitaet typisiert sind; OperationalActivityAction ist das einzige nicht abstrakte Stereotyp auf UML Action.",
+      "konventionen": [
+        "L4-MK11",
+        "L4-MK12",
+        "L4-MK13",
+        "L4-MK14",
+        "L4-MK15",
+        "L4-MK16",
+        "L4-MK17"
+      ],
+      "quelle": [
+        "admbw-stereotypes:OperationalActivityAction",
+        "admbw-doku:3.152",
+        "leitfaden:L4-MK14"
+      ],
+      "admbwVorhanden": true
+    },
+    "service_task": {
+      "bpmn": "task",
+      "admbw": "OperationalActivityAction",
+      "sicherheit": "belegt",
+      "begruendung": "L4-MK14 verlangt, dass Aktionen (OPERATIONALACTIVITYACTION) ueber das Behavior mit der Aktivitaet typisiert sind; OperationalActivityAction ist das einzige nicht abstrakte Stereotyp auf UML Action.",
+      "konventionen": [
+        "L4-MK11",
+        "L4-MK12",
+        "L4-MK13",
+        "L4-MK14",
+        "L4-MK15",
+        "L4-MK16",
+        "L4-MK17"
+      ],
+      "quelle": [
+        "admbw-stereotypes:OperationalActivityAction",
+        "admbw-doku:3.152",
+        "leitfaden:L4-MK14"
+      ],
+      "admbwVorhanden": true,
+      "hinweis": "gleiche Abbildung wie task"
+    },
+    "user_task": {
+      "bpmn": "task",
+      "admbw": "OperationalActivityAction",
+      "sicherheit": "belegt",
+      "begruendung": "L4-MK14 verlangt, dass Aktionen (OPERATIONALACTIVITYACTION) ueber das Behavior mit der Aktivitaet typisiert sind; OperationalActivityAction ist das einzige nicht abstrakte Stereotyp auf UML Action.",
+      "konventionen": [
+        "L4-MK11",
+        "L4-MK12",
+        "L4-MK13",
+        "L4-MK14",
+        "L4-MK15",
+        "L4-MK16",
+        "L4-MK17"
+      ],
+      "quelle": [
+        "admbw-stereotypes:OperationalActivityAction",
+        "admbw-doku:3.152",
+        "leitfaden:L4-MK14"
+      ],
+      "admbwVorhanden": true,
+      "hinweis": "gleiche Abbildung wie task"
+    },
+    "send_task": {
+      "bpmn": "task",
+      "admbw": "OperationalActivityAction",
+      "sicherheit": "belegt",
+      "begruendung": "L4-MK14 verlangt, dass Aktionen (OPERATIONALACTIVITYACTION) ueber das Behavior mit der Aktivitaet typisiert sind; OperationalActivityAction ist das einzige nicht abstrakte Stereotyp auf UML Action.",
+      "konventionen": [
+        "L4-MK11",
+        "L4-MK12",
+        "L4-MK13",
+        "L4-MK14",
+        "L4-MK15",
+        "L4-MK16",
+        "L4-MK17"
+      ],
+      "quelle": [
+        "admbw-stereotypes:OperationalActivityAction",
+        "admbw-doku:3.152",
+        "leitfaden:L4-MK14"
+      ],
+      "admbwVorhanden": true,
+      "hinweis": "gleiche Abbildung wie task"
+    },
+    "receive_task": {
+      "bpmn": "task",
+      "admbw": "OperationalActivityAction",
+      "sicherheit": "belegt",
+      "begruendung": "L4-MK14 verlangt, dass Aktionen (OPERATIONALACTIVITYACTION) ueber das Behavior mit der Aktivitaet typisiert sind; OperationalActivityAction ist das einzige nicht abstrakte Stereotyp auf UML Action.",
+      "konventionen": [
+        "L4-MK11",
+        "L4-MK12",
+        "L4-MK13",
+        "L4-MK14",
+        "L4-MK15",
+        "L4-MK16",
+        "L4-MK17"
+      ],
+      "quelle": [
+        "admbw-stereotypes:OperationalActivityAction",
+        "admbw-doku:3.152",
+        "leitfaden:L4-MK14"
+      ],
+      "admbwVorhanden": true,
+      "hinweis": "gleiche Abbildung wie task"
+    },
+    "script_task": {
+      "bpmn": "task",
+      "admbw": "OperationalActivityAction",
+      "sicherheit": "belegt",
+      "begruendung": "L4-MK14 verlangt, dass Aktionen (OPERATIONALACTIVITYACTION) ueber das Behavior mit der Aktivitaet typisiert sind; OperationalActivityAction ist das einzige nicht abstrakte Stereotyp auf UML Action.",
+      "konventionen": [
+        "L4-MK11",
+        "L4-MK12",
+        "L4-MK13",
+        "L4-MK14",
+        "L4-MK15",
+        "L4-MK16",
+        "L4-MK17"
+      ],
+      "quelle": [
+        "admbw-stereotypes:OperationalActivityAction",
+        "admbw-doku:3.152",
+        "leitfaden:L4-MK14"
+      ],
+      "admbwVorhanden": true,
+      "hinweis": "gleiche Abbildung wie task"
+    },
+    "manual_task": {
+      "bpmn": "task",
+      "admbw": "OperationalActivityAction",
+      "sicherheit": "belegt",
+      "begruendung": "L4-MK14 verlangt, dass Aktionen (OPERATIONALACTIVITYACTION) ueber das Behavior mit der Aktivitaet typisiert sind; OperationalActivityAction ist das einzige nicht abstrakte Stereotyp auf UML Action.",
+      "konventionen": [
+        "L4-MK11",
+        "L4-MK12",
+        "L4-MK13",
+        "L4-MK14",
+        "L4-MK15",
+        "L4-MK16",
+        "L4-MK17"
+      ],
+      "quelle": [
+        "admbw-stereotypes:OperationalActivityAction",
+        "admbw-doku:3.152",
+        "leitfaden:L4-MK14"
+      ],
+      "admbwVorhanden": true,
+      "hinweis": "gleiche Abbildung wie task"
+    },
+    "business_rule_task": {
+      "bpmn": "task",
+      "admbw": "OperationalActivityAction",
+      "sicherheit": "belegt",
+      "begruendung": "L4-MK14 verlangt, dass Aktionen (OPERATIONALACTIVITYACTION) ueber das Behavior mit der Aktivitaet typisiert sind; OperationalActivityAction ist das einzige nicht abstrakte Stereotyp auf UML Action.",
+      "konventionen": [
+        "L4-MK11",
+        "L4-MK12",
+        "L4-MK13",
+        "L4-MK14",
+        "L4-MK15",
+        "L4-MK16",
+        "L4-MK17"
+      ],
+      "quelle": [
+        "admbw-stereotypes:OperationalActivityAction",
+        "admbw-doku:3.152",
+        "leitfaden:L4-MK14"
+      ],
+      "admbwVorhanden": true,
+      "hinweis": "gleiche Abbildung wie task"
+    },
+    "exclusive_gateway": {
+      "bpmn": "exclusiveGateway",
+      "admbw": null,
+      "sicherheit": "kein-stereotyp",
+      "begruendung": "L4-MK15 verlangt Verzweigung und Zusammenfuehrung ueber Gateways. Die MDG fuehrt kein Gateway-Stereotyp; BPMN2.0::Gateway erscheint nur in den Metaconstraints der Kanten.",
+      "konventionen": [
+        "L4-MK13",
+        "L4-MK15"
+      ],
+      "quelle": [
+        "leitfaden:L4-MK15",
+        "mdg:OperationalControlFlow"
+      ],
+      "admbwVorhanden": false
+    },
+    "parallel_gateway": {
+      "bpmn": "exclusiveGateway",
+      "admbw": null,
+      "sicherheit": "kein-stereotyp",
+      "begruendung": "L4-MK15 verlangt Verzweigung und Zusammenfuehrung ueber Gateways. Die MDG fuehrt kein Gateway-Stereotyp; BPMN2.0::Gateway erscheint nur in den Metaconstraints der Kanten.",
+      "konventionen": [
+        "L4-MK13",
+        "L4-MK15"
+      ],
+      "quelle": [
+        "leitfaden:L4-MK15",
+        "mdg:OperationalControlFlow"
+      ],
+      "admbwVorhanden": false,
+      "hinweis": "gleiche Abbildung wie exclusive_gateway"
+    },
+    "inclusive_gateway": {
+      "bpmn": "exclusiveGateway",
+      "admbw": null,
+      "sicherheit": "kein-stereotyp",
+      "begruendung": "L4-MK15 verlangt Verzweigung und Zusammenfuehrung ueber Gateways. Die MDG fuehrt kein Gateway-Stereotyp; BPMN2.0::Gateway erscheint nur in den Metaconstraints der Kanten.",
+      "konventionen": [
+        "L4-MK13",
+        "L4-MK15"
+      ],
+      "quelle": [
+        "leitfaden:L4-MK15",
+        "mdg:OperationalControlFlow"
+      ],
+      "admbwVorhanden": false,
+      "hinweis": "gleiche Abbildung wie exclusive_gateway"
+    },
+    "event_based_gateway": {
+      "bpmn": "exclusiveGateway",
+      "admbw": null,
+      "sicherheit": "kein-stereotyp",
+      "begruendung": "L4-MK15 verlangt Verzweigung und Zusammenfuehrung ueber Gateways. Die MDG fuehrt kein Gateway-Stereotyp; BPMN2.0::Gateway erscheint nur in den Metaconstraints der Kanten.",
+      "konventionen": [
+        "L4-MK13",
+        "L4-MK15"
+      ],
+      "quelle": [
+        "leitfaden:L4-MK15",
+        "mdg:OperationalControlFlow"
+      ],
+      "admbwVorhanden": false,
+      "hinweis": "gleiche Abbildung wie exclusive_gateway"
+    },
+    "complex_gateway": {
+      "bpmn": "exclusiveGateway",
+      "admbw": null,
+      "sicherheit": "kein-stereotyp",
+      "begruendung": "L4-MK15 verlangt Verzweigung und Zusammenfuehrung ueber Gateways. Die MDG fuehrt kein Gateway-Stereotyp; BPMN2.0::Gateway erscheint nur in den Metaconstraints der Kanten.",
+      "konventionen": [
+        "L4-MK13",
+        "L4-MK15"
+      ],
+      "quelle": [
+        "leitfaden:L4-MK15",
+        "mdg:OperationalControlFlow"
+      ],
+      "admbwVorhanden": false,
+      "hinweis": "gleiche Abbildung wie exclusive_gateway"
+    },
+    "sequence_flow": {
+      "bpmn": "sequenceFlow",
+      "admbw": "OperationalControlFlow",
+      "sicherheit": "belegt",
+      "begruendung": "L4-MK15: prozessual abhaengige Elemente sind ueber einen Kontrollfluss (CONTROLFLOW) verbunden.",
+      "konventionen": [
+        "L4-MK15",
+        "L4-MK17"
+      ],
+      "quelle": [
+        "admbw-stereotypes:OperationalControlFlow",
+        "mdg:OperationalControlFlow",
+        "leitfaden:L4-MK15"
+      ],
+      "admbwVorhanden": true
+    },
+    "message_flow": {
+      "bpmn": "messageFlow",
+      "admbw": "OperationalMessageFlow",
+      "sicherheit": "belegt",
+      "begruendung": "L4-MK20: Der Informationsaustausch zwischen Pools erfolgt ueber OPERATIONALMESSAGEFLOW.",
+      "konventionen": [
+        "L4-MK20"
+      ],
+      "quelle": [
+        "admbw-stereotypes:OperationalMessageFlow",
+        "admbw-doku:3.165",
+        "leitfaden:L4-MK20"
+      ],
+      "admbwVorhanden": true
+    },
+    "association": {
+      "bpmn": "association",
+      "admbw": "OperationalExchange",
+      "sicherheit": "abgeleitet",
+      "begruendung": "L4-MK17 verlangt Conveyed Items (EXCHANGEITEM), die mit dem Kontrollfluss verknuepft sind. In BPMN traegt die Assoziation Datenobjekt an Fluss; in ADMBw ist OperationalExchange (UML InformationFlow) die Beziehung mit conveyed-Element. Die Abbildung ist aus beiden Quellen geschlossen, nicht woertlich belegt.",
+      "konventionen": [
+        "L4-MK17",
+        "L4-MK20"
+      ],
+      "quelle": [
+        "admbw-stereotypes:OperationalExchange",
+        "admbw-doku:3.161",
+        "mdg:OperationalExchange",
+        "leitfaden:L4-MK17"
+      ],
+      "admbwVorhanden": true
+    },
+    "data_object_reference": {
+      "bpmn": "dataObjectReference",
+      "admbw": "InformationElement",
+      "sicherheit": "abgeleitet",
+      "begruendung": "L4-MK17: Conveyed Items sind EXCHANGEITEM. ExchangeItem und OperationalExchangeItem sind abstrakt und nicht instanziierbar; InformationElement ist der naechstliegende konkrete Nachfahre fuer Informationsfluesse. Bei Signalen ist OperationalSignal zu waehlen.",
+      "konventionen": [
+        "L4-MK17",
+        "L4-MK20"
+      ],
+      "quelle": [
+        "admbw-stereotypes:InformationElement",
+        "admbw-stereotypes:ExchangeItem",
+        "leitfaden:L4-MK17"
+      ],
+      "admbwVorhanden": true
+    },
+    "participant": {
+      "bpmn": "participant",
+      "admbw": "OperationalArchitecture",
+      "sicherheit": "abgeleitet",
+      "begruendung": "L4-MK08: Der betrachtete Anwendungsfall (OPERATIONALARCHITECTURE) wird auf das Diagramm gezogen; L4-MK09 typisiert Pools mit ihm. Der Pool traegt den Typ, nicht das Stereotyp -- in ADMBw ist der Typ eine Klasse.",
+      "konventionen": [
+        "L4-MK08",
+        "L4-MK09",
+        "L4-MK10",
+        "L4-MK16"
+      ],
+      "quelle": [
+        "admbw-stereotypes:OperationalArchitecture",
+        "leitfaden:L4-MK08",
+        "leitfaden:L4-MK09"
+      ],
+      "admbwVorhanden": true
+    },
+    "lane": {
+      "bpmn": "lane",
+      "admbw": "OperationalPerformer",
+      "sicherheit": "abgeleitet",
+      "begruendung": "L4-MK09: Lanes werden mit den Aufgabentraegern (OPERATIONALPERFORMER) typisiert. OperationalPerformer ist UML Class; die Lane traegt den Typ.",
+      "konventionen": [
+        "L4-MK09",
+        "L4-MK10",
+        "L4-MK12"
+      ],
+      "quelle": [
+        "admbw-stereotypes:OperationalPerformer",
+        "leitfaden:L4-MK09",
+        "leitfaden:L4-MK10"
+      ],
+      "admbwVorhanden": true
+    }
+  },
+  "konventionen": {
+    "L4-MK01": {
+      "text": "Es ist ein Package Logical Specifications/L4/Logical Activities angelegt.",
+      "verweis": "-",
+      "art": "package"
+    },
+    "L4-MK02": {
+      "text": "Für die Darstellung der Aktivitäten ist ein Diagramm vom Typ L4 - Logical Activities mit dem Namen „L4 : Projektkürzel : Hierarchie“ in dem Package angelegt.",
+      "verweis": "L4-A",
+      "art": "package"
+    },
+    "L4-MK03": {
+      "text": "Die relevanten Aktivitäten (OPERATIONALACTIVITY) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+      "verweis": "L4-B",
+      "art": "diagram"
+    },
+    "L4-MK04": {
+      "text": "Potenzielle Referenzprozesse (STANDARDOPERATIONALACTIVITY) sind auf dem Diagramm angelegt oder aus dem Modellelementekatalog entnommen.",
+      "verweis": "L4-B",
+      "art": "diagram"
+    },
+    "L4-MK05": {
+      "text": "Alle Aktivitäten (OPERATIONALACTIVITY) die einen Referenzprozess (STANDARDOPERATIONALACTIVITY) 1:1 umsetzen sind auf dem Diagramm mit diesem verbunden (IMPLEMENTS).",
+      "verweis": "L4-Bc",
+      "art": "diagram"
+    },
+    "L4-MK06": {
+      "text": "Das TaggedValue abstractionLevel ist gemäß dem Wert des Taxonomieelements gesetzt. Hinweis: Die Angabe des Abstraktionslevel ist notwendig um einen einheitlichen Abstraktionsgrad bei der Beschreibung der inneren Struktur der Anwendungsfälle Aufgabeträger und Prozesse zu gewährleisten und nicht unterschiedliche Abstraktionsebene hinsichtlich der inhaltlichen Beschreibung miteinander zu vermischen.",
+      "verweis": "-",
+      "art": "element"
+    },
+    "L4-MK07": {
+      "text": "Die relevanten Aktivitäten (OPERATIONALACTIVITY) können über ein Business Process Diagram (als Composite Diagram modelliert) verfeinert werden welches den Namen der Aktivität trägt.",
+      "verweis": "L4-Bd",
+      "art": "other"
+    },
+    "L4-MK08": {
+      "text": "Das Business Process Diagram ist als BPMN-Kollaborationsdiagramm ausgeführt. Der betrachtete Anwendungsfall (OPERATIONALARCHITECTURE) ist aus dem Modellelementekatalog entnommen und auf das Diagramm gezogen.",
+      "verweis": "L4-I",
+      "art": "diagram"
+    },
+    "L4-MK09": {
+      "text": "Die Pools und Lanes werden mit dem Anwendungsfall und den Aufgabenträgern (OPERATIONALPERFORMER) typisiert. Hinweis: Die Verwendung eines Prozessdiagramms ohne Pools und Lanes ist als Ausnahmen zulässig muss aber mit dem begleitenden Referat abgestimmt und im Modell dokumentiert sein (A7). Hinweis Benamung: Die Benennung der Lanes entspricht den Aufgabenträgern. Soll ein Prozess in einem Pool abgebildet werden darf dieser nach dem Prozess benannt werden.",
+      "verweis": "L4-C",
+      "art": "diagram"
+    },
+    "L4-MK10": {
+      "text": "Die Pools und Lanes sind über den betrachteten Anwendungsfall (OPERATIONALARCHITECTURE) mit Aufgabenträgern verbunden (PERFORMSINCONTEXT).",
+      "verweis": "-",
+      "art": "connector"
+    },
+    "L4-MK11": {
+      "text": "Die relevanten Aktionen (OPERATIONALACTIVITYACTION) und Prozesselemente (STARTEVENT ENDEVENT GATEWAY etc.) des Business Process Diagram sind angelegt.",
+      "verweis": "L4-D, L4-F, L4-E",
+      "art": "element"
+    },
+    "L4-MK12": {
+      "text": "Alle Aktionen (OPERATIONALACTIVITYACTION) und Prozesselemente (STARTEVENT ENDEVENT GATEWAY etc.) des Business Process Diagram sind innerhalb der Lanes (falls vorhanden) oder des Pools zu modellieren.",
+      "verweis": "L4-D, L4-E, L4-F",
+      "art": "element"
+    },
+    "L4-MK13": {
+      "text": "Bei allen Prozesselementen (OPERATIONALACTIVITYACTION STARTEVENT ENDEVENT GATEWAY etc.) ist der entsprechende \"type\" gesetzt und eingeblendet.",
+      "verweis": "-",
+      "art": "element"
+    },
+    "L4-MK14": {
+      "text": "Alle Aktionen (OPERATIONALACTIVITYACTION) sind über das Behavior mit der entsprechenden Aktivität (OPERATIONALACTIVITY) typisiert und verfügen über einen aussagefähigen Namen. Hinweis: Die Hierarchie bildet sich über die Zuordnung von Aktivitäten zu einzelnen Diagrammen und nicht über Relationen ab.",
+      "verweis": "L4-E",
+      "art": "diagram"
+    },
+    "L4-MK15": {
+      "text": "Alle Aktionen (OPERATIONALACTIVITYACTION) und Prozesselemente (STARTEVENT ENDEVENT GATEWAY etc.) des Business Process Diagram die prozessual abhängig sind sind über einen Kontrollfluss (CONTROLFLOW)verbunden. Hinweis: Verzweigungen und Zusammenführungen des Kontrollflusses erfolgen immer über Gateways. Die Zusammenführung erfolgt durch den Gateway-Typen der für die Verzweigung verwendet wurde.",
+      "verweis": "L4-G, L4-H",
+      "art": "connector"
+    },
+    "L4-MK16": {
+      "text": "Jeder ausmodellierte Pool verfügt über einen abgeschlossenen Prozess (mind. STARTEVENT OPERATIONALACTIVITYACTION ENDEVENT). Hinweis: zugeklappte Pools des BPMN-Kollaborationsdiagramms enthalten keine Elemente alle Beziehungen gehen hier an den Pool.",
+      "verweis": "L4-H, L4-G",
+      "art": "diagram"
+    },
+    "L4-MK17": {
+      "text": "Jede Aktion (OPERATIONALACTIVITYACTION) ist mit einem Trigger (Eingangssignal(e) bzw. -information(en)) und einem Ergebnis (Ausgangssignal(e) bzw. - information(en)) versehen. Diese sind als „Conveyed Items“ (EXCHANGEITEM) mit dem Kontrollfluss (OPERATIONALCONTROLFLOW) verknüpft. Das „Mitschleppen“ der „Conveyed Items“ über Gateways etc. bis zur empfangenden Aktion ist nicht erforderlich.",
+      "verweis": "-",
+      "art": "other"
+    },
+    "L4-MK18": {
+      "text": "Muss vor der Ausführung einer Aktion (OPERATIONALACTIVITYACTION) eine bestimmte Bedingung erfüllt sein ist ein Zwischenereignis (INTERMEDIATEEVENT) in den Kontrollfluss einzufügen entsprechend zu typisieren und aussagekräftig zu benennen.",
+      "verweis": "-",
+      "art": "other"
+    },
+    "L4-MK19": {
+      "text": "Alle Aktionen (OPERATIONALACTIVITYACTION) die aus einem Referenzprozessschritt abgeleitet sind sind mit diesem verknüpft (IMPLEMENTS).",
+      "verweis": "L4-Ha",
+      "art": "other"
+    },
+    "L4-MK20": {
+      "text": "Der Informationsaustausch zwischen Pools erfolgt über eine speziellen Kontrollfluss (OPERATIONALMESSAGEFLOW). Analog zum Kontrollfluss (OPERATIONALCONTROLFLOW) werden hier „Conveyed Items“ (EXCHANGEITEM) zugewiesen. Der Notwendigkeit des Empfangs eines solchen Elementes vor einer Aktion stellt eine besondere Bedingung dar und ist mit einem Zwischenereignis (INTERMEDIATEEVENT) zu modellieren.",
+      "verweis": "-",
+      "art": "element"
+    }
+  },
+  "pruefregeln": [
+    {
+      "id": "BPMN-L4-01",
+      "konvention": "L4-MK08",
+      "schwere": "fehler",
+      "titel": "Kollaborationsdiagramm mit Pool vorhanden",
+      "beschreibung": "Das Modell muss eine Kollaboration mit mindestens einem Teilnehmer (Pool) enthalten; jeder Teilnehmer muss auf einen vorhandenen Prozess zeigen.",
+      "objekt": "modell",
+      "behebbar": true,
+      "konventionstext": "Das Business Process Diagram ist als BPMN-Kollaborationsdiagramm ausgeführt. Der betrachtete Anwendungsfall (OPERATIONALARCHITECTURE) ist aus dem Modellelementekatalog entnommen und auf das Diagramm gezogen.",
+      "verweis": "L4-I",
+      "quelle": [
+        "leitfaden:L4-MK08",
+        "knowledge/leitfaden/konventionen.json"
+      ]
+    },
+    {
+      "id": "BPMN-L4-02",
+      "konvention": "L4-MK09",
+      "schwere": "warnung",
+      "titel": "Pool und Lanes sind benannt",
+      "beschreibung": "Jeder Pool und jede Lane braucht einen Namen; Lanes sind nach Aufgabentraegern zu benennen.",
+      "objekt": "teilnehmer",
+      "behebbar": true,
+      "konventionstext": "Die Pools und Lanes werden mit dem Anwendungsfall und den Aufgabenträgern (OPERATIONALPERFORMER) typisiert. Hinweis: Die Verwendung eines Prozessdiagramms ohne Pools und Lanes ist als Ausnahmen zulässig muss aber mit dem begleitenden Referat abgestimmt und im Modell dokumentiert sein (A7). Hinweis Benamung: Die Benennung der Lanes entspricht den Aufgabenträgern. Soll ein Prozess in einem Pool abgebildet werden darf dieser nach dem Prozess benannt werden.",
+      "verweis": "L4-C",
+      "quelle": [
+        "leitfaden:L4-MK09",
+        "knowledge/leitfaden/konventionen.json"
+      ]
+    },
+    {
+      "id": "BPMN-L4-03",
+      "konvention": "L4-MK09",
+      "schwere": "warnung",
+      "titel": "Lane ist mit einem Aufgabentraeger typisiert",
+      "beschreibung": "Jede Lane soll auf einen OperationalPerformer verweisen (PERFORMSINCONTEXT, L4-MK10).",
+      "objekt": "lane",
+      "behebbar": false,
+      "konventionstext": "Die Pools und Lanes werden mit dem Anwendungsfall und den Aufgabenträgern (OPERATIONALPERFORMER) typisiert. Hinweis: Die Verwendung eines Prozessdiagramms ohne Pools und Lanes ist als Ausnahmen zulässig muss aber mit dem begleitenden Referat abgestimmt und im Modell dokumentiert sein (A7). Hinweis Benamung: Die Benennung der Lanes entspricht den Aufgabenträgern. Soll ein Prozess in einem Pool abgebildet werden darf dieser nach dem Prozess benannt werden.",
+      "verweis": "L4-C",
+      "quelle": [
+        "leitfaden:L4-MK09",
+        "knowledge/leitfaden/konventionen.json"
+      ]
+    },
+    {
+      "id": "BPMN-L4-04",
+      "konvention": "L4-MK12",
+      "schwere": "fehler",
+      "titel": "Alle Knoten liegen in einer Lane",
+      "beschreibung": "Existieren Lanes, muss jeder Flussknoten genau einer Lane zugeordnet sein; sonst liegt er nur im Pool und ist fachlich nicht zugeordnet.",
+      "objekt": "knoten",
+      "behebbar": true,
+      "konventionstext": "Alle Aktionen (OPERATIONALACTIVITYACTION) und Prozesselemente (STARTEVENT ENDEVENT GATEWAY etc.) des Business Process Diagram sind innerhalb der Lanes (falls vorhanden) oder des Pools zu modellieren.",
+      "verweis": "L4-D, L4-E, L4-F",
+      "quelle": [
+        "leitfaden:L4-MK12",
+        "knowledge/leitfaden/konventionen.json"
+      ]
+    },
+    {
+      "id": "BPMN-L4-05",
+      "konvention": "L4-MK14",
+      "schwere": "fehler",
+      "titel": "Aktion traegt das ADMBw-Stereotyp",
+      "beschreibung": "Jede Aufgabe muss das Stereotyp OperationalActivityAction tragen (UML Action, nicht abstrakt).",
+      "objekt": "aktion",
+      "behebbar": true,
+      "konventionstext": "Alle Aktionen (OPERATIONALACTIVITYACTION) sind über das Behavior mit der entsprechenden Aktivität (OPERATIONALACTIVITY) typisiert und verfügen über einen aussagefähigen Namen. Hinweis: Die Hierarchie bildet sich über die Zuordnung von Aktivitäten zu einzelnen Diagrammen und nicht über Relationen ab.",
+      "verweis": "L4-E",
+      "quelle": [
+        "leitfaden:L4-MK14",
+        "knowledge/leitfaden/konventionen.json"
+      ]
+    },
+    {
+      "id": "BPMN-L4-06",
+      "konvention": "L4-MK14",
+      "schwere": "warnung",
+      "titel": "Aktion hat einen aussagefaehigen Namen",
+      "beschreibung": "Der Name einer Aktion darf nicht leer sein und soll die Taetigkeit benennen (Verb + Objekt).",
+      "objekt": "aktion",
+      "behebbar": true,
+      "konventionstext": "Alle Aktionen (OPERATIONALACTIVITYACTION) sind über das Behavior mit der entsprechenden Aktivität (OPERATIONALACTIVITY) typisiert und verfügen über einen aussagefähigen Namen. Hinweis: Die Hierarchie bildet sich über die Zuordnung von Aktivitäten zu einzelnen Diagrammen und nicht über Relationen ab.",
+      "verweis": "L4-E",
+      "quelle": [
+        "leitfaden:L4-MK14",
+        "knowledge/leitfaden/konventionen.json"
+      ]
+    },
+    {
+      "id": "BPMN-L4-07",
+      "konvention": "L4-MK15",
+      "schwere": "fehler",
+      "titel": "Kontrollfluss verbindet zulaessige Elemente",
+      "beschreibung": "Quelle eines OperationalControlFlow darf nur Gateway, Zwischenereignis, Startereignis oder Aktion sein; Ziel nur Endereignis, Gateway, Zwischenereignis oder Aktion (MDG-Metaconstraints).",
+      "objekt": "fluss",
+      "behebbar": false,
+      "konventionstext": "Alle Aktionen (OPERATIONALACTIVITYACTION) und Prozesselemente (STARTEVENT ENDEVENT GATEWAY etc.) des Business Process Diagram die prozessual abhängig sind sind über einen Kontrollfluss (CONTROLFLOW)verbunden. Hinweis: Verzweigungen und Zusammenführungen des Kontrollflusses erfolgen immer über Gateways. Die Zusammenführung erfolgt durch den Gateway-Typen der für die Verzweigung verwendet wurde.",
+      "verweis": "L4-G, L4-H",
+      "quelle": [
+        "leitfaden:L4-MK15",
+        "knowledge/leitfaden/konventionen.json"
+      ]
+    },
+    {
+      "id": "BPMN-L4-08",
+      "konvention": "L4-MK15",
+      "schwere": "fehler",
+      "titel": "Verzweigung und Zusammenfuehrung nur ueber Gateways",
+      "beschreibung": "Ein Knoten mit mehr als einem ausgehenden oder eingehenden Sequenzfluss muss ein Gateway sein; Verzweigungen duerfen nicht an Aktionen haengen.",
+      "objekt": "knoten",
+      "behebbar": true,
+      "konventionstext": "Alle Aktionen (OPERATIONALACTIVITYACTION) und Prozesselemente (STARTEVENT ENDEVENT GATEWAY etc.) des Business Process Diagram die prozessual abhängig sind sind über einen Kontrollfluss (CONTROLFLOW)verbunden. Hinweis: Verzweigungen und Zusammenführungen des Kontrollflusses erfolgen immer über Gateways. Die Zusammenführung erfolgt durch den Gateway-Typen der für die Verzweigung verwendet wurde.",
+      "verweis": "L4-G, L4-H",
+      "quelle": [
+        "leitfaden:L4-MK15",
+        "knowledge/leitfaden/konventionen.json"
+      ]
+    },
+    {
+      "id": "BPMN-L4-09",
+      "konvention": "L4-MK15",
+      "schwere": "fehler",
+      "titel": "Zusammenfuehrung nutzt den Gateway-Typ der Verzweigung",
+      "beschreibung": "L4-MK15: Die Zusammenfuehrung erfolgt durch den Gateway-Typen, der fuer die Verzweigung verwendet wurde.",
+      "objekt": "gateway",
+      "behebbar": true,
+      "konventionstext": "Alle Aktionen (OPERATIONALACTIVITYACTION) und Prozesselemente (STARTEVENT ENDEVENT GATEWAY etc.) des Business Process Diagram die prozessual abhängig sind sind über einen Kontrollfluss (CONTROLFLOW)verbunden. Hinweis: Verzweigungen und Zusammenführungen des Kontrollflusses erfolgen immer über Gateways. Die Zusammenführung erfolgt durch den Gateway-Typen der für die Verzweigung verwendet wurde.",
+      "verweis": "L4-G, L4-H",
+      "quelle": [
+        "leitfaden:L4-MK15",
+        "knowledge/leitfaden/konventionen.json"
+      ]
+    },
+    {
+      "id": "BPMN-L4-10",
+      "konvention": "L4-MK16",
+      "schwere": "fehler",
+      "titel": "Pool hat einen abgeschlossenen Prozess",
+      "beschreibung": "Jeder ausgemodellte Pool braucht mindestens Startereignis, eine Aktion und Endereignis; jeder Knoten muss vom Startereignis aus erreichbar sein.",
+      "objekt": "prozess",
+      "behebbar": true,
+      "konventionstext": "Jeder ausmodellierte Pool verfügt über einen abgeschlossenen Prozess (mind. STARTEVENT OPERATIONALACTIVITYACTION ENDEVENT). Hinweis: zugeklappte Pools des BPMN-Kollaborationsdiagramms enthalten keine Elemente alle Beziehungen gehen hier an den Pool.",
+      "verweis": "L4-H, L4-G",
+      "quelle": [
+        "leitfaden:L4-MK16",
+        "knowledge/leitfaden/konventionen.json"
+      ]
+    },
+    {
+      "id": "BPMN-L4-11",
+      "konvention": "L4-MK17",
+      "schwere": "warnung",
+      "titel": "Aktion hat Trigger und Ergebnis als Conveyed Items",
+      "beschreibung": "Jede Aktion soll an eingehendem und ausgehendem Kontrollfluss je ein Datenobjekt (EXCHANGEITEM) tragen.",
+      "objekt": "aktion",
+      "behebbar": true,
+      "konventionstext": "Jede Aktion (OPERATIONALACTIVITYACTION) ist mit einem Trigger (Eingangssignal(e) bzw. -information(en)) und einem Ergebnis (Ausgangssignal(e) bzw. - information(en)) versehen. Diese sind als „Conveyed Items“ (EXCHANGEITEM) mit dem Kontrollfluss (OPERATIONALCONTROLFLOW) verknüpft. Das „Mitschleppen“ der „Conveyed Items“ über Gateways etc. bis zur empfangenden Aktion ist nicht erforderlich.",
+      "verweis": "-",
+      "quelle": [
+        "leitfaden:L4-MK17",
+        "knowledge/leitfaden/konventionen.json"
+      ]
+    },
+    {
+      "id": "BPMN-L4-12",
+      "konvention": "L4-MK18",
+      "schwere": "fehler",
+      "titel": "Bedingung haengt an Gateway oder Zwischenereignis",
+      "beschreibung": "Ein bedingter Sequenzfluss darf nur von einem Gateway oder einem Zwischenereignis ausgehen; eine Vorbedingung vor einer Aktion ist als Zwischenereignis zu modellieren.",
+      "objekt": "fluss",
+      "behebbar": true,
+      "konventionstext": "Muss vor der Ausführung einer Aktion (OPERATIONALACTIVITYACTION) eine bestimmte Bedingung erfüllt sein ist ein Zwischenereignis (INTERMEDIATEEVENT) in den Kontrollfluss einzufügen entsprechend zu typisieren und aussagekräftig zu benennen.",
+      "verweis": "-",
+      "quelle": [
+        "leitfaden:L4-MK18",
+        "knowledge/leitfaden/konventionen.json"
+      ]
+    },
+    {
+      "id": "BPMN-L4-13",
+      "konvention": "L4-MK20",
+      "schwere": "fehler",
+      "titel": "Nachrichtenfluss ist pooluebergreifend und traegt ein Conveyed Item",
+      "beschreibung": "Ein Nachrichtenfluss verbindet zwei verschiedene Pools und soll ein Datenobjekt (EXCHANGEITEM) tragen; der Empfang vor einer Aktion ist als Zwischenereignis zu modellieren.",
+      "objekt": "fluss",
+      "behebbar": true,
+      "konventionstext": "Der Informationsaustausch zwischen Pools erfolgt über eine speziellen Kontrollfluss (OPERATIONALMESSAGEFLOW). Analog zum Kontrollfluss (OPERATIONALCONTROLFLOW) werden hier „Conveyed Items“ (EXCHANGEITEM) zugewiesen. Der Notwendigkeit des Empfangs eines solchen Elementes vor einer Aktion stellt eine besondere Bedingung dar und ist mit einem Zwischenereignis (INTERMEDIATEEVENT) zu modellieren.",
+      "verweis": "-",
+      "quelle": [
+        "leitfaden:L4-MK20",
+        "knowledge/leitfaden/konventionen.json"
+      ]
+    },
+    {
+      "id": "BPMN-L4-14",
+      "konvention": "L4-MK11",
+      "schwere": "fehler",
+      "titel": "Prozess hat ein Startereignis",
+      "beschreibung": "Ohne Startereignis ist kein Einstiegspunkt definiert.",
+      "objekt": "prozess",
+      "behebbar": true,
+      "konventionstext": "Die relevanten Aktionen (OPERATIONALACTIVITYACTION) und Prozesselemente (STARTEVENT ENDEVENT GATEWAY etc.) des Business Process Diagram sind angelegt.",
+      "verweis": "L4-D, L4-F, L4-E",
+      "quelle": [
+        "leitfaden:L4-MK11",
+        "knowledge/leitfaden/konventionen.json"
+      ]
+    },
+    {
+      "id": "BPMN-L4-15",
+      "konvention": "L4-MK10",
+      "schwere": "hinweis",
+      "titel": "Pool ist mit dem Anwendungsfall typisiert",
+      "beschreibung": "Der Pool soll auf eine OperationalArchitecture (Anwendungsfall) verweisen.",
+      "objekt": "teilnehmer",
+      "behebbar": false,
+      "konventionstext": "Die Pools und Lanes sind über den betrachteten Anwendungsfall (OPERATIONALARCHITECTURE) mit Aufgabenträgern verbunden (PERFORMSINCONTEXT).",
+      "verweis": "-",
+      "quelle": [
+        "leitfaden:L4-MK10",
+        "knowledge/leitfaden/konventionen.json"
+      ]
+    }
+  ],
+  "nichtPruefbar": [
+    {
+      "konvention": "L4-MK01",
+      "grund": "Package-Struktur im Modellrepository, nicht im BPMN-Dokument."
+    },
+    {
+      "konvention": "L4-MK02",
+      "grund": "Diagrammtyp und Diagrammname im Werkzeug, nicht im BPMN-Austausch."
+    },
+    {
+      "konvention": "L4-MK03",
+      "grund": "Katalogbezug (Modellelementekatalog) liegt ausserhalb der Datei."
+    },
+    {
+      "konvention": "L4-MK04",
+      "grund": "Referenzprozesse stammen aus dem Katalog, nicht aus dem Prozess."
+    },
+    {
+      "konvention": "L4-MK05",
+      "grund": "IMPLEMENTS-Verknuepfung zum Referenzprozess braucht das Zielmodell."
+    },
+    {
+      "konvention": "L4-MK06",
+      "grund": "TaggedValue abstractionLevel ist eine Modelleigenschaft, kein BPMN-Attribut."
+    },
+    {
+      "konvention": "L4-MK07",
+      "grund": "Composite-Diagramm der Aktivitaet -- Sache des Repositorys."
+    },
+    {
+      "konvention": "L4-MK19",
+      "grund": "IMPLEMENTS zum Referenzprozessschritt braucht den Referenzprozess."
+    }
+  ],
+  "transformationsRegeln": [
+    {
+      "regel": "BPMN-L4-05",
+      "aktion": "Stereotyp OperationalActivityAction an jeder Aufgabe setzen"
+    },
+    {
+      "regel": "BPMN-L4-06",
+      "aktion": "Fehlenden Aktionsnamen als Platzhalter setzen und protokollieren"
+    },
+    {
+      "regel": "BPMN-L4-04",
+      "aktion": "Knoten ohne Lane der Standard-Lane des Pools zuordnen"
+    },
+    {
+      "regel": "BPMN-L4-08",
+      "aktion": "Fehlendes Gateway fuer Verzweigung/Zusammenfuehrung einfuegen"
+    },
+    {
+      "regel": "BPMN-L4-09",
+      "aktion": "Zusammenfuehrungs-Gateway auf den Typ der Verzweigung setzen"
+    },
+    {
+      "regel": "BPMN-L4-10",
+      "aktion": "Fehlendes Startereignis oder Endereignis ergaenzen"
+    },
+    {
+      "regel": "BPMN-L4-11",
+      "aktion": "Fehlendes Conveyed Item als InformationElement (Platzhalter) ergaenzen"
+    },
+    {
+      "regel": "BPMN-L4-12",
+      "aktion": "Zwischenereignis vor bedingten Fluss setzen"
+    },
+    {
+      "regel": "BPMN-L4-13",
+      "aktion": "Nachrichtenfluss mit Platzhalter-Informationselement versehen"
+    }
+  ]
+}
