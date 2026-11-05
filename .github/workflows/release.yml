@@ -37,22 +37,15 @@ jobs:
         with:
           name: "EAM Platform ${{ github.ref_name }}"
           body_path: dist/README.md
+          # Muster statt fester Liste: neue Auslieferungen (Apps, Auto-ZIPs)
+          # landen sonst nicht im Release — genau so gingen Analyzer-HTML und
+          # die App-ZIPs des Tags v3.5.0 zunächst verloren. Ausgenommen bleibt
+          # dist/GRAPH.md (Bauwerkzeug-Bericht, kein Download).
           files: |
-            dist/EAM-AI-Suite.html
-            dist/EAM-AI-Suite.aspx
-            dist/EAM-Suite.html
-            dist/EAM-Suite.aspx
-            dist/EAM-Suite-en.html
-            dist/BPMN-Studio.html
-            dist/ADMBw-Extraktor.html
-            dist/admbw-extraktor.py
-            dist/EAM-MDG-Parser.html
-            dist/eam-mdg-parser.py
-            dist/eam_qea_analyzer_openwebui.py
-            dist/eam-qea-mcp-server.py
-            dist/eam-ai-suite-python-*.zip
-            dist/eam-ai-suite-python.zip
-            dist/START-HIER.html
+            dist/*.html
+            dist/*.aspx
+            dist/*.py
+            dist/*.zip
             dist/README.md
             dist/RELEASES.md
             dist/SHA256SUMS
