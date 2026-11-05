@@ -108,15 +108,17 @@ def test_manifest_nennt_nur_ausgelieferte_dateien(tmp_path: Path) -> None:
         "eam-ai-suite-python.zip",
     ):
         assert f"releases/latest/download/{datei}" in seite, datei
-    # GitHub Pages: jede HTML-App hat eine Direkt-URL.
+    # GitHub Pages: die HTML-Apps haben eine Direkt-URL. Der EAM Analyzer
+    # bewusst nicht: seine Browser-Variante ohne KI-Anbindung ist redundant
+    # (sprachliche Abfragen macht die EAM AI Suite), er wird nur ausgeliefert.
     for app in (
         "eam-ai-suite/",
         "eam-suite/",
         "bpmn-studio/",
         "admbw-extraktor/",
-        "eam-analyzer/",
     ):
         assert f"mitchel85.github.io/EAM-Toolfamilie/{app}" in seite, app
+    assert "mitchel85.github.io/EAM-Toolfamilie/eam-analyzer/" not in seite
     assert "Schnellwahl" in seite
 
     # Altbestand ist weg, das Manifest kann nicht wieder 84 Einträge erzeugen.

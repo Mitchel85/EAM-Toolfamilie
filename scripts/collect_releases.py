@@ -591,7 +591,6 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
                 ("eam_qea_analyzer_openwebui.py", "Open-WebUI-Tool herunterladen"),
                 ("eam-qea-mcp-server.py", "MCP-Server herunterladen"),
             ],
-            seiten=SEITEN + "eam-analyzer/",
         ),
         _karte(
             "EAM AI Suite Python", "Für Terminal und Server",
