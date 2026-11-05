@@ -62,6 +62,18 @@ Tabellenstruktur der `.qea` bzw. der Struktur der `.xmi` und bringt kein eigenes
 mit. Kein Ersatz für ein Modellierungswerkzeug ist das Ganze auch nicht: Substanz sind
 Pakete, Elemente, Beziehungen und Tags — Diagramme sind Darstellung.
 
+## Architektur — der Wissensgraph
+
+![Wissensgraph der EAM Toolfamilie: Regelwerk und Wissensbasis als Quelle, Werkzeuge und Auslieferung mit typisierten Beziehungen](docs/architekturkarte.png)
+
+- Jede Kante ist eine echte Beziehung — *erzeugt · wird gelesen · wird gespiegelt · wird
+  genutzt · liefert*; der Pfeil zeigt den Wissensfluss von der Quelle zum Verbraucher.
+- Die Zone „Regelwerk fließt in jede Funktion" ist CI-erzwungen: `scripts/verify_graph.py`
+  prüft jede Kante, bevor etwas ausgeliefert wird. `BPMN Studio` steht bewusst draußen
+  (ohne MDG-Abhängigkeit).
+- Die genauen Kanten stehen maschinenlesbar in `scripts/dependency_rules.py`, lesbar in
+  [docs/ABHAENGIGKEITEN.md](docs/ABHAENGIGKEITEN.md) — erzeugt, nicht von Hand gepflegt.
+
 ## Herunterladen
 
 Alle Dateien liegen im öffentlichen Release. Jedes Werkzeug gibt es einzeln und als
