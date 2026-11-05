@@ -84,6 +84,12 @@ AUSLIEFERUNGEN = [
         "Dieselbe App mit englischer Oberfläche; Modellinhalte und Dateiformat bleiben unverändert.",
     ),
     (
+        "apps/bpmn-studio/dist/BPMN-Studio.html",
+        "BPMN-Studio.html",
+        "BPMN Studio — eine HTML-Datei",
+        "Prozesse als BPMN 2.0 anzeigen, bearbeiten, prüfen, ADMBw-konform machen; Export als XML, SVG und PNG. Offline im Browser.",
+    ),
+    (
         "apps/mdg-web/dist/ADMBw-Extraktor.html",
         "ADMBw-Extraktor.html",
         "ADMBw Extraktor — eine HTML-Datei",
@@ -287,7 +293,7 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
 <main class="wrap">
   <h2>Welches Werkzeug wofür</h2>
   <p class="lead">Eine Karte je Werkzeug. Dateiname und Größe stehen darunter.</p>
-  <div class="quick"><b>Schnellwahl:</b> <a href="#ai-suite">Bauen → EAM AI Suite</a> · <a href="#suite">Prüfen und Bearbeiten → EAM Suite</a> · <a href="#mdg">Nachschlagen → ADMBw Extraktor</a> · <a href="#qea-analyzer">Abfragen → QEA Analyzer</a></div>
+  <div class="quick"><b>Schnellwahl:</b> <a href="#ai-suite">Bauen → EAM AI Suite</a> · <a href="#suite">Prüfen und Bearbeiten → EAM Suite</a> · <a href="#bpmn">Prozesse → BPMN Studio</a> · <a href="#mdg">Nachschlagen → ADMBw Extraktor</a> · <a href="#qea-analyzer">Abfragen → QEA Analyzer</a></div>
   <section class="grid">
 ${cards}
   </section>
@@ -394,6 +400,14 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
             ["Datei herunterladen", "Datei öffnen", "Modelle bearbeiten"],
             groesse=groesse("EAM-Suite.html"),
             slug="suite",
+        ),
+        _karte(
+            "BPMN Studio", "Prozesse",
+            "BPMN 2.0 lesen, anzeigen, bearbeiten und prüfen; auf Knopfdruck ADMBw-konform machen; Export als XML, SVG und PNG.",
+            "BPMN-Studio.html", "BPMN-Studio.html herunterladen",
+            ["Datei herunterladen", "Datei öffnen", "Prozess bearbeiten"],
+            groesse=groesse("BPMN-Studio.html"),
+            slug="bpmn",
         ),
         _karte(
             "ADMBw Extraktor", "Nachschlagen und exportieren",

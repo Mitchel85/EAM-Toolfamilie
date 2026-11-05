@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BPMN Studio — ADMBw-konforme Prozesse</title>
+<style>
+{{BPMN_CSS}}
+{{STUDIO_CSS}}
+</style>
+</head>
+<body>
+<header class="kopf">
+  <div class="marke">
+    <span class="zeichen">B</span>
+    <div>
+      <h1>BPMN Studio</h1>
+      <p class="unterzeile">ADMBw · BPMN 2.0 · Prozesse extrahieren, prüfen, exportieren · <span id="version">{{VERSION}}</span></p>
+    </div>
+  </div>
+  <div class="werkzeuge" role="toolbar" aria-label="Werkzeuge">
+    <label class="knopf datei">BPMN laden<input id="datei-laden" type="file" accept=".bpmn,.xml,application/xml,text/xml" hidden></label>
+    <button id="btn-neu" type="button">Neu</button>
+    <button id="btn-speichern" type="button">BPMN speichern</button>
+    <span class="trenner" aria-hidden="true"></span>
+    <button id="btn-xml" type="button">Export XML</button>
+    <button id="btn-svg" type="button">Export SVG</button>
+    <button id="btn-png" type="button">Export PNG</button>
+    <span class="trenner" aria-hidden="true"></span>
+    <button id="btn-pruefen" type="button" class="haupt">ADMBw-Prüfung</button>
+    <button id="btn-konform" type="button">ADMBw-konform machen</button>
+    <button id="btn-text" type="button">Aus Text extrahieren</button>
+    <label class="schalter" title="Optionaler KI-Adapter (standardmäßig aus)">
+      <input id="ki-aktiv" type="checkbox"> KI
+    </label>
+  </div>
+</header>
+
+<main class="rumpf">
+  <section class="leinwand" id="leinwand" aria-label="BPMN-Zeichenfläche">
+    <div id="canvas"></div>
+    <div class="hinweis-start" id="hinweis-start">
+      <strong>BPMN laden</strong> oder <strong>Aus Text extrahieren</strong> —
+      die Datei bleibt offline, es wird nichts hochgeladen.
+    </div>
+  </section>
+
+  <aside class="seitenleiste" aria-label="ADMBw-Prüfung">
+    <div class="reiter" role="tablist">
+      <button id="reiter-befunde" type="button" class="aktiv" role="tab" aria-selected="true">ADMBw-Prüfung</button>
+      <button id="reiter-protokoll" type="button" role="tab" aria-selected="false">Protokoll</button>
+    </div>
+
+    <section id="bereich-befunde" class="bereich">
+      <div class="zusammenfassung" id="zusammenfassung">
+        <span class="ziffer" id="zahl-fehler">0</span> Fehler
+        <span class="ziffer" id="zahl-warnung">0</span> Warnungen
+        <span class="ziffer" id="zahl-hinweis">0</span> Hinweise
+      </div>
+      <p class="leer" id="befunde-leer">Noch nicht geprüft. „ADMBw-Prüfung“ startet den Lauf.</p>
+      <ul class="befunde" id="befunde"></ul>
+      <div class="fussnote">
+        Prüfung nach den L4-Modellierungskonventionen (L4-MK08 … L4-MK20).
+        Befunde sind Hinweise, keine automatische Freigabe.
+      </div>
+    </section>
+
+    <section id="bereich-protokoll" class="bereich" hidden>
+      <ul class="protokoll" id="protokoll"></ul>
+      <p class="leer" id="protokoll-leer">Noch keine Änderung protokolliert.</p>
+    </section>
+  </aside>
+</main>
+
+<dialog id="text-dialog" class="dialog">
+  <form method="dialog" class="dialog-inhalt">
+    <h2>Aus Text extrahieren</h2>
+    <p class="hilfe">Regelbasiert und offline. Erkannt werden Sätze mit Handlung (Verb + Objekt),
+      Rollen am Satzanfang oder im Passiv sowie Bedingungssätze. Bitte das Ergebnis fachlich prüfen.</p>
+    <label class="feld">Prozessname
+      <input id="text-name" type="text" placeholder="z. B. Antragsbearbeitung" autocomplete="off">
+    </label>
+    <label class="feld">Prozesstext
+      <textarea id="text-eingabe" rows="12" placeholder="Der Sachbearbeiter prüft den Antrag. Danach erstellt er den Bescheid."></textarea>
+    </label>
+    <p class="warnung" id="text-warnung" hidden></p>
+    <div class="dialog-fuss">
+      <button id="text-abweisen" type="button" class="zweit">Abbrechen</button>
+      <button id="text-starten" type="button" class="haupt">Extrahieren</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="ki-dialog" class="dialog">
+  <form method="dialog" class="dialog-inhalt">
+    <h2>KI-Extraktion (optional)</h2>
+    <p class="warnung">
+      <strong>Keine dienstlichen, vertraulichen oder personenbezogenen Daten senden.</strong>
+      Der Text geht an den hier eingetragenen Endpunkt. Standardmäßig ist die Funktion aus;
+      ohne vollständige Angaben wird nichts gesendet.
+    </p>
+    <label class="feld">Basis-URL (OpenAI-kompatibel)
+      <input id="ki-url" type="url" placeholder="https://api.example.invalid/v1" autocomplete="off">
+    </label>
+    <label class="feld">Modell
+      <input id="ki-modell" type="text" placeholder="modellname" autocomplete="off">
+    </label>
+    <label class="feld">Schlüssel (nur im Speicher)
+      <input id="ki-key" type="password" autocomplete="off">
+    </label>
+    <label class="feld">Prozesstext
+      <textarea id="ki-eingabe" rows="10" placeholder="Nur erfundene Beispieldaten oder freigegebene Inhalte."></textarea>
+    </label>
+    <p class="warnung" id="ki-status" hidden></p>
+    <div class="dialog-fuss">
+      <button id="ki-abweisen" type="button" class="zweit">Abbrechen</button>
+      <button id="ki-starten" type="button" class="haupt">An KI senden</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="meldung" class="dialog klein">
+  <form method="dialog" class="dialog-inhalt">
+    <h2 id="meldung-titel">Hinweis</h2>
+    <p id="meldung-text"></p>
+    <div class="dialog-fuss"><button type="submit" class="haupt">Schließen</button></div>
+  </form>
+</dialog>
+
+<script>{{BPMN_JS}}</script>
+<script>window.BPMN_REGELN = {{PRUEFREGELN}};</script>
+<script>{{STUDIO_JS}}</script>
+</body>
+</html>

@@ -78,6 +78,16 @@ def main() -> int:
         dist / "html" / mdg_manifest["output"],
     )
 
+    # BPMN-Studio: eigenes Build-Skript, eigenstaendige Einzeldatei.
+    run(sys.executable, "apps/bpmn-studio/build.py")
+    bpmn_manifest = json.loads(
+        (ROOT / "apps" / "bpmn-studio" / "app.json").read_text(encoding="utf-8")
+    )
+    shutil.copyfile(
+        ROOT / "apps" / "bpmn-studio" / "dist" / bpmn_manifest["output"],
+        dist / "html" / bpmn_manifest["output"],
+    )
+
     sys.path.insert(0, str(CORE))
     import build_backend  # noqa: E402
 
@@ -90,7 +100,7 @@ def main() -> int:
         sums.append(f"{sha256(path)}  {path.relative_to(dist)}\n")
     (dist / "SHA256SUMS").write_text("".join(sums), encoding="utf-8")
     print(f"fertig: {dist}")
-    print(f"  HTML:  {len(APPS) + 1} eigenständige Werkzeuge")
+    print(f"  HTML:  {len(APPS) + 2} eigenständige Werkzeuge")
     print(f"  Wheel: {wheel}")
     print(f"  Dateien: {len(sums)}")
     return 0

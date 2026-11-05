@@ -23,8 +23,9 @@ ROOT = Path(__file__).resolve().parent
 CORE = ROOT / "packages" / "core"
 RULES = ROOT / "packages" / "rules"
 SCRIPTS = ROOT / "scripts"
+PACKAGES = ROOT / "packages"
 
-for pfad in (SCRIPTS, RULES, CORE):
+for pfad in (SCRIPTS, RULES, CORE, PACKAGES):
     if pfad.is_dir() and str(pfad) not in sys.path:
         sys.path.insert(0, str(pfad))
 

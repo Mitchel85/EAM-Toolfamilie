@@ -137,6 +137,10 @@ stehen in [docs/ABNAHME.md](docs/ABNAHME.md).
 - **EAM Suite** (eine HTML-Datei, Fassung 8.4) — vorhandene Modelle analysieren, ansehen
   (Explorer, Sichten, Graph, Pfade), mehrere verschmelzen, von Hand bearbeiten und als neue
   `.qea` speichern; ohne MDG-Prüfung, ohne KI, ohne Prosa.
+- **BPMN Studio** (HTML-Datei und Python-Paket `packages/bpmn`) — Prozesse als
+  BPMN 2.0 anzeigen, bearbeiten und prüfen; auf Knopfdruck ADMBw-konform machen
+  (Lane-Typisierung, Aktionen, Gateways); Export als XML, SVG und PNG. Optional
+  Prosa-Extraktion und KI-Anbindung. Offline, ohne Server.
 - **ADMBw Extraktor** (HTML-Datei und Python-Skript) — MDG-XML im Browser oder auf der
   Kommandozeile durchsuchen und als Regeldateien exportieren; baut kein Modell. Das
   Python-Skript ist dieselbe Datei, die auch im Python-ZIP liegt. Zusätzlich lässt sich der
@@ -149,6 +153,7 @@ Schnellwahl
 - Neues Modell aus Text → EAM AI Suite (für Serien und Server: EAM AI Suite Python)
 - Modell nur ansehen → EAM Suite
 - Modelle zusammenlegen oder von Hand ändern → EAM Suite
+- Prozesse modellieren oder prüfen → BPMN Studio
 - Regelwerk nachschlagen → ADMBw Extraktor
 - Modell abfragen (Open WebUI/MCP) → EAM QEA Analyzer
 
@@ -207,6 +212,8 @@ Alle Dateien liegen im öffentlichen Release.
   [EAM-Suite.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.html)
   · für SharePoint:
   [EAM-Suite.aspx](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.aspx)
+- BPMN Studio:
+  [BPMN-Studio.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/BPMN-Studio.html)
 - ADMBw Extraktor:
   [ADMBw-Extraktor.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/ADMBw-Extraktor.html)
   · [Python-Variante](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/admbw-extraktor.py)

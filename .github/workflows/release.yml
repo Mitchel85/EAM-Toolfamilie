@@ -43,6 +43,7 @@ jobs:
             dist/EAM-Suite.html
             dist/EAM-Suite.aspx
             dist/EAM-Suite-en.html
+            dist/BPMN-Studio.html
             dist/ADMBw-Extraktor.html
             dist/admbw-extraktor.py
             dist/EAM-MDG-Parser.html

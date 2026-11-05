@@ -4,6 +4,27 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.4.0 - 2026-11-05
+
+### Neues Werkzeug: BPMN Studio
+
+Prozesse als BPMN 2.0 lesen, anzeigen, bearbeiten, pruefen und ausgeben.
+Zwei Fassungen aus einer Quelle: `packages/bpmn/` (Python) und
+`apps/bpmn-studio/` (Einzeldatei, offline).
+
+- BPMN 2.0 mit Diagrammgeometrie; XSD-validiert, Roundtrip byte-stabil
+- Pruefung nach den L4-MK-Konventionen des Leitfadens (20 Regeln), Befunde
+  mit Regel-ID und Objektname
+- Knopf "ADMBw-konform machen": Transformation mit Protokoll, idempotent
+- Export XML, SVG, PNG; SVG und PNG deterministisch
+- Prosa-Extraktion regelbasiert; KI-Adapter optional und standardmaessig aus
+- `.qea`-Bruecke ueber den vorhandenen Writer
+- bpmn.js 18.31.1 (MIT) gebuendelt, keine Laufzeit-Netzabhaengigkeit
+
+Kompatibilitaet zu bpmn.io selbst geprueft (Import, 10/10 Assoziationen,
+0 Seitenfehler); ARIS und Enterprise Architect nur aus Dokumenten belegt --
+siehe `docs/BPMN-KOMPATIBILITAET.md`.
+
 ## 3.3.6 - 2026-11-04
 
 ### Altnamen wirklich im Release

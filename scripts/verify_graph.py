@@ -37,6 +37,7 @@ ZELLEN = {
     "apps/html-analyzer": "eam-qea-analyzer",
     "apps/html-editor": "eam-suite",
     "apps/mdg-web": "eam-mdg-web",
+    "apps/bpmn-studio": "eam-bpmn-studio",
     "apps/mcp": "eam-mcp",
     "apps/admbw-extractor": "eam-admbw-extractor",
     "apps/admbw-batch": "eam-admbw-batch",
@@ -51,6 +52,7 @@ ARTEFAKTE = {
     "apps/html-editor/dist/EAM-Suite.html": "apps/html-editor",
     "apps/html-editor/dist/EAM-Suite.aspx": "apps/html-editor",
     "apps/mdg-web/dist/ADMBw-Extraktor.html": "apps/mdg-web",
+    "apps/bpmn-studio/dist/BPMN-Studio.html": "apps/bpmn-studio",
 }
 
 #: Apps, die die Wissensbasis über Symlinks lesen müssen (keine Kopien).

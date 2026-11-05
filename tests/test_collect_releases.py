@@ -83,10 +83,11 @@ def test_manifest_nennt_nur_ausgelieferte_dateien(tmp_path: Path) -> None:
     start = dist / "START-HIER.html"
     assert start.is_file()
     seite = start.read_text(encoding="utf-8")
-    assert seite.count('class="card') == 6
+    assert seite.count('class="card') == 7
     for datei in (
         "EAM-AI-Suite.html",
         "EAM-Suite.html",
+        "BPMN-Studio.html",
         "ADMBw-Extraktor.html",
         "eam_qea_analyzer_openwebui.py",
         "eam-qea-mcp-server.py",

@@ -15,21 +15,22 @@ flowchart LR
   z4["eam-qea-analyzer<br/>apps/html-analyzer"]
   z5["eam-suite<br/>apps/html-editor"]
   z6["eam-mdg-web<br/>apps/mdg-web"]
-  z7["eam-mcp<br/>apps/mcp"]
-  z8["eam-admbw-extractor<br/>apps/admbw-extractor"]
-  z9["eam-admbw-batch<br/>apps/admbw-batch"]
-  z10["eam-admbw-script-maker<br/>apps/admbw-script-maker"]
-  z11["eam-ai-cli<br/>apps/cli"]
+  z7["eam-bpmn-studio<br/>apps/bpmn-studio"]
+  z8["eam-mcp<br/>apps/mcp"]
+  z9["eam-admbw-extractor<br/>apps/admbw-extractor"]
+  z10["eam-admbw-batch<br/>apps/admbw-batch"]
+  z11["eam-admbw-script-maker<br/>apps/admbw-script-maker"]
+  z12["eam-ai-cli<br/>apps/cli"]
   z1 --> z0
   z3 -.-> z2
   z4 -.-> z2
   z5 -.-> z2
-  z7 --> z1
-  z8 --> z0
+  z8 --> z1
   z9 --> z0
   z10 --> z0
-  z11 --> z1
   z11 --> z0
+  z12 --> z1
+  z12 --> z0
 ```
 
 ## 1. Zellen und Kanten
@@ -46,6 +47,7 @@ Eine Zelle ist ein Ordner mit `package.json`. `dependencies` sind Laufzeit-,
 | `apps/html-analyzer` | eam-qea-analyzer | 4.0.0 | `@mitchel85/eam-vendor` |
 | `apps/html-editor` | eam-suite | 8.4.0 | `@mitchel85/eam-vendor` |
 | `apps/mdg-web` | eam-mdg-web | 2.0.0 | — |
+| `apps/bpmn-studio` | eam-bpmn-studio | 3.4.0 | — |
 | `apps/mcp` | eam-mcp | 2.4.0 | `@mitchel85/eam-core` |
 | `apps/admbw-extractor` | eam-admbw-extractor | 2.4.0 | `@mitchel85/eam-rules` |
 | `apps/admbw-batch` | eam-admbw-batch | 2.4.0 | `@mitchel85/eam-rules` |
@@ -137,6 +139,7 @@ Eine Zelle ist ein Ordner mit `package.json`. `dependencies` sind Laufzeit-,
 | `EAM-Suite.html` | `apps/html-editor/dist/EAM-Suite.html` |
 | `EAM-Suite.aspx` | `apps/html-editor/dist/EAM-Suite.aspx` |
 | `EAM-Suite-en.html` | `apps/html-editor/dist/EAM-Suite-en.html` |
+| `BPMN-Studio.html` | `apps/bpmn-studio/dist/BPMN-Studio.html` |
 | `ADMBw-Extraktor.html` | `apps/mdg-web/dist/ADMBw-Extraktor.html` |
 | `admbw-extraktor.py` | `packages/rules/mdg_parser.py` |
 | `EAM-MDG-Parser.html` | `apps/mdg-web/dist/ADMBw-Extraktor.html` |
