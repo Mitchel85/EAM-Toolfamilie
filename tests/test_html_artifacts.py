@@ -1,8 +1,8 @@
-"""Die drei HTML-Auslieferungen sind eigenständige Altwerkzeuge.
+"""Die beiden HTML-Auslieferungen sind eigenständige Altwerkzeuge.
 
 Kein gemeinsamer UI-Kern, keine per CSS versteckten Reiter: Jede Datei hat
 ihren eigenen Quellstand, ihre eigene Größe, ihren eigenen Titel und ihre
-eigenen Funktionsmarker. Der Test baut alle drei aus den Quellen und prüft
+eigenen Funktionsmarker. Der Test baut beide aus den Quellen und prüft
 genau das.
 """
 
@@ -28,16 +28,6 @@ APPS = {
         "max_size": 4_000_000,
         "markers": ("window.KI", "var EDIT =", "var MERGE", "function openAny(", "function exportXmi("),
         "forbidden": (),
-    },
-    "html-analyzer": {
-        "product": "EAM QEA Analyzer",
-        "version": "v4.0",
-        "title": "EAM QEA Analyzer — QEA-Architekturen niederschwellig analysieren, erkunden &amp; exportieren",
-        "bytes": 347_032,
-        "min_size": 250_000,
-        "max_size": 500_000,
-        "markers": ("function openAny(", "function exportXmi(", "global.EAMF"),
-        "forbidden": ("var EDIT =", "window.KI", 'id="editbtn"', 'id="tab-ki"', "(Edit)"),
     },
     "html-editor": {
         "product": "EAM Suite",
@@ -108,14 +98,14 @@ def test_bau_ist_deterministisch(gebaut: dict[str, dict]) -> None:
         assert _sha(dateien["html"]) == vorher, f"{app}: zwei Bauten unterscheiden sich"
 
 
-def test_drei_verschiedene_werkzeuge(gebaut: dict[str, dict]) -> None:
+def test_zwei_verschiedene_werkzeuge(gebaut: dict[str, dict]) -> None:
     groessen = {app: d["html"].stat().st_size for app, d in gebaut.items()}
     hashes = {app: _sha(d["html"]) for app, d in gebaut.items()}
-    assert len(set(hashes.values())) == 3
-    assert max(groessen.values()) > 3 * min(groessen.values())
+    assert len(set(hashes.values())) == 2
+    assert max(groessen.values()) > 2 * min(groessen.values())
     for app, regeln in APPS.items():
         assert regeln["min_size"] <= groessen[app] <= regeln["max_size"], app
-    assert groessen["html-analyzer"] < groessen["html-editor"] < groessen["html-suite"]
+    assert groessen["html-editor"] < groessen["html-suite"]
 
 
 def test_titel_und_versionen(gebaut: dict[str, dict]) -> None:

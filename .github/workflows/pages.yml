@@ -57,7 +57,6 @@ jobs:
           for app in \
             eam-ai-suite:EAM-AI-Suite.html \
             eam-suite:EAM-Suite.html \
-            eam-analyzer:EAM-QEA-Analyzer.html \
             admbw-extraktor:ADMBw-Extraktor.html \
             bpmn-studio:BPMN-Studio.html
           do

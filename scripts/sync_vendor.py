@@ -41,12 +41,6 @@ ZUORDNUNG: dict[str, tuple[str, ...]] = {
         "sql-wasm.wasm",
         "LICENSE-sql.js",
     ),
-    "apps/html-analyzer": (
-        "eam-formats.js",
-        "sql-wasm.js",
-        "sql-wasm.wasm",
-        "LICENSE-sql.js",
-    ),
     "apps/html-editor": (
         "eam-formats.js",
         "sql-wasm.js",

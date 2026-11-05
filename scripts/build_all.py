@@ -6,7 +6,6 @@
 Erzeugt:
 
   dist/html/EAM-AI-Suite.html/.aspx
-  dist/html/EAM-QEA-Analyzer.html/.aspx
   dist/html/EAM-Suite.html/.aspx
   dist/wheel/eam_ai-<version>-py3-none-any.whl
   dist/offline/... (Ordner + .zip + .tar.gz)
@@ -29,7 +28,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CORE = ROOT / "packages" / "core"
-APPS = ["html-suite", "html-analyzer", "html-editor"]
+APPS = ["html-suite", "html-editor"]
 
 
 def sha256(path: Path) -> str:

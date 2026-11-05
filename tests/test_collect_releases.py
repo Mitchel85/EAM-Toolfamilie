@@ -101,7 +101,6 @@ def test_manifest_nennt_nur_ausgelieferte_dateien(tmp_path: Path) -> None:
         "EAM-Suite.html",
         "BPMN-Studio.html",
         "ADMBw-Extraktor.html",
-        "EAM-QEA-Analyzer.html",
         "eam_qea_analyzer_openwebui.py",
         "eam-qea-mcp-server.py",
         "admbw-extraktor.py",

@@ -25,7 +25,7 @@ def test_mdg_aenderung_trifft_wissensbasis_und_downstream() -> None:
 
 def test_vendor_aenderung_trifft_alle_html_apps() -> None:
     betroffen = zellen(["vendor/sql-wasm.js"])
-    for app in ("apps/html-suite", "apps/html-analyzer", "apps/html-editor"):
+    for app in ("apps/html-suite", "apps/html-editor"):
         assert app in betroffen
 
 

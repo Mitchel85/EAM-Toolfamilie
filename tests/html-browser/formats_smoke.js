@@ -5,16 +5,15 @@
  *
  *   NODE_PATH=/usr/lib/node_modules node tests/html-browser/formats_smoke.js \
  *       apps/html-suite/dist/EAM-AI-Suite.html \
- *       apps/html-analyzer/dist/EAM-QEA-Analyzer.html \
  *       packages/core/fixtures/Musterarchitektur_MASC.qea \
  *       /tmp/etappe3/masc.xmi /tmp/etappe3/masc.json /tmp/etappe3
  *
  * Geprueft wird, was pytest nicht pruefen kann:
- *   1. .xmi-Laden liefert dieselben Modellzahlen wie .qea-Laden (Suite).
- *   2. .json-Laden liefert Elemente/Kanten (Suite).
- *   3. Export XMI + JSON aus der App; die Dateien werden spaeter von
+ *   1. .qea-Laden liefert die Referenz (Suite).
+ *   2. Roundtrip qea -> Export-XMI -> Reimport erhaelt Kanten, Pakete, Sichten.
+ *   3. .xmi- und .json-Laden liefern dieselben Modellzahlen wie .qea (Suite).
+ *   4. Export XMI + JSON aus der App; die Dateien werden spaeter von
  *      packages/core/xmi_reader.py zurueckgelesen (Querformat-Beweis).
- *   4. Derselbe .xmi-Lauf im Analyzer.
  *   5. Kein alert()/dialog() waehrend der Laeufe.
  */
 
@@ -26,9 +25,9 @@ const CHROME = process.env.CHROME_BIN
   || '/root/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome';
 
 (async () => {
-  const [suiteHtml, analyzerHtml, qeaFile, xmiFile, jsonFile, outDir] = process.argv.slice(2);
-  if (!suiteHtml || !analyzerHtml || !qeaFile || !xmiFile || !jsonFile || !outDir) {
-    console.error('Aufruf: formats_smoke.js <suite.html> <analyzer.html> <modell.qea> <modell.xmi> <modell.json> <ausgabeordner>');
+  const [suiteHtml, qeaFile, xmiFile, jsonFile, outDir] = process.argv.slice(2);
+  if (!suiteHtml || !qeaFile || !xmiFile || !jsonFile || !outDir) {
+    console.error('Aufruf: formats_smoke.js <suite.html> <modell.qea> <modell.xmi> <modell.json> <ausgabeordner>');
     process.exit(2);
   }
   const qeaBytes = fs.readFileSync(qeaFile);
@@ -101,11 +100,6 @@ const CHROME = process.env.CHROME_BIN
   /* 4) Suite: .json */
   page = await neueSeite(suiteHtml);
   ergebnis.suiteJson = await lade(page, Buffer.from(jsonText, 'utf8'), 'masc.json');
-  await page.close();
-
-  /* 5) Analyzer: .xmi */
-  page = await neueSeite(analyzerHtml);
-  ergebnis.analyzerXmi = await lade(page, Buffer.from(xmiText, 'utf8'), 'masc.xmi');
   await page.close();
 
   await browser.close();

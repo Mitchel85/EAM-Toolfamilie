@@ -50,7 +50,6 @@ REGELN: tuple[dict[str, object], ...] = (
         "pfade": ("vendor/*",),
         "zellen": (
             "apps/html-suite",
-            "apps/html-analyzer",
             "apps/html-editor",
             "dist",
         ),
@@ -62,13 +61,6 @@ REGELN: tuple[dict[str, object], ...] = (
         "pfade": ("apps/html-suite/*",),
         "zellen": ("apps/html-suite", "dist"),
         "befehl": "python3 scripts/build_legacy_app.py apps/html-suite && python3 scripts/propagate.py --release",
-        "hinweis": "Eigenständiger Altstand: nur diese App und ihr Release-Asset ändern sich.",
-    },
-    {
-        "id": "html-analyzer",
-        "pfade": ("apps/html-analyzer/*",),
-        "zellen": ("apps/html-analyzer", "dist"),
-        "befehl": "python3 scripts/build_legacy_app.py apps/html-analyzer && python3 scripts/propagate.py --release",
         "hinweis": "Eigenständiger Altstand: nur diese App und ihr Release-Asset ändern sich.",
     },
     {
@@ -136,7 +128,6 @@ REGELN: tuple[dict[str, object], ...] = (
             "apps/cli",
             "apps/mcp",
             "apps/html-suite",
-            "apps/html-analyzer",
             "apps/html-editor",
             "apps/admbw-extractor/html",
             "dist",

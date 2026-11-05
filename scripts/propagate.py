@@ -33,7 +33,7 @@ import mdg_source  # noqa: E402  (bewusst nach dem Pfad-Aufbau)
 
 #: Aktuelle MDG, relativ zur Repo-Wurzel — Quelle ist packages/rules/CURRENT.
 MDG = f"packages/rules/{mdg_source.name()}"
-APPS = ("html-suite", "html-analyzer", "html-editor")
+APPS = ("html-suite", "html-editor")
 
 
 def run(*args: str) -> None:

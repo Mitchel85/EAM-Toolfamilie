@@ -12,7 +12,7 @@ und `apps/admbw-script-maker` (funktionslos, ersatzlos gestrichen).
 | `EAM-AI-Suite` (`architektur-mate-ki`) | `apps/html-suite` | eigener Quellstand | `src/` + `vendor/` und eigener Build, keine UI-Konfiguration |
 | `EAM-AI-Suite-Python` (`eam-suite-ai`) | `packages/core` + `apps/cli` | übernommen | 31 Module, 668 Tests, unveränderte Prüflogik |
 | `EAM-Suite` (`admbw-qea-editor`) | `apps/html-editor` | eigener Quellstand | eigener Editor v8.4, kein gemeinsamer UI-Kern |
-| `EAM-QEA-Analyzer` (`admbw-qea-analyzer`) | `apps/html-analyzer` | eigener Quellstand | eigener Analyzer v4.0, ohne Edit/KI |
+| `EAM-QEA-Analyzer` (`admbw-qea-analyzer`) | (entfallen) | entfernt (05.11.2026) | HTML-Fassung ohne KI-Anbindung war redundant; Abfragen laufen als Open-WebUI-Tool/MCP (`apps/mcp`) |
 | `EAM-AI-QEA-Analyzer` (`eam-qea-tool`) | `apps/mcp` | übernommen | CLI, MCP-Server, Web-API, Tests |
 | `EAM-AI-ADMBw-Extractor` | `apps/admbw-extractor` | übernommen | Prüfungen 53/53 |
 | `EAM-AI-ADMBw-Batch` | (entfallen) | entfernt (05.11.2026) | JSON-Batch wird Exportformat im Kern; `packages/core/batch-schema.json` |
@@ -32,10 +32,11 @@ und `apps/admbw-script-maker` (funktionslos, ersatzlos gestrichen).
 ## Endzustand
 
 - **Eine Quelle:** `packages/rules` (Leser + Regelwerk), `knowledge/` (daraus erzeugt).
-- **Drei eigenständige HTML-Werkzeuge:** `apps/html-suite` (AI Suite 9.1),
-  `apps/html-analyzer` (QEA Analyzer 4.0) und `apps/html-editor` (EAM Suite 8.4)
-  bringen jeweils eigenen `src/`- und `vendor/`-Stand mit; es gibt keinen
-  gemeinsamen UI-Kern und keine per CSS versteckten Varianten.
+- **Zwei eigenständige HTML-Werkzeuge:** `apps/html-suite` (AI Suite 9.1) und
+  `apps/html-editor` (EAM Suite 8.4) bringen jeweils eigenen `src/`- und
+  `vendor/`-Stand mit; es gibt keinen gemeinsamen UI-Kern und keine per CSS
+  versteckten Varianten. (Die HTML-Fassung des Analyzers wurde am 05.11.2026
+  entfernt — ihre Browser-Variante ohne KI war redundant zur EAM AI Suite.)
 - **Keine Verteilung mehr:** `sync_consumers.py` und `CONSUMERS.json` sind entfernt;
   die Apps lesen die Wissensbasis über Symlinks. Wächter:
   `scripts/check_single_source.py` (läuft in CI und als Test).

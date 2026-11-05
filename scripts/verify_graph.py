@@ -34,7 +34,6 @@ ZELLEN = {
     "packages/core": "@mitchel85/eam-core",
     "vendor": "@mitchel85/eam-vendor",
     "apps/html-suite": "eam-ai-suite",
-    "apps/html-analyzer": "eam-qea-analyzer",
     "apps/html-editor": "eam-suite",
     "apps/admbw-extractor/html": "eam-admbw-extractor-html",
     "apps/bpmn-studio": "eam-bpmn-studio",

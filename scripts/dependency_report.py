@@ -49,10 +49,10 @@ def zellen_tabelle() -> list[str]:
 
 def vendor_tabelle() -> list[str]:
     dateien = sorted(p for p in QUELLE.glob("*") if p.is_file() and p.name not in {"package.json", "README.md"})
-    kopf = ["| Bibliothek | SHA-256 | Suite | Analyzer | Editor |", "|---|---|---|---|---|"]
+    kopf = ["| Bibliothek | SHA-256 | Suite | Editor |", "|---|---|---|---|"]
     for datei in dateien:
         spalten = ["x" if datei.name in ZUORDNUNG[app] else "—" for app in
-                   ("apps/html-suite", "apps/html-analyzer", "apps/html-editor")]
+                   ("apps/html-suite", "apps/html-editor")]
         kopf.append(f"| `vendor/{datei.name}` | `{sha256(datei)[:16]}…` | {' | '.join(spalten)} |")
     return kopf
 

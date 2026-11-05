@@ -15,7 +15,6 @@ Manifeste beschreiben die Zellen und ihre Solllkanten:
 @mitchel85/eam-core    packages/core
 @mitchel85/eam-vendor  vendor
 eam-ai-suite           apps/html-suite       (eigener Quellstand: architektur-mate-ki)
-eam-qea-analyzer       apps/html-analyzer    (eigener Quellstand: admbw-qea-analyzer)
 eam-suite              apps/html-editor      (eigener Quellstand: admbw-qea-editor)
 eam-mdg-web            apps/mdg-web
 eam-mcp                apps/mcp
@@ -52,7 +51,6 @@ python3 scripts/propagate.py --check         # Wissensbasis, Vendor, Manifeste, 
 python3 scripts/build_knowledge.py --mdg packages/rules/NAFv4-ADMBw-MDG-2026.05.xml \
         --check --check-provenance      # Wissensbasis gegen MDG + Parser
 python3 scripts/build_legacy_app.py apps/html-suite
-python3 scripts/build_legacy_app.py apps/html-analyzer
 python3 scripts/build_legacy_app.py apps/html-editor
 python3 apps/mdg-web/build.py
 python3 scripts/verify_graph.py            # jeder Knoten gemessen: Datei, Größe, SHA-256

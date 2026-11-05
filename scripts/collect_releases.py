@@ -126,18 +126,6 @@ AUSLIEFERUNGEN = [
         "EAM QEA Analyzer — MCP-Server",
         "MCP-Wrapper für Open WebUI, Claude Desktop und VS Code; braucht eam_qea_analyzer_openwebui.py im selben Ordner.",
     ),
-    (
-        "apps/html-analyzer/dist/EAM-QEA-Analyzer.html",
-        "EAM-QEA-Analyzer.html",
-        "EAM Analyzer — eine HTML-Datei",
-        "Modelle abfragen (`.qea` und `.xmi`): suchen, zählen, vergleichen, erklären. Offline im Browser, ohne KI-Anbindung.",
-    ),
-    (
-        "apps/html-analyzer/dist/EAM-QEA-Analyzer.aspx",
-        "EAM-QEA-Analyzer.aspx",
-        "EAM Analyzer — SharePoint-Fassung",
-        "Dieselbe Abfrage-App als ASPX mit BOM für SharePoint/IIS.",
-    ),
 ]
 
 #: App-Buendel fuer den Auto-Zip: je Anwendung ein Archiv mit Kurzanleitung.
@@ -181,15 +169,13 @@ APP_ZIPS: tuple[AppBuendel, ...] = (
     },
     {
         "name": "EAM-Analyzer",
-        "produkt": "EAM Analyzer — HTML, Open-WebUI-Tool und MCP-Server",
-        "text": "Vorhandene Modelle befragen (`.qea` und `.xmi`): als HTML im Browser, als Werkzeug in Open WebUI oder als MCP-Server für Open WebUI, Claude Desktop und VS Code.",
+        "produkt": "EAM Analyzer — Open-WebUI-Tool und MCP-Server",
+        "text": "Vorhandene Modelle befragen (`.qea` und `.xmi`): als Werkzeug in Open WebUI oder als MCP-Server für Open WebUI, Claude Desktop und VS Code.",
         "dateien": (
-            ("EAM-QEA-Analyzer.html", "apps/html-analyzer/dist/EAM-QEA-Analyzer.html", "HTML-Fassung: im Browser öffnen"),
-            ("EAM-QEA-Analyzer.aspx", "apps/html-analyzer/dist/EAM-QEA-Analyzer.aspx", "SharePoint-/IIS-Fassung mit BOM"),
             ("eam_qea_analyzer_openwebui.py", "apps/mcp/eam_qea_tool.py", "Open-WebUI-Tool: unter „Werkzeuge“ einfügen"),
             ("eam-qea-mcp-server.py", "apps/mcp/mcp_server.py", "MCP-Server: starten und im Client verbinden"),
         ),
-        "start": ("EAM-QEA-Analyzer.html im Browser öffnen", "Modell laden (`.qea` oder `.xmi`)", "Fragen stellen"),
+        "start": ("Open-WebUI-Tool in Open WebUI einfügen", "Modell laden (`.qea` oder `.xmi`)", "Fragen stellen"),
     },
     {
         "name": "ADMBw-Extraktor",
@@ -582,13 +568,12 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
         ),
         _karte(
             "EAM Analyzer", "Abfragen",
-            "Vorhandene Modelle der Formate .qea und .xmi befragen: als HTML im Browser, als Open-WebUI-Tool oder als MCP-Server für Open WebUI, Claude Desktop und VS Code.",
-            "EAM-QEA-Analyzer.html", "EAM-QEA-Analyzer.html herunterladen",
-            ["HTML herunterladen und öffnen", "Modell laden (.qea oder .xmi)", "Modell fragen"],
-            groesse=groesse("EAM-QEA-Analyzer.html"),
+            "Vorhandene Modelle der Formate .qea und .xmi befragen: als Open-WebUI-Tool oder als MCP-Server für Open WebUI, Claude Desktop und VS Code.",
+            "eam_qea_analyzer_openwebui.py", "Open-WebUI-Tool herunterladen",
+            ["Open-WebUI-Tool herunterladen", "Modell laden (.qea oder .xmi)", "Modell fragen"],
+            groesse=groesse("eam_qea_analyzer_openwebui.py"),
             slug="qea-analyzer",
             weitere=[
-                ("eam_qea_analyzer_openwebui.py", "Open-WebUI-Tool herunterladen"),
                 ("eam-qea-mcp-server.py", "MCP-Server herunterladen"),
             ],
         ),

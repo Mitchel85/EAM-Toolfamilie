@@ -30,7 +30,7 @@ def test_jede_zelle_ist_verbunden() -> None:
         pytest.skip("Auslieferungen nicht gebaut")
     bericht = _modul().pruefe()
     assert bericht["befunde"] == [], "\n".join(bericht["befunde"])
-    assert len(bericht["knoten"]) == 11
+    assert len(bericht["knoten"]) == 10
 
 
 def test_jede_abhaengigkeit_zeigt_auf_eine_zelle() -> None:
@@ -46,7 +46,7 @@ def test_vendor_ist_eine_zelle_und_die_html_apps_haengen_daran() -> None:
     bericht = _modul().pruefe()
     knoten = {k["path"]: k for k in bericht["knoten"]}
     assert knoten["vendor"]["name"] == "@mitchel85/eam-vendor"
-    for app in ("apps/html-suite", "apps/html-analyzer", "apps/html-editor"):
+    for app in ("apps/html-suite", "apps/html-editor"):
         assert "@mitchel85/eam-vendor" in knoten[app]["devDependencies"]
     assert knoten["apps/admbw-extractor/html"]["dependencies"] == {}
 

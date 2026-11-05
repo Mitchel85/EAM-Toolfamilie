@@ -45,7 +45,7 @@ Kurz, was jedes Werkzeug kann — und wie sie sich unterscheiden.
 | **EAM AI Suite** (HTML) | `.qea` · `.xmi` · `.json` | ja (eigener Zugang) | Die ganze Kette in einer Datei: aus Text, Handbuch, PDF oder Bild ein geprüftes Modell bauen, ansehen, bearbeiten | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/eam-ai-suite/) |
 | **EAM AI Suite** (Python `eam-ai`) | `.qea` · `.xmi` · `.json` | ja (Backend) | Dieselbe Kette ohne Browser — für Serienläufe, Webdienst und Server | — |
 | **EAM Suite** (HTML) | `.qea` · `.xmi` · `.json` | nein | Vorhandene Modelle analysieren und verstehen, mehrere verschmelzen, von Hand bearbeiten und zurückschreiben | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/eam-suite/) |
-| **EAM Analyzer** (HTML, Open WebUI, MCP) | `.qea` · `.xmi` | über das KI-Modell des Werkzeugs | Ein Modell befragen — als Werkzeug in Open WebUI oder als MCP-Server für Open WebUI, Claude Desktop und VS Code | — (wird nur ausgeliefert) |
+| **EAM Analyzer** (Open WebUI, MCP) | `.qea` · `.xmi` | über das KI-Modell des Werkzeugs | Ein Modell befragen — als Werkzeug in Open WebUI oder als MCP-Server für Open WebUI, Claude Desktop und VS Code | — |
 | **ADMBw Extraktor** (HTML, Python) | MDG-XML | nein | Regelwerk durchsuchen und als sechs Regeldateien exportieren; die Grundlage für alles andere | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/admbw-extraktor/) |
 | **BPMN Studio** (HTML, Python) | BPMN 2.0 | optional | Prozesse lesen, zeichnen und prüfen; auf Knopfdruck ADMBw-konform machen; Export als XML, SVG und PNG | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/bpmn-studio/) |
 
@@ -72,12 +72,10 @@ komplettes Paket (Anwendung + Kurzanleitung).
 | EAM AI Suite | [EAM-AI-Suite.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-AI-Suite.html) · [.aspx](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-AI-Suite.aspx) | [EAM-AI-Suite.zip](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-AI-Suite.zip) |
 | EAM AI Suite Python | [eam-ai-suite-python.zip](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam-ai-suite-python.zip) | — |
 | EAM Suite | [EAM-Suite.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.html) · [.aspx](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.aspx) · [en](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite-en.html) | [EAM-Suite.zip](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.zip) |
-| EAM Analyzer | [EAM-QEA-Analyzer.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-QEA-Analyzer.html) · [.aspx](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-QEA-Analyzer.aspx) | [EAM-Analyzer.zip](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Analyzer.zip) |
+| EAM Analyzer | [Open-WebUI-Tool](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam_qea_analyzer_openwebui.py) · [MCP-Server](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam-qea-mcp-server.py) | [EAM-Analyzer.zip](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Analyzer.zip) |
 | ADMBw Extraktor | [ADMBw-Extraktor.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/ADMBw-Extraktor.html) · [admbw-extraktor.py](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/admbw-extraktor.py) | [ADMBw-Extraktor.zip](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/ADMBw-Extraktor.zip) |
 | BPMN Studio | [BPMN-Studio.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/BPMN-Studio.html) | [BPMN-Studio.zip](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/BPMN-Studio.zip) |
 
-Für Open WebUI und MCP: [eam_qea_analyzer_openwebui.py](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam_qea_analyzer_openwebui.py) und
-[eam-qea-mcp-server.py](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/eam-qea-mcp-server.py).
 Übersicht und Prüfsummen: [START-HIER.html](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/START-HIER.html) ·
 [RELEASES.md](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/RELEASES.md) ·
 [SHA256SUMS](https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/SHA256SUMS)
