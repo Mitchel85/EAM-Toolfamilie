@@ -67,6 +67,18 @@ jobs:
           done
           # Kein Jekyll: reines HTML, keine Verarbeitung nötig.
           touch seite/.nojekyll
+
+          # Amtliche MDG für den Extraktor bereitstellen. Der Knopf im Werkzeug
+          # lädt sie von hier (gleiche Herkunft — der Browser darf sie nicht
+          # direkt vom BAAINBw holen, bundeswehr.de sendet keine CORS-Freigabe).
+          # Die Datei ist dieselbe, die der Regelwerk-Wächter pflegt; das
+          # Manifest belegt Version und Prüfsumme.
+          mkdir -p seite/admbw-extraktor/mdg
+          aktuell="$(tr -d '\r\n' < packages/rules/CURRENT)"
+          cp "packages/rules/$aktuell" "seite/admbw-extraktor/mdg/$aktuell"
+          python3 scripts/mdg_manifest.py "seite/admbw-extraktor/mdg/$aktuell" \
+            --aus seite/admbw-extraktor/mdg/manifest.json
+
           ls -la seite
 
       - uses: actions/configure-pages@v5

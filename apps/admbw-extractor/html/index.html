@@ -2,6 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AD%3C/text%3E%3C/svg%3E">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ADMBw Extraktor — MDG-Auswertung</title>
 <style>
@@ -25,6 +26,10 @@
   .drop h2 { font-size:17px; margin:10px 0 4px; color:var(--bw-blue); }
   .drop p { font-size:13px; color:var(--bw-mid); }
   .hint { font-size:12px; color:var(--bw-mid); text-align:center; margin-top:10px; }
+  .loadrow { display:flex; align-items:center; justify-content:center; gap:12px; margin-top:14px; flex-wrap:wrap; }
+  .loadinfo { font-size:12px; color:var(--bw-mid); }
+  .loadinfo.warn { color:#8a5a10; }
+  .loadinfo.ok { color:#1c6e4e; }
   /* Chatbot-Anleitung: eigener Stil, damit Schrift und Fläche immer kontrastieren */
   #chatbot-info { margin-top:20px; border:1px solid var(--border); border-radius:10px; background:var(--card); }
   #chatbot-info > summary { cursor:pointer; padding:12px 14px; font-weight:600; color:var(--bw-dark); }
@@ -93,6 +98,10 @@
     <p>Die Technologie-Datei im XML-Format, z.&nbsp;B. <code>NAFv4-ADMBw-MDG-2026.05.xml</code><br>(Bezug: BAAINBw, Rubrik „Methode Architektur“)</p>
   </div>
   <div class="hint">Die Datei wird ausschließlich lokal im Browser verarbeitet — es wird nichts hochgeladen.</div>
+  <div class="loadrow">
+    <button class="btn primary" id="btn-mdg" type="button">🏛 Amtliche MDG laden</button>
+    <span class="loadinfo" id="mdgstand">Prüfe Angebot …</span>
+  </div>
   <input type="file" id="file" accept=".xml,text/xml,application/xml" hidden>
 
   <div id="result" hidden>
@@ -612,30 +621,87 @@ function resetResults(){
   $('srcfile').textContent = 'keine Datei geladen';
 }
 
+function verarbeiteXml(buffer, name, size){
+  try {
+    var text = decodeXmlBuffer(buffer);
+    DATA = parseMdg(text);
+    DATA.src = name;
+    $('srcfile').textContent = name + ' · ' + size + ' Bytes';
+    buildMarkdown();
+    renderStats();
+    renderPanels();
+    renderDl();
+    $('result').hidden = false;
+    var pb = $('promptblock'); if (pb) pb.hidden = false;
+    toast('✅ ' + name + ' gelesen: ' + DATA.stereo.length + ' Stereotype, ' + DATA.topo.length + ' Topologie-Regeln, ' + DATA.vp.length + ' Viewpoints, ' + DATA.tag.length + ' Tag-Typen');
+    return true;
+  } catch (e) {
+    resetResults();
+    toast('⚠ Fehler: ' + e.message);
+    return false;
+  }
+}
+
 function handleFile(file){
   var reader = new FileReader();
   $('drop').classList.add('over');
   reader.onload = function(){
-    try {
-      var text = decodeXmlBuffer(reader.result);
-      DATA = parseMdg(text);
-      DATA.src = file.name;
-      $('srcfile').textContent = file.name + ' · ' + file.size + ' Bytes';
-      buildMarkdown();
-      renderStats();
-      renderPanels();
-      renderDl();
-      $('result').hidden = false;
-      var pb = $('promptblock'); if (pb) pb.hidden = false;
-      toast('✅ ' + file.name + ' gelesen: ' + DATA.stereo.length + ' Stereotype, ' + DATA.topo.length + ' Topologie-Regeln, ' + DATA.vp.length + ' Viewpoints, ' + DATA.tag.length + ' Tag-Typen');
-    } catch (e) {
-      resetResults();
-      toast('⚠ Fehler: ' + e.message);
-    }
+    verarbeiteXml(reader.result, file.name, file.size);
     $('drop').classList.remove('over');
   };
   reader.onerror = function(){ resetResults(); toast('⚠ Datei konnte nicht gelesen werden'); $('drop').classList.remove('over'); };
   reader.readAsArrayBuffer(file);
+}
+
+/* ---- Amtliche MDG vom Projekt angeboten (gleiche Herkunft, kein CORS) ---- */
+var MDG_MANIFEST = null;
+
+function setzeMdgStand(text, klasse){
+  var el = $('mdgstand');
+  el.textContent = text;
+  el.className = 'loadinfo' + (klasse ? ' ' + klasse : '');
+}
+
+function hex(buf){
+  return Array.prototype.map.call(new Uint8Array(buf), function(b){
+    return ('0' + b.toString(16)).slice(-2);
+  }).join('');
+}
+
+async function pruefeMdgAngebot(){
+  try {
+    var r = await fetch('mdg/manifest.json', { cache: 'no-store' });
+    if (!r.ok) throw new Error('kein Manifest');
+    MDG_MANIFEST = await r.json();
+    setzeMdgStand('Stand ' + (MDG_MANIFEST.version || '?') + ' · ' + Math.round(MDG_MANIFEST.bytes / 1024) + ' KB', '');
+  } catch (e) {
+    $('btn-mdg').disabled = true;
+    setzeMdgStand('Lokal geöffnet — bitte Datei wählen oder Projektseite nutzen', 'warn');
+  }
+}
+
+async function ladeAmtlicheMdg(){
+  if (!MDG_MANIFEST) { await pruefeMdgAngebot(); }
+  if (!MDG_MANIFEST) return;
+  var btn = $('btn-mdg');
+  btn.disabled = true;
+  setzeMdgStand('Lade ' + MDG_MANIFEST.datei + ' …', '');
+  try {
+    var r = await fetch('mdg/' + MDG_MANIFEST.datei);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    var buf = await r.arrayBuffer();
+    if (MDG_MANIFEST.sha256 && window.crypto && crypto.subtle) {
+      var ist = hex(await crypto.subtle.digest('SHA-256', buf));
+      if (ist !== MDG_MANIFEST.sha256) throw new Error('Prüfsumme weicht ab');
+      setzeMdgStand('Prüfsumme bestätigt · ' + MDG_MANIFEST.datei, 'ok');
+    }
+    if (verarbeiteXml(buf, MDG_MANIFEST.datei, buf.byteLength)) {
+      toast('✅ Amtliche MDG geladen — Prüfsumme stimmt');
+    }
+  } catch (e) {
+    setzeMdgStand('Laden fehlgeschlagen (' + e.message + ') — bitte Datei manuell wählen', 'warn');
+  }
+  btn.disabled = false;
 }
 
 // Events
@@ -644,6 +710,8 @@ $('drop').addEventListener('click', function(ev){
   $('file').click();
 });
 $('file').addEventListener('change', function(){ if (this.files[0]) handleFile(this.files[0]); });
+$('btn-mdg').addEventListener('click', ladeAmtlicheMdg);
+pruefeMdgAngebot();
 ['dragover','dragenter'].forEach(function(evt){
   $('drop').addEventListener(evt, function(e){ e.preventDefault(); this.classList.add('over'); });
 });
