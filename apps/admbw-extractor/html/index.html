@@ -25,6 +25,14 @@
   .drop h2 { font-size:17px; margin:10px 0 4px; color:var(--bw-blue); }
   .drop p { font-size:13px; color:var(--bw-mid); }
   .hint { font-size:12px; color:var(--bw-mid); text-align:center; margin-top:10px; }
+  /* Chatbot-Anleitung: eigener Stil, damit Schrift und Fläche immer kontrastieren */
+  #chatbot-info { margin-top:20px; border:1px solid var(--border); border-radius:10px; background:var(--card); }
+  #chatbot-info > summary { cursor:pointer; padding:12px 14px; font-weight:600; color:var(--bw-dark); }
+  #chatbot-info .cinfo-body { padding:0 16px 16px; line-height:1.6; color:var(--ink); }
+  #chatbot-info .cinfo-lead { margin-top:0; font-size:12.5px; color:var(--ink); }
+  #chatbot-info p { color:var(--ink); }
+  #chatbot-info b { color:var(--bw-dark); }
+  #chatbot-info code { color:var(--bw-blue); }
   .stats { display:flex; flex-wrap:wrap; gap:10px; margin:18px 0; }
   .stat { flex:1; min-width:140px; background:var(--card); border:1px solid var(--border); border-left:4px solid var(--bw-blue); border-radius:10px; padding:10px 14px; }
   .stat b { font-size:26px; display:block; }
@@ -63,6 +71,7 @@
     .btn { background:transparent; }
     .btn.primary { background:var(--bw-blue); color:#0A1E33; }
     .toast { background:#E8E8E8; color:#0A1E33; }
+    #chatbot-info > summary, #chatbot-info b { color:var(--ink); }
   }
 </style>
 </head>
@@ -116,10 +125,10 @@
       <p class="hint">Arbeitsanweisung für ein Sprachmodell, das aus Prosa ein Modell bauen soll.
       Wird nicht gebraucht, wenn mit der EAM Suite gebaut wird.</p>
     </div>
-    <details id="chatbot-info" style="margin-top:20px;border:1px solid #d5daea;border-radius:10px;background:#fbfcff">
-      <summary style="cursor:pointer;padding:12px 14px;font-weight:600">🤖 Regeldateien in einem Chatbot nutzen — Anleitung</summary>
-      <div style="padding:0 16px 16px;line-height:1.6">
-        <p class="hint" style="margin-top:0">Die sechs Markdown-Dateien sind reine Fachdaten. Jeder Chatbot kann
+    <details id="chatbot-info">
+      <summary>🤖 Regeldateien in einem Chatbot nutzen — Anleitung</summary>
+      <div class="cinfo-body">
+        <p class="cinfo-lead">Die sechs Markdown-Dateien sind reine Fachdaten. Jeder Chatbot kann
         sie als Wissensquelle lesen — ChatGPT, Claude, Gemini, Open WebUI, ein lokales Modell. Der Chatbot
         <b>schlaegt dann vor</b>, er <b>prueft nicht</b>; die verbindliche Pruefung bleibt beim Extraktor und bei der EAM Suite.</p>
 

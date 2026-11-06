@@ -397,6 +397,14 @@ def prompt_md(rules: dict, quelle: str, ts: str | None) -> str:
         "",
         "6. Jede Aussage mit der Regelzeile belegen — keine ungeprüften ✓-Behauptungen.",
         "",
+        "## Arbeitsweise: Schritt für Schritt",
+        "",
+        "Arbeite iterativ, nicht alles auf einmal. Höchstens 10 bis 15 Elemente pro "
+        "Schritt, dann Zwischenstand ausgeben und auf „weiter“ warten. Bei langen "
+        "Dokumenten zuerst eine Gliederung vorschlagen. Wer alles in einem Durchgang "
+        "versucht, sprengt bei umfangreichen Texten das Kontextfenster und verliert "
+        "Genauigkeit bei der Regelprüfung.",
+        "",
         "## Ausgabeformat",
         "",
         "- **Elemente:** Prosa-Stelle | Elementname | Stereotyp | Metaklasse",

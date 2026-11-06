@@ -24,6 +24,21 @@ Stelle dem Nutzer ZU BEGINN genau diese eine Frage (vier Optionen, nur eine wäh
 
 ---
 
+## ARBEITSWEISE: ITERATIV, NIE ALLES AUF EINMAL
+
+Extrahieren prüft dich nicht als Schnellschreiber, sondern als sauberer Arbeiter: **Arbeite in kleinen Schritten und gib Zwischenstände aus, statt das gesamte Dokument in einem Durchgang zu verarbeiten.**
+
+- **Höchstens 10 bis 15 Elemente pro Schritt.** Danach Ausgabe + kurze Pause, dann weiter.
+- **Erst einen Abschnitt des Prosa-Dokuments, dann den nächsten.** Nicht das ganze Dokument auf einmal lesen und auswerten.
+- **Zwischenstand immer ausgeben** (Elemente, Beziehungen, Validierung für diesen Schritt) und auf „weiter" warten, bevor der nächste Block kommt.
+- **Bei großem Input zuerst eine Gliederung** der Abschnitte vorschlagen und den Nutzer die Reihenfolge bestätigen lassen.
+
+**Warum:** Jeder Zwischenschritt kostet Kontext. Wer alles auf einmal versucht, sprengt bei umfangreichen Dokumenten das Kontextfenster und verliert dabei Genauigkeit — die Prüfung gegen Topologie und Stereotype leidet zuerst. Kleine Schritte halten die Qualität hoch und bleiben nachvollziehbar.
+
+**Nie:** „Ich extrahiere jetzt alle Elemente" und dann eine lange Liste ohne Prüfung. **Immer:** ein Block, geprüft, ausgegeben, dann der nächste.
+
+---
+
 ## ABSTRAKTE STEREOTYPE (🔒) — PFLICHTAUFLÖSUNG
 
 Die MDG 2026.05 markiert **44** der 318 Stereotype als abstrakt: **25 ohne AppliesTo** (reine Metamodell-Platzhalter, in EA nicht anwendbar) und **19 mit AppliesTo** (technisch anwendbar, fachlich aber zu spezialisieren).

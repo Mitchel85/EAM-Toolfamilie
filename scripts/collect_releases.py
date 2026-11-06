@@ -467,6 +467,7 @@ ${cards}
     <li><b>Open WebUI.</b> <i>Workspace → Knowledge → „+"</i>, die sechs Dateien hochladen, Sammlung <i>ADMBw-Regelwerk</i> nennen. Im Chat mit <code>#</code> vor der Frage anhängen — oder unter <i>Workspace → Models</i> beim Modell als Knowledge eintragen, dann greift sie in jedem Chat.</li>
     <li><b>Andere Chatbots.</b> ChatGPT: Projekt anlegen, Dateien hinzufügen (oder Custom GPT → Knowledge). Claude: Projekt → Knowledge. Gemini: Gem oder Notebook mit den Dateien als Quelle. Lokal: Dateien in den Kontext legen oder einen Index bauen.</li>
     <li><b>Master-Prompt.</b> <code>ADMBw-Prompt.md</code> als System-Anweisung setzen, die sechs Wissensdateien als Knowledge. Der Prompt sagt, wie gebaut wird; die Dateien sagen, was erlaubt ist.</li>
+    <li><b>Iterativ arbeiten.</b> Der Prompt verlangt ausdrücklich kleine Schritte: höchstens 10 bis 15 Elemente, dann Zwischenstand ausgeben und weiter. Wer ein langes Dokument in einem Durchgang verarbeiten lässt, sprengt bei manchen Modellen das Kontextfenster — die Regelprüfung leidet zuerst.</li>
     <li><b>Grenzen.</b> Die Dateien sind Daten, keine Befehle. Bei Widerspruch gilt die MDG, nicht die Chat-Antwort.</li>
   </ol>
 
