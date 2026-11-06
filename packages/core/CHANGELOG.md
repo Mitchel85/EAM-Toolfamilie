@@ -4,6 +4,26 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.5.1 - 2026-11-06
+
+### Extraktor: amtliche MDG per Knopfdruck, besserer Kontrast, iterativer Prompt
+
+Das feste Release v3.5.0 enthielt noch den Stand von gestern Abend -- die
+Aenderungen vom 06.11. waren nur auf der Projektseite und im Nachtlauf.
+Diese Fassung bringt beides wieder zusammen.
+
+- ADMBw Extraktor: Knopf "Amtliche MDG laden" holt die vom Waechter gepflegte
+  Datei von der Projektseite (gleiche Herkunft, kein CORS) und prueft die
+  SHA-256 im Browser, bevor er verarbeitet
+- Anleitung "Regeldateien in einem Chatbot nutzen" folgt dem Theme; im Dark
+  Mode war heller Text auf fast weissem Grund (Kontrast jetzt 12,5:1)
+- Master-Prompt verlangt iteratives Arbeiten: 10-15 Elemente pro Schritt,
+  Zwischenstand ausgeben -- Schutz vor Kontext-Ueberlauf
+- Die Iterationsregel steht im Generator (packages/rules/documents.py), damit
+  die Ein-Quellen-Regel gilt und die Wissensbasis reproduzierbar bleibt
+- Projektseite: Publish-Job liest das Repository (Checkout), sonst fehlt
+  packages/rules/CURRENT beim Ausliefern
+
 ## 3.5.0 - 2026-11-05
 
 ### Zwei neue Zielformate: XMI 2.1 und JSON-Batch
