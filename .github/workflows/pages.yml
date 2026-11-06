@@ -36,6 +36,12 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
+      # Der Veröffentlichungs-Job startet ohne Arbeitskopie: er bekommt nur das
+      # Artefakt `dist`. Für die amtliche MDG (packages/rules) braucht er das
+      # Repository — sonst fehlt die Datei, die der Wächter pflegt.
+      - name: Repository lesen
+        uses: actions/checkout@v4
+
       - name: Auslieferungen holen
         uses: actions/download-artifact@v4
         with:

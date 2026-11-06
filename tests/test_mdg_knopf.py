@@ -81,3 +81,32 @@ def test_pages_liefert_mdg_und_manifest_aus() -> None:
     assert "packages/rules/CURRENT" in text
     assert "scripts/mdg_manifest.py" in text
     assert "manifest.json" in text
+
+
+def test_veroeffentlichungs_job_hat_repo_checkout() -> None:
+    """Der Publish-Job bekommt nur `dist` — ohne Checkout fehlt packages/rules.
+
+    Genau daran ist der erste Lauf gescheitert: 'packages/rules/CURRENT:
+    No such file or directory', weil der Job ohne Arbeitskopie startet.
+    """
+    try:
+        import yaml
+    except ModuleNotFoundError:  # pragma: no cover - Umgebungen ohne PyYAML
+        # Ohne YAML-Parser genügt der Blick auf den Abschnitt des Jobs.
+        text = PAGES.read_text(encoding="utf-8")
+        abschnitt = text.split("veroeffentlichen:", 1)[1]
+        assert "actions/checkout" in abschnitt, "Publish-Job ohne Checkout"
+        return
+
+    daten = yaml.safe_load(PAGES.read_text(encoding="utf-8"))
+    schritte = daten["jobs"]["veroeffentlichen"]["steps"]
+    uses = [str(s.get("uses", "")) for s in schritte]
+    assert any("actions/checkout" in u for u in uses), "Publish-Job ohne Checkout"
+
+    # Der Checkout muss vor dem Schritt stehen, der packages/rules liest.
+    index_checkout = next(i for i, u in enumerate(uses) if "actions/checkout" in u)
+    index_nutzung = next(
+        i for i, s in enumerate(schritte)
+        if "packages/rules" in str(s.get("run", ""))
+    )
+    assert index_checkout < index_nutzung
