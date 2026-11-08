@@ -199,10 +199,55 @@ print(report.summary())
   IR kennt keine Objekt-GUIDs. `semantic_view` macht die Aufloesung explizit.
 - `strict=True` macht jede Warnung zum Fehler; `allow_empty=True` laesst
   Modelle ohne Elemente zu (der Writer lehnt sie ab).
+- `with_refs=True` schreibt je Element das Feld `ref` ins IR (die Kennung, auf
+  die Kanten zeigen). `with_owners=True` ergaenzt bei Ports, Parts und
+  ActionPins das Feld `owner` — die Referenz des Traegerelements. Beides ist
+  additiv und nur fuer Formate gedacht, die eine explizite Knotenidentitaet
+  brauchen (ArchiMate).
 - Bewusste Grenzen: Sichten/Layout werden nicht gelesen; das IR traegt ein
   Technologieprofil (das haeufigste `FQName`-Praefix); ein IR, dessen `name`
   ohne echte Namenskollision vom Pfadsegment abweicht, wird auf den
   Anzeigenamen normalisiert.
+
+## ArchiMate exportieren
+
+```bash
+python3 archimate_writer.py --ir modell.qea --out modell.xml --report bericht.json
+./apps/cli/eam-ai archimate --ir modell.qea -o modell.xml --report bericht.json
+```
+
+Als Modul:
+
+```python
+from qea_reader import read_qea_ex
+from archimate_writer import write_archimate
+
+ir, _ = read_qea_ex("modell.qea", with_refs=True, with_owners=True)
+report = write_archimate(ir, "modell.xml", modellname="MASC")
+print(report.elements, report.relationships, report.unresolved)
+```
+
+- **Viertes Zielformat** neben `.qea`, `.xmi` und `.json`: Open-Group
+  „ArchiMate Model Exchange File Format" (3.2), namespace
+  `http://www.opengroup.org/xsd/archimate/3.0/`.
+- **Kein 1:1-Mapping.** Der NAFv4.1-ArchiMate-Guide (2026.06) sagt selbst, dass
+  NAF-Elemente auf mehrere ArchiMate-Typen zeigen. Die Tabelle steht sichtbar
+  in `archimate_writer.ELEMENT_MAP`; Elemente ohne Stereotyp fallen auf
+  `Grouping`/`Requirement` zurueck und werden im Report gezaehlt.
+- **Traeger-Aufloesung:** Ports, Parts und ActionPins haben kein ArchiMate-
+  Konzept. Sie entfallen als Element, ihre Kanten laufen auf den Traeger
+  (`owner` aus dem Reader). Ohne diesen Schritt verliert MASC rund 200 Kanten.
+- **Beziehungsmatrix:** `archimate/relationships.xml` (Archi, EPL-2.0) wird bei
+  jedem Lauf geladen. Illegale Kanten werden ueber
+  `Realization -> Serving -> Association` umgebaut und im Report ausgewiesen.
+- **Deterministisch:** Kennung = IR-GUID, sonst SHA-256 aus
+  `paket|stereotype|name`. Zwei Laeufe → gleiche Bytes.
+- **Report:** `elements`, `relationships`, `remapped`, `unresolved`,
+  `collapsed`, `skipped_display`, `skipped_package`, `fallback`, `by_type`,
+  `by_relation`, `unresolved_by_type`.
+- **Grenzen:** Sichten/Diagramme werden nicht geschrieben; Zustaende,
+  Entscheidungen und Ereignisse einer Prozesssicht haben kein ArchiMate-
+  Aequivalent und werden gezaehlt, nicht umgedeutet.
 
 ## Modell ansehen (grafisch)
 

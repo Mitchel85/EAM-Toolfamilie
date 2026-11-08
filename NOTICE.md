@@ -15,6 +15,7 @@ Schnittstellen und Dateiformaten.
 | `vendor/pdf.min.js`, `vendor/pdf.worker.min.js` | PDF-Vorschau und Textextraktion | Apache-2.0 (Mozilla Foundation); Volltext in `vendor/LICENSE-pdfjs.txt` |
 | `vendor/jszip.min.js` | ZIP-Erzeugung im Browser | MIT oder GPLv3 (Stuart Knightley; MIT gewählt) |
 | `apps/mcp/eam_qea_tool.py` | QEA-Analyse/Open-WebUI-Anbindung, abgeleitet von `schmitze87/AAroN` | Apache-2.0; Volltext in `apps/mcp/LICENSE-AAroN.txt` |
+| `packages/core/archimate/relationships.xml`, `relationships-keys.xml` | ArchiMate-Beziehungsmatrix fuer den Export | EPL-2.0 (Eclipse Public License), aus dem Archi-Projekt (`archimatetool/archi`); unveraendert uebernommen |
 
 ## Wissensbasis
 

@@ -4,6 +4,34 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.6.0 - 2026-11-07
+
+### ArchiMate 3.2 als viertes Zielformat
+
+Der Konverter ist Teil der Familie geworden: `packages/core/archimate_writer.py`
+liest dasselbe IR wie `.qea`, `.xmi` und `.json` und schreibt das Open-Group
+Model Exchange Format. Aufruf ueber `eam-ai archimate --ir MODELL --out ZIEL`.
+
+- **Eigener Unterbefehl** `eam-ai archimate` (Exit 1 bei `--strict`, wenn
+  Kanten nicht aufloesbar sind) plus eigenstaendiger Modulaufruf
+- **Traeger-Aufloesung:** Ports, Parts und ActionPins entfallen als Element,
+  ihre Kanten laufen auf das Traegerelement. Der Reader liefert dafuer neu
+  `with_refs=True` (Feld `ref`) und `with_owners=True` (Feld `owner`) --
+  additiv, bestehende IR-Aufrufer bleiben unberuehrt
+- **Beziehungsmatrix** aus Archi (EPL-2.0, `archimate/relationships.xml`):
+  illegale Kanten werden ueber `Realization -> Serving -> Association`
+  umgebaut und im Report gezaehlt, nicht still umgedeutet
+- **Kein 1:1-Mapping:** Der NAFv4.1-Guide (2026.06) laesst mehrere ArchiMate-
+  Typen je NAF-Element zu; die Tabelle steht in `ELEMENT_MAP`, Fallbacks
+  (`element_fallback_*`) und nicht abbildbare EA-Typen stehen im Report
+- **Deterministisch:** GUID aus dem IR, sonst SHA-256 aus Paketpfad, Stereotyp
+  und Name; zwei Laeufe erzeugen dieselben Bytes
+- MASC: 984 Elemente, 1.526 Beziehungen, 122 eingezogene Ports/Parts,
+  116 umgebaute und 100 nicht aufloesbare Kanten (Zustaende/Ereignisse/
+  Entscheidungen ohne ArchiMate-Aequivalent)
+- Neue Tests: `tests/core/test_archimate_format.py` (Determinismus,
+  geschlossene Referenzen, Traeger-Aufloesung, laute Fehler, Typweissliste)
+
 ## 3.5.1 - 2026-11-06
 
 ### Extraktor: amtliche MDG per Knopfdruck, besserer Kontrast, iterativer Prompt

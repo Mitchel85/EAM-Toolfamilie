@@ -135,6 +135,7 @@ class _Element:
     origin: str = ""
     guid: str = ""
     ref: str = ""
+    owner: str = ""
 
     def content_key(self) -> tuple[Any, ...]:
         """Exakt die Sortierung aus qea_writer._element_index (ohne Paket/Name)."""
@@ -406,6 +407,8 @@ class _ObjectRow:
     package_id: int
     pdata1: str
     guid: str
+    parent_id: int = 0
+    classifier: int = 0
 
 
 def _read_objects(
@@ -441,6 +444,8 @@ def _read_objects(
                 package_id=package_id,
                 pdata1=_text(_raw(row, columns, "PDATA1"), f"{what}.PDATA1"),
                 guid=_text(_raw(row, columns, "ea_guid"), f"{what}.ea_guid"),
+                parent_id=_int(_raw(row, columns, "ParentID"), f"{what}.ParentID", default=0) or 0,
+                classifier=_int(_raw(row, columns, "Classifier"), f"{what}.Classifier", default=0) or 0,
             )
         )
     return objects
@@ -658,6 +663,8 @@ def _build_elements(
     objects: Iterable[_ObjectRow],
     packages: Mapping[int, _Package],
     object_tags: Mapping[int, dict[str, str]],
+    *,
+    with_owners: bool = False,
 ) -> tuple[list[_Element], int]:
     elements: list[_Element] = []
     tag_count = 0
@@ -699,7 +706,42 @@ def _build_elements(
             )
         )
     _assign_element_refs(elements)
+    if with_owners:
+        _assign_element_owners(elements, objects)
     return elements, tag_count
+
+
+# Objekttypen, die in ArchiMate kein eigenes Konzept haben und auf ihren
+# Traeger gezogen werden muessen (Ports, Parts, Pins).
+OWNED_TYPES = frozenset({"port", "part", "actionpin"})
+
+
+def _assign_element_owners(
+    elements: Sequence[_Element], objects: Iterable[_ObjectRow]
+) -> None:
+    """Setzt fuer Ports/Parts/Pins die IR-Referenz des Traegerelements."""
+    by_id = {element.object_id: element for element in elements}
+    roh = {obj.object_id: obj for obj in objects}
+    for element in elements:
+        if element.ea_type.strip().lower() not in OWNED_TYPES:
+            continue
+        aktuell = element.object_id
+        for _ in range(6):
+            obj = roh.get(aktuell)
+            if obj is None:
+                break
+            typ = obj.object_type.strip().lower()
+            ziel = 0
+            if typ == "part":
+                ziel = obj.classifier or obj.parent_id
+            elif typ in ("port", "actionpin"):
+                ziel = obj.parent_id or obj.classifier
+            if not ziel or ziel == aktuell:
+                break
+            aktuell = ziel
+            if aktuell in by_id:
+                element.owner = by_id[aktuell].ref
+                break
 
 
 def _assign_element_refs(elements: Sequence[_Element]) -> None:
@@ -847,7 +889,12 @@ def _read_connectors(
 
 
 def read_qea_ex(
-    path: str | Path, *, strict: bool = False, allow_empty: bool = False
+    path: str | Path,
+    *,
+    strict: bool = False,
+    allow_empty: bool = False,
+    with_owners: bool = False,
+    with_refs: bool = False,
 ) -> tuple[dict[str, Any], ReadReport]:
     """Liest eine .qea und liefert (IR-Dict, ReadReport).
 
@@ -889,7 +936,9 @@ def read_qea_ex(
                 + ", ".join(str(value) for value in dangling_tag_owners[:10])
             )
 
-        elements, element_tag_count = _build_elements(objects, packages, object_tags)
+        elements, element_tag_count = _build_elements(
+            objects, packages, object_tags, with_owners=with_owners
+        )
         if not elements and not allow_empty:
             raise QeaReaderError(
                 "das Modell enthaelt kein Element -- Abbruch statt leerem IR "
@@ -944,6 +993,8 @@ def read_qea_ex(
         element_items: list[dict[str, Any]] = []
         for element in sorted(elements, key=lambda e: e.order_key()):
             item = {"package": element.package_path, "name": element.name}
+            if with_refs:
+                item["ref"] = element.ref
             if element.stereotype:
                 item["stereotype"] = element.stereotype
             item["ea_type"] = element.ea_type
@@ -957,6 +1008,8 @@ def read_qea_ex(
                 item["tags"] = dict(sorted(element.tags.items()))
             if element.origin:
                 item["origin"] = element.origin
+            if element.owner:
+                item["owner"] = element.owner
             # Weicht die Kennung von der Ableitung ab, ist sie gefuehrt (etwa aus
             # dem Katalog) und muss woertlich zurueckgeschrieben werden.
             # Katalogelemente (mit Herkunft) und fremde Kennungen werden

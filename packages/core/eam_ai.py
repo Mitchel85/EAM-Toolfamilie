@@ -99,7 +99,7 @@ FINDINGS_NAME = "findings.json"
 
 # Eine Quelle fuer die Version: hier. pyproject.toml und CHANGELOG.md muessen
 # dazu passen; tests/test_packaging.py prueft die drei Stellen gegeneinander.
-__version__ = "3.5.1"
+__version__ = "3.6.0"
 
 # DOCX ist eine ZIP-Datei mit genau diesem Pfad fuer den sichtbaren Text.
 _DOCX_MAIN = "word/document.xml"
@@ -1011,6 +1011,51 @@ def _report(
 # --------------------------------------------------------------------------
 
 
+def cmd_archimate(args) -> int:
+    """IR -> ArchiMate 3.2 Model Exchange XML (viertes Zielformat)."""
+    from archimate_writer import ArchimateWriterError, write_archimate
+    from qea_reader import QeaReaderError, read_qea_ex
+
+    try:
+        if args.ir.suffix.lower() == ".json":
+            ir = json.loads(args.ir.read_text(encoding="utf-8"))
+        else:
+            ir, _ = read_qea_ex(args.ir, with_refs=True, with_owners=True)
+        report = write_archimate(ir, args.out, modellname=args.name or args.ir.stem)
+    except (ArchimateWriterError, QeaReaderError, OSError, ValueError) as exc:
+        print(f"FEHLER: {exc}", file=sys.stderr)
+        return 1
+
+    daten = {
+        "elements": report.elements,
+        "relationships": report.relationships,
+        "remapped": report.remapped,
+        "unresolved": report.unresolved,
+        "skipped_display": report.skipped_display,
+        "skipped_package": report.skipped_package,
+        "collapsed": report.collapsed,
+        "fallback": report.fallback,
+        "by_type": report.by_type,
+        "by_relation": report.by_relation,
+        "unresolved_by_type": report.unresolved_by_type,
+    }
+    if args.report:
+        args.report.write_text(json.dumps(daten, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    print(
+        f"{args.out}: {report.elements} Elemente, {report.relationships} Beziehungen, "
+        f"{report.remapped} umgebaut, {report.unresolved} nicht aufloesbar"
+    )
+    if report.unresolved:
+        print(
+            "HINWEIS: " + ", ".join(f"{k} {v}" for k, v in sorted(report.unresolved_by_type.items())),
+            file=sys.stderr,
+        )
+    if args.strict and report.unresolved:
+        return 1
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="eam-ai",
@@ -1370,6 +1415,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="nur pruefen und Bericht zeigen, keine .qea schreiben",
     )
     p_toolbox.set_defaults(func=cmd_toolbox)
+
+    p_arch = sub.add_parser(
+        "archimate",
+        help="IR (.qea/.json) -> ArchiMate 3.2 Model Exchange XML",
+    )
+    p_arch.add_argument("--ir", required=True, type=Path, help="IR-JSON oder .qea")
+    p_arch.add_argument("--out", "-o", required=True, type=Path, help="Zieldatei .xml")
+    p_arch.add_argument("--name", default=None, help="Modellname (Default: Dateiname)")
+    p_arch.add_argument("--report", type=Path, default=None, help="Report als JSON")
+    p_arch.add_argument(
+        "--strict",
+        action="store_true",
+        help="mit Exit 1 enden, wenn Kanten nicht aufloesbar sind",
+    )
+    p_arch.set_defaults(func=cmd_archimate)
     return parser
 
 

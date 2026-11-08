@@ -102,6 +102,8 @@ _ELEMENT_KEYS = {
     "tags",
     "guid",
     "origin",
+    "owner",
+    "ref",
     "xref_tags",
 }
 _CONNECTOR_KEYS = {

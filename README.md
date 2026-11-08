@@ -32,8 +32,8 @@ Modelle zusammenfinden.
 | **7 · Abfragen** | Fragen an ein vorhandenes Modell — als Werkzeug in Open WebUI oder per MCP | **EAM Analyzer** |
 | **8 · Prozesse** | BPMN 2.0 lesen, zeichnen, prüfen, ADMBw-konform machen | **BPMN Studio** |
 
-**Das Ergebnis** liegt als `.qea`, `.xmi` oder `.json` vor — alle drei Formate sind
-gleichwertig und in der ganzen Familie lesbar. Damit lässt sich der Weg auch rückwärts
+**Das Ergebnis** liegt als `.qea`, `.xmi`, `.json` oder ArchiMate-Exchange-XML vor —
+alle vier Formate sind gleichwertig und in der ganzen Familie lesbar. Damit lässt sich der Weg auch rückwärts
 gehen: eine `.xmi` aus einem anderen Werkzeug wird gelesen, geprüft und weiterbearbeitet.
 
 ## Die Werkzeuge im Vergleich
