@@ -96,14 +96,23 @@
   function canvasUebersicht() {
     var canvas = modeler.get('canvas');
     try {
-      canvas.zoom('fit-viewport');
+      // Ganzes Modell mit Rand: Pool-Rahmen und Lane-Beschriftung gehoeren ins
+      // Bild. Links muss der Rand die Werkzeugleiste freihalten, sonst liegt
+      // der Pool-Kopf darunter und das Diagramm wirkt rahmenlos.
       var vb = canvas.viewbox();
-      var grund = vb.inner && vb.inner.width ? vb.inner.width / Math.max(1, vb.outer.width) : 1;
-      if (grund > 0 && 1 / grund > 2) {
-        // Weniger als halbe Naturgroesse: auf den Anfang zoomen, damit die
-        // ersten Schritte lesbar sind. Der Rest bleibt erreichbar.
-        canvas.viewbox({ x: 40, y: 30, width: Math.min(vb.inner.width, 1400), height: Math.min(vb.inner.height + 100, 900) });
-      }
+      var flaeche = document.querySelector('.djs-container');
+      var breite = flaeche ? flaeche.clientWidth : 1200;
+      var hoehe = flaeche ? flaeche.clientHeight : 800;
+      var links = 90, rest = 25, oben = 25;
+      var skala = Math.min((breite - links - rest) / Math.max(1, vb.inner.width),
+                           (hoehe - oben - rest) / Math.max(1, vb.inner.height));
+      if (!(skala > 0)) skala = vb.scale || 1;
+      canvas.viewbox({
+        x: vb.inner.x - links / skala,
+        y: vb.inner.y - oben / skala,
+        width: breite / skala,
+        height: hoehe / skala
+      });
     } catch (e) { /* Ansicht ist Beiwerk */ }
   }
 
@@ -780,7 +789,8 @@
     });
     return ergebnis.length ? ergebnis : [satz];
   }
-  var ZAEHLWOERTER = ['mehrere', 'zahlreiche', 'diverse', 'sämtliche', 'saemtliche',
+  var ZAEHLWOERTER = ['welcher', 'welche', 'welches', 'wer', 'was',
+    'mehrere', 'zahlreiche', 'diverse', 'sämtliche', 'saemtliche',
     'alle', 'beide', 'einige', 'folgende', 'verschiedene', 'unterschiedliche',
     'weitere', 'einzelne', 'die', 'der', 'das', 'den', 'dem', 'des'];
 
@@ -813,7 +823,8 @@
         // Platzhalter fuer eine Aufzaehlung. Der Kopf der Aufzaehlung wird zur
         // Aufgabe, die Punkte darunter werden zu Details derselben Aufgabe.
         if (/^eine der/i.test(objekt) || /^einer der/i.test(objekt)) return;
-        if (ZAEHLWOERTER.indexOf(objekt.trim().toLowerCase()) !== -1) {
+        if (ZAEHLWOERTER.indexOf(objekt.trim().toLowerCase()) !== -1
+            || /^(welche[rms]?|wer|was|folgende[nrs]?|mehrere[nrs]?|alle[nrs]?|beide[nrs]?|einige[nrs]?|sämtliche[nrs]?|saemtliche[nrs]?)\b/i.test(objekt.trim())) {
           if (!naechsteZeileStart) naechsteZeileStart = verb.inf;
           return;
         }
@@ -875,8 +886,15 @@
     var y = function (lane, zeile) {
       return startY + lane * laneHoehe * zeilenProLane + (zeile || 0) * zeileHoehe + 42;
     };
-    var xTask = function (i) { return 230 + (i % schritteProZeile) * 170; };
     var zeileVon = function (i) { return Math.floor(i / schritteProZeile); };
+    // Serpentine: gerade Zeilen laufen links nach rechts, ungerade zurueck.
+    // Sonst springt der Fluss am Zeilenende ueber die ganze Breite zurueck und
+    // kreuzt dabei alle Kaesten.
+    var xTask = function (i) {
+      var spalte = i % schritteProZeile;
+      if (zeileVon(i) % 2 === 1) spalte = spalten - 1 - spalte;
+      return 230 + spalte * 170;
+    };
 
     var knoten = [];
     var kanten = [];
@@ -914,7 +932,10 @@
     });
     var letzteLane = schritte.length ? schritte[schritte.length - 1]._lane : 0;
     var letzteZeile = schritte.length ? zeileVon(schritte.length - 1) : 0;
-    var endX = xTask(schritte.length) + 60;
+    // (endX folgt weiter unten der Laufrichtung)
+    // Das Endereignis folgt der Laufrichtung der letzten Zeile.
+    var letzteX = schritte.length ? xTask(schritte.length - 1) : 200;
+    var endX = (letzteZeile % 2 === 1) ? letzteX - 60 : letzteX + 190;
     knoten.push({ id: 'End_Text', x: endX, y: y(letzteLane, letzteZeile), w: 36, h: 36 });
     knotenLane['End_Text'] = letzteLane;
     kanten.push({ id: 'Flow_' + (kanten.length + 1), q: letzter, z: 'End_Text' });
@@ -960,12 +981,15 @@
     xml.push('</bpmn:process>');
 
     xml.push('<bpmndi:BPMNDiagram id="BPMNDiagram_Text"><bpmndi:BPMNPlane id="BPMNPlane_Text" bpmnElement="Collaboration_Text">');
-    xml.push('<bpmndi:BPMNShape id="Participant_Text_di" bpmnElement="Participant_Text" isHorizontal="true"><dc:Bounds x="40" y="' +
+    xml.push('<bpmndi:BPMNShape id="Participant_Text_di" bpmnElement="Participant_Text" isHorizontal="true"><dc:Bounds x="60" y="' +
       startY + '" width="' + breite + '" height="' + poolHoehe + '" /></bpmndi:BPMNShape>');
+    // Die Lane beginnt erst hinter dem Pool-Band: sonst verdeckt sie die
+    // Pool-Beschriftung und der Rahmen ist nicht mehr als Pool zu erkennen.
+    var laneX = 90;
     lanes.forEach(function (lane, i) {
       xml.push('<bpmndi:BPMNShape id="Lane_Text_' + (i + 1) + '_di" bpmnElement="Lane_Text_' + (i + 1) +
-        '" isHorizontal="true"><dc:Bounds x="40" y="' + (startY + i * laneHoehe * zeilenProLane) + '" width="' + breite +
-        '" height="' + (laneHoehe * zeilenProLane) + '" /></bpmndi:BPMNShape>');
+        '" isHorizontal="true"><dc:Bounds x="' + laneX + '" y="' + (startY + i * laneHoehe * zeilenProLane) +
+        '" width="' + (breite - 30) + '" height="' + (laneHoehe * zeilenProLane) + '" /></bpmndi:BPMNShape>');
     });
     knoten.forEach(function (k) {
       xml.push('<bpmndi:BPMNShape id="' + k.id + '_di" bpmnElement="' + k.id + '"><dc:Bounds x="' + k.x +
