@@ -612,6 +612,19 @@
     ['genehmigen', ['genehmigt', 'genehmigen']],
     ['freigeben', ['freigeben', 'freigegeben']],
     ['ablehnen', ['ablehnen', 'abgelehnt']],
+    ['unterzeichnen', ['unterzeichnet', 'unterzeichnen', 'unterzeichne']],
+    ['schließen', ['geschlossen', 'schließt', 'schließen', 'abgeschlossen']],
+    ['erfolgen', ['erfolgt', 'erfolgen']],
+    ['informieren', ['informiert', 'informieren']],
+    ['melden', ['meldet', 'melden', 'gemeldet']],
+    ['veröffentlichen', ['veröffentlicht', 'veröffentlichen']],
+    ['festlegen', ['festgelegt', 'festlegen', 'legt fest']],
+    ['bewerten', ['bewertet', 'bewerten']],
+    ['einleiten', ['eingeleitet', 'einleiten', 'leitet ein']],
+    ['aufnehmen', ['aufgenommen', 'aufnehmen']],
+    ['bilden', ['gebildet', 'bilden']],
+    ['benennen', ['benannt', 'benennen']],
+    ['unterrichten', ['unterrichtet', 'unterrichten']],
     ['entscheiden', ['entscheidet', 'entscheiden', 'entschieden']],
     ['buchen', ['bucht', 'buchen', 'gebucht']],
     ['zahlen', ['zahlt', 'zahlen', 'gezahlt']],
@@ -699,6 +712,9 @@
     for (var i = 0; i < ROLLEN_BEKANNT.length; i++) {
       if (ROLLEN_BEKANNT[i].toLowerCase() === klein) return true;
     }
+    // Abkuerzungen wie PSG, PLA, BWB sind Aufgabentraeger, auch wenn sie in
+    // keiner Liste stehen.
+    if (/^[A-ZÄÖÜ][A-ZÄÖÜ0-9]{2,7}$/.test(wort)) return true;
     return /(?:abteilung|behörde|behoerde|gesellschaft|verwaltung|werkstatt|service|stelle|zentrale|kasse|bank|team|amt|ausschuss|ministerium|truppe|bieter)$/.test(klein) && klein.length >= 5;
   }
 
@@ -772,7 +788,12 @@
       if (['und', 'oder', 'sowie', 'danach', 'anschließend', 'dann', 'zuerst'].indexOf(k[ende]) >= 0) break;
       ende++;
     }
-    var text = w.slice(start, ende).join(' ').replace(/^[,.;:!?]+|[,.;:!?]+$/g, '');
+    var text = w.slice(start, ende).join(' ')
+      .replace(/^[,.;:!?]+|[,.;:!?]+$/g, '')
+      .replace(/\s+(?:ist|sind|wird|werden|hat|haben)\s+zu\b.*$/i, '')
+      .replace(/\s+(?:ist|sind)\s*$/i, '')
+      .replace(/\s+zu$/i, '')
+      .trim();
     if (!text && verbIndex === w.length - 1) {
       // Imperativ/Infinitiv am Ende: "Antrag erfassen"
       var beginn = verbIndex;
@@ -786,11 +807,40 @@
       while (nach < w.length && !STOPP[k[nach]]) nach++;
       text = w.slice(b, nach).join(' ');
     }
+    // Kein Objekt nach dem Verb: das Subjekt davor ist das Objekt
+    // ("Die Entscheidung erfolgt durch die PSG.").
+    if (!text) {
+      var vorn = verbIndex - 1;
+      while (vorn >= 0 && (ARTIKEL[k[vorn]] || STOPP[k[vorn]])) vorn--;
+      var anf = vorn;
+      while (anf > 0 && !ARTIKEL[k[anf - 1]] && !STOPP[k[anf - 1]]) anf--;
+      if (vorn >= anf) text = w.slice(anf, vorn + 1).join(' ');
+    }
+    // Auch der Rueckfallpfad ("Antrag ist zu") muss die Hilfsverbreste loswerden.
+    text = text
+      .replace(/\s+(?:ist|sind|wird|werden|hat|haben)\s+zu\b.*$/i, '')
+      .replace(/\s+(?:ist|sind)\s*$/i, '')
+      .replace(/\s+zu$/i, '')
+      .trim();
+    // Reine Hilfswoerter sind kein Objekt.
+    if (/^(?:ist|sind|wird|werden|hat|haben|zu|der|die|das|dem|den)$/i.test(text)) text = '';
     return text;
   }
   function saetze(text) {
     var ergebnis = [];
-    text.replace(/\r\n?/g, '\n').split('\n').forEach(function (zeile) {
+    // Zeilen, die mitten im Satz umbrechen ("… Ablehnung (1\nWoche nach
+    // Bericht)"), wieder zusammenziehen — sonst entstehen halbe Labels.
+    var rohZeilen = text.replace(/\r\n?/g, '\n').split('\n');
+    var zeilen = [];
+    rohZeilen.forEach(function (z) {
+      var vorher = zeilen.length ? zeilen[zeilen.length - 1] : '';
+      var offen = (/[(,;:\-–]$/.test(vorher.trim())
+        || vorher.split('(').length > vorher.split(')').length)
+        && !/^\s*[•▪◦·\-–—*]/.test(z);
+      if (offen && z.trim()) zeilen[zeilen.length - 1] = vorher + ' ' + z.trim();
+      else zeilen.push(z);
+    });
+    zeilen.forEach(function (zeile) {
       var roh = zeile.trim();
       if (!roh || roh.charAt(0) === '#') return;
       var punkt = /^[•▪◦·\-–—*]\s+/.test(roh);
@@ -828,6 +878,24 @@
     'alle', 'beide', 'einige', 'folgende', 'verschiedene', 'unterschiedliche',
     'weitere', 'einzelne', 'die', 'der', 'das', 'den', 'dem', 'des'];
 
+  // "Freigabe, Freigabe mit Auflagen oder Ablehnung" ist ein Entscheidungspunkt,
+  // keine Aufgabe. Nur Ausgaenge mit Ergebnischarakter zaehlen — "PSG oder PLA"
+  // ist eine Zustaendigkeit, kein Gateway.
+  var ENTSCHEIDUNGS_WORTE = /(freigabe|abnahme|ablehnung|zuschlag|absage|genehmigung|zustimmung|auflagen)/i;
+
+  function entscheidungsListe(satz) {
+    if (!/\boder\b/i.test(satz)) return null;
+    // Nur ein echter Kopf ("Entscheidung: ...") wird abgeschnitten; sonst
+    // verliert der erste Ausgang seinen halben Namen ("ohne Auflagen").
+    var teil = satz.replace(/^[^:–-]*[:–-]\s*/, '');
+    var items = teil.replace(/[.;]\s*$/, '').split(/\s*,\s*|\s+oder\s+/i)
+      .map(function (s) { return s.trim(); }).filter(Boolean);
+    if (items.length < 2) return null;
+    var treffer = items.filter(function (s) { return ENTSCHEIDUNGS_WORTE.test(s); });
+    if (treffer.length < 2) return null;
+    return items.slice(0, 4);
+  }
+
   function zerlege(text) {
     var schritte = [];
     var letzteRolle = '';
@@ -838,6 +906,11 @@
       var m = satz.match(/^(?:Wenn|Falls|Sofern|Sobald)\s+(.+?),\s*(?:dann\s+)?(.+)$/i);
       var haupt = satz;
       if (m) { bedingung = m[1].trim(); haupt = m[2].trim(); }
+      if (!m) {
+        // "Bei Ablehnung ist der Vorgang zu schliessen."
+        var mb = satz.match(/^Bei\s+(.+?)\s+(ist|sind|wird|werden|hat|haben)\s+(.+)$/i);
+        if (mb) { bedingung = 'Bei ' + mb[1].trim(); haupt = mb[2] + ' ' + mb[3]; }
+      }
       var istNaechsterSatz = typeof naechsteZeileStart === 'object' && !/^\s*[•▪◦·\-–—]/.test(satz);
       if (istNaechsterSatz) naechsteZeileStart = '';
       var punkt = /^\s*[•▪◦·\-–—]\s+(.+)$/.test(satz);
@@ -846,6 +919,19 @@
         return;
       }
       klauseln(haupt).forEach(function (klausel) {
+        var entscheidung = entscheidungsListe(klausel);
+        if (entscheidung) {
+          var rolleE = rolleImSatz(klausel) || letzteRolle;
+          if (rolleE) letzteRolle = rolleE;
+          schritte.push({
+            rolle: rolleE,
+            aktion: 'entscheiden',
+            objekt: 'Entscheidung',
+            entscheidung: entscheidung,
+            bedingung: bedingung
+          });
+          return;
+        }
         var verb = findeVerb(klausel);
         if (!verb) return;
         var rolle = rolleImSatz(klausel);
@@ -875,6 +961,11 @@
         if (istKopf) {
           schritt.teilschritte = [];
           naechsteZeileStart = schritt;
+        }
+        // Entscheidung ohne ausformulierte Ergebnisse: nach BPMN-Konvention
+        // zwei Ausgaenge "ja"/"nein".
+        if (verb.inf === 'entscheiden' && !bedingung) {
+          schritt.entscheidung = ['ja', 'nein'];
         }
         schritte.push(schritt);
       });
@@ -985,6 +1076,25 @@
     schritte.forEach(function (s, i) {
       var aufgabeId = 'Task_' + (i + 1);
       var p = pos[i];
+      if (s.entscheidung && s.entscheidung.length) {
+        // Entscheidungspunkt: XOR mit einem Ausgang je Ergebnis, danach
+        // Zusammenfuehrung. Die Ergebnisse sind Beschriftungen, keine
+        // erfundenen Aufgaben.
+        var dSplit = 'Gateway_Split_' + (++gwNr);
+        var dMerge = 'Gateway_Merge_' + gwNr;
+        knoten.push({ id: dSplit, x: p.x, y: p.y + 9, w: 50, h: 50 });
+        knotenLane[dSplit] = s._lane;
+        // Zusammenfuehrung dichter setzen: bei 200 px Spaltenabstand wuerde
+        // sie sonst die naechste Aufgabe beruehren.
+        knoten.push({ id: dMerge, x: p.x + 110, y: p.y + 9, w: 50, h: 50 });
+        knotenLane[dMerge] = s._lane;
+        kanten.push({ id: 'Flow_' + (kanten.length + 1), q: letzter, z: dSplit });
+        s.entscheidung.forEach(function (ausgang) {
+          kanten.push({ id: 'Flow_' + (kanten.length + 1), q: dSplit, z: dMerge, name: ausgang });
+        });
+        letzter = dMerge;
+        return;
+      }
       if (s.bedingung) {
         var split = 'Gateway_Split_' + (++gwNr);
         var merge = 'Gateway_Merge_' + gwNr;
@@ -1037,6 +1147,7 @@
     xml.push('</bpmn:laneSet>');
     xml.push('<bpmn:startEvent id="Start_Text" name="' + esc(prozessName) + ' gestartet" />');
     schritte.forEach(function (s, i) {
+      if (s.entscheidung && s.entscheidung.length) return;
       xml.push('<bpmn:userTask id="Task_' + (i + 1) + '" name="' + esc(aktionsName(s)) + '" />');
     });
     xml.push('<bpmn:endEvent id="End_Text" name="' + esc(prozessName) + ' abgeschlossen" />');
@@ -1187,34 +1298,43 @@
     var aufgaben = alleElemente.filter(istAufgabe);
     var start = alleElemente.filter(function (e) { return e.type === 'bpmn:StartEvent'; })[0];
 
-    var reihenfolge = [];
+    // Erste Lane als Rückfall: eine Aufgabe ohne Lane-Zuordnung soll keine
+    // zusätzliche Lane "Bearbeitung" erzeugen.
+    var ersteLane = (alleElemente.filter(function (e) { return e.type === 'bpmn:Lane'; })[0]);
+    var rueckfall = ersteLane ? name(ersteLane) : 'Bearbeitung';
+
+    var schritte = [];
     var besucht = {};
     var aktuell = start;
     while (aktuell && !besucht[aktuell.id]) {
       besucht[aktuell.id] = true;
-      if (istAufgabe(aktuell)) reihenfolge.push(aktuell);
+      var laneJetzt = laneVon(aktuell);
+      var rolleJetzt = laneJetzt ? name(laneJetzt) : rueckfall;
+      if (istAufgabe(aktuell)) {
+        schritte.push({ rolle: rolleJetzt, aktion: name(aktuell) || 'bearbeiten', objekt: '', bedingung: '' });
+      } else if (aktuell.type === 'bpmn:ExclusiveGateway') {
+        // Gateways muessen den Umbau ueberleben, sonst verschwinden sie beim
+        // naechsten Weiterarbeiten.
+        var aus = (aktuell.outgoing || []).filter(function (c) { return c.type === 'bpmn:SequenceFlow'; });
+        if (aus.length > 1) {
+          schritte.push({
+            rolle: rolleJetzt, aktion: 'entscheiden', objekt: 'Entscheidung',
+            entscheidung: aus.map(function (c) { return name(c) || 'Ausgang'; }),
+            bedingung: ''
+          });
+        }
+      }
       var kante = (aktuell.outgoing || []).filter(function (c) {
         return c.type === 'bpmn:SequenceFlow';
       })[0];
       aktuell = kante ? kante.target : null;
     }
     aufgaben.forEach(function (t) {
-      if (reihenfolge.indexOf(t) === -1) reihenfolge.push(t);
-    });
-
-    // Erste Lane als Rückfall: eine Aufgabe ohne Lane-Zuordnung soll keine
-    // zusätzliche Lane "Bearbeitung" erzeugen.
-    var ersteLane = (alleElemente.filter(function (e) { return e.type === 'bpmn:Lane'; })[0]);
-    var rueckfall = ersteLane ? name(ersteLane) : 'Bearbeitung';
-
-    var schritte = reihenfolge.map(function (t) {
-      var lane = laneVon(t);
-      return {
-        rolle: lane ? name(lane) : rueckfall,
-        aktion: name(t) || 'bearbeiten',
-        objekt: '',
-        bedingung: ''
-      };
+      var schon = schritte.some(function (s) { return s.aktion === (name(t) || 'bearbeiten'); });
+      if (!schon) {
+        var lane = laneVon(t);
+        schritte.push({ rolle: lane ? name(lane) : rueckfall, aktion: name(t) || 'bearbeiten', objekt: '', bedingung: '' });
+      }
     });
 
     // Lanes ohne Aufgabe mitgeben, damit sie beim Umbau nicht verloren gehen.
@@ -1244,7 +1364,10 @@
 
   function wendeOperationenAn(stand, antwort) {
     var schritte = stand.schritte.map(function (s) {
-      return { rolle: s.rolle, aktion: s.aktion, objekt: s.objekt || '', bedingung: s.bedingung || '' };
+      return {
+        rolle: s.rolle, aktion: s.aktion, objekt: s.objekt || '', bedingung: s.bedingung || '',
+        entscheidung: s.entscheidung || null
+      };
     });
     var leer = (stand.leerLanes || []).slice();
     var prozess = String(antwort.prozess || stand.prozess || '').trim();
@@ -1278,6 +1401,24 @@
         if (weg) {
           schritte = schritte.filter(function (s) { return s !== weg; });
           bericht.push('"' + weg.aktion + '" entfernt');
+        }
+      } else if (art === 'gateway_hinzufuegen' && op.schritt) {
+        var g = schrittFinden(schritte, op.schritt);
+        if (g) {
+          // Der Schritt bleibt bestehen; der Entscheidungspunkt kommt DAHINTER.
+          // Ein Gateway ersetzt keine Aufgabe.
+          var ausgaenge = (op.ausgaenge && op.ausgaenge.length ? op.ausgaenge : ['ja', 'nein']);
+          schritte.splice(schritte.indexOf(g) + 1, 0, {
+            rolle: g.rolle, aktion: 'entscheiden', objekt: 'Entscheidung',
+            entscheidung: ausgaenge, bedingung: ''
+          });
+          bericht.push('Entscheidung nach "' + g.aktion + '": ' + ausgaenge.join(' / '));
+        }
+      } else if (art === 'gateway_entfernen' && op.schritt) {
+        var ge = schrittFinden(schritte, op.schritt);
+        if (ge && ge.entscheidung) {
+          ge.entscheidung = null;
+          bericht.push('Entscheidung bei "' + ge.aktion + '" entfernt');
         }
       } else if (art === 'schritt_hinzufuegen' && op.aktion) {
         var neu = { rolle: op.lane || 'Bearbeitung', aktion: op.aktion, objekt: op.objekt || '', bedingung: op.bedingung || '' };
@@ -1350,7 +1491,9 @@
             + '{"op":"schritt_verschieben","schritt":"...","lane":"..."} | '
             + '{"op":"schritt_umbenennen","schritt":"...","neu":"..."} | '
             + '{"op":"schritt_loeschen","schritt":"..."} | '
-            + '{"op":"schritt_hinzufuegen","lane":"...","aktion":"...","nach":"..."}. '
+            + '{"op":"schritt_hinzufuegen","lane":"...","aktion":"...","nach":"..."} | '
+            + '{"op":"gateway_hinzufuegen","schritt":"...","ausgaenge":["ja","nein"]} | '
+            + '{"op":"gateway_entfernen","schritt":"..."}. '
             + 'Führe nur aus, was der Auftrag verlangt; alles andere bleibt unangetastet. '
             + 'Nenne Schritte exakt so, wie sie im Stand stehen. Erfinde keine Schritte.' },
         { role: 'user', content: 'Bisheriger Stand:\n' + JSON.stringify(stand)
