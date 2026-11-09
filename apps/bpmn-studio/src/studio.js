@@ -704,7 +704,9 @@
     'Nutzer', 'Industrie', 'Auftragnehmer', 'Auftraggeber', 'Bundesamt',
     'Referat', 'Abteilung', 'Qualitätssicherung', 'Projektlenkungsausschuss',
     'Projektbüro', 'Projektgruppe', 'Kommission', 'Ministerium', 'Dezernat',
-    'Dienststelle', 'Bundesministerium', 'Prüfungsamt', 'Vergabekammer'];
+    'Dienststelle', 'Bundesministerium', 'Prüfungsamt', 'Vergabekammer',
+    'Projektmanager', 'Projektleiter', 'Projektleiterin', 'Teamleiter',
+    'Sachbearbeiter', 'Sachbearbeiterin', 'Referent', 'Referentin'];
 
   function istRolle(wort) {
     var klein = wort.toLowerCase();
@@ -878,6 +880,26 @@
     'alle', 'beide', 'einige', 'folgende', 'verschiedene', 'unterschiedliche',
     'weitere', 'einzelne', 'die', 'der', 'das', 'den', 'dem', 'des'];
 
+  // Satzfragmente sind keine Aufgaben: "Jede Aktivität ist separat dokumentieren"
+  // wird zu "Aktivität dokumentieren", "Werden können informieren" faellt weg.
+  function bereinigeObjekt(objekt) {
+    var t = String(objekt || '').trim();
+    t = t.replace(/^(?:Wobei|Hierbei|Danach|Anschließend|Anschliessend|Zudem|Dabei|Dafür|Dafuer)\s+/i, '');
+    t = t.replace(/^(.*?)\s+(?:ist|sind|hat|haben|wird|werden)\s+.*$/i, '$1');
+    t = t.replace(/^(?:Jede|Jeder|Jedes|Alle|Sämtliche|Saemtliche|Die|Der|Das|Den|Dem|Ein|Eine|Einen|Einem)\s+/i, '');
+    t = t.replace(/\s+/g, ' ').trim();
+    if (!t) return '';
+    // Satzreste ohne Sachbezug.
+    if (/^(?:werden|koennen|können|haben|hat|ist|sind|wird)\b/i.test(t)) return '';
+    if (/^(?:Gemäß|Gemaess|Nach|Laut|Aufgrund|Gem\.)(?:\s|$)/i.test(t)) return '';
+    // Einzelnes Genitivwort ("Notars", "Personals") ist kein Objekt.
+    if (/^[A-ZÄÖÜ][a-zäöüß]{3,}s$/.test(t)) return '';
+    // Reine Zeit- oder Zahlenangaben sind kein Objekt.
+    if (/^(?:\d+|einige|mehrere)\b/i.test(t)) return '';
+    if (/^(?:woche|wochen|monat|monate|tag|tage|jahr|jahre)\b/i.test(t)) return '';
+    return t;
+  }
+
   // "Freigabe, Freigabe mit Auflagen oder Ablehnung" ist ein Entscheidungspunkt,
   // keine Aufgabe. Nur Ausgaenge mit Ergebnischarakter zaehlen — "PSG oder PLA"
   // ist eine Zustaendigkeit, kein Gateway.
@@ -923,10 +945,15 @@
         if (entscheidung) {
           var rolleE = rolleImSatz(klausel) || letzteRolle;
           if (rolleE) letzteRolle = rolleE;
+          var frage = 'Entscheidung treffen';
+          if (/freigabe/i.test(entscheidung.join(' '))) frage = 'Freigabe entscheiden';
+          else if (/abnahme/i.test(entscheidung.join(' '))) frage = 'Abnahme entscheiden';
+          else if (/zuschlag|absage/i.test(entscheidung.join(' '))) frage = 'Zuschlag entscheiden';
           schritte.push({
             rolle: rolleE,
             aktion: 'entscheiden',
             objekt: 'Entscheidung',
+            frage: frage,
             entscheidung: entscheidung,
             bedingung: bedingung
           });
@@ -948,8 +975,24 @@
           if (!naechsteZeileStart) naechsteZeileStart = verb.inf;
           return;
         }
+        objekt = bereinigeObjekt(objekt);
         if (!objekt) return;
         if (/^(ihn|sie|es|ihm|diesen|diese|dieses)$/i.test(objekt) && letztesObjekt) objekt = letztesObjekt;
+        // Steht die Rolle im Objekt, gehoert sie in die Lane.
+        // Objekt ist nur die eigene Rolle: keine Aufgabe.
+        if (rolle && objekt.toLowerCase() === String(rolle).toLowerCase()) return;
+        var erstes = objekt.split(/\s+/)[0];
+        if (istRolle(erstes) && erstes.toLowerCase() !== String(rolle || '').toLowerCase()) {
+          rolle = erstes;
+          letzteRolle = rolle;
+          objekt = bereinigeObjekt(objekt.split(/\s+/).slice(1).join(' '));
+          if (!objekt) return;
+        }
+        // Letzte Kontrolle: Satzanlaeufe, die kein Objekt sind.
+        // \b greift nach "ß" nicht (ASCII-Wortgrenze), daher \s|$.
+        if (/^(?:Gemäß|Gemaess|Werden|Wobei|Hierbei|Danach)(?:\s|$)/i.test(objekt)) return;
+        // "Bewertung erfolgen" heisst "Bewertung durchfuehren".
+        if (verb.inf === 'erfolgen') verb = { inf: 'durchführen', index: verb.index, form: verb.form };
         letztesObjekt = objekt;
         var istKopf = !!naechsteZeileStart;
         var schritt = {
@@ -970,6 +1013,15 @@
         schritte.push(schritt);
       });
     });
+    // Rollenluecke schliessen: ein Schritt ohne Rollennennung gehoert fast immer
+    // zum selben Aufgabentraeger wie der Schritt davor.
+    schritte.forEach(function (s, i) {
+      if (s.rolle) return;
+      var r = '';
+      for (var j = i - 1; j >= 0 && !r; j--) if (schritte[j].rolle) r = schritte[j].rolle;
+      for (var k = i + 1; k < schritte.length && !r; k++) if (schritte[k].rolle) r = schritte[k].rolle;
+      if (r) s.rolle = r;
+    });
     return schritte;
   }
 
@@ -977,6 +1029,17 @@
     var objekt = (schritt.objekt || '').trim();
     var aktion = (schritt.aktion || 'bearbeiten').trim();
     return (objekt ? objekt.charAt(0).toUpperCase() + objekt.slice(1) + ' ' : '') + aktion;
+  }
+
+  // Aus einer Antwort wird eine Aufgabe: "Ablehnung" -> "Ablehnung aussprechen",
+  // "Freigabe" -> "Freigabe erteilen".
+  function antwortAufgabe(antwort) {
+    var a = String(antwort || '').trim().replace(/\s*\([^)]*\)\s*$/, '');
+    if (!a) return 'Ergebnis bearbeiten';
+    if (/^(ja|nein)$/i.test(a)) return a === 'ja' ? 'Ergebnis bestätigen' : 'Ergebnis verwerfen';
+    if (/ablehnung|absage|verworfen/i.test(a)) return a + ' aussprechen';
+    if (/freigabe|genehmigung|abnahme|zuschlag|zustimmung/i.test(a)) return a + ' erteilen';
+    return a + ' bearbeiten';
   }
 
   // Rechtwinklige Fuehrung zwischen zwei Kaesten. Gleiche Reihe: gerade.
@@ -1029,44 +1092,44 @@
     var startY = 40;
     var kopfHoehe = 34;
     var zeileHoehe = 150;
-    var spaltenProZeile = Math.max(1, Math.min(6, Number(window.BPMN_SCHRITTE_PRO_ZEILE) || 6));
+    var xStart = 230;
+    var spaltenBreite = 200;
+    // Kein Zeilenumbruch: der Fluss läuft je Lane strikt von links nach rechts.
+    var spaltenProZeile = Math.max(1, Number(window.BPMN_SCHRITTE_PRO_ZEILE) || 999);
 
-    // Jede Lane bekommt eigene Reihen: alle Schritte einer Rolle stehen
-    // untereinander in ihrer Lane, nicht quer ueber das ganze Diagramm.
     var laneSchritte = lanes.map(function () { return []; });
     schritte.forEach(function (s, i) { (laneSchritte[s._lane] || laneSchritte[0]).push(i); });
 
-    var laneHoehen = laneSchritte.map(function (liste) {
-      var zeilen = Math.max(1, Math.ceil(liste.length / spaltenProZeile));
-      return zeilen * zeileHoehe + kopfHoehe;
+    // Zeitachse: die X-Position folgt der Prozessreihenfolge, die Y-Position der
+    // Lane. Dadurch laeuft der Fluss immer nach rechts; ein Lane-Wechsel ist
+    // nur ein Sprung nach unten, nie zurueck.
+    var laneExtra = lanes.map(function () { return 0; });
+    schritte.forEach(function (s) {
+      if (s.entscheidung && s.entscheidung.length) {
+        laneExtra[s._lane] = Math.max(laneExtra[s._lane], (s.entscheidung.length - 1) * 80);
+      }
     });
+    var laneHoehen = lanes.map(function (_, i) { return zeileHoehe + laneExtra[i]; });
     var laneTop = [];
     var summe = startY;
     lanes.forEach(function (_, i) { laneTop[i] = summe; summe += laneHoehen[i]; });
     var poolHoehe = summe - startY + 12;
-    var maxSpalten = Math.max(1, Math.min(spaltenProZeile,
-      Math.max.apply(null, laneSchritte.map(function (l) { return l.length || 1; }))));
-    var breite = Math.max(1000, 300 + maxSpalten * 200);
 
-    // Position jedes Schritts in seiner Lane (Serpentine je Lane).
     var pos = {};
-    laneSchritte.forEach(function (liste, l) {
-      liste.forEach(function (idx, k) {
-        var zeile = Math.floor(k / spaltenProZeile);
-        var spalte = k % spaltenProZeile;
-        var inDieserZeile = Math.min(spaltenProZeile, liste.length - zeile * spaltenProZeile);
-        if (zeile % 2 === 1) spalte = inDieserZeile - 1 - spalte;
-        pos[idx] = {
-          x: 230 + spalte * 200,
-          y: laneTop[l] + kopfHoehe + zeile * zeileHoehe + 40,
-          zeile: zeile
-        };
-      });
+    var xCursor = xStart;
+    schritte.forEach(function (s, i) {
+      pos[i] = { x: xCursor, y: laneTop[s._lane] + 40 };
+      xCursor += (s.entscheidung && s.entscheidung.length) ? 4 * spaltenBreite : spaltenBreite;
     });
+    var breite = Math.max(1000, xCursor + 120);
 
     var knoten = [];
     var kanten = [];
     var knotenLane = {};
+    var taskNamen = {};
+    var taskArt = {};
+    var gwNamen = {};
+    var gwDefault = {};
     var letzter = 'Start_Text';
     var erster = schritte.length ? pos[0] : { x: 230, y: laneTop[0] + kopfHoehe + 40 };
     knoten.push({ id: 'Start_Text', x: 140, y: erster.y + 16, w: 36, h: 36 });
@@ -1077,22 +1140,41 @@
       var aufgabeId = 'Task_' + (i + 1);
       var p = pos[i];
       if (s.entscheidung && s.entscheidung.length) {
-        // Entscheidungspunkt: XOR mit einem Ausgang je Ergebnis, danach
-        // Zusammenfuehrung. Die Ergebnisse sind Beschriftungen, keine
-        // erfundenen Aufgaben.
+        // Konvention (Camunda/OMG): erst die Aufgabe, die die Entscheidung
+        // verlangt, dann das Gateway, dann je Antwort eine Aufgabe.
+        var n = s.entscheidung.length;
         var dSplit = 'Gateway_Split_' + (++gwNr);
-        var dMerge = 'Gateway_Merge_' + gwNr;
-        knoten.push({ id: dSplit, x: p.x, y: p.y + 9, w: 50, h: 50 });
+        var dJoin = 'Gateway_Merge_' + gwNr;
+        gwNamen[dSplit] = (s.frage || 'Entscheidung').replace(/\bentscheiden\b/i, 'entschieden') + '?';
+        knoten.push({ id: aufgabeId, x: p.x, y: p.y, w: 120, h: 68 });
+        knotenLane[aufgabeId] = s._lane;
+        taskNamen[aufgabeId] = s.frage || 'Entscheidung treffen';
+        kanten.push({ id: 'Flow_' + (kanten.length + 1), q: letzter, z: aufgabeId });
+        knoten.push({ id: dSplit, x: p.x + spaltenBreite, y: p.y + 9, w: 50, h: 50 });
         knotenLane[dSplit] = s._lane;
-        // Zusammenfuehrung dichter setzen: bei 200 px Spaltenabstand wuerde
-        // sie sonst die naechste Aufgabe beruehren.
-        knoten.push({ id: dMerge, x: p.x + 110, y: p.y + 9, w: 50, h: 50 });
-        knotenLane[dMerge] = s._lane;
-        kanten.push({ id: 'Flow_' + (kanten.length + 1), q: letzter, z: dSplit });
-        s.entscheidung.forEach(function (ausgang) {
-          kanten.push({ id: 'Flow_' + (kanten.length + 1), q: dSplit, z: dMerge, name: ausgang });
+        kanten.push({ id: 'Flow_' + (kanten.length + 1), q: aufgabeId, z: dSplit });
+        s.entscheidung.forEach(function (antwort, k) {
+          var zweigId = aufgabeId + '_' + (k + 1);
+          knoten.push({ id: zweigId, x: p.x + 2 * spaltenBreite, y: p.y + k * 80, w: 120, h: 68 });
+          knotenLane[zweigId] = s._lane;
+          taskNamen[zweigId] = antwortAufgabe(antwort);
+          var zweigFlow = 'Flow_' + (kanten.length + 1);
+          if (/ablehnung|absage|verworfen/i.test(antwort)) gwDefault[dSplit] = zweigFlow;
+          kanten.push({ id: zweigFlow, q: dSplit, z: zweigId, name: antwort });
+          if (/ablehnung|absage|verworfen/i.test(antwort)) {
+            // Eine Ablehnung beendet den Vorgang; sie laeuft nicht in die
+            // normale Fortsetzung zurueck.
+            var endAblehnung = 'End_Ablehnung_' + gwNr + '_' + (k + 1);
+            knoten.push({ id: endAblehnung, x: p.x + 3 * spaltenBreite, y: p.y + k * 80 + 16, w: 36, h: 36 });
+            knotenLane[endAblehnung] = s._lane;
+            kanten.push({ id: 'Flow_' + (kanten.length + 1), q: zweigId, z: endAblehnung });
+          } else {
+            kanten.push({ id: 'Flow_' + (kanten.length + 1), q: zweigId, z: dJoin });
+          }
         });
-        letzter = dMerge;
+        knoten.push({ id: dJoin, x: p.x + 3 * spaltenBreite, y: p.y + 9 + (n - 1) * 40, w: 50, h: 50 });
+        knotenLane[dJoin] = s._lane;
+        letzter = dJoin;
         return;
       }
       if (s.bedingung) {
@@ -1102,6 +1184,7 @@
         knotenLane[split] = s._lane;
         knoten.push({ id: aufgabeId, x: p.x, y: p.y, w: 120, h: 68 });
         knotenLane[aufgabeId] = s._lane;
+        taskNamen[aufgabeId] = aktionsName(s);
         knoten.push({ id: merge, x: p.x + 160, y: p.y - 9, w: 50, h: 50 });
         knotenLane[merge] = s._lane;
         kanten.push({ id: 'Flow_' + (kanten.length + 1), q: letzter, z: split });
@@ -1113,6 +1196,8 @@
       }
       knoten.push({ id: aufgabeId, x: p.x, y: p.y, w: 120, h: 68 });
       knotenLane[aufgabeId] = s._lane;
+      taskNamen[aufgabeId] = aktionsName(s);
+      if (/^(erhalten|empfangen|entgegennehmen)$/i.test(s.aktion || '')) taskArt[aufgabeId] = 'receive';
       kanten.push({ id: 'Flow_' + (kanten.length + 1), q: letzter, z: aufgabeId });
       letzter = aufgabeId;
     });
@@ -1120,7 +1205,7 @@
     var letzterIdx = schritte.length - 1;
     var letzteLane = schritte.length ? schritte[letzterIdx]._lane : 0;
     var letzteP = schritte.length ? pos[letzterIdx] : { x: 230, y: laneTop[0] + kopfHoehe + 40, zeile: 0 };
-    var endX = (letzteP.zeile % 2 === 1) ? letzteP.x - 60 : letzteP.x + 190;
+    var endX = letzteP.x + 190;
     knoten.push({ id: 'End_Text', x: endX, y: letzteP.y + 16, w: 36, h: 36 });
     knotenLane['End_Text'] = letzteLane;
     kanten.push({ id: 'Flow_' + (kanten.length + 1), q: letzter, z: 'End_Text' });
@@ -1146,16 +1231,24 @@
     });
     xml.push('</bpmn:laneSet>');
     xml.push('<bpmn:startEvent id="Start_Text" name="' + esc(prozessName) + ' gestartet" />');
-    schritte.forEach(function (s, i) {
-      if (s.entscheidung && s.entscheidung.length) return;
-      xml.push('<bpmn:userTask id="Task_' + (i + 1) + '" name="' + esc(aktionsName(s)) + '" />');
+    knoten.forEach(function (k) {
+      if (!/^Task_/.test(k.id)) return;
+      var tag = taskArt[k.id] === 'receive' ? 'bpmn:receiveTask' : 'bpmn:userTask';
+      xml.push('<' + tag + ' id="' + k.id + '" name="' + esc(taskNamen[k.id] || 'Aufgabe') + '" />');
     });
     xml.push('<bpmn:endEvent id="End_Text" name="' + esc(prozessName) + ' abgeschlossen" />');
+    knoten.forEach(function (k) {
+      if (/^End_Ablehnung_/.test(k.id)) {
+        xml.push('<bpmn:endEvent id="' + k.id + '" name="Antrag abgelehnt" />');
+      }
+    });
     // Ohne diesen Block existieren die Gateways nur als Zeichnung: die Fluesse
     // zeigen dann auf Elemente, die es im Modell nicht gibt.
     knoten.forEach(function (k) {
       if (/^Gateway_(Split|Merge)_/.test(k.id)) {
-        xml.push('<bpmn:exclusiveGateway id="' + k.id + '" />');
+        var gName = gwNamen[k.id] ? ' name="' + esc(gwNamen[k.id]) + '"' : '';
+        var gDef = gwDefault[k.id] ? ' default="' + gwDefault[k.id] + '"' : '';
+        xml.push('<bpmn:exclusiveGateway id="' + k.id + '"' + gName + gDef + ' />');
       }
     });
     kanten.forEach(function (k) {
