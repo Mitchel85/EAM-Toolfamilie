@@ -892,20 +892,27 @@
   // Sonst ueber einen Korridor zwischen den Reihen — eine Linie quer durch die
   // Reihe wuerde alle Kaesten dazwischen durchschneiden.
   function kantenRoute(q, z) {
-    var qx = q.x + q.w, qy = q.y + q.h / 2;
-    var zx = z.x, zy = z.y + z.h / 2;
-    if (Math.abs(qy - zy) < 6 && zx > qx) return [[qx, qy], [zx, zy]];
-    var unten = zy > qy;
-    var korridor = unten
-      ? (q.y + q.h + z.y) / 2
-      : (z.y + z.h + q.y) / 2;
+    var qR = q.x + q.w, qC = q.x + q.w / 2, qB = q.y + q.h;
+    var qy = q.y + q.h / 2, zy = z.y + z.h / 2;
+    var zL = z.x, zC = z.x + z.w / 2, zT = z.y, zB = z.y + z.h;
+
+    // Gleiche Reihe, Ziel rechts: gerade Linie.
+    if (Math.abs(qy - zy) < 6 && zL >= qR) return [[qR, qy], [zL, zy]];
+
+    // Gleiche Reihe, Ziel links: unter der Reihe herum.
     if (Math.abs(qy - zy) < 6) {
-      // gleiche Reihe, Ziel links: unten herum
-      var qb = q.y + q.h;
-      return [[q.x + q.w / 2, qb], [q.x + q.w / 2, qb + 24], [zx, qb + 24], [zx, z.y + z.h]];
+      var unten = qB + 14;
+      return [[qC, qB], [qC, unten], [zC, unten], [zC, zB]];
     }
-    return [[qx, qy], [qx + 26, qy], [qx + 26, korridor], [zx, korridor],
-      [zx, unten ? z.y : z.y + z.h]];
+
+    // Senkrecht im Spaltengang neben der Quelle (dort ist in jeder Lane frei),
+    // waagerecht erst im Rand der Zielreihe. Frueher lief die Waagerechte ueber
+    // die halbe Diagrammbreite und sah wie eine Sammellinie aus.
+    var gang = qR + 26;
+    if (zT > q.y) {
+      return [[qR, qy], [gang, qy], [gang, zT - 14], [zC, zT - 14], [zC, zT]];
+    }
+    return [[qR, qy], [gang, qy], [gang, zB + 14], [zC, zB + 14], [zC, zB]];
   }
 
   function prozessXml(nameWunsch, schritte, zusatzLanes) {
@@ -916,21 +923,17 @@
       if (l && laneIndex[l] == null) { laneIndex[l] = lanes.length; lanes.push(l); }
     });
     schritte.forEach(function (s) {
-      var rolle = s.rolle || 'Bearbeitung';
+      // Ohne erkannte Rolle bleibt die Lane sichtbar als offene Frage stehen.
+      var rolle = s.rolle || 'Ungeklärt';
       if (laneIndex[rolle] == null) {
         laneIndex[rolle] = lanes.length;
         lanes.push(rolle);
       }
       s._lane = laneIndex[rolle];
     });
-    if (!lanes.length) { laneIndex['Bearbeitung'] = 0; lanes.push('Bearbeitung'); }
-    // Die Sammel-Lane gehoert nach unten: oben steht, wer wirklich handelt.
-    if (lanes.length > 1 && lanes[0] === 'Bearbeitung') {
-      lanes.push(lanes.shift());
-      laneIndex = {};
-      lanes.forEach(function (l, i) { laneIndex[l] = i; });
-      schritte.forEach(function (s) { s._lane = laneIndex[s.rolle || 'Bearbeitung']; });
-    }
+    // Reihenfolge = erste Erwaehnung. Eine Umsortierung wuerde den Startknoten
+    // in eine Lane weiter unten setzen; der Leser faengt dann in der Mitte an.
+    if (!lanes.length) { laneIndex['Ungeklärt'] = 0; lanes.push('Ungeklärt'); }
 
     var startY = 40;
     var kopfHoehe = 34;
