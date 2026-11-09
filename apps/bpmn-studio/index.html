@@ -1828,7 +1828,7 @@ h1 { font-size: 18px; margin: 0; letter-spacing: .2px; }
     <span class="zeichen">B</span>
     <div>
       <h1>BPMN Studio</h1>
-      <p class="unterzeile">ADMBw · BPMN 2.0 · Prozesse extrahieren, prüfen, exportieren · <span id="version">3.6.0</span></p>
+      <p class="unterzeile">ADMBw · BPMN 2.0 · Prozesse extrahieren, prüfen, exportieren · <span id="version">3.6.1</span></p>
     </div>
   </div>
   <div class="werkzeuge" role="toolbar" aria-label="Werkzeuge">
@@ -2449,6 +2449,22 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
     $('meldung-text').textContent = text;
     var dialog = $('meldung');
     if (dialog.showModal) dialog.showModal();
+  }
+
+  // Nach dem Import passt sich die Ansicht dem Modell an. Bei einem sehr langen
+  // Band landet sonst alles bei 0,12-facher Groesse in einer unlesbaren Reihe.
+  function canvasUebersicht() {
+    var canvas = modeler.get('canvas');
+    try {
+      canvas.zoom('fit-viewport');
+      var vb = canvas.viewbox();
+      var grund = vb.inner && vb.inner.width ? vb.inner.width / Math.max(1, vb.outer.width) : 1;
+      if (grund > 0 && 1 / grund > 2) {
+        // Weniger als halbe Naturgroesse: auf den Anfang zoomen, damit die
+        // ersten Schritte lesbar sind. Der Rest bleibt erreichbar.
+        canvas.viewbox({ x: 40, y: 30, width: Math.min(vb.inner.width, 1400), height: Math.min(vb.inner.height + 100, 900) });
+      }
+    } catch (e) { /* Ansicht ist Beiwerk */ }
   }
 
   function herunterladen(dateiname, blob) {
@@ -3092,12 +3108,23 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
   function saetze(text) {
     var ergebnis = [];
     text.replace(/\r\n?/g, '\n').split('\n').forEach(function (zeile) {
-      zeile = zeile.trim();
-      if (!zeile || zeile.charAt(0) === '#') return;
-      zeile = zeile.replace(/^(?:[-–—*]|\d+[.)])\s+/, '');
+      var roh = zeile.trim();
+      if (!roh || roh.charAt(0) === '#') return;
+      var punkt = /^[•▪◦·\-–—*]\s+/.test(roh);
+      // Aufzaehlungszeichen bleibt stehen: der Kopf der Aufzaehlung wird eine
+      // Aufgabe, die Punkte darunter ihre Details. Nur numerierte Zeilen
+      // werden entnummeriert, ihr Inhalt ist ein eigener Schritt.
+      zeile = punkt ? roh : roh.replace(/^\d+[.)]\s+/, '');
       zeile.split(/(?<=[.!?])\s+|;\s*/).forEach(function (satz) {
         satz = satz.trim();
-        if (satz) ergebnis.push(satz);
+        if (!satz) return;
+        if (punkt && ergebnis.length && (/^[a-zäöüß]/.test(satz) || /^[A-ZÄÖÜ]{2,}\.$/.test(satz))) {
+          // "… zu pruefen. der Pruefbericht ist zu erstellen" ist ein Satz,
+          // der an einer Abkuerzung oder Aufzaehlung haengt, kein neuer.
+          ergebnis[ergebnis.length - 1] += ' ' + satz;
+          return;
+        }
+        ergebnis.push(satz);
       });
     });
     return ergebnis;
@@ -3113,15 +3140,27 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
     });
     return ergebnis.length ? ergebnis : [satz];
   }
+  var ZAEHLWOERTER = ['mehrere', 'zahlreiche', 'diverse', 'sämtliche', 'saemtliche',
+    'alle', 'beide', 'einige', 'folgende', 'verschiedene', 'unterschiedliche',
+    'weitere', 'einzelne', 'die', 'der', 'das', 'den', 'dem', 'des'];
+
   function zerlege(text) {
     var schritte = [];
     var letzteRolle = '';
     var letztesObjekt = '';
+    var naechsteZeileStart = '';
     saetze(text).forEach(function (satz) {
       var bedingung = '';
       var m = satz.match(/^(?:Wenn|Falls|Sofern|Sobald)\s+(.+?),\s*(?:dann\s+)?(.+)$/i);
       var haupt = satz;
       if (m) { bedingung = m[1].trim(); haupt = m[2].trim(); }
+      var istNaechsterSatz = typeof naechsteZeileStart === 'object' && !/^\s*[•▪◦·\-–—]/.test(satz);
+      if (istNaechsterSatz) naechsteZeileStart = '';
+      var punkt = /^\s*[•▪◦·\-–—]\s+(.+)$/.test(satz);
+      if (punkt && naechsteZeileStart && typeof naechsteZeileStart === 'object') {
+        naechsteZeileStart.teilschritte.push(satz.replace(/^\s*[•▪◦·\-–—]\s+/, '').replace(/[.;]\s*$/, '').trim());
+        return;
+      }
       klauseln(haupt).forEach(function (klausel) {
         var verb = findeVerb(klausel);
         if (!verb) return;
@@ -3129,15 +3168,30 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
         if (!rolle && letzteRolle) rolle = letzteRolle;
         if (rolle) letzteRolle = rolle;
         var objekt = objektImSatz(klausel, verb.index, rolle);
+
+        // "folgende Stellen zu genehmigen" ist keine Aufgabe, sondern ein
+        // Platzhalter fuer eine Aufzaehlung. Der Kopf der Aufzaehlung wird zur
+        // Aufgabe, die Punkte darunter werden zu Details derselben Aufgabe.
+        if (/^eine der/i.test(objekt) || /^einer der/i.test(objekt)) return;
+        if (ZAEHLWOERTER.indexOf(objekt.trim().toLowerCase()) !== -1) {
+          if (!naechsteZeileStart) naechsteZeileStart = verb.inf;
+          return;
+        }
         if (!objekt) return;
         if (/^(ihn|sie|es|ihm|diesen|diese|dieses)$/i.test(objekt) && letztesObjekt) objekt = letztesObjekt;
         letztesObjekt = objekt;
-        schritte.push({
+        var istKopf = !!naechsteZeileStart;
+        var schritt = {
           rolle: rolle,
           aktion: verb.inf,
           objekt: objekt,
           bedingung: bedingung
-        });
+        };
+        if (istKopf) {
+          schritt.teilschritte = [];
+          naechsteZeileStart = schritt;
+        }
+        schritte.push(schritt);
       });
     });
     return schritte;
@@ -3166,18 +3220,29 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
     });
     if (!lanes.length) { laneIndex['Bearbeitung'] = 0; lanes.push('Bearbeitung'); }
 
-    var laneHoehe = 130;
+    var laneHoehe = 190;
     var startY = 40;
-    var breite = Math.max(1000, 300 + schritte.length * 170);
-    var poolHoehe = Math.max(laneHoehe, lanes.length * laneHoehe);
-    var y = function (lane) { return startY + lane * laneHoehe + 42; };
-    var xTask = function (i) { return 230 + i * 170; };
+    // Zeilenumbruch: 56 Schritte in einer Reihe ergeben ein 9.800 Pixel breites
+    // Band, in dem nichts lesbar ist. Deshalb nach je SCHRITTE_PRO_ZEILE
+    // Schritten eine neue Zeile, die Lane wächst entsprechend.
+    var schritteProZeile = Math.max(1, Math.min(8, Number(window.BPMN_SCHRITTE_PRO_ZEILE) || 8));
+    var zeilenProLane = Math.max(1, Math.ceil(schritte.length / schritteProZeile));
+    var zeileHoehe = 175;
+    var spalten = Math.min(schritte.length, schritteProZeile) || 1;
+    var breite = Math.max(1000, 300 + spalten * 170);
+    // Etwas Luft am unteren Rand, sonst klebt die letzte Reihe am Pool.
+    var poolHoehe = Math.max(laneHoehe, lanes.length * laneHoehe * zeilenProLane + 30);
+    var y = function (lane, zeile) {
+      return startY + lane * laneHoehe * zeilenProLane + (zeile || 0) * zeileHoehe + 42;
+    };
+    var xTask = function (i) { return 230 + (i % schritteProZeile) * 170; };
+    var zeileVon = function (i) { return Math.floor(i / schritteProZeile); };
 
     var knoten = [];
     var kanten = [];
     var knotenLane = {};
     var letzter = 'Start_Text';
-    var startKnoten = { id: 'Start_Text', x: 140, y: y(0), w: 36, h: 36 };
+    var startKnoten = { id: 'Start_Text', x: 140, y: y(0, 0), w: 36, h: 36 };
     knoten.push(startKnoten);
     knotenLane['Start_Text'] = 0;
 
@@ -3185,14 +3250,15 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
     schritte.forEach(function (s, i) {
       var aufgabeId = 'Task_' + (i + 1);
       var aufgabeX = xTask(i);
+      var z = zeileVon(i);
       if (s.bedingung) {
         var split = 'Gateway_Split_' + (++gwNr);
         var merge = 'Gateway_Merge_' + gwNr;
-        knoten.push({ id: split, x: aufgabeX - 80, y: y(s._lane), w: 50, h: 50 });
+        knoten.push({ id: split, x: aufgabeX - 80, y: y(s._lane, z), w: 50, h: 50 });
         knotenLane[split] = s._lane;
-        knoten.push({ id: aufgabeId, x: aufgabeX, y: y(s._lane) + 7, w: 120, h: 68 });
+        knoten.push({ id: aufgabeId, x: aufgabeX, y: y(s._lane, z) + 7, w: 120, h: 68 });
         knotenLane[aufgabeId] = s._lane;
-        knoten.push({ id: merge, x: aufgabeX + 160, y: y(s._lane), w: 50, h: 50 });
+        knoten.push({ id: merge, x: aufgabeX + 160, y: y(s._lane, z), w: 50, h: 50 });
         knotenLane[merge] = s._lane;
         kanten.push({ id: 'Flow_' + (kanten.length + 1), q: letzter, z: split });
         kanten.push({ id: 'Flow_' + (kanten.length + 1), q: split, z: aufgabeId, bedingung: s.bedingung });
@@ -3201,14 +3267,15 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
         letzter = merge;
         return;
       }
-      knoten.push({ id: aufgabeId, x: aufgabeX, y: y(s._lane) + 7, w: 120, h: 68 });
+      knoten.push({ id: aufgabeId, x: aufgabeX, y: y(s._lane, z) + 7, w: 120, h: 68 });
       knotenLane[aufgabeId] = s._lane;
       kanten.push({ id: 'Flow_' + (kanten.length + 1), q: letzter, z: aufgabeId });
       letzter = aufgabeId;
     });
     var letzteLane = schritte.length ? schritte[schritte.length - 1]._lane : 0;
+    var letzteZeile = schritte.length ? zeileVon(schritte.length - 1) : 0;
     var endX = xTask(schritte.length) + 60;
-    knoten.push({ id: 'End_Text', x: endX, y: y(letzteLane), w: 36, h: 36 });
+    knoten.push({ id: 'End_Text', x: endX, y: y(letzteLane, letzteZeile), w: 36, h: 36 });
     knotenLane['End_Text'] = letzteLane;
     kanten.push({ id: 'Flow_' + (kanten.length + 1), q: letzter, z: 'End_Text' });
 
@@ -3257,8 +3324,8 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
       startY + '" width="' + breite + '" height="' + poolHoehe + '" /></bpmndi:BPMNShape>');
     lanes.forEach(function (lane, i) {
       xml.push('<bpmndi:BPMNShape id="Lane_Text_' + (i + 1) + '_di" bpmnElement="Lane_Text_' + (i + 1) +
-        '" isHorizontal="true"><dc:Bounds x="40" y="' + (startY + i * laneHoehe) + '" width="' + breite +
-        '" height="' + laneHoehe + '" /></bpmndi:BPMNShape>');
+        '" isHorizontal="true"><dc:Bounds x="40" y="' + (startY + i * laneHoehe * zeilenProLane) + '" width="' + breite +
+        '" height="' + (laneHoehe * zeilenProLane) + '" /></bpmndi:BPMNShape>');
     });
     knoten.forEach(function (k) {
       xml.push('<bpmndi:BPMNShape id="' + k.id + '_di" bpmnElement="' + k.id + '"><dc:Bounds x="' + k.x +
@@ -3345,11 +3412,18 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
     var xml = prozessXml($('text-name').value, schritte);
     $('text-dialog').close();
     importieren(xml).then(function () {
-      protokoll = [wahl.hinweis].concat(['Aus Text: ' + schritte.length + ' Schritt(e), ' + new Set(schritte.map(function (s) { return s.rolle || 'Bearbeitung'; })).size + ' Rolle(n) als Lanes.']).filter(function (z) { return !!z; });
+      var rollen = new Set(schritte.map(function (s) { return s.rolle || 'Bearbeitung'; })).size;
+      protokoll = [wahl.hinweis].concat(['Aus Text: ' + schritte.length + ' Schritt(e), ' + rollen + ' Rolle(n) als Lanes.']).filter(function (z) { return !!z; });
       protokolliere('Alle Elemente sind Vorschläge — bitte fachlich prüfen (Sicherheitsgrad "unsicher").');
+      if (rollen === 1 && schritte.length > 20) {
+        protokolliere('Nur eine Rolle erkannt: das Modell liegt in einer einzigen Lane ('
+          + schritte.length + ' Schritte). Für mehrere Lanes je Schritt eine Rolle angeben '
+          + 'oder die KI-Extraktion (Häkchen „KI") verwenden.');
+      }
       zeichneProtokoll();
       $('reiter-protokoll').click();
       pruefe();
+      canvasUebersicht();
     }).catch(function (fehler) {
       ausgabe('Der Text konnte nicht in BPMN übersetzt werden: ' + fehler.message, 'Extraktion fehlgeschlagen');
     });
@@ -3716,7 +3790,7 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
       pruefe: pruefe,
       zerlege: zerlege,
       prozessXml: prozessXml,
-      version: '3.6.0'
+      version: '3.6.1'
     };
   }
 
