@@ -19,7 +19,7 @@
     </div>
   </div>
   <div class="werkzeuge" role="toolbar" aria-label="Werkzeuge">
-    <label class="knopf datei">BPMN laden<input id="datei-laden" type="file" accept=".bpmn,.xml,application/xml,text/xml" hidden></label>
+    <label class="knopf datei" title="BPMN 2.0 XML oder PDF mit Prozesstext">BPMN/PDF laden<input id="datei-laden" type="file" accept=".bpmn,.xml,.pdf,application/xml,text/xml,application/pdf" hidden></label>
     <button id="btn-neu" type="button">Neu</button>
     <button id="btn-speichern" type="button">BPMN speichern</button>
     <span class="trenner" aria-hidden="true"></span>
@@ -132,6 +132,8 @@
   </form>
 </dialog>
 
+<script>{{PDF_JS}}</script>
+<script id="pdf-worker-quelle" type="text/plain">{{PDF_WORKER}}</script>
 <script>{{BPMN_JS}}</script>
 <script>window.BPMN_REGELN = {{PRUEFREGELN}};</script>
 <script>{{STUDIO_JS}}</script>

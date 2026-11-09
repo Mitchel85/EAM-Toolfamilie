@@ -32,11 +32,13 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 SRC = HERE / "src"
 VENDOR = ROOT / "vendor" / "bpmn-js"
+PDF_JS = ROOT / "vendor" / "pdf.min.js"
+PDF_WORKER = ROOT / "vendor" / "pdf.worker.min.js"
 REGELN = ROOT / "knowledge" / "bpmn" / "prozess-regeln.json"
 AUSGABE = HERE / "index.html"
 DIST = HERE / "dist" / "BPMN-Studio.html"
 
-VERSION = "3.4.3"
+VERSION = "3.5.0"
 BPMN_JS_VERSION = "18.31.1"
 
 MIME = {
@@ -86,7 +88,8 @@ def _regeln() -> dict:
 
 
 def baue() -> str:
-    for pfad in (SRC / "index.html", SRC / "studio.js", SRC / "studio.css", *CSS_DATEIEN):
+    for pfad in (SRC / "index.html", SRC / "studio.js", SRC / "studio.css", *CSS_DATEIEN,
+                 PDF_JS, PDF_WORKER):
         if not pfad.is_file():
             raise SystemExit(f"Quelle fehlt: {pfad}")
 
@@ -94,8 +97,10 @@ def baue() -> str:
     studio_js = (SRC / "studio.js").read_text(encoding="utf-8")
     studio_css = (SRC / "studio.css").read_text(encoding="utf-8")
     bpmn_js = (VENDOR / "bpmn-modeler.production.min.js").read_text(encoding="utf-8")
+    pdf_js = PDF_JS.read_text(encoding="utf-8")
+    pdf_worker = PDF_WORKER.read_text(encoding="utf-8")
 
-    if "</script" in studio_js.lower() or "</script" in bpmn_js.lower():
+    if any("</script" in teil.lower() for teil in (studio_js, bpmn_js, pdf_js, pdf_worker)):
         raise SystemExit("JavaScript enthaelt '</script' und wuerde den HTML-Block beenden")
 
     bpmn_css_teile = [
@@ -109,6 +114,8 @@ def baue() -> str:
     for platzhalter, wert in (
         ("{{BPMN_CSS}}", bpmn_css),
         ("{{STUDIO_CSS}}", studio_css),
+        ("{{PDF_JS}}", pdf_js),
+        ("{{PDF_WORKER}}", pdf_worker),
         ("{{BPMN_JS}}", bpmn_js),
         ("{{STUDIO_JS}}", studio_js),
         ("{{PRUEFREGELN}}", regeln),

@@ -49,7 +49,7 @@ Kurz, was jedes Werkzeug kann — und wie sie sich unterscheiden.
 | **EAM Suite** (HTML) | `.qea` · `.xmi` · `.json` | nein | Vorhandene Modelle analysieren und verstehen, mehrere verschmelzen, von Hand bearbeiten und zurückschreiben | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/eam-suite/) |
 | **EAM Analyzer** (Open WebUI, MCP) | `.qea` · `.xmi` | über das KI-Modell des Werkzeugs | Ein Modell befragen — als Werkzeug in Open WebUI oder als MCP-Server für Open WebUI, Claude Desktop und VS Code | — |
 | **ADMBw Extraktor** (HTML, Python) | MDG-XML | nein | Regelwerk durchsuchen und als sechs Regeldateien exportieren; die Grundlage für alles andere | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/admbw-extraktor/) |
-| **BPMN Studio** (HTML, Python) | BPMN 2.0 | optional | Prozesse lesen, zeichnen und prüfen; auf Knopfdruck ADMBw-konform machen; Export als XML, SVG und PNG | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/bpmn-studio/) |
+| **BPMN Studio** (HTML, Python) | BPMN 2.0, PDF | optional | Prozesse lesen, zeichnen und prüfen; Prozesstext aus PDF übernehmen; auf Knopfdruck ADMBw-konform machen; Export als XML, SVG und PNG | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/bpmn-studio/) |
 
 Der Unterschied in einem Satz: die **AI Suiten bauen** Modelle (mit KI), die **EAM Suite
 analysiert und bearbeitet** sie (ohne KI), der **EAM Analyzer befragt** sie (als Werkzeug

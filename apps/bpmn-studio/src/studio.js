@@ -128,8 +128,85 @@
     });
   }
 
+  function istPdf(datei) {
+    return /\.pdf$/i.test(datei.name || '') || datei.type === 'application/pdf';
+  }
+
+  // pdf.js bringt seinen Worker mit; er steckt als Textblock in der Datei und
+  // wird erst beim ersten Bedarf als Blob-URL bereitgestellt. So bleibt das
+  // Studio eine einzige Datei ohne externen Ladevorgang.
+  function pdfVorbereiten() {
+    if (!window.pdfjsLib) return false;
+    if (!window.pdfjsLib.GlobalWorkerOptions.workerSrc) {
+      var quelle = document.getElementById('pdf-worker-quelle');
+      if (quelle && quelle.textContent) {
+        var blob = new Blob([quelle.textContent], { type: 'text/javascript' });
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(blob);
+      }
+    }
+    return true;
+  }
+
+  function pdfLesen(datei) {
+    return new Promise(function (fertig, scheitern) {
+      if (!pdfVorbereiten()) {
+        scheitern(new Error('PDF-Komponente fehlt in dieser Datei'));
+        return;
+      }
+      datei.arrayBuffer().then(function (puffer) {
+        return window.pdfjsLib.getDocument({ data: new Uint8Array(puffer) }).promise;
+      }).then(function (dokument) {
+        var seiten = [];
+        var kette = Promise.resolve();
+        var nummern = [];
+        for (var n = 1; n <= dokument.numPages; n++) nummern.push(n);
+        nummern.forEach(function (nummer) {
+          kette = kette.then(function () {
+            return dokument.getPage(nummer).then(function (seite) {
+              return seite.getTextContent().then(function (inhalt) {
+                var zeilen = [];
+                var zeile = '';
+                inhalt.items.forEach(function (stueck) {
+                  if (!stueck || typeof stueck.str !== 'string') return;
+                  zeile += stueck.str;
+                  if (stueck.hasEOL) { zeilen.push(zeile); zeile = ''; }
+                });
+                if (zeile.trim()) zeilen.push(zeile);
+                seiten.push(zeilen.join('\n'));
+              });
+            });
+          });
+        });
+        return kette.then(function () { return { seiten: seiten, anzahl: dokument.numPages }; });
+      }).then(fertig).catch(scheitern);
+    });
+  }
+
   function textLaden(datei) {
     if (!datei) return;
+    if (istPdf(datei)) {
+      pdfLesen(datei).then(function (ergebnis) {
+        var text = ergebnis.seiten.join('\n\n')
+          .replace(/[ \t]+\n/g, '\n')
+          .replace(/\n{3,}/g, '\n\n')
+          .trim();
+        if (!text) {
+          ausgabe('Die PDF enthält keinen extrahierbaren Text — vermutlich ein Scan ohne Textebene.', 'PDF ohne Text');
+          return;
+        }
+        $('text-eingabe').value = text;
+        if (!$('text-name').value.trim()) $('text-name').value = (datei.name || '').replace(/\.pdf$/i, '');
+        var warnung = $('text-warnung');
+        warnung.hidden = false;
+        warnung.className = 'warnung';
+        warnung.textContent = 'PDF gelesen: ' + ergebnis.anzahl + ' Seite(n), ' + text.length
+          + ' Zeichen. Text prüfen, dann „Extrahieren“ — oder den Abschnitt über den Auftrag eingrenzen.';
+        textDialogOeffnen();
+      }).catch(function (fehler) {
+        ausgabe('Die PDF konnte nicht gelesen werden: ' + fehler.message, 'PDF-Laden fehlgeschlagen');
+      });
+      return;
+    }
     var leser = new FileReader();
     leser.onload = function () {
       importieren(String(leser.result)).catch(function (fehler) {
@@ -797,6 +874,13 @@
       xml.push('<bpmn:userTask id="Task_' + (i + 1) + '" name="' + esc(aktionsName(s)) + '" />');
     });
     xml.push('<bpmn:endEvent id="End_Text" name="' + esc(prozessName) + ' abgeschlossen" />');
+    // Ohne diesen Block existieren die Gateways nur als Zeichnung: die Fluesse
+    // zeigen dann auf Elemente, die es im Modell nicht gibt.
+    knoten.forEach(function (k) {
+      if (/^Gateway_(Split|Merge)_/.test(k.id)) {
+        xml.push('<bpmn:exclusiveGateway id="' + k.id + '" />');
+      }
+    });
     kanten.forEach(function (k) {
       var nameAttr = k.name ? ' name="' + esc(k.name) + '"' : '';
       xml.push('<bpmn:sequenceFlow id="' + k.id + '" sourceRef="' + k.q + '" targetRef="' + k.z + '"' + nameAttr + '>' +
@@ -910,6 +994,10 @@
 
   function kiDialogOeffnen() {
     $('ki-status').hidden = true;
+    try {
+      if (!$('ki-url').value) $('ki-url').value = localStorage.getItem('bpmn-ki-url') || '';
+      if (!$('ki-modell').value) $('ki-modell').value = localStorage.getItem('bpmn-ki-modell') || '';
+    } catch (e) { /* privater Modus: nichts gemerkt */ }
     $('ki-dialog').showModal();
   }
 
@@ -919,6 +1007,10 @@
     var key = $('ki-key').value;
     var text = $('ki-eingabe').value.trim();
     var status = $('ki-status');
+    try {
+      localStorage.setItem('bpmn-ki-url', basis);
+      localStorage.setItem('bpmn-ki-modell', modell);
+    } catch (e) { /* privater Modus: nichts gemerkt */ }
     if (!basis || !modell || !key) {
       status.hidden = false;
       status.className = 'warnung fehler';
@@ -943,25 +1035,41 @@
         temperature: 0,
         response_format: { type: 'json_object' },
         messages: [
-          { role: 'system', content: 'Du bist Prozessanalyst. Antworte ausschließlich mit {"schritte":[{"rolle":"...","aktion":"...","objekt":"...","bedingung":"..."}]}. Aktion im Infinitiv. Erfinde nichts.' },
+          { role: 'system', content: 'Du bist Prozessanalyst. Antworte ausschließlich mit einem JSON-Objekt dieser Form: {"schritte":[{"rolle":"...","aktion":"...","objekt":"...","bedingung":"..."}]}. Aktion im Infinitiv. Erfinde nichts, was nicht im Text steht. Kein Markdown, keine Erklärung.' },
           { role: 'user', content: text }
         ]
       })
     }).then(function (antwort) {
-      if (!antwort.ok) throw new Error('HTTP ' + antwort.status);
+      if (!antwort.ok) {
+        // Die Gegenstelle sagt meist genau, was fehlt (Schluessel, Guthaben, Modell).
+        return antwort.text().then(function (roh) {
+          var meldung = '';
+          try {
+            var fehler = JSON.parse(roh);
+            meldung = (fehler && fehler.error && (fehler.error.message || fehler.error)) || '';
+          } catch (e) {
+            meldung = String(roh || '').slice(0, 200);
+          }
+          throw new Error('HTTP ' + antwort.status + (meldung ? ' — ' + meldung : ''));
+        });
+      }
       return antwort.json();
     }).then(function (daten) {
       var inhalt = daten && daten.choices && daten.choices[0] && daten.choices[0].message && daten.choices[0].message.content;
       if (!inhalt) throw new Error('Antwort ohne Inhalt');
       var bereinigt = String(inhalt).trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
       var json = JSON.parse(bereinigt);
-      if (!json.schritte || !json.schritte.length) throw new Error('keine Schritte in der Antwort');
-      var schritte = json.schritte.map(function (s) {
+      var liste = json.schritte || json.steps || (Array.isArray(json) ? json : null);
+      if (!liste || !liste.length) throw new Error('Antwort enthält keine Schritte (erwartet: {"schritte": [...]})');
+      var zeitwort = /^(danach|anschließend|anschliessend|daraufhin|darauf|zuerst|zunächst|zunaechst|schließlich|schliesslich|abschließend|abschliessend|im anschluss|zum schluss|anschließend)\b[\s,.]*$/i;
+      var schritte = liste.map(function (s) {
+        var bedingung = String(s.bedingung || s.condition || '').trim();
+        if (zeitwort.test(bedingung)) bedingung = '';
         return {
-          rolle: String(s.rolle || '').trim(),
-          aktion: String(s.aktion || 'bearbeiten').trim().toLowerCase(),
-          objekt: String(s.objekt || '').trim(),
-          bedingung: String(s.bedingung || '').trim()
+          rolle: String(s.rolle || s.role || '').trim(),
+          aktion: String(s.aktion || s.action || 'bearbeiten').trim().toLowerCase(),
+          objekt: String(s.objekt || s.object || '').trim(),
+          bedingung: bedingung
         };
       });
       var xml = prozessXml($('text-name') ? $('text-name').value : '', schritte);
