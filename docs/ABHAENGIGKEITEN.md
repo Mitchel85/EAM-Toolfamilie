@@ -40,7 +40,7 @@ Eine Zelle ist ein Ordner mit `package.json`. `dependencies` sind Laufzeit-,
 | `apps/html-suite` | eam-ai-suite | 9.1.0 | `@mitchel85/eam-vendor` |
 | `apps/html-editor` | eam-suite | 8.4.0 | `@mitchel85/eam-vendor` |
 | `apps/admbw-extractor/html` | eam-admbw-extractor-html | 2.0.0 | — |
-| `apps/bpmn-studio` | eam-bpmn-studio | 3.5.0 | — |
+| `apps/bpmn-studio` | eam-bpmn-studio | 3.6.0 | — |
 | `apps/mcp` | eam-mcp | 2.4.0 | `@mitchel85/eam-core` |
 | `apps/admbw-extractor` | eam-admbw-extractor | 2.4.0 | `@mitchel85/eam-rules` |
 | `apps/cli` | eam-ai-cli | 2.4.0 | `@mitchel85/eam-core`, `@mitchel85/eam-rules` |

@@ -1,6 +1,6 @@
 {
   "productName": "BPMN Studio",
-  "version": "3.5.0",
+  "version": "3.6.0",
   "sourceRepo": "Mitchel85/eam-platform",
   "sourceCommit": "eigenbau",
   "sourceNote": "Eigenentwicklung im Monorepo; bpmn-js 18.31.1 (MIT) gebündelt, keine Laufzeit-Netzabhängigkeit",
