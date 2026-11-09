@@ -16,6 +16,17 @@
   };
   var SEVERITY = { fehler: 0, warnung: 1, hinweis: 2 };
 
+  // Beispielprozess fuer die Demo: vier Rollen, drei Entscheidungen mit
+  // beschrifteten Ausgaengen, bedingte Aufgabe, Empfangsaufgabe.
+  var BEISPIEL_TEXT = 'Der Sachbearbeiter prüft den Antrag.\n' +
+    'Der Projektlenkungsausschuss entscheidet über die Freigabe: Freigabe, Freigabe mit Auflagen oder Ablehnung.\n' +
+    'Wenn Auflagen vorliegen, überarbeitet der Sachbearbeiter den Antrag.\n' +
+    'Der BAAINBw unterzeichnet den Vertrag.\n' +
+    'Der BAAINBw löst die Bestellung aus.\n' +
+    'Die Truppe erhält die Lieferung.\n' +
+    'Die Truppe prüft die Lieferung.\n' +
+    'Der BAAINBw archiviert den Vorgang.';
+
   var LEER_XML = '<?xml version="1.0" encoding="UTF-8"?>\n' +
     '<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" ' +
     'xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" ' +
@@ -628,6 +639,10 @@
     ['bilden', ['gebildet', 'bilden']],
     ['benennen', ['benannt', 'benennen']],
     ['unterrichten', ['unterrichtet', 'unterrichten']],
+    ['überarbeiten', ['überarbeitet', 'überarbeiten', 'überarbeite']],
+    ['auslösen', ['ausgelöst', 'auslösen', 'löst']],
+    ['bestellen', ['bestellt', 'bestellen']],
+    ['reservieren', ['reserviert', 'reservieren']],
     ['entscheiden', ['entscheidet', 'entscheiden', 'entschieden']],
     ['buchen', ['bucht', 'buchen', 'gebucht']],
     ['zahlen', ['zahlt', 'zahlen', 'gezahlt']],
@@ -889,6 +904,7 @@
     var t = String(objekt || '').trim();
     t = t.replace(/^(?:Wobei|Hierbei|Danach|Anschließend|Anschliessend|Zudem|Dabei|Dafür|Dafuer)\s+/i, '');
     t = t.replace(/^(.*?)\s+(?:ist|sind|hat|haben|wird|werden)\s+.*$/i, '$1');
+    t = t.replace(/^(?:ggf\.?|gegebenenfalls|evtl\.?|eventuell)\s+/i, '');
     t = t.replace(/^(?:Jede|Jeder|Jedes|Alle|Sämtliche|Saemtliche|Die|Der|Das|Den|Dem|Ein|Eine|Einen|Einem)\s+/i, '');
     t = t.replace(/\s+/g, ' ').trim();
     if (!t) return '';
@@ -1122,7 +1138,8 @@
     var xCursor = xStart;
     schritte.forEach(function (s, i) {
       pos[i] = { x: xCursor, y: laneTop[s._lane] + 40 };
-      xCursor += (s.entscheidung && s.entscheidung.length) ? 4 * spaltenBreite : spaltenBreite;
+      xCursor += (s.entscheidung && s.entscheidung.length) ? 4 * spaltenBreite
+        : (s.bedingung ? 3 * spaltenBreite : spaltenBreite);
     });
     var breite = Math.max(1000, xCursor + 120);
 
@@ -1183,12 +1200,14 @@
       if (s.bedingung) {
         var split = 'Gateway_Split_' + (++gwNr);
         var merge = 'Gateway_Merge_' + gwNr;
-        knoten.push({ id: split, x: p.x - 85, y: p.y - 9, w: 50, h: 50 });
+        // Eigener Platz fuer die Bedingung: Split -> Aufgabe -> Zusammenfuehrung.
+        knoten.push({ id: split, x: p.x, y: p.y + 9, w: 50, h: 50 });
         knotenLane[split] = s._lane;
-        knoten.push({ id: aufgabeId, x: p.x, y: p.y, w: 120, h: 68 });
+        gwNamen[split] = s.bedingung + '?';
+        knoten.push({ id: aufgabeId, x: p.x + spaltenBreite, y: p.y, w: 120, h: 68 });
         knotenLane[aufgabeId] = s._lane;
         taskNamen[aufgabeId] = aktionsName(s);
-        knoten.push({ id: merge, x: p.x + 160, y: p.y - 9, w: 50, h: 50 });
+        knoten.push({ id: merge, x: p.x + 2 * spaltenBreite, y: p.y + 9, w: 50, h: 50 });
         knotenLane[merge] = s._lane;
         kanten.push({ id: 'Flow_' + (kanten.length + 1), q: letzter, z: split });
         kanten.push({ id: 'Flow_' + (kanten.length + 1), q: split, z: aufgabeId, bedingung: s.bedingung });
@@ -1707,6 +1726,14 @@
     $('btn-konform').addEventListener('click', konformMachen);
     $('btn-text').addEventListener('click', textDialogOeffnen);
     $('text-abweisen').addEventListener('click', function () { $('text-dialog').close(); });
+    var beispielKnopf = $('text-beispiel');
+    if (beispielKnopf) {
+      beispielKnopf.addEventListener('click', function () {
+        $('text-eingabe').value = BEISPIEL_TEXT;
+        $('text-name').value = 'Beschaffungsvorhaben';
+        $('text-eingabe').focus();
+      });
+    }
     $('text-starten').addEventListener('click', textExtrahieren);
     $('ki-aktiv').addEventListener('change', function () {
       if (this.checked) kiDialogOeffnen();
