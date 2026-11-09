@@ -120,7 +120,7 @@
       if (!(skala > 0)) skala = vb.scale || 1;
       // Bei sehr langen Prozessen wird "alles einpassen" unlesbar. Dann lieber
       // am Anfang in lesbarer Groesse starten; der Rest ist erreichbar.
-      if (skala < 0.35) skala = 0.6;
+      if (skala < 0.6) skala = 0.7;
       canvas.viewbox({
         x: vb.inner.x - links / skala,
         y: vb.inner.y - oben / skala,

@@ -1828,7 +1828,7 @@ h1 { font-size: 18px; margin: 0; letter-spacing: .2px; }
     <span class="zeichen">B</span>
     <div>
       <h1>BPMN Studio</h1>
-      <p class="unterzeile">ADMBw · BPMN 2.0 · Prozesse extrahieren, prüfen, exportieren · <span id="version">3.10.0</span></p>
+      <p class="unterzeile">ADMBw · BPMN 2.0 · Prozesse extrahieren, prüfen, exportieren · <span id="version">3.10.1</span></p>
     </div>
   </div>
   <div class="werkzeuge" role="toolbar" aria-label="Werkzeuge">
@@ -2481,7 +2481,7 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
       if (!(skala > 0)) skala = vb.scale || 1;
       // Bei sehr langen Prozessen wird "alles einpassen" unlesbar. Dann lieber
       // am Anfang in lesbarer Groesse starten; der Rest ist erreichbar.
-      if (skala < 0.35) skala = 0.6;
+      if (skala < 0.6) skala = 0.7;
       canvas.viewbox({
         x: vb.inner.x - links / skala,
         y: vb.inner.y - oben / skala,
@@ -4153,7 +4153,7 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
       pruefe: pruefe,
       zerlege: zerlege,
       prozessXml: prozessXml,
-      version: '3.10.0'
+      version: '3.10.1'
     };
   }
 
