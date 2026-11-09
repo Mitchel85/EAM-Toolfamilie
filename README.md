@@ -33,8 +33,10 @@ Modelle zusammenfinden.
 | **8 · Prozesse** | BPMN 2.0 lesen, zeichnen, prüfen, ADMBw-konform machen | **BPMN Studio** |
 
 **Das Ergebnis** liegt als `.qea`, `.xmi`, `.json` oder ArchiMate-Exchange-XML vor —
-alle vier Formate sind gleichwertig und in der ganzen Familie lesbar. Damit lässt sich der Weg auch rückwärts
-gehen: eine `.xmi` aus einem anderen Werkzeug wird gelesen, geprüft und weiterbearbeitet.
+alle vier Formate sind gleichwertig. Die Python-Kette schreibt sie und liest sie wieder
+ein; die Browser-Werkzeuge lesen `.qea`, `.xmi` und `.json`. Damit lässt sich der Weg
+auch rückwärts gehen: eine `.xmi` oder ein ArchiMate-XML aus einem anderen Werkzeug wird
+gelesen, geprüft und weiterbearbeitet.
 
 ## Die Werkzeuge im Vergleich
 
@@ -43,7 +45,7 @@ Kurz, was jedes Werkzeug kann — und wie sie sich unterscheiden.
 | Werkzeug | Formate | KI | Wofür es gut ist | Im Browser |
 |---|---|---|---|---|
 | **EAM AI Suite** (HTML) | `.qea` · `.xmi` · `.json` | ja (eigener Zugang) | Die ganze Kette in einer Datei: aus Text, Handbuch, PDF oder Bild ein geprüftes Modell bauen, ansehen, bearbeiten | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/eam-ai-suite/) |
-| **EAM AI Suite** (Python `eam-ai`) | `.qea` · `.xmi` · `.json` | ja (Backend) | Dieselbe Kette ohne Browser — für Serienläufe, Webdienst und Server | — |
+| **EAM AI Suite** (Python `eam-ai`) | `.qea` · `.xmi` · `.json` · ArchiMate-XML | ja (Backend) | Dieselbe Kette ohne Browser — für Serienläufe, Webdienst und Server; ArchiMate 3.2 lesen, schreiben und prüfen | — |
 | **EAM Suite** (HTML) | `.qea` · `.xmi` · `.json` | nein | Vorhandene Modelle analysieren und verstehen, mehrere verschmelzen, von Hand bearbeiten und zurückschreiben | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/eam-suite/) |
 | **EAM Analyzer** (Open WebUI, MCP) | `.qea` · `.xmi` | über das KI-Modell des Werkzeugs | Ein Modell befragen — als Werkzeug in Open WebUI oder als MCP-Server für Open WebUI, Claude Desktop und VS Code | — |
 | **ADMBw Extraktor** (HTML, Python) | MDG-XML | nein | Regelwerk durchsuchen und als sechs Regeldateien exportieren; die Grundlage für alles andere | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/admbw-extraktor/) |
@@ -114,6 +116,24 @@ eam-ai --help
   braucht ein KI-Backend (`--backend openai` oder `ollama`, offline `--backend datei`).
   Das Ergebnis geht auch als `--out modell.xmi` oder `--out modell.json`; `--format {qea,xmi,json}`
   erzwingt das Format.
+- `eam-ai archimate --ir modell.qea --out modell.xml --report bericht.json` — **Export**:
+  ArchiMate 3.2 schreiben. Der Report zählt jede Näherung; `--strict` endet mit Exit 1,
+  wenn Kanten offen bleiben.
+- `eam-ai archimate-read --in modell.xml --out modell.json` — **Import**: ArchiMate lesen;
+  das IR läuft danach durch dieselben Prüfungen und Writer wie eines aus `.qea`.
+  `--strict` behandelt Warnungen als Fehler.
+- **Prüfen** ohne Schreiben: dieselben Befehle mit `--report bericht.json --strict` —
+  der Report nennt `unresolved`, `inverted`, `remapped`, `approximations` und die
+  Paketzähler; der Rundlauf `.qea → XML → IR → XML` ist byte-identisch.
+- `eam-ai archimate-check --in modell.xml --format md` — **Modellbefund**: lesen,
+  zusammenfassen und prüfen (offene Referenzen, Matrixverstöße, verwaiste Elemente)
+  in Text, Markdown oder JSON. `--format prompt --frage "…"` macht daraus den
+  fertigen Prompt für die KI: der Befund ist die einzige Wissensquelle, Antwort
+  auf Deutsch, keine erfundenen Elemente. Exit 3 bei unlesbarer Datei.
+- `python -m graph laden --in modell.qea --db modell.graph.sqlite` — das Modell als
+  abfragbarer Graph (SQLite): `faehigkeit`, `befunde`, `ungueltig`, `pfad`, `statistik`.
+  Der Graph zeigt das Modell, wie es ist, und repariert nichts; Einzelheiten in
+  `docs/GRAPH.md`.
 - `eam-ai build … --modell bestand.qea` — an ein vorhandenes Modell anknüpfen: sein Inhalt
   geht in den Prompt, das Ergebnis enthält Bestand und Neues.
 - `eam-ai build --mdg technologie.xml --out geruest.qea` — Gerüst nur aus dem Regelwerk,

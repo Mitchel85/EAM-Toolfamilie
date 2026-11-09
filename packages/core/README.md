@@ -21,6 +21,10 @@ Entscheidungen:
 | `rules_schema.py` | Schema-Prüfer für `rules.json` (stdlib) | fertig |
 | `validator.py` | IR gegen `rules.json` prüfen | fertig |
 | `qea_reader.py` | `.qea` → IR-JSON (nur lesen) | fertig |
+| `archimate_writer.py` | IR → ArchiMate-3.2-Exchange-XML, matrixgeprüft, deterministisch | fertig |
+| `archimate_reader.py` | ArchiMate-XML → IR; `qea → XML → IR → XML` byte-identisch | fertig |
+| `archimate_check.py` | Modellbefund: offene Referenzen, Matrixverstöße, verwaiste Elemente | fertig |
+| `graph.py` | Modell als SQLite-Graph: Umfeld einer Fähigkeit, ungültige Kanten | fertig |
 | `extract.py` | Prosa → IR mit Belegkennung, LLM-Aufruf austauschbar | fertig |
 | `emit.py` | IR → `.qea` mit Herkunfts-Tags + `quellen.json` | fertig |
 | `table_import.py` | CSV/XLSX → IR (stdlib, ohne openpyxl) | fertig |
@@ -209,6 +213,23 @@ print(report.summary())
   ohne echte Namenskollision vom Pfadsegment abweicht, wird auf den
   Anzeigenamen normalisiert.
 
+## Kommandozeile: ArchiMate exportieren, importieren, prüfen
+
+| Aufgabe | Befehl | Ergebnis |
+|---|---|---|
+| **Export** (IR → XML) | `eam-ai archimate --ir modell.qea --out modell.xml --report bericht.json` | XML + Report; `--name` setzt den Modellnamen |
+| **Import** (XML → IR) | `eam-ai archimate-read --in modell.xml --out modell.json --report bericht.json` | IR-JSON + Report; ohne `--out` nach stdout |
+| **Prüfen** (Export) | `eam-ai archimate … --strict` | Exit 1, wenn Kanten nicht auflösbar sind; `--report` nennt jede Näherung |
+| **Prüfen** (Import) | `eam-ai archimate-read … --strict` | Exit 1 bei Warnungen (etwa unbenannte Elemente) |
+| **Verstehen** (Modell) | `eam-ai archimate-check --in modell.xml --format md` | Zusammenfassung + Qualitätsbefund (offene Referenzen, Matrixverstöße, verwaiste Elemente) |
+| **Befragen** (Prompt) | `eam-ai archimate-check --in modell.xml --format prompt --frage "…"` | fertiger Prompt: Befund als einzige Wissensquelle, Antwort auf Deutsch |
+
+Die Befehle stehen im installierten Paket (`eam-ai …`) und im Monorepo
+(`./apps/cli/eam-ai …`) zur Verfügung; `python3 archimate_writer.py`,
+`python3 archimate_reader.py` und `python3 archimate_check.py` bieten
+`--ir`/`--in`, `--out` und `--report` auch als Modulaufruf (ohne die
+Modellnamen-Option von `eam-ai`).
+
 ## ArchiMate exportieren
 
 ```bash
@@ -238,16 +259,133 @@ print(report.elements, report.relationships, report.unresolved)
   Konzept. Sie entfallen als Element, ihre Kanten laufen auf den Traeger
   (`owner` aus dem Reader). Ohne diesen Schritt verliert MASC rund 200 Kanten.
 - **Beziehungsmatrix:** `archimate/relationships.xml` (Archi, EPL-2.0) wird bei
-  jedem Lauf geladen. Illegale Kanten werden ueber
-  `Realization -> Serving -> Association` umgebaut und im Report ausgewiesen.
+  jedem Lauf geladen. Ist eine Kante nur in Gegenrichtung legal, wird sie
+  invertiert und als `inverted` gezaehlt. Sonst wird sie auf die semantisch
+  naechste legale Relation umgebaut (`FALLBACK_PRAEFERENZ`) und je
+  `(von, nach, Quelltyp, Zieltyp)` ausgewiesen.
 - **Deterministisch:** Kennung = IR-GUID, sonst SHA-256 aus
   `paket|stereotype|name`. Zwei Laeufe → gleiche Bytes.
-- **Report:** `elements`, `relationships`, `remapped`, `unresolved`,
-  `collapsed`, `skipped_display`, `skipped_package`, `fallback`, `by_type`,
-  `by_relation`, `unresolved_by_type`.
-- **Grenzen:** Sichten/Diagramme werden nicht geschrieben; Zustaende,
-  Entscheidungen und Ereignisse einer Prozesssicht haben kein ArchiMate-
+- **Report:** `elements`, `relationships`, `remapped`, `inverted`,
+  `unresolved`, `unresolved_display`, `collapsed`, `self_edges`, `duplicates`,
+  `note_links`, `skipped_display`, `skipped_fachlich`, `packages`,
+  `packages_emitted`, `packages_not_emitted`, `fallback`, `by_type`,
+  `by_relation`, `remaps`, `remap_by_type`, `approximations`. Der
+  CLI-Report enthaelt zusaetzlich `unmapped` und `remap_samples`.
+- **Grenzen:** Sichten/Diagramme werden nicht geschrieben; Zustand und Ereignis
+  werden als `BusinessEvent` angenaehert (`approximations`), Entscheidungen,
+  Synchronisationen und Partitionen einer Prozesssicht haben kein ArchiMate-
   Aequivalent und werden gezaehlt, nicht umgedeutet.
+
+## ArchiMate lesen
+
+```bash
+python3 archimate_reader.py --in modell.xml --out modell.json --report bericht.json
+./apps/cli/eam-ai archimate-read --in modell.xml -o modell.json
+```
+
+Als Modul:
+
+```python
+from archimate_reader import read_archimate, read_archimate_ex
+
+ir = read_archimate("modell.xml")                    # dict wie read_qea
+ir, report = read_archimate_ex("modell.xml")         # dict + Statistiken
+```
+
+- **Gleiches IR wie der qea-Reader:** `ir_version`, `packages`, `elements`,
+  `connectors`, `diagrams`. Ein gelesenes XML laeuft ohne Umbau durch
+  `qea_writer`, `viewer_html` und die Pruefungen.
+- **Was gelesen wird:** Elemente, Beziehungen, Properties, der
+  Organisationsbaum (`<organizations>`, nur wo kein Paketpfad-Property steht)
+  und `Grouping`-Elemente. Die vier Haus-Properties des Writers werden zu
+  IR-Feldern (`stereotype`, `ea_type`, `guid`, `package`), jede weitere
+  Property wird ein Tagged Value. Fehlt die Metaklasse, gilt der `xsi:type`
+  als `ea_type` -- so bleibt ein fremdes ArchiMate-Modell lesbar.
+- **Dokumentreihenfolge bleibt erhalten.** Der qea-Reader sortiert kanonisch;
+  dieser Reader nicht. Der Writer schreibt in IR-Reihenfolge -- nur so ist
+  `qea -> XML -> IR -> XML` byte-identisch.
+- **Identitaet:** Die XML-Kennung steht im IR als `identifier`, wenn sie sich
+  nicht aus der GUID ableiten laesst (bei Beziehungen immer, weil das Format
+  dort keine GUID-Property kennt). Der Writer bevorzugt sie. `ref` folgt der
+  Konvention des qea-Readers (`paket::name`, bei Namensgruppen `#N`).
+- **Rundlauf:** `qea -> XML -> IR -> XML` ist byte-identisch
+  (Testarchitektur 399 Elemente/422 Beziehungen, MASC 1.019/1.569; gemessen am
+  09.11.2026). Der
+  Modellkopf (Name, Kennung) steht in `meta.archimate`; der Writer schreibt ihn
+  daraus zurueck, ohne dass ein Name mitgegeben werden muss.
+- **Laute Fehler:** ungueltiges XML, falscher Namensraum, fehlende oder
+  doppelte Kennungen, unbekannte ArchiMate-Typen und Beziehungen auf nicht
+  vorhandene Elemente brechen mit `ArchimateReaderError` ab. `strict=True`
+  macht zusaetzlich jede Warnung zum Fehler.
+- **Grenzen, offen ausgewiesen:** Eigene Properties und der Organisationsbaum
+  werden gelesen, aber vom Writer nicht zurueckgeschrieben; ein fremdes Modell
+  ist deshalb erst ab dem ersten eigenen Export ein Fixpunkt. Sichten werden
+  gezaehlt, nicht uebernommen. Der Report nennt `imported_elements` (Elemente
+  ohne ADMBw-Metaklasse), `organization_nodes` und die Tag-Zahlen.
+
+## ArchiMate verstehen und prüfen
+
+```bash
+python3 archimate_check.py --in modell.xml --out befund.md --format md
+./apps/cli/eam-ai archimate-check --in modell.qea --format text --limit 40
+./apps/cli/eam-ai archimate-check --in modell.xml --format prompt --frage "Wo fehlen Beziehungen?"
+```
+
+Als Modul:
+
+```python
+from archimate_check import lade_modell, pruefe, render_markdown
+
+ir, format_label = lade_modell("modell.xml")
+befund = pruefe(ir, format=format_label, datei="modell.xml")
+print(render_markdown(befund, limit=0))
+print(befund.summary())   # {"error": .., "warning": .., "info": ..}
+```
+
+- **Ein Weg, drei Eingaben:** `.xml` (Model Exchange), `.json` (IR) und `.qea`
+  laufen durch dieselbe Prüfung. `lade_modell` erkennt das Format, `pruefe`
+  arbeitet auf dem IR.
+- **Was geprüft wird:** offene Referenzen (eine Kante zeigt auf ein Element,
+  das im Modell fehlt), Matrixverstöße (das Typpaar ist laut ArchiMate-3.2-
+  Matrix nicht erlaubt -- dieselbe Matrix, die der Writer beim Export
+  anwendet) und verwaiste Elemente (an keiner auflösbaren Beziehung). Dazu
+  doppelte Kennungen, Selbstbezüge und unbenannte Elemente.
+- **Nicht prüfbar wird gezählt, nicht geraten:** Elemente ohne Konzept, Kanten
+  ohne Beziehungsart und Pakete als Kantenendpunkt stehen als eigene Zahl im
+  Abschnitt „Pruefbarkeit“. Der Bericht urteilt nur dort, wo das Modell eine
+  Regel verletzt.
+- **Zusammenfassung:** Schichten, Konzepte und Beziehungsarten als Zahlen --
+  das Modell, wie es ist. Jede Meldung nennt Objekt und Regel (Matrix,
+  Kennung, Name), keine Meldung erfindet Modellwissen.
+- **Prompt-Pfad:** `--format prompt` legt den Befund als einzige Wissensquelle
+  unter eine Frage. Der Kopf ist derselbe wie in `qea_chat.PROMPT_KOPF`:
+  keine erfundenen Elemente, Beziehungen, Zahlen oder Quellen; Antwort auf
+  Deutsch; Belegstelle `<Paket>::<Element>` oder Kennung. Ein Test hält beide
+  Seiten zusammen.
+- **Exitcodes:** 0 ohne Fehler, 1 bei Fehlern (`--strict`: auch bei Warnungen),
+  3 bei unlesbarer Datei. `--limit 0` zeigt alle Meldungen, Standard sind 40.
+- **Beispielberichte:** `examples/archimate/BEISPIELBERICHT.md` (Prüfmodell
+  mit drei Fehlerklassen) und `BEISPIELBERICHT-MASC.md` (Musterarchitektur:
+  1.430 Elemente, 61 Fehler, 171 Warnungen). Beide entstehen mit dem Befehl
+  oben; ein Test vergleicht den kleinen Bericht Byte für Byte.
+
+## Modell als Graph abfragen (SQLite, ohne Neo4j)
+
+```bash
+python3 graph.py laden --in modell.qea --db modell.graph.sqlite
+python3 graph.py faehigkeit --db modell.graph.sqlite --name "Fuehrungsfaehigkeit" --tiefe 2
+python3 graph.py ungueltig --db modell.graph.sqlite --regel K04
+```
+
+Knoten sind Elemente **und** Pakete (Typ, Stereotyp, Kennung), Kanten sind die
+Beziehungen (ArchiMate-Typ, Stereotyp, Kennung, Endpunkte). Der Graph zeigt das
+Modell, wie es ist: ungueltige Kanten werden gemeldet, nicht repariert -- die
+Reparatur ist Sache des Writers beim Export. Geprueft wird gegen die
+ArchiMate-3.2-Matrix (dieselbe `archimate/relationships.xml` wie der Writer);
+die Befunde decken sich mit dessen Zaehlern (`remapped`, `inverted`,
+`self_edges`). Abfragen: welche Elemente an einer Faehigkeit haengen (BFS oder
+rekursives SQL) und welche Kanten ungueltig sind. Details, Schema und
+Beispielabfragen: **`docs/GRAPH.md`**.
 
 ## Modell ansehen (grafisch)
 

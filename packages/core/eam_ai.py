@@ -99,7 +99,7 @@ FINDINGS_NAME = "findings.json"
 
 # Eine Quelle fuer die Version: hier. pyproject.toml und CHANGELOG.md muessen
 # dazu passen; tests/test_packaging.py prueft die drei Stellen gegeneinander.
-__version__ = "3.6.0"
+__version__ = "3.7.0"
 
 # DOCX ist eine ZIP-Datei mit genau diesem Pfad fuer den sichtbaren Text.
 _DOCX_MAIN = "word/document.xml"
@@ -1013,7 +1013,7 @@ def _report(
 
 def cmd_archimate(args) -> int:
     """IR -> ArchiMate 3.2 Model Exchange XML (viertes Zielformat)."""
-    from archimate_writer import ArchimateWriterError, write_archimate
+    from archimate_writer import ArchimateWriterError, modellkopf, write_archimate
     from qea_reader import QeaReaderError, read_qea_ex
 
     try:
@@ -1021,24 +1021,18 @@ def cmd_archimate(args) -> int:
             ir = json.loads(args.ir.read_text(encoding="utf-8"))
         else:
             ir, _ = read_qea_ex(args.ir, with_refs=True, with_owners=True)
-        report = write_archimate(ir, args.out, modellname=args.name or args.ir.stem)
+        # Ohne --name gilt der Modellkopf aus dem IR -- nur so bleibt
+        # ``XML -> IR -> XML`` ueber die CLI byte-identisch. Fehlt er (etwa bei
+        # einer .qea-Quelle), ist der Dateiname der Notbehelf.
+        modellname = args.name
+        if modellname is None:
+            modellname = "" if modellkopf(ir)[0] else args.ir.stem
+        report = write_archimate(ir, args.out, modellname=modellname)
     except (ArchimateWriterError, QeaReaderError, OSError, ValueError) as exc:
         print(f"FEHLER: {exc}", file=sys.stderr)
         return 1
 
-    daten = {
-        "elements": report.elements,
-        "relationships": report.relationships,
-        "remapped": report.remapped,
-        "unresolved": report.unresolved,
-        "skipped_display": report.skipped_display,
-        "skipped_package": report.skipped_package,
-        "collapsed": report.collapsed,
-        "fallback": report.fallback,
-        "by_type": report.by_type,
-        "by_relation": report.by_relation,
-        "unresolved_by_type": report.unresolved_by_type,
-    }
+    daten = report.as_dict()
     if args.report:
         args.report.write_text(json.dumps(daten, ensure_ascii=False, indent=2), encoding="utf-8")
 
@@ -1052,6 +1046,74 @@ def cmd_archimate(args) -> int:
             file=sys.stderr,
         )
     if args.strict and report.unresolved:
+        return 1
+    return 0
+
+
+def cmd_archimate_read(args) -> int:
+    """ArchiMate 3.2 Model Exchange XML -> IR (Umkehrung von ``archimate``)."""
+    from archimate_reader import ArchimateReaderError, read_archimate_ex, render_json
+
+    try:
+        ir, report = read_archimate_ex(args.quelle, strict=args.strict)
+    except (ArchimateReaderError, OSError, ValueError) as exc:
+        print(f"FEHLER: {exc}", file=sys.stderr)
+        return 1
+
+    text = render_json(ir)
+    if args.out:
+        args.out.write_text(text, encoding="utf-8")
+    else:
+        print(text, end="")
+    if args.report:
+        args.report.write_text(
+            json.dumps(report.as_dict(), ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+    print(report.summary(), file=sys.stderr if not args.out else sys.stdout)
+    return 0
+
+
+def cmd_archimate_check(args) -> int:
+    """ArchiMate-Modell lesen, zusammenfassen, pruefen (XML, IR-JSON, .qea)."""
+    import archimate_check
+
+    try:
+        ir, format_label = archimate_check.lade_modell(args.quelle)
+        befund = archimate_check.pruefe(
+            ir, format=format_label, datei=args.quelle.name
+        )
+    except archimate_check.ArchimateCheckError as exc:
+        print(f"FEHLER: {exc}", file=sys.stderr)
+        return 3
+
+    if args.format == "json":
+        text = archimate_check.render_json(befund)
+    elif args.format == "md":
+        text = archimate_check.render_markdown(befund, limit=args.limit)
+    elif args.format == "prompt":
+        text = archimate_check.render_prompt(befund, args.frage, limit=args.limit)
+    else:
+        text = archimate_check.render_text(befund, limit=args.limit)
+
+    summary = befund.summary()
+    if args.out:
+        try:
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            args.out.write_text(text, encoding="utf-8")
+        except OSError as exc:
+            print(f"FEHLER: Bericht nicht schreibbar: {exc}", file=sys.stderr)
+            return 3
+        print(
+            f"{args.out}: {summary['error']} Fehler, {summary['warning']} Warnungen, "
+            f"{summary['info']} Hinweise",
+            file=sys.stderr,
+        )
+    else:
+        sys.stdout.write(text)
+
+    if summary["error"]:
+        return 1
+    if args.strict and summary["warning"]:
         return 1
     return 0
 
@@ -1430,6 +1492,56 @@ def build_parser() -> argparse.ArgumentParser:
         help="mit Exit 1 enden, wenn Kanten nicht aufloesbar sind",
     )
     p_arch.set_defaults(func=cmd_archimate)
+
+    p_arch_lesen = sub.add_parser(
+        "archimate-read",
+        help="ArchiMate 3.2 Model Exchange XML -> IR (.json)",
+    )
+    p_arch_lesen.add_argument(
+        "--in", "-i", dest="quelle", required=True, type=Path, help="ArchiMate-XML"
+    )
+    p_arch_lesen.add_argument(
+        "--out", "-o", dest="out", type=Path, default=None,
+        help="Ziel-IR (.json; Default: Standardausgabe)",
+    )
+    p_arch_lesen.add_argument("--report", type=Path, default=None, help="Report als JSON")
+    p_arch_lesen.add_argument(
+        "--strict",
+        action="store_true",
+        help="Warnungen (etwa unbenannte Elemente) als Fehler behandeln",
+    )
+    p_arch_lesen.set_defaults(func=cmd_archimate_read)
+
+    p_arch_pruefen = sub.add_parser(
+        "archimate-check",
+        help="ArchiMate-Modell lesen, zusammenfassen und pruefen "
+        "(offene Referenzen, Matrixverstoesse, verwaiste Elemente)",
+    )
+    p_arch_pruefen.add_argument(
+        "--in", "-i", dest="quelle", required=True, type=Path,
+        help="Modell (.xml ArchiMate Model Exchange, .json IR oder .qea)",
+    )
+    p_arch_pruefen.add_argument(
+        "--out", "-o", type=Path, default=None, help="Bericht in diese Datei schreiben"
+    )
+    p_arch_pruefen.add_argument(
+        "--format", "-f", dest="format",
+        choices=("text", "md", "json", "prompt"),
+        default="text",
+        help="Ausgabeformat: text (Standard), md, json oder prompt (fertiger Prompt)",
+    )
+    p_arch_pruefen.add_argument(
+        "--frage", default="", help="Frage fuer --format prompt"
+    )
+    p_arch_pruefen.add_argument(
+        "--limit", type=int, default=40,
+        help="Meldungen im Bericht (Default: 40; 0 = alle)",
+    )
+    p_arch_pruefen.add_argument(
+        "--strict", action="store_true",
+        help="Warnungen zaehlen wie Fehler (Exit 1)",
+    )
+    p_arch_pruefen.set_defaults(func=cmd_archimate_check)
     return parser
 
 

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Beispielmodell fuer die ArchiMate-Pruefung (archimate_check.py).
+
+  Das Modell ist absichtlich fehlerhaft und enthaelt genau die Faelle, die
+  der Befund erkennen soll:
+
+    1. offene Referenz   id-rel-05 zeigt auf id-el-99 (gibt es nicht)
+    2. Matrixverstoss    id-rel-03 Composition  BusinessActor -> BusinessService
+                         id-rel-04 Assignment   BusinessActor -> ApplicationComponent
+    3. verwaist          id-el-04 "Altsystem" haengt an keiner gueltigen Kante
+    4. Selbstbezug       id-rel-06 Serving BusinessService -> BusinessService
+    5. ohne Namen        id-el-07 (BusinessObject)
+
+  Legende der gueltigen Kanten: id-rel-01 (Serving) und id-rel-02 (Access)
+  sind matrix-konform und dienen als Gegenprobe; sie duerfen nicht gemeldet
+  werden.
+
+  Keine echten Modelldaten, keine Personenbezuege: reines Lehrbeispiel.
+-->
+<model xmlns="http://www.opengroup.org/xsd/archimate/3.0/"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       identifier="id-beispiel-pruefung" version="3.2">
+  <name xml:lang="de">Beispiel: Pruefmodell mit drei Fehlerklassen</name>
+  <elements>
+    <element identifier="id-el-01" xsi:type="BusinessActor">
+      <name xml:lang="de">Sachbearbeiter</name>
+      <documentation xml:lang="de">Rolle in der Antragsbearbeitung.</documentation>
+    </element>
+    <element identifier="id-el-02" xsi:type="BusinessService">
+      <name xml:lang="de">Antrag bearbeiten</name>
+    </element>
+    <element identifier="id-el-03" xsi:type="ApplicationComponent">
+      <name xml:lang="de">Fachverfahren</name>
+    </element>
+    <element identifier="id-el-04" xsi:type="ApplicationComponent">
+      <name xml:lang="de">Altsystem</name>
+      <documentation xml:lang="de">Niemand weiss, womit es verbunden ist.</documentation>
+    </element>
+    <element identifier="id-el-05" xsi:type="DataObject">
+      <name xml:lang="de">Antrag</name>
+    </element>
+    <element identifier="id-el-07" xsi:type="BusinessObject"/>
+  </elements>
+  <relationships>
+    <relationship identifier="id-rel-01" xsi:type="Serving"
+                  source="id-el-03" target="id-el-02">
+      <name xml:lang="de">unterstuetzt</name>
+    </relationship>
+    <relationship identifier="id-rel-02" xsi:type="Access"
+                  source="id-el-03" target="id-el-05"/>
+    <relationship identifier="id-rel-03" xsi:type="Composition"
+                  source="id-el-01" target="id-el-02">
+      <name xml:lang="de">besteht aus</name>
+    </relationship>
+    <relationship identifier="id-rel-04" xsi:type="Assignment"
+                  source="id-el-01" target="id-el-03"/>
+    <relationship identifier="id-rel-05" xsi:type="Serving"
+                  source="id-el-02" target="id-el-99">
+      <name xml:lang="de">zeigt ins Leere</name>
+    </relationship>
+    <relationship identifier="id-rel-06" xsi:type="Serving"
+                  source="id-el-02" target="id-el-02"/>
+  </relationships>
+</model>

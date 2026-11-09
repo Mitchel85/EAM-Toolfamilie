@@ -105,6 +105,11 @@ _ELEMENT_KEYS = {
     "owner",
     "ref",
     "xref_tags",
+    # Kennung des ArchiMate-Austauschformats (``archimate_reader``). Sie ist
+    # keine EA-Identitaet: der Writer leitet seine GUID wie bisher ab und
+    # ignoriert das Feld -- es bleibt aber im IR zulaessig, damit ein
+    # gelesenes XML ohne Umweg durch die uebrigen Werkzeuge laeuft.
+    "identifier",
 }
 _CONNECTOR_KEYS = {
     "source",
@@ -116,6 +121,7 @@ _CONNECTOR_KEYS = {
     "notes",
     "tags",
     "guid",
+    "identifier",
 }
 
 

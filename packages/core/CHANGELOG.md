@@ -4,6 +4,136 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.7.0 - 2026-11-09
+
+### Graph: Modelle als SQLite-Graph abfragen
+
+`packages/core/graph.py` legt ein Modell als Graphen ab (SQLite, kein Neo4j) --
+aus `.qea`, ArchiMate-XML oder IR-JSON, mit denselben Kennungen. Knoten sind
+Elemente und Pakete (Typ, Stereotyp, Kennung, ArchiMate-Typ), Kanten die
+Beziehungen. Zwei Abfragen sind der Zweck: welche Elemente an einer Faehigkeit
+haengen (`elemente_an_faehigkeit`, BFS oder rekursives SQL ueber
+`v_nachbarschaft`) und welche Kanten ungueltig sind (`ungueltige_kanten` gegen
+die ArchiMate-3.2-Matrix). Der Graph zeigt das Modell, wie es ist, und
+repariert nichts -- die Befunde K02/K04/K05 decken sich exakt mit den Zaehlern
+des Writers (`self_edges`, `remapped`, `inverted`); Ports/Parts/Pins werden wie
+im Export auf den Traeger gezogen und als Hinweis K09/K10 ausgewiesen.
+Doku: `docs/GRAPH.md`, 40 Tests: `tests/core/test_graph.py`.
+
+### ArchiMate lesen: XML zurueck ins IR, Rundlauf bewiesen
+
+Die Familie kann ArchiMate jetzt auch lesen. `packages/core/archimate_reader.py`
+ist die Umkehrung des Writers: Es parst das Open-Group Model Exchange Format und
+liefert dasselbe IR wie `qea_reader.py` (`packages`, `elements`, `connectors`,
+`diagrams`). Aufruf ueber `eam-ai archimate-read --in MODELL.xml --out IR.json`
+oder direkt als Modul.
+
+- **Was gelesen wird:** Elemente, Beziehungen, Properties, der
+  Organisationsbaum (`<organizations>`) und `Grouping`-Elemente. Die vier
+  ADMBw-Properties des Writers werden zu IR-Feldern, jede weitere Property zum
+  Tagged Value; fehlt die Metaklasse, gilt der `xsi:type` als `ea_type`
+  (Import aus fremden ArchiMate-Werkzeugen).
+- **Dokumentreihenfolge bleibt erhalten.** Anders als der qea-Reader sortiert
+  der ArchiMate-Reader nicht -- der Writer schreibt in IR-Reihenfolge, und nur
+  so ist der Rueckweg byte-identisch.
+- **Identitaet:** Die XML-Kennung wird woertlich uebernommen, wenn sie sich
+  nicht aus der GUID ableiten laesst (neues optionales IR-Feld `identifier`),
+  und vom Writer bevorzugt. Das betrifft die aus Paketen erzeugten
+  Grouping-Elemente und alle Beziehungen (das Format kennt dort keine
+  GUID-Property).
+- **Writer idempotent:** Bereits vorhandene ArchiMate-Typen bleiben Typ
+  (`Serving`, `Flow`, `Triggering`, `Access`, `Influence`, `Assignment`,
+  `Specialization` waren im `TYPE_MAP` nicht enthalten und waeren beim
+  Rueckweg verloren gegangen); Modellname und -kennung kommen aus
+  `meta.archimate`.
+- **Rundlauf bewiesen:** `qea -> XML -> IR -> XML` ist byte-identisch --
+  Testarchitektur 399 Elemente/422 Beziehungen (402.890 Bytes), MASC 1.019/1.569
+  (1.165.972 Bytes); das IR ist nach dem zweiten Lesen gleich dem nach dem
+  ersten. Das gelesene IR laeuft unveraendert durch `qea_writer.plan_model`
+  und `validator.validate_model` (Rueckweg nach `.qea` getestet). Die erste
+  Strecke ist bewusst verlustbehaftet und im Writer-Report gezaehlt
+  (Darstellungstypen, BPMN-Mechanik, zusammengefasste Ports); byte-identisch
+  ist die Strecke ab XML.
+- **Grenzen, offen ausgewiesen:** Eigene Properties und der Organisationsbaum
+  werden gelesen, aber vom Writer nicht zurueckgeschrieben; ein fremdes Modell
+  ist deshalb erst ab dem ersten eigenen Export ein Fixpunkt. Sichten werden
+  gezaehlt, nicht uebernommen.
+- Neue Tests: `tests/core/test_archimate_reader.py` (25 Tests: Lesen,
+  Properties, Organisationsbaum, Kennungen, laute Fehler, Rundlauf beider
+  Modelle, IR-Kompatibilitaet fuer `qea_writer` und `validator`, CLI).
+
+### ArchiMate verstehen und pruefen
+
+`packages/core/archimate_check.py` ist der Werkzeugpfad fuer die KI: **lesen ->
+zusammenfassen -> beurteilen**. Es nimmt Model Exchange XML, IR-JSON oder
+`.qea` (`eam-ai archimate-check --in MODELL`) und liefert einen
+Qualitaetsbefund in der Sprache der Suite.
+
+- **Drei Pruefungen aus der Aufgabe:** offene Referenzen (Kante zeigt auf ein
+  fehlendes Element), Matrixverstoesse (Typpaar laut ArchiMate-3.2-Matrix
+  nicht erlaubt -- dieselbe `archimate/relationships.xml`, die der Writer
+  anwendet) und verwaiste Elemente (an keiner aufloesbaren Beziehung). Dazu
+  doppelte Kennungen, Selbstbezuege und unbenannte Elemente.
+- **Nicht pruefbar bleibt sichtbar:** Elemente ohne Konzept, Kanten ohne
+  Beziehungsart und Pakete als Kantenendpunkt werden gezaehlt, nicht geraten.
+- **Eine Zuordnungskette:** Stereotyp und Metaklasse loest dieselbe Funktion
+  auf wie beim Schreiben (`archimate_writer.archimate_konzept`). Der Befund
+  beurteilt damit dasselbe Modell, das der Export schreibt.
+- **Vier Ausgaben:** Text, Markdown, JSON und `prompt`. Der Prompt-Kopf sagt
+  der KI, dass nur der Befund gilt: keine erfundenen Elemente, Beziehungen,
+  Zahlen oder Quellen; Antwort auf Deutsch; Belegstelle `<Paket>::<Element>`
+  oder Kennung. Er stimmt woertlich mit `qea_chat.PROMPT_KOPF` ueberein (Test).
+- **Deterministisch und laut:** kein Zeitstempel, kein Zufall; unlesbare
+  Datei/fehlende Matrix -> `ArchimateCheckError`, Exit 3. Exit 1 bei Fehlern,
+  mit `--strict` auch bei Warnungen.
+- **Beispielberichte im Paket:** `examples/archimate/BEISPIELBERICHT.md`
+  (Pruefmodell, 3 Fehler/4 Warnungen) und `BEISPIELBERICHT-MASC.md`
+  (Musterarchitektur, 1.430 Elemente/1.747 Beziehungen: 61 Fehler -- 60
+  Matrixverstoesse und eine doppelte Kennung --, 171 Warnungen). Der kleine
+  Bericht wird im Test Byte fuer Byte gegen die Ausgabe geprueft.
+- Neue Tests: `tests/core/test_archimate_check.py` (35 Tests: Konzept- und
+  Beziehungsaufloesung, jede Pruefung, Formate, Determinismus, Prompt-Regeln,
+  CLI und `eam-ai`-Verdrahtung, Matrix-Konformitaet der Writer-Ausgabe; beide
+  Beispielberichte werden Byte fuer Byte gegen die Ausgabe geprueft).
+
+### Konverter nach Audit korrigiert (Guide 2026.06)
+
+Der Writer folgt jetzt dem NAFv4.1-ArchiMate-Guide, soweit die
+ArchiMate-3.2-Beziehungsmatrix es erlaubt. Grundlage war der Soll-Ist-Audit
+gegen 513 Guide-Zeilen (47 Viewpoint-Tabellen).
+
+- **23 Element-Regeln berichtigt:** View/Viewpoint/ArchitecturalDescription ->
+  Representation, Standard -> Contract, Constraint-Familie -> Requirement,
+  ProjectMilestone -> ImplementationEvent, Function -> BusinessProcess,
+  Software -> SystemSoftware, Protocol -> Artifact, Energy -> Material u. a.
+- **Beziehungen aus der Matrix:** `Influence` und `Assignment` entstehen aus
+  den Guide-Relationen statt aus einem Serving-Default; ein unbekannter
+  Stereotyp wird `Dependency`/`Association`, nie Serving.
+- **Kantenlogik:** Ist eine Kante nur in Gegenrichtung legal, wird sie
+  invertiert und gezaehlt (`inverted`). Sonst greift ein semantisch geordneter
+  Fallback (Serving -> Assignment, Realization -> Serving/Assignment,
+  Composition -> Aggregation; Specialization nie als Realization-Ersatz).
+- **Report zaehlt jede Naeherung getrennt:** `inverted`, `self_edges`,
+  `duplicates`, `note_links`, `skipped_display` vs. `skipped_fachlich`,
+  Paketzaehler (`packages`, `packages_emitted`, `packages_not_emitted`),
+  `approximations`, `remap_by_type`; der CLI-Report zusaetzlich `unmapped`
+  und `remap_samples`.
+- **MASC nach der Korrektur:** 1.019 Elemente/1.569 Beziehungen (vorher
+  984/1.526), Umbauten 116 -> 38, offene Kanten 100 -> 51, Influence 336,
+  Assignment 11; Ausgabe deterministisch (drei Laeufe byte-identisch).
+- **Regeln mit Test:** 33 Beziehungs- und 27 Element-Regeln, je ein Test in
+  `tests/core/test_archimate_mapping.py`; die Report-Matrix in
+  `tests/core/test_archimate_format.py`.
+
+### Doku und CLI
+
+README (Familie und Paket) beschreiben ArchiMate als Lese-, Schreib- und
+Pruefformat. Die CLI-Uebersicht nennt die vier Aufgaben: Export
+(`eam-ai archimate`), Import (`eam-ai archimate-read`), Pruefung
+(`--strict` plus `--report`, Exit 1 bei offenen Kanten oder Warnungen) und
+Modellbefund (`eam-ai archimate-check` mit `--format text|md|json|prompt`).
+Die Grenzen je Richtung stehen im Paket-README und im Writer-Report.
+
 ## 3.6.0 - 2026-11-07
 
 ### ArchiMate 3.2 als viertes Zielformat

@@ -189,7 +189,12 @@ def test_darstellungs_und_pakettypen_werden_uebersprungen():
     report = archimate_writer.write_archimate(ir, "/tmp/archimate_skip.xml")
     assert report.elements == 1
     assert report.skipped_display == 2
-    assert report.skipped_package == 1
+    # Ein Paket-Eintrag in elements[] ist kein ArchiMate-Element; die echten
+    # IR-Pakete werden getrennt gezaehlt (Audit T2, Nr. 17).
+    assert report.skipped_package_entries == 1
+    # Der IR-Helfer legt ein Paket an; es wird nicht als Element ausgegeben.
+    assert report.packages == 1
+    assert report.packages_not_emitted == 1
 
 
 # --------------------------------------------------------------------------

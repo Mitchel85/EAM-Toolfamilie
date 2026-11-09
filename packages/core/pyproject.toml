@@ -15,7 +15,7 @@ backend-path = ["."]
 
 [project]
 name = "eam-ai"
-version = "3.6.0"
+version = "3.7.0"
 description = "Technologie + Prosa zu .qea: Extraktion, Pruefung, Export (offline-faehig)."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -77,6 +77,9 @@ modules = [
     "xmi_writer",
     "json_batch",
     "archimate_writer",
+    "archimate_reader",
+    "graph",
+    "archimate_check",
 ]
 resources = [
     "rules.schema.json",
@@ -84,6 +87,9 @@ resources = [
     "examples/offline/mdg_admbw_auszug.xml",
     "examples/offline/prosa.txt",
     "examples/offline/antwort.json",
+    "examples/archimate/beispiel_fehlermodell.xml",
+    "examples/archimate/BEISPIELBERICHT.md",
+    "examples/archimate/BEISPIELBERICHT-MASC.md",
     "archimate/relationships.xml",
     "archimate/relationships-keys.xml",
 ]
