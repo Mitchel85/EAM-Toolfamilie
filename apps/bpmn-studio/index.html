@@ -1828,7 +1828,7 @@ h1 { font-size: 18px; margin: 0; letter-spacing: .2px; }
     <span class="zeichen">B</span>
     <div>
       <h1>BPMN Studio</h1>
-      <p class="unterzeile">ADMBw · BPMN 2.0 · Prozesse extrahieren, prüfen, exportieren · <span id="version">3.6.2</span></p>
+      <p class="unterzeile">ADMBw · BPMN 2.0 · Prozesse extrahieren, prüfen, exportieren · <span id="version">3.7.0</span></p>
     </div>
   </div>
   <div class="werkzeuge" role="toolbar" aria-label="Werkzeuge">
@@ -3043,10 +3043,37 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
     var treffer = satz.match(/[\wÄÖÜäöüß-]+/g);
     return treffer || [];
   }
+  // Rollen, die in Verfahrenstexten taugen. Ohne diese Liste erkennt die
+  // Regelzerlegung nur Woerter auf -stelle/-amt und laesst "BAAINBw" oder
+  // "Truppe" durchfallen — dann entsteht genau eine Lane "Bearbeitung".
+  var ROLLEN_BEKANNT = ['BAAINBw', 'BMVg', 'Truppe', 'Bieter', 'Haushaltsausschuss',
+    'Bundesrechnungshof', 'Bundesarchiv', 'NATO', 'Vergabestelle', 'Prüfstelle',
+    'Nutzer', 'Industrie', 'Auftragnehmer', 'Auftraggeber', 'Bundesamt',
+    'Referat', 'Abteilung', 'Qualitätssicherung', 'Projektlenkungsausschuss',
+    'Projektbüro', 'Projektgruppe', 'Kommission', 'Ministerium', 'Dezernat',
+    'Dienststelle', 'Bundesministerium', 'Prüfungsamt', 'Vergabekammer'];
+
   function istRolle(wort) {
     var klein = wort.toLowerCase();
     if (ROLLEN_SET[klein]) return true;
-    return /(?:abteilung|behörde|behoerde|gesellschaft|verwaltung|werkstatt|service|stelle|zentrale|kasse|bank|team|amt)$/.test(klein) && klein.length >= 6;
+    for (var i = 0; i < ROLLEN_BEKANNT.length; i++) {
+      if (ROLLEN_BEKANNT[i].toLowerCase() === klein) return true;
+    }
+    return /(?:abteilung|behörde|behoerde|gesellschaft|verwaltung|werkstatt|service|stelle|zentrale|kasse|bank|team|amt|ausschuss|ministerium|truppe|bieter)$/.test(klein) && klein.length >= 5;
+  }
+
+  // Sucht eine bekannte Rolle im Satz — zuerst als Subjekt, dann nach
+  // "durch/vom/seitens", zuletzt irgendwo im Satz.
+  function bekannteRolle(satz) {
+    var beste = '', bestePos = -1;
+    ROLLEN_BEKANNT.forEach(function (r) {
+      var re = new RegExp('(^|[^\\wÄÖÜäöüß])' + r.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([^\\wÄÖÜäöüß]|$)', 'i');
+      var m = satz.match(re);
+      if (!m) return;
+      var pos = m.index + m[1].length;
+      if (bestePos < 0 || pos < bestePos) { beste = satz.substr(pos, r.length); bestePos = pos; }
+    });
+    return beste;
   }
   function findeVerb(satz) {
     var w = woerter(satz);
@@ -3067,11 +3094,18 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
     return null;
   }
   function rolleImSatz(satz) {
-    var m = satz.match(/^(?:Der|Die|Das|Ein|Eine)\s+([A-ZÄÖÜ][\wÄÖÜäöüß-]*)/);
+    var m;
+    // 1. Subjekt am Satzanfang: "Der BAAINBw prueft ..."
+    m = satz.match(/^(?:Der|Die|Das|Ein|Eine)\s+([A-ZÄÖÜ][\wÄÖÜäöüß-]*)/);
     if (m && istRolle(m[1])) return m[1];
+    // 2. Handelnde Stelle im Passiv: "… ist durch den BAAINBw zu pruefen"
+    m = satz.match(/\b(?:durch|vom|von|seitens|beim)\s+(?:der|die|dem|den)?\s*([A-ZÄÖÜ][\wÄÖÜäöüß-]*)/);
+    if (m && istRolle(m[1])) return m[1];
+    // 3. Bekannte Rolle irgendwo im Satz
+    m = bekannteRolle(satz);
+    if (m) return m;
+    // 4. Sonst: Artikel + Rollenwort irgendwo
     m = satz.match(/\b(?:der|die|das)\s+([A-ZÄÖÜ][\wÄÖÜäöüß-]*)/);
-    if (m && istRolle(m[1])) return m[1];
-    m = satz.match(/\b(?:von|vom|durch)\s+(?:der|die|dem|den)?\s*([A-ZÄÖÜ][\wÄÖÜäöüß-]*)/);
     if (m && istRolle(m[1])) return m[1];
     return '';
   }
@@ -3214,6 +3248,26 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
     return (objekt ? objekt.charAt(0).toUpperCase() + objekt.slice(1) + ' ' : '') + aktion;
   }
 
+  // Rechtwinklige Fuehrung zwischen zwei Kaesten. Gleiche Reihe: gerade.
+  // Sonst ueber einen Korridor zwischen den Reihen — eine Linie quer durch die
+  // Reihe wuerde alle Kaesten dazwischen durchschneiden.
+  function kantenRoute(q, z) {
+    var qx = q.x + q.w, qy = q.y + q.h / 2;
+    var zx = z.x, zy = z.y + z.h / 2;
+    if (Math.abs(qy - zy) < 6 && zx > qx) return [[qx, qy], [zx, zy]];
+    var unten = zy > qy;
+    var korridor = unten
+      ? (q.y + q.h + z.y) / 2
+      : (z.y + z.h + q.y) / 2;
+    if (Math.abs(qy - zy) < 6) {
+      // gleiche Reihe, Ziel links: unten herum
+      var qb = q.y + q.h;
+      return [[q.x + q.w / 2, qb], [q.x + q.w / 2, qb + 24], [zx, qb + 24], [zx, z.y + z.h]];
+    }
+    return [[qx, qy], [qx + 26, qy], [qx + 26, korridor], [zx, korridor],
+      [zx, unten ? z.y : z.y + z.h]];
+  }
+
   function prozessXml(nameWunsch, schritte, zusatzLanes) {
     var prozessName = (nameWunsch || '').trim() || 'Extrahierter Prozess';
     var lanes = [];
@@ -3230,53 +3284,72 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
       s._lane = laneIndex[rolle];
     });
     if (!lanes.length) { laneIndex['Bearbeitung'] = 0; lanes.push('Bearbeitung'); }
+    // Die Sammel-Lane gehoert nach unten: oben steht, wer wirklich handelt.
+    if (lanes.length > 1 && lanes[0] === 'Bearbeitung') {
+      lanes.push(lanes.shift());
+      laneIndex = {};
+      lanes.forEach(function (l, i) { laneIndex[l] = i; });
+      schritte.forEach(function (s) { s._lane = laneIndex[s.rolle || 'Bearbeitung']; });
+    }
 
-    var laneHoehe = 190;
     var startY = 40;
-    // Zeilenumbruch: 56 Schritte in einer Reihe ergeben ein 9.800 Pixel breites
-    // Band, in dem nichts lesbar ist. Deshalb nach je SCHRITTE_PRO_ZEILE
-    // Schritten eine neue Zeile, die Lane wächst entsprechend.
-    var schritteProZeile = Math.max(1, Math.min(8, Number(window.BPMN_SCHRITTE_PRO_ZEILE) || 8));
-    var zeilenProLane = Math.max(1, Math.ceil(schritte.length / schritteProZeile));
-    var zeileHoehe = 175;
-    var spalten = Math.min(schritte.length, schritteProZeile) || 1;
-    var breite = Math.max(1000, 300 + spalten * 170);
-    // Etwas Luft am unteren Rand, sonst klebt die letzte Reihe am Pool.
-    var poolHoehe = Math.max(laneHoehe, lanes.length * laneHoehe * zeilenProLane + 30);
-    var y = function (lane, zeile) {
-      return startY + lane * laneHoehe * zeilenProLane + (zeile || 0) * zeileHoehe + 42;
-    };
-    var zeileVon = function (i) { return Math.floor(i / schritteProZeile); };
-    // Serpentine: gerade Zeilen laufen links nach rechts, ungerade zurueck.
-    // Sonst springt der Fluss am Zeilenende ueber die ganze Breite zurueck und
-    // kreuzt dabei alle Kaesten.
-    var xTask = function (i) {
-      var spalte = i % schritteProZeile;
-      if (zeileVon(i) % 2 === 1) spalte = spalten - 1 - spalte;
-      return 230 + spalte * 170;
-    };
+    var kopfHoehe = 34;
+    var zeileHoehe = 150;
+    var spaltenProZeile = Math.max(1, Math.min(6, Number(window.BPMN_SCHRITTE_PRO_ZEILE) || 6));
+
+    // Jede Lane bekommt eigene Reihen: alle Schritte einer Rolle stehen
+    // untereinander in ihrer Lane, nicht quer ueber das ganze Diagramm.
+    var laneSchritte = lanes.map(function () { return []; });
+    schritte.forEach(function (s, i) { (laneSchritte[s._lane] || laneSchritte[0]).push(i); });
+
+    var laneHoehen = laneSchritte.map(function (liste) {
+      var zeilen = Math.max(1, Math.ceil(liste.length / spaltenProZeile));
+      return zeilen * zeileHoehe + kopfHoehe;
+    });
+    var laneTop = [];
+    var summe = startY;
+    lanes.forEach(function (_, i) { laneTop[i] = summe; summe += laneHoehen[i]; });
+    var poolHoehe = summe - startY + 12;
+    var maxSpalten = Math.max(1, Math.min(spaltenProZeile,
+      Math.max.apply(null, laneSchritte.map(function (l) { return l.length || 1; }))));
+    var breite = Math.max(1000, 300 + maxSpalten * 200);
+
+    // Position jedes Schritts in seiner Lane (Serpentine je Lane).
+    var pos = {};
+    laneSchritte.forEach(function (liste, l) {
+      liste.forEach(function (idx, k) {
+        var zeile = Math.floor(k / spaltenProZeile);
+        var spalte = k % spaltenProZeile;
+        var inDieserZeile = Math.min(spaltenProZeile, liste.length - zeile * spaltenProZeile);
+        if (zeile % 2 === 1) spalte = inDieserZeile - 1 - spalte;
+        pos[idx] = {
+          x: 230 + spalte * 200,
+          y: laneTop[l] + kopfHoehe + zeile * zeileHoehe + 40,
+          zeile: zeile
+        };
+      });
+    });
 
     var knoten = [];
     var kanten = [];
     var knotenLane = {};
     var letzter = 'Start_Text';
-    var startKnoten = { id: 'Start_Text', x: 140, y: y(0, 0), w: 36, h: 36 };
-    knoten.push(startKnoten);
+    var erster = schritte.length ? pos[0] : { x: 230, y: laneTop[0] + kopfHoehe + 40 };
+    knoten.push({ id: 'Start_Text', x: 140, y: erster.y + 16, w: 36, h: 36 });
     knotenLane['Start_Text'] = 0;
 
     var gwNr = 0;
     schritte.forEach(function (s, i) {
       var aufgabeId = 'Task_' + (i + 1);
-      var aufgabeX = xTask(i);
-      var z = zeileVon(i);
+      var p = pos[i];
       if (s.bedingung) {
         var split = 'Gateway_Split_' + (++gwNr);
         var merge = 'Gateway_Merge_' + gwNr;
-        knoten.push({ id: split, x: aufgabeX - 80, y: y(s._lane, z), w: 50, h: 50 });
+        knoten.push({ id: split, x: p.x - 85, y: p.y - 9, w: 50, h: 50 });
         knotenLane[split] = s._lane;
-        knoten.push({ id: aufgabeId, x: aufgabeX, y: y(s._lane, z) + 7, w: 120, h: 68 });
+        knoten.push({ id: aufgabeId, x: p.x, y: p.y, w: 120, h: 68 });
         knotenLane[aufgabeId] = s._lane;
-        knoten.push({ id: merge, x: aufgabeX + 160, y: y(s._lane, z), w: 50, h: 50 });
+        knoten.push({ id: merge, x: p.x + 160, y: p.y - 9, w: 50, h: 50 });
         knotenLane[merge] = s._lane;
         kanten.push({ id: 'Flow_' + (kanten.length + 1), q: letzter, z: split });
         kanten.push({ id: 'Flow_' + (kanten.length + 1), q: split, z: aufgabeId, bedingung: s.bedingung });
@@ -3285,18 +3358,17 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
         letzter = merge;
         return;
       }
-      knoten.push({ id: aufgabeId, x: aufgabeX, y: y(s._lane, z) + 7, w: 120, h: 68 });
+      knoten.push({ id: aufgabeId, x: p.x, y: p.y, w: 120, h: 68 });
       knotenLane[aufgabeId] = s._lane;
       kanten.push({ id: 'Flow_' + (kanten.length + 1), q: letzter, z: aufgabeId });
       letzter = aufgabeId;
     });
-    var letzteLane = schritte.length ? schritte[schritte.length - 1]._lane : 0;
-    var letzteZeile = schritte.length ? zeileVon(schritte.length - 1) : 0;
-    // (endX folgt weiter unten der Laufrichtung)
-    // Das Endereignis folgt der Laufrichtung der letzten Zeile.
-    var letzteX = schritte.length ? xTask(schritte.length - 1) : 200;
-    var endX = (letzteZeile % 2 === 1) ? letzteX - 60 : letzteX + 190;
-    knoten.push({ id: 'End_Text', x: endX, y: y(letzteLane, letzteZeile), w: 36, h: 36 });
+
+    var letzterIdx = schritte.length - 1;
+    var letzteLane = schritte.length ? schritte[letzterIdx]._lane : 0;
+    var letzteP = schritte.length ? pos[letzterIdx] : { x: 230, y: laneTop[0] + kopfHoehe + 40, zeile: 0 };
+    var endX = (letzteP.zeile % 2 === 1) ? letzteP.x - 60 : letzteP.x + 190;
+    knoten.push({ id: 'End_Text', x: endX, y: letzteP.y + 16, w: 36, h: 36 });
     knotenLane['End_Text'] = letzteLane;
     kanten.push({ id: 'Flow_' + (kanten.length + 1), q: letzter, z: 'End_Text' });
 
@@ -3348,8 +3420,8 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
     var laneX = 90;
     lanes.forEach(function (lane, i) {
       xml.push('<bpmndi:BPMNShape id="Lane_Text_' + (i + 1) + '_di" bpmnElement="Lane_Text_' + (i + 1) +
-        '" isHorizontal="true"><dc:Bounds x="' + laneX + '" y="' + (startY + i * laneHoehe * zeilenProLane) +
-        '" width="' + (breite - 30) + '" height="' + (laneHoehe * zeilenProLane) + '" /></bpmndi:BPMNShape>');
+        '" isHorizontal="true"><dc:Bounds x="' + laneX + '" y="' + laneTop[i] +
+        '" width="' + (breite - 30) + '" height="' + laneHoehen[i] + '" /></bpmndi:BPMNShape>');
     });
     knoten.forEach(function (k) {
       xml.push('<bpmndi:BPMNShape id="' + k.id + '_di" bpmnElement="' + k.id + '"><dc:Bounds x="' + k.x +
@@ -3359,10 +3431,7 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
       var q = knoten.filter(function (n) { return n.id === k.q; })[0];
       var z = knoten.filter(function (n) { return n.id === k.z; })[0];
       if (!q || !z) return;
-      var qx = q.x + q.w, qy = q.y + q.h / 2, zx = z.x, zy = z.y + z.h / 2;
-      var punkte = Math.abs(qy - zy) < 0.5
-        ? [[qx, qy], [zx, zy]]
-        : [[qx, qy], [qx + 25, qy], [qx + 25, zy], [zx, zy]];
+      var punkte = kantenRoute(q, z);
       xml.push('<bpmndi:BPMNEdge id="' + k.id + '_di" bpmnElement="' + k.id + '">' +
         punkte.map(function (p) { return '<di:waypoint x="' + p[0] + '" y="' + p[1] + '" />'; }).join('') +
         '</bpmndi:BPMNEdge>');
@@ -3814,7 +3883,7 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
       pruefe: pruefe,
       zerlege: zerlege,
       prozessXml: prozessXml,
-      version: '3.6.2'
+      version: '3.7.0'
     };
   }
 
