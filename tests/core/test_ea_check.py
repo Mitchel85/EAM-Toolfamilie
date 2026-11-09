@@ -178,6 +178,24 @@ def test_finalize_liefert_pruefungsfreie_datei(tmp_path: Path) -> None:
     con.close()
 
 
+def test_write_qea_mit_vorlage_ist_ea_fertig(tmp_path: Path, monkeypatch) -> None:
+    """Der Schalter erreicht alle Erzeuger: eine Vorlage genügt."""
+    monkeypatch.setenv("EAM_EA_VORLAGE", str(EA_QUELLE))
+    ziel = qea_writer.write_qea(_ir_mit_sicht(), tmp_path / "dienst.qea")
+    befunde = ea_check.pruefe_datei(ziel) + ea_check.pruefe_erzeugte_sicht(ziel)
+    assert [b for b in befunde if b.severity == "FEHLER"] == [], ea_check.formatieren(befunde)
+
+
+def test_ohne_vorlage_bleibt_es_leseformat(tmp_path: Path, monkeypatch) -> None:
+    """Ohne Schalter ändert sich nichts — AAroN-Pipelines bleiben unberührt."""
+    monkeypatch.delenv("EAM_EA_VORLAGE", raising=False)
+    ziel = qea_writer.write_qea(_ir_mit_sicht(), tmp_path / "roh.qea")
+    tabellen = {r[0] for r in sqlite3.connect(ziel).execute(
+        "SELECT name FROM sqlite_master WHERE type='table'")}
+    assert "t_document" not in tabellen
+    assert "t_object" in tabellen
+
+
 def test_finalize_erhaelt_mdg_kennung(tmp_path: Path) -> None:
     roh = qea_writer.write_qea(_ir_mit_sicht(), tmp_path / "roh.qea")
     fertig = qea_writer.finalize_for_ea(roh, tmp_path / "fertig.qea", vorlage=EA_QUELLE)

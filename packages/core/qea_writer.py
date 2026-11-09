@@ -1897,8 +1897,19 @@ def _write_file(plan: ModelPlan, target: Path) -> None:
         raise
 
 
-def write_qea(ir: "Mapping[str, Any] | str | os.PathLike[str]", target: str | os.PathLike[str]) -> Path:
+def write_qea(
+    ir: "Mapping[str, Any] | str | os.PathLike[str]",
+    target: str | os.PathLike[str],
+    *,
+    ea_vorlage: str | os.PathLike[str] | None = None,
+) -> Path:
     """Schreibt eine .qea aus einem IR-Dict oder einer IR-JSON-Datei.
+
+    Ohne Vorlage entsteht das AAroN-Leseformat (17 Tabellen). Mit ``ea_vorlage``
+    — oder wenn die Umgebungsvariable ``EAM_EA_VORLAGE`` gesetzt ist — wird das
+    Modell in eine echte EA-Datei eingesetzt und geprüft. Damit liefern alle
+    Erzeuger (CLI, WebUI, MCP, Prosa-Import) EA-öffnungsfähige Dateien, ohne
+    dass jeder Aufrufer die Nachbearbeitung kennen muss.
 
     Rueckgabe: Pfad der geschriebenen Datei. Fehler: QeaWriterError.
     """
@@ -1908,7 +1919,19 @@ def write_qea(ir: "Mapping[str, Any] | str | os.PathLike[str]", target: str | os
     path = Path(target)
     if path.suffix.lower() != ".qea":
         _fail(f"Ziel {str(path)!r} hat nicht die Endung .qea")
-    _write_file(plan, path)
+
+    vorlage = ea_vorlage or os.environ.get("EAM_EA_VORLAGE")
+    if not vorlage:
+        _write_file(plan, path)
+        return path
+
+    vorlage_pfad = Path(vorlage)
+    if not vorlage_pfad.is_file():
+        _fail(f"EA-Vorlage {str(vorlage_pfad)!r} fehlt")
+    with tempfile.TemporaryDirectory(prefix="qea-ea-") as workdir:
+        roh = Path(workdir) / "roh.qea"
+        _write_file(plan, roh)
+        finalize_for_ea(roh, path, vorlage=vorlage_pfad)
     return path
 
 

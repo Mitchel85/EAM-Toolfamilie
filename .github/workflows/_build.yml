@@ -77,12 +77,13 @@ jobs:
       # Rücklauf über E-Mail-Screenshots.
       - name: EA-Öffnungstest (.qea)
         run: |
-          shopt -s globstar nullglob
-          dateien=(dist/**/*.qea apps/**/*.qea packages/**/fixtures/*.qea)
+          # Jede .qea im Baum muss von Enterprise Architect zu öffnen sein.
+          mapfile -t dateien < <(find . -name '*.qea' -not -path './.git/*' | sort)
           if [ ${#dateien[@]} -eq 0 ]; then
             echo "keine .qea im Baum — übersprungen"
             exit 0
           fi
+          echo "${#dateien[@]} Datei(en)"
           python packages/core/ea_check.py "${dateien[@]}"
 
       - name: Auslieferungen als Artefakt
