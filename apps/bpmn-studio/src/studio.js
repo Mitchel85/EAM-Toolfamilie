@@ -789,10 +789,13 @@
     return (objekt ? objekt.charAt(0).toUpperCase() + objekt.slice(1) + ' ' : '') + aktion;
   }
 
-  function prozessXml(nameWunsch, schritte) {
+  function prozessXml(nameWunsch, schritte, zusatzLanes) {
     var prozessName = (nameWunsch || '').trim() || 'Extrahierter Prozess';
     var lanes = [];
     var laneIndex = {};
+    (zusatzLanes || []).forEach(function (l) {
+      if (l && laneIndex[l] == null) { laneIndex[l] = lanes.length; lanes.push(l); }
+    });
     schritte.forEach(function (s) {
       var rolle = s.rolle || 'Bearbeitung';
       if (laneIndex[rolle] == null) {
@@ -801,7 +804,7 @@
       }
       s._lane = laneIndex[rolle];
     });
-    if (!lanes.length) lanes.push('Bearbeitung');
+    if (!lanes.length) { laneIndex['Bearbeitung'] = 0; lanes.push('Bearbeitung'); }
 
     var laneHoehe = 130;
     var startY = 40;
@@ -994,6 +997,9 @@
 
   function kiDialogOeffnen() {
     $('ki-status').hidden = true;
+    // Im Serverbetrieb liegen Schlüssel und Modell beim Dienst — die Felder
+    // würden nur verwirren.
+    if ($('ki-zugang')) $('ki-zugang').hidden = !!window.BPMN_KI_DIENST;
     try {
       if (!$('ki-url').value) $('ki-url').value = localStorage.getItem('bpmn-ki-url') || '';
       if (!$('ki-modell').value) $('ki-modell').value = localStorage.getItem('bpmn-ki-modell') || '';
@@ -1001,7 +1007,126 @@
     $('ki-dialog').showModal();
   }
 
-  function kiExtrahieren() {
+  // Aktuellen Stand als Schrittliste lesen — Grundlage für die Weiterarbeit.
+  // Die Reihenfolge folgt den Sequenzflüssen ab dem Startereignis; nicht
+  // erreichbare Aufgaben hängen hinten an, damit nichts verloren geht.
+  function modellAlsSchritte() {
+    var registry = modeler.get('elementRegistry');
+    var alleElemente = registry.getAll();
+    var participant = alleElemente.filter(function (e) { return e.type === 'bpmn:Participant'; })[0];
+    var aufgaben = alleElemente.filter(istAufgabe);
+    var start = alleElemente.filter(function (e) { return e.type === 'bpmn:StartEvent'; })[0];
+
+    var reihenfolge = [];
+    var besucht = {};
+    var aktuell = start;
+    while (aktuell && !besucht[aktuell.id]) {
+      besucht[aktuell.id] = true;
+      if (istAufgabe(aktuell)) reihenfolge.push(aktuell);
+      var kante = (aktuell.outgoing || []).filter(function (c) {
+        return c.type === 'bpmn:SequenceFlow';
+      })[0];
+      aktuell = kante ? kante.target : null;
+    }
+    aufgaben.forEach(function (t) {
+      if (reihenfolge.indexOf(t) === -1) reihenfolge.push(t);
+    });
+
+    // Erste Lane als Rückfall: eine Aufgabe ohne Lane-Zuordnung soll keine
+    // zusätzliche Lane "Bearbeitung" erzeugen.
+    var ersteLane = (alleElemente.filter(function (e) { return e.type === 'bpmn:Lane'; })[0]);
+    var rueckfall = ersteLane ? name(ersteLane) : 'Bearbeitung';
+
+    var schritte = reihenfolge.map(function (t) {
+      var lane = laneVon(t);
+      return {
+        rolle: lane ? name(lane) : rueckfall,
+        aktion: name(t) || 'bearbeiten',
+        objekt: '',
+        bedingung: ''
+      };
+    });
+
+    // Lanes ohne Aufgabe mitgeben, damit sie beim Umbau nicht verloren gehen.
+    var alleLanes = alleElemente.filter(function (e) { return e.type === 'bpmn:Lane'; })
+      .map(function (l) { return name(l); });
+    var benutzt = {};
+    schritte.forEach(function (s) { benutzt[s.rolle.toLowerCase()] = true; });
+    var leer = alleLanes.filter(function (l) { return l && !benutzt[l.toLowerCase()]; });
+
+    return { prozess: participant ? name(participant) : '', schritte: schritte, leerLanes: leer };
+  }
+
+  // Operationen der KI auf den bestehenden Stand anwenden. Die KI liefert nur
+  // Änderungsabsichten; ausgeführt wird hier — so kann sie nichts überschreiben,
+  // was sie nicht ausdrücklich ändern soll.
+  function schrittFinden(schritte, name) {
+    var gesucht = String(name || '').trim().toLowerCase();
+    if (!gesucht) return null;
+    for (var i = 0; i < schritte.length; i++) {
+      if (schritte[i].aktion.toLowerCase() === gesucht) return schritte[i];
+    }
+    for (var j = 0; j < schritte.length; j++) {
+      if (schritte[j].aktion.toLowerCase().indexOf(gesucht) !== -1) return schritte[j];
+    }
+    return null;
+  }
+
+  function wendeOperationenAn(stand, antwort) {
+    var schritte = stand.schritte.map(function (s) {
+      return { rolle: s.rolle, aktion: s.aktion, objekt: s.objekt || '', bedingung: s.bedingung || '' };
+    });
+    var leer = (stand.leerLanes || []).slice();
+    var prozess = String(antwort.prozess || stand.prozess || '').trim();
+    var bericht = [];
+
+    (antwort.operationen || []).forEach(function (op) {
+      var art = String(op.op || '').toLowerCase();
+      if (art === 'lane_hinzufuegen' && op.name) {
+        if (leer.indexOf(op.name) === -1) leer.push(op.name);
+        bericht.push('Lane "' + op.name + '" ergänzt');
+      } else if (art === 'lane_umbenennen' && op.lane && op.neu) {
+        var alt = op.lane.toLowerCase();
+        schritte.forEach(function (s) { if (s.rolle.toLowerCase() === alt) s.rolle = op.neu; });
+        leer = leer.map(function (l) { return l.toLowerCase() === alt ? op.neu : l; });
+        bericht.push('Lane "' + op.lane + '" → "' + op.neu + '"');
+      } else if (art === 'pool_umbenennen' && op.name) {
+        prozess = op.name;
+        bericht.push('Pool → "' + op.name + '"');
+      } else if (art === 'schritt_verschieben' && op.schritt && op.lane) {
+        var ziel = schrittFinden(schritte, op.schritt);
+        if (ziel) {
+          ziel.rolle = op.lane;
+          leer = leer.filter(function (l) { return l !== op.lane; });
+          bericht.push('"' + ziel.aktion + '" → Lane "' + op.lane + '"');
+        }
+      } else if (art === 'schritt_umbenennen' && op.schritt && op.neu) {
+        var um = schrittFinden(schritte, op.schritt);
+        if (um) { bericht.push('"' + um.aktion + '" → "' + op.neu + '"'); um.aktion = op.neu; }
+      } else if (art === 'schritt_loeschen' && op.schritt) {
+        var weg = schrittFinden(schritte, op.schritt);
+        if (weg) {
+          schritte = schritte.filter(function (s) { return s !== weg; });
+          bericht.push('"' + weg.aktion + '" entfernt');
+        }
+      } else if (art === 'schritt_hinzufuegen' && op.aktion) {
+        var neu = { rolle: op.lane || 'Bearbeitung', aktion: op.aktion, objekt: op.objekt || '', bedingung: op.bedingung || '' };
+        var anker = op.nach ? schrittFinden(schritte, op.nach) : null;
+        var pos = anker ? schritte.indexOf(anker) + 1 : schritte.length;
+        schritte.splice(pos, 0, neu);
+        bericht.push('"' + op.aktion + '" eingefügt');
+      }
+    });
+
+    return { prozess: prozess, schritte: schritte, leerLanes: leer, bericht: bericht };
+  }
+
+  var KI_REGELN = 'Antworte ausschließlich mit einem JSON-Objekt der Form '
+    + '{"prozess":"...","schritte":[{"rolle":"...","aktion":"...","objekt":"...","bedingung":"..."}]}. '
+    + 'Jeder Schritt braucht eine Rolle (Aufgabenträger) — sie bestimmt die Lane; '
+    + 'ohne Rolle entsteht keine Lane. Aktion im Infinitiv. Kein Markdown, keine Erklärung.';
+
+  function kiExtrahieren(weiter) {
     // Serverbetrieb: der Schluessel liegt beim Server, der Browser schickt nur Text.
     var dienst = window.BPMN_KI_DIENST || '';
     var basis = $('ki-url').value.trim().replace(/\/+$/, '');
@@ -1021,12 +1146,55 @@
         return;
       }
     }
-    if (!text) {
+    if (!text && !weiter) {
       status.hidden = false;
       status.className = 'warnung fehler';
       status.textContent = 'Bitte einen Text eingeben.';
       return;
     }
+    var auftrag = $('ki-auftrag') ? $('ki-auftrag').value.trim() : '';
+    var stand = null;
+    var nachrichten;
+    if (weiter) {
+      stand = modellAlsSchritte();
+      if (!stand.schritte.length) {
+        status.hidden = false;
+        status.className = 'warnung fehler';
+        status.textContent = 'Es gibt noch keinen Prozess zum Weiterarbeiten. Bitte zuerst einen Text auswerten oder ein BPMN laden.';
+        return;
+      }
+      if (!auftrag) {
+        status.hidden = false;
+        status.className = 'warnung fehler';
+        status.textContent = 'Bitte den Änderungsauftrag eintragen — z. B. „Lane Poststelle ergänzen".';
+        return;
+      }
+      nachrichten = [
+        { role: 'system', content:
+            'Du bist Prozessanalyst und änderst einen bestehenden Prozess. Antworte ausschließlich mit JSON dieser Form: '
+            + '{"prozess":"Poolname","hinweis":"kurz, was du geändert hast","operationen":[ ... ]}. '
+            + 'Erlaubte Operationen: '
+            + '{"op":"lane_hinzufuegen","name":"..."} | '
+            + '{"op":"lane_umbenennen","lane":"...","neu":"..."} | '
+            + '{"op":"pool_umbenennen","name":"..."} | '
+            + '{"op":"schritt_verschieben","schritt":"...","lane":"..."} | '
+            + '{"op":"schritt_umbenennen","schritt":"...","neu":"..."} | '
+            + '{"op":"schritt_loeschen","schritt":"..."} | '
+            + '{"op":"schritt_hinzufuegen","lane":"...","aktion":"...","nach":"..."}. '
+            + 'Führe nur aus, was der Auftrag verlangt; alles andere bleibt unangetastet. '
+            + 'Nenne Schritte exakt so, wie sie im Stand stehen. Erfinde keine Schritte.' },
+        { role: 'user', content: 'Bisheriger Stand:\n' + JSON.stringify(stand)
+            + '\n\nÄnderungsauftrag: ' + auftrag }
+      ];
+    } else {
+      var textStand = text;
+      nachrichten = [
+        { role: 'system', content: KI_REGELN + ' Du leitest den Prozess ausschließlich aus dem Text ab. '
+            + 'Erfinde nichts, was nicht im Text steht.' },
+        { role: 'user', content: textStand }
+      ];
+    }
+
     var endpoint = dienst || (/\/chat\/completions$/.test(basis) ? basis : basis + '/chat/completions');
     var anfrageKopf = { 'Content-Type': 'application/json' };
     if (!dienst) anfrageKopf['Authorization'] = 'Bearer ' + key;
@@ -1040,10 +1208,7 @@
         model: modell || undefined,
         temperature: 0,
         response_format: { type: 'json_object' },
-        messages: [
-          { role: 'system', content: 'Du bist Prozessanalyst. Antworte ausschließlich mit einem JSON-Objekt dieser Form: {"schritte":[{"rolle":"...","aktion":"...","objekt":"...","bedingung":"..."}]}. Aktion im Infinitiv. Erfinde nichts, was nicht im Text steht. Kein Markdown, keine Erklärung.' },
-          { role: 'user', content: text }
-        ]
+        messages: nachrichten
       })
     }).then(function (antwort) {
       if (!antwort.ok) {
@@ -1065,6 +1230,24 @@
       if (!inhalt) throw new Error('Antwort ohne Inhalt');
       var bereinigt = String(inhalt).trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
       var json = JSON.parse(bereinigt);
+
+      // Weiterarbeit: die KI liefert Operationen, ausgeführt wird lokal.
+      if (weiter && Array.isArray(json.operationen)) {
+        var ergebnis = wendeOperationenAn(stand, json);
+        if (!ergebnis.schritte.length) throw new Error('Nach den Änderungen bliebe kein Schritt übrig');
+        var neuerPool = String(json.prozess || '').trim() || $('ki-name').value.trim() || '';
+        var xmlWeiter = prozessXml(neuerPool, ergebnis.schritte, ergebnis.leerLanes);
+        $('ki-dialog').close();
+        importieren(xmlWeiter).then(function () {
+          protokoll = ['KI-Änderung: ' + (ergebnis.bericht.length ? ergebnis.bericht.join('; ') : 'keine Änderung erkannt')
+            + (json.hinweis ? ' — ' + json.hinweis : '')];
+          zeichneProtokoll();
+          $('reiter-protokoll').click();
+          pruefe();
+        });
+        return;
+      }
+
       var liste = json.schritte || json.steps || (Array.isArray(json) ? json : null);
       if (!liste || !liste.length) throw new Error('Antwort enthält keine Schritte (erwartet: {"schritte": [...]})');
       var zeitwort = /^(danach|anschließend|anschliessend|daraufhin|darauf|zuerst|zunächst|zunaechst|schließlich|schliesslich|abschließend|abschliessend|im anschluss|zum schluss|anschließend)\b[\s,.]*$/i;
@@ -1078,7 +1261,11 @@
           bedingung: bedingung
         };
       });
-      var xml = prozessXml($('text-name') ? $('text-name').value : '', schritte);
+      var eingabeName = $('ki-name') ? $('ki-name').value.trim() : '';
+      var kiName = (json.prozess || '').trim();
+      var poolName = (weiter ? [kiName, eingabeName] : [eingabeName, kiName])
+        .concat([$('text-name') ? $('text-name').value.trim() : '']).filter(Boolean)[0] || '';
+      var xml = prozessXml(poolName, schritte);
       $('ki-dialog').close();
       importieren(xml).then(function () {
         protokoll = ['KI-Ausgabe: ' + schritte.length + ' Schritt(e). Alle Elemente sind Vorschläge und fachlich zu prüfen.'];
@@ -1116,7 +1303,8 @@
       if (this.checked) kiDialogOeffnen();
     });
     $('ki-abweisen').addEventListener('click', function () { $('ki-dialog').close(); });
-    $('ki-starten').addEventListener('click', kiExtrahieren);
+    $('ki-starten').addEventListener('click', function () { kiExtrahieren(false); });
+    $('ki-weiter').addEventListener('click', function () { kiExtrahieren(true); });
     $('reiter-befunde').addEventListener('click', function () {
       this.classList.add('aktiv'); this.setAttribute('aria-selected', 'true');
       $('reiter-protokoll').classList.remove('aktiv'); $('reiter-protokoll').setAttribute('aria-selected', 'false');

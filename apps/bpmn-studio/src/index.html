@@ -104,21 +104,30 @@
       Der Text geht an den hier eingetragenen Endpunkt. Standardmäßig ist die Funktion aus;
       ohne vollständige Angaben wird nichts gesendet.
     </p>
-    <label class="feld">Basis-URL (OpenAI-kompatibel)
-      <input id="ki-url" type="url" placeholder="https://api.example.invalid/v1" autocomplete="off">
-    </label>
-    <label class="feld">Modell
-      <input id="ki-modell" type="text" placeholder="modellname" autocomplete="off">
-    </label>
-    <label class="feld">Schlüssel (nur im Speicher)
-      <input id="ki-key" type="password" autocomplete="off">
+    <div id="ki-zugang">
+      <label class="feld">Basis-URL (OpenAI-kompatibel)
+        <input id="ki-url" type="url" placeholder="https://api.example.invalid/v1" autocomplete="off">
+      </label>
+      <label class="feld">Modell
+        <input id="ki-modell" type="text" placeholder="modellname" autocomplete="off">
+      </label>
+      <label class="feld">Schlüssel (nur im Speicher)
+        <input id="ki-key" type="password" autocomplete="off">
+      </label>
+    </div>
+    <label class="feld">Pool-Name (optional)
+      <input id="ki-name" type="text" placeholder="z. B. Antragsverfahren" autocomplete="off">
     </label>
     <label class="feld">Prozesstext
       <textarea id="ki-eingabe" rows="10" placeholder="Nur erfundene Beispieldaten oder freigegebene Inhalte."></textarea>
     </label>
+    <label class="feld">Weiterarbeiten (optional)
+      <textarea id="ki-auftrag" rows="3" placeholder="z. B. Benenne den Pool 'Antragsverfahren 2026', ergänze die Lane 'Poststelle (extern)' und verschiebe 'Bescheid versenden' dorthin. Weitere Befehle: Schritt einfügen, umbenennen, löschen, Lane umbenennen."></textarea>
+    </label>
     <p class="warnung" id="ki-status" hidden></p>
     <div class="dialog-fuss">
       <button id="ki-abweisen" type="button" class="zweit">Abbrechen</button>
+      <button id="ki-weiter" type="button" class="zweit">Weiterarbeiten</button>
       <button id="ki-starten" type="button" class="haupt">An KI senden</button>
     </div>
   </form>
