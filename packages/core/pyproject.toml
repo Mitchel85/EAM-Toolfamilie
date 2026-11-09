@@ -89,7 +89,6 @@ resources = [
     "examples/offline/antwort.json",
     "examples/archimate/beispiel_fehlermodell.xml",
     "examples/archimate/BEISPIELBERICHT.md",
-    "examples/archimate/BEISPIELBERICHT-MASC.md",
     "archimate/relationships.xml",
     "archimate/relationships-keys.xml",
 ]

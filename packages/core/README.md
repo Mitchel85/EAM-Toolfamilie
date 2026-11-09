@@ -365,7 +365,7 @@ print(befund.summary())   # {"error": .., "warning": .., "info": ..}
 - **Exitcodes:** 0 ohne Fehler, 1 bei Fehlern (`--strict`: auch bei Warnungen),
   3 bei unlesbarer Datei. `--limit 0` zeigt alle Meldungen, Standard sind 40.
 - **Beispielberichte:** `examples/archimate/BEISPIELBERICHT.md` (Prüfmodell
-  mit drei Fehlerklassen) und `BEISPIELBERICHT-MASC.md` (Musterarchitektur:
+  mit drei Fehlerklassen) und `fixtures/BEISPIELBERICHT-MASC.md` (Test-Fixture) (Musterarchitektur:
   1.430 Elemente, 61 Fehler, 171 Warnungen). Beide entstehen mit dem Befehl
   oben; ein Test vergleicht den kleinen Bericht Byte für Byte.
 

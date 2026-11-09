@@ -32,7 +32,7 @@ FIXTURES = CORE / "fixtures"
 BEISPIEL = CORE / "examples" / "archimate" / "beispiel_fehlermodell.xml"
 BEISPIELBERICHT = CORE / "examples" / "archimate" / "BEISPIELBERICHT.md"
 MASC = FIXTURES / "Musterarchitektur_MASC.qea"
-MASCBERICHT = CORE / "examples" / "archimate" / "BEISPIELBERICHT-MASC.md"
+MASCBERICHT = CORE / "fixtures" / "BEISPIELBERICHT-MASC.md"
 
 NS = "http://www.opengroup.org/xsd/archimate/3.0/"
 

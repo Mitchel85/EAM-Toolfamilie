@@ -121,12 +121,12 @@ laufender Nummer (`-2`, `-3`). Pakete bekommen `id-<sha256 von "paket:"+Pfad>`.
 
 ```bash
 python3 packages/core/graph.py faehigkeit \
-    --db masc.graph.sqlite --name "Informationsüberlegenheit sicherstellen" --tiefe 2
+    --db masc.graph.sqlite --name "Beispielfaehigkeit" --tiefe 2
 ```
 
 ```
-Faehigkeit: Informationsüberlegenheit sicherstellen  [id-ee9c9f17-…]  Capability, Paket …/EnduringTasks
-  1  <- Serving        Capability           Weltraumaufklärung
+Faehigkeit: Beispielfaehigkeit  [id-ee9c9f17-…]  Capability, Paket …/Capabilities
+  1  <- Serving        Capability           Teilfaehigkeit
   2  -> Association    Grouping             Erdnaher Orbit
   2  <- Realization    BusinessProcess      Geoinformationswesen sicherstellen
   2  <- Realization    ApplicationService   Spacecraft Information Service Bw
@@ -145,7 +145,7 @@ import graph
 
 con = graph.oeffne("masc.graph.sqlite")
 start, umfeld = graph.elemente_an_faehigkeit(
-    con, "Informationsüberlegenheit sicherstellen", tiefe=2
+    con, "Beispielfaehigkeit", tiefe=2
 )
 for zeile in umfeld:
     print(zeile["tiefe"], zeile["richtung"], zeile["beziehung"],
@@ -184,7 +184,7 @@ Doku kann nicht verrotten.
 
 ```bash
 python3 packages/core/graph.py pfad --db masc.graph.sqlite \
-    --von "Spacecraft Information Service Bw" --nach "Weltraumaufklärung"
+    --von "Beispielservice" --nach "Teilfaehigkeit"
 ```
 
 ## 4. Welche Kanten sind ungültig?

@@ -87,7 +87,7 @@ Qualitaetsbefund in der Sprache der Suite.
   Datei/fehlende Matrix -> `ArchimateCheckError`, Exit 3. Exit 1 bei Fehlern,
   mit `--strict` auch bei Warnungen.
 - **Beispielberichte im Paket:** `examples/archimate/BEISPIELBERICHT.md`
-  (Pruefmodell, 3 Fehler/4 Warnungen) und `BEISPIELBERICHT-MASC.md`
+  (Pruefmodell, 3 Fehler/4 Warnungen) und `fixtures/BEISPIELBERICHT-MASC.md` (Test-Fixture)
   (Musterarchitektur, 1.430 Elemente/1.747 Beziehungen: 61 Fehler -- 60
   Matrixverstoesse und eine doppelte Kennung --, 171 Warnungen). Der kleine
   Bericht wird im Test Byte fuer Byte gegen die Ausgabe geprueft.
