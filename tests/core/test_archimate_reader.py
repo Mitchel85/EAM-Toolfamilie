@@ -24,13 +24,17 @@ import pytest
 import archimate_reader as ar
 import archimate_writer as aw
 from archimate_reader import ArchimateReaderError
+from conftest import fixture_pfad, vorhanden
 from qea_reader import read_qea_ex
 
 NS = "{http://www.opengroup.org/xsd/archimate/3.0/}"
 CORE = Path(__file__).resolve().parents[2] / "packages" / "core"
 FIXTURES = CORE / "fixtures"
 MASC = FIXTURES / "Musterarchitektur_MASC.qea"
-TESTARCHITEKTUR = Path("/root/hermes-workspace/admbw-qea-editor/Testarchitektur.qea")
+TESTARCHITEKTUR = fixture_pfad(
+    "Testarchitektur.qea",
+    "/root/hermes-workspace/admbw-qea-editor/Testarchitektur.qea",
+)
 
 FREMD = """<?xml version="1.0" encoding="utf-8"?>
 <model xmlns="http://www.opengroup.org/xsd/archimate/3.0/"
@@ -318,7 +322,7 @@ def test_rundlauf_masc_ist_byte_identisch(tmp_path: Path):
         assert rel.get("source") in ids and rel.get("target") in ids
 
 
-@pytest.mark.skipif(not TESTARCHITEKTUR.is_file(), reason="Testarchitektur.qea fehlt")
+@pytest.mark.skipif(not vorhanden(TESTARCHITEKTUR), reason="Testarchitektur.qea fehlt")
 def test_rundlauf_testarchitektur_ist_byte_identisch(tmp_path: Path):
     ir0, _ = read_qea_ex(TESTARCHITEKTUR, with_refs=True, with_owners=True)
     xml1 = tmp_path / "test1.xml"
@@ -388,7 +392,7 @@ def test_rundlauf_fremdes_modell_ist_fixpunkt(tmp_path: Path):
     ]
 
 
-@pytest.mark.skipif(not MASC.is_file(), reason="Musterarchitektur_MASC.qea fehlt")
+@pytest.mark.skipif(not vorhanden(MASC), reason="Musterarchitektur_MASC.qea fehlt")
 def test_gelesenes_ir_ist_fuer_den_qea_writer_gueltig(tmp_path: Path):
     """IR-Kompatibilitaet heisst: die uebrigen Werkzeuge lesen es ohne Umbau."""
     from qea_writer import plan_model, write_qea
@@ -406,7 +410,7 @@ def test_gelesenes_ir_ist_fuer_den_qea_writer_gueltig(tmp_path: Path):
     assert ziel.stat().st_size > 0
 
 
-@pytest.mark.skipif(not MASC.is_file(), reason="Musterarchitektur_MASC.qea fehlt")
+@pytest.mark.skipif(not vorhanden(MASC), reason="Musterarchitektur_MASC.qea fehlt")
 def test_gelesenes_ir_laeuft_durch_den_validator(tmp_path: Path):
     """IR-Kompatibilitaet heisst auch: die Pruefung liest es ohne Umbau.
 
@@ -456,7 +460,7 @@ def test_cli_meldet_fehler(tmp_path: Path, capsys: pytest.CaptureFixture[str]):
     assert "FEHLER" in capsys.readouterr().err
 
 
-@pytest.mark.skipif(not MASC.is_file(), reason="Fixture Musterarchitektur fehlt")
+@pytest.mark.skipif(not vorhanden(MASC), reason="Fixture Musterarchitektur fehlt")
 def test_cli_rundlauf_ohne_name_ist_byte_identisch(tmp_path: Path):
     """Der Modulaufruf darf den Modellkopf nicht durch den Dateinamen ersetzen.
 
@@ -475,7 +479,7 @@ def test_cli_rundlauf_ohne_name_ist_byte_identisch(tmp_path: Path):
     assert xml1.read_bytes() == xml2.read_bytes()
 
 
-@pytest.mark.skipif(not MASC.is_file(), reason="Fixture Musterarchitektur fehlt")
+@pytest.mark.skipif(not vorhanden(MASC), reason="Fixture Musterarchitektur fehlt")
 def test_eam_ai_cli_rundlauf_ohne_name(tmp_path: Path):
     """Die dokumentierte Strecke: ``eam-ai archimate-read`` dann ``archimate``."""
     import eam_ai

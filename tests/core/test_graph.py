@@ -25,13 +25,17 @@ import pytest
 
 import archimate_writer as aw
 import graph
+from conftest import fixture_pfad, vorhanden
 from graph import GraphError, Mehrdeutig
 from qea_reader import read_qea_ex
 
 CORE = Path(__file__).resolve().parents[2] / "packages" / "core"
 FIXTURES = CORE / "fixtures"
 MASC = FIXTURES / "Musterarchitektur_MASC.qea"
-TESTARCHITEKTUR = Path("/root/hermes-workspace/admbw-qea-editor/Testarchitektur.qea")
+TESTARCHITEKTUR = fixture_pfad(
+    "Testarchitektur.qea",
+    "/root/hermes-workspace/admbw-qea-editor/Testarchitektur.qea",
+)
 
 P1 = "Modell"
 P2 = "Modell/Faehigkeiten"
@@ -722,6 +726,7 @@ def test_elementname_mit_trennzeichen_bricht_ab() -> None:
 # --------------------------------------------------------------------------
 # Eingabeformate: .qea, .xml, .json
 # --------------------------------------------------------------------------
+@pytest.mark.skipif(not vorhanden(TESTARCHITEKTUR), reason="Testarchitektur.qea fehlt")
 def test_json_ir_und_qea_ergeben_denselben_graphen(tmp_path: Path) -> None:
     ir_daten, _ = read_qea_ex(TESTARCHITEKTUR, with_refs=True, with_owners=True)
     json_datei = tmp_path / "ir.json"
@@ -772,6 +777,7 @@ def test_archimate_xml_liefert_denselben_graphen(tmp_path: Path) -> None:
     assert dump(aus_ir)["befunde"] == dump(aus_xml)["befunde"]
 
 
+@pytest.mark.skipif(not vorhanden(TESTARCHITEKTUR), reason="Testarchitektur.qea fehlt")
 def test_writer_repariert_was_der_graph_meldet(tmp_path: Path) -> None:
     """Die Arbeitsteilung: der Graph zeigt den Verstoss, der Writer baut um.
 
@@ -809,7 +815,7 @@ def test_writer_repariert_was_der_graph_meldet(tmp_path: Path) -> None:
 # --------------------------------------------------------------------------
 # Gegenprobe gegen den Writer (Musterarchitektur)
 # --------------------------------------------------------------------------
-@pytest.mark.skipif(not MASC.is_file(), reason="Musterarchitektur fehlt")
+@pytest.mark.skipif(not vorhanden(MASC), reason="Musterarchitektur fehlt")
 def test_masc_befunde_entsprechen_den_writer_zaehlern(tmp_path: Path) -> None:
     """Graph und Export duerfen sich nicht widersprechen.
 
@@ -854,7 +860,7 @@ def test_masc_befunde_entsprechen_den_writer_zaehlern(tmp_path: Path) -> None:
     ) == report.self_edges
 
 
-@pytest.mark.skipif(not MASC.is_file(), reason="Musterarchitektur fehlt")
+@pytest.mark.skipif(not vorhanden(MASC), reason="Musterarchitektur fehlt")
 def test_masc_archimate_typen_entsprechen_dem_writer(tmp_path: Path) -> None:
     """Der Graph darf keinem Element einen anderen ArchiMate-Typ geben als der Export."""
     ir_daten, _ = read_qea_ex(MASC, with_refs=True, with_owners=True)
@@ -872,7 +878,7 @@ def test_masc_archimate_typen_entsprechen_dem_writer(tmp_path: Path) -> None:
     assert bericht.knoten_elemente == verglichen + 1  # + Issue ohne Abbildung
 
 
-@pytest.mark.skipif(not MASC.is_file(), reason="Musterarchitektur fehlt")
+@pytest.mark.skipif(not vorhanden(MASC), reason="Musterarchitektur fehlt")
 def test_masc_graph_ist_vollstaendig_aufloesbar(tmp_path: Path) -> None:
     """Bis auf Darstellung/Mechanik/Ports hat jede Kante zwei Knoten oder einen Befund."""
     db = tmp_path / "masc.sqlite"
