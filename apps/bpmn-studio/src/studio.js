@@ -1002,20 +1002,24 @@
   }
 
   function kiExtrahieren() {
+    // Serverbetrieb: der Schluessel liegt beim Server, der Browser schickt nur Text.
+    var dienst = window.BPMN_KI_DIENST || '';
     var basis = $('ki-url').value.trim().replace(/\/+$/, '');
     var modell = $('ki-modell').value.trim();
     var key = $('ki-key').value;
     var text = $('ki-eingabe').value.trim();
     var status = $('ki-status');
-    try {
-      localStorage.setItem('bpmn-ki-url', basis);
-      localStorage.setItem('bpmn-ki-modell', modell);
-    } catch (e) { /* privater Modus: nichts gemerkt */ }
-    if (!basis || !modell || !key) {
-      status.hidden = false;
-      status.className = 'warnung fehler';
-      status.textContent = 'Basis-URL, Modell und Schlüssel sind erforderlich. Es wird nichts gesendet.';
-      return;
+    if (!dienst) {
+      try {
+        localStorage.setItem('bpmn-ki-url', basis);
+        localStorage.setItem('bpmn-ki-modell', modell);
+      } catch (e) { /* privater Modus: nichts gemerkt */ }
+      if (!basis || !modell || !key) {
+        status.hidden = false;
+        status.className = 'warnung fehler';
+        status.textContent = 'Basis-URL, Modell und Schlüssel sind erforderlich. Es wird nichts gesendet.';
+        return;
+      }
     }
     if (!text) {
       status.hidden = false;
@@ -1023,15 +1027,17 @@
       status.textContent = 'Bitte einen Text eingeben.';
       return;
     }
-    var endpoint = /\/chat\/completions$/.test(basis) ? basis : basis + '/chat/completions';
+    var endpoint = dienst || (/\/chat\/completions$/.test(basis) ? basis : basis + '/chat/completions');
+    var anfrageKopf = { 'Content-Type': 'application/json' };
+    if (!dienst) anfrageKopf['Authorization'] = 'Bearer ' + key;
     status.hidden = false;
     status.className = 'warnung';
     status.textContent = 'Anfrage läuft …';
     fetch(endpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      headers: anfrageKopf,
       body: JSON.stringify({
-        model: modell,
+        model: modell || undefined,
         temperature: 0,
         response_format: { type: 'json_object' },
         messages: [
@@ -1142,6 +1148,20 @@
     importieren(LEER_XML).catch(function (fehler) {
       ausgabe('Startmodell nicht lesbar: ' + fehler.message);
     });
+    if (window.BPMN_KI_DIENST) {
+      ['ki-url', 'ki-modell', 'ki-key'].forEach(function (id) {
+        var feld = $(id);
+        if (!feld) return;
+        var huelle = feld.closest('.feld');
+        if (huelle) huelle.hidden = true;
+      });
+      var hinweis = document.querySelector('#ki-dialog .warnung');
+      if (hinweis) {
+        hinweis.textContent = 'Diese Installation nutzt den Schlüssel des Servers. Der Browser sieht ihn nicht; '
+          + 'jede Anfrage läuft über den angemeldeten Zugang. Keine dienstlichen oder personenbezogenen Daten senden.';
+      }
+    }
+
     // Kleine, dokumentierte Schnittstelle fuer Tests und Integratoren.
     window.BPMNStudio = {
       modeler: function () { return modeler; },

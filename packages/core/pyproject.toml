@@ -38,6 +38,7 @@ eam-ai = "eam_ai:main"
 modules = [
     "eam_ai",
     "eam_suite",
+    "ea_check",
     "emit",
     "extract",
     "handbuch_generator",

@@ -32,12 +32,20 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import sqlite3
 import sys
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Mapping, NoReturn, Sequence
+
+try:  # Paket-Import (Wheel/PyPI)
+    from .ea_check import formatieren as ea_check_formatieren
+    from .ea_check import pruefe_abfragen, pruefe_geometrie, pruefe_tabellen
+except ImportError:  # Einzeldatei-Import: Module liegen flach nebeneinander
+    from ea_check import formatieren as ea_check_formatieren
+    from ea_check import pruefe_abfragen, pruefe_geometrie, pruefe_tabellen
 
 IR_VERSION = 1
 
@@ -50,6 +58,19 @@ DEFAULT_CONNECTOR_TYPE = "Dependency"
 
 #: Schema-Version, die EA in ``usys_system`` ablegt (alle geprueften EA-Dateien).
 SYSTEM_SCHEMA_VERSION = "4.01"
+
+#: Wenn True, bricht das Schreiben bei jedem EA-Befund ab (statt nur zu warnen).
+#: Fuer Auslieferungen an Enterprise Architect geeignet; fuer AAroN-Pipelines
+#: bleibt der Standard False, weil dort nur die 15 Lesetabellen verlangt sind.
+STRICT_EA = False
+
+#: EA-Geometrie-Konvention: y wächst nach UNTEN, gespeichert wird es negativ.
+#: Ein Kasten ``(links, oben, breite, hoehe)`` wird deshalb zu
+#: RectTop = -oben, RectBottom = -(oben + hoehe). Positive Werte kippen die
+#: Höhe und lassen die Kästen in EA übereinander liegen.
+def rechteck(links: float, oben: float, rechts: float, unten: float) -> tuple[float, float]:
+    """IR-Koordinaten (y nach unten positiv) -> (RectTop, RectBottom)."""
+    return (-oben, -unten)
 
 #: Pflicht-Tabellen laut AAroN (github.com/schmitze87/AAroN).
 #:
@@ -1501,6 +1522,14 @@ _INSERT_COLUMNS: dict[str, tuple[str, ...]] = {
         "Swimlanes",
         "StyleEx",
     ),
+    "t_diagramlinks": (
+        "DiagramID",
+        "ConnectorID",
+        "Geometry",
+        "Style",
+        "Hidden",
+        "Path",
+    ),
     "t_diagramobjects": (
         "Diagram_ID",
         "Object_ID",
@@ -1753,6 +1782,31 @@ def _diagram_object_rows(plan: ModelPlan) -> list[tuple]:
     return rows
 
 
+def _connect_ro(path: Path) -> sqlite3.Connection:
+    """Nur-Lese-Verbindung für Nachprüfungen."""
+    return sqlite3.connect(f"file:{path}?mode=ro", uri=True)
+
+
+def _diagram_link_rows(plan: ModelPlan) -> list[tuple]:
+    """Zeilen fuer ``t_diagramlinks``: lässt Kanten auf Sichten sichtbar werden.
+
+    Eine Kante erscheint in EA nur dann auf einer Sicht, wenn dort eine Zeile
+    steht UND beide Enden als Sichtobjekte vorhanden sind. Ohne diese Tabelle
+    zeigt EA ein Kästchenraster ohne Linien.
+    """
+    geometrie = "SX=0;SY=0;EX=0;EY=0;EDGE=2;$LLB=;LLT=;LMT=;LMB=;LRT=;LRB=;IRHS=;ILHS=;"
+    stil = "Mode=2;Color=-1;LWidth=0;"
+    rows: list[tuple] = []
+    for diagram in plan.diagrams:
+        if not diagram.diagram_id:
+            continue
+        objekte = {member.object_id for member in diagram.members}
+        for connector in plan.connectors:
+            if connector.source_object_id in objekte and connector.target_object_id in objekte:
+                rows.append((diagram.diagram_id, connector.connector_id, geometrie, stil, 0, None))
+    return rows
+
+
 def _is_default_diagram(plan: ModelPlan, diagram_id: int) -> bool:
     for diagram in plan.diagrams:
         if diagram.diagram_id == diagram_id:
@@ -1813,6 +1867,7 @@ def _write_file(plan: ModelPlan, target: Path) -> None:
                 # Diagramm-ID tragen.
                 _insert(con, "t_diagram", _diagram_rows(plan, package_ids))
                 _insert(con, "t_diagramobjects", _diagram_object_rows(plan))
+                _insert(con, "t_diagramlinks", _diagram_link_rows(plan))
                 # Projektkennung + Schemaversion: AAroN baut daraus den
                 # Projektknoten; EA legt beides an.
                 _insert(con, "usys_system", _system_rows(plan))
@@ -1821,6 +1876,20 @@ def _write_file(plan: ModelPlan, target: Path) -> None:
                 _fail(f"SQLite integrity_check fehlgeschlagen: {result!r}")
         finally:
             con.close()
+
+        # EA-Öffnungsprüfung: verhindert, dass eine Datei ausgeliefert wird, an der
+        # Enterprise Architect mit "SQL API Open FAILED" scheitert. Bewusst NUR
+        # Warnung — die Standardschreibweise bleibt ein reines Leseformat für
+        # AAroN. Wer EA-Auslieferung braucht, ruft `finalize_for_ea` auf oder
+        # schaltet hier hart: ``STRICT_EA = True``.
+        befunde = pruefe_geometrie(_connect_ro(temp_path))
+        if befunde:
+            meldung = ea_check_formatieren(befunde)
+            if STRICT_EA:
+                temp_path.unlink(missing_ok=True)
+                _fail(meldung)
+            print(meldung, file=sys.stderr)
+
         os.chmod(temp_path, 0o644)
         os.replace(temp_path, target)
     except BaseException:
@@ -1851,6 +1920,118 @@ def render_bytes(ir: "Mapping[str, Any] | str | os.PathLike[str]") -> bytes:
         path = Path(workdir) / "model.qea"
         _write_file(plan_model(ir), path)
         return path.read_bytes()
+
+
+def finalize_for_ea(
+    quelle: str | os.PathLike[str],
+    ziel: str | os.PathLike[str],
+    vorlage: str | os.PathLike[str],
+    start_sicht_praefix: str = "",
+) -> Path:
+    """Setzt ein erzeugtes Modell in eine echte EA-Datei ein.
+
+    Der Writer allein erzeugt ein Leseformat (AAroN: 15 Tabellen, plus `t_xref`).
+    Enterprise Architect prüft beim Öffnen seinen kompletten internen Tabellensatz
+    und bricht bei der ersten fehlenden Tabelle ab. Deshalb wird hier die
+    Datenbankhülle einer Datei verwendet, die EA nachweislich öffnet; nur die
+    Modelltabellen werden geleert und mit den eigenen Zeilen gefüllt.
+
+    ``vorlage`` muss ein EA-Projekt mit vollständigem Tabellensatz sein.
+    ``start_sicht_praefix`` wählt die Startsicht (z. B. ``"R2 "``); ohne Angabe
+    gewinnt die Sicht mit den meisten Elementen.
+    """
+    quelle, ziel, vorlage = Path(quelle), Path(ziel), Path(vorlage)
+    if not quelle.is_file() or not vorlage.is_file():
+        _fail("Quelle oder Vorlage fehlt")
+    if ziel.suffix.lower() != ".qea":
+        _fail(f"Ziel {str(ziel)!r} hat nicht die Endung .qea")
+    if quelle.resolve() == ziel.resolve():
+        _fail("Quelle und Ziel dürfen nicht dieselbe Datei sein")
+
+    modelltabellen = (
+        "t_diagramlinks", "t_diagramobjects", "t_objectproperties", "t_connectortag",
+        "t_connectorconstraint", "t_attributeconstraints", "t_attribute",
+        "t_attributetag", "t_operation", "t_operationtag", "t_connector",
+        "t_object", "t_diagram", "t_package", "t_xref",
+    )
+    uebernehmen = (
+        "t_package", "t_object", "t_connector", "t_objectproperties",
+        "t_diagram", "t_diagramobjects", "t_diagramlinks", "t_xref",
+    )
+
+    ziel.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(vorlage, ziel)
+    con = sqlite3.connect(ziel)
+    try:
+        con.execute("ATTACH DATABASE ? AS quelle", (str(quelle),))
+        for tabelle in modelltabellen:
+            con.execute(f'DELETE FROM main."{tabelle}"')
+            con.execute("DELETE FROM main.sqlite_sequence WHERE name = ?", (tabelle,))
+
+        for tabelle in uebernehmen:
+            ziel_spalten = [r[1] for r in con.execute(f"PRAGMA main.table_info({tabelle})")]
+            quell_spalten = {r[1] for r in con.execute(f"PRAGMA quelle.table_info({tabelle})")}
+            gemeinsam = [c for c in ziel_spalten if c in quell_spalten]
+            if not gemeinsam:
+                continue
+            liste = ", ".join(f'"{c}"' for c in gemeinsam)
+            con.execute(
+                f'INSERT INTO main."{tabelle}" ({liste}) '
+                f'SELECT {liste} FROM quelle."{tabelle}"'
+            )
+
+        # t_maintypes fehlt in echten EA-Dateien, EA fragt sie aber ab.
+        vorhanden = {r[0] for r in con.execute("SELECT name FROM main.sqlite_master WHERE type='table'")}
+        if "t_maintypes" not in vorhanden:
+            con.execute(
+                "CREATE TABLE main.t_maintypes ("
+                "MainType TEXT NOT NULL COLLATE NOCASE PRIMARY KEY, "
+                "Description TEXT NULL COLLATE NOCASE)"
+            )
+
+        # Startsicht: Präfix bevorzugt, sonst die größte Sicht.
+        start = None
+        if start_sicht_praefix:
+            start = con.execute(
+                "SELECT d.Diagram_ID FROM main.t_diagram d "
+                "LEFT JOIN main.t_diagramobjects o ON o.Diagram_ID = d.Diagram_ID "
+                "WHERE d.Name LIKE ? GROUP BY d.Diagram_ID "
+                "ORDER BY count(o.Object_ID) DESC, d.Diagram_ID LIMIT 1",
+                (start_sicht_praefix + "%",),
+            ).fetchone()
+        if not start:
+            start = con.execute(
+                "SELECT Diagram_ID FROM main.t_diagramobjects GROUP BY Diagram_ID "
+                "ORDER BY count(*) DESC, Diagram_ID LIMIT 1"
+            ).fetchone()
+        if start:
+            con.execute("DELETE FROM main.usys_system WHERE Property = 'DefaultDiagram'")
+            con.execute(
+                "INSERT INTO main.usys_system (Property, Value) VALUES ('DefaultDiagram', ?)",
+                (str(start[0]),),
+            )
+
+        con.commit()
+        # Geleerte Tabellen hinterlassen tote Seiten (real: 9,8 MB -> 2,4 MB).
+        con.execute("VACUUM")
+    finally:
+        try:
+            con.execute("DETACH DATABASE quelle")
+        except sqlite3.Error:
+            pass
+        con.close()
+
+    befunde = [b for b in _pruefe_ea_ziel(ziel) if b.severity == "FEHLER"]
+    if befunde:
+        _fail(ea_check_formatieren(befunde))
+    return ziel
+
+
+def _pruefe_ea_ziel(pfad: Path):
+    """Vollprüfung über ``ea_check`` (Tabellen, Abfragen, Geometrie, Integrität)."""
+    import ea_check
+
+    return ea_check.pruefe_datei(pfad)
 
 
 def load_ir(path: str | os.PathLike[str]) -> dict[str, Any]:
