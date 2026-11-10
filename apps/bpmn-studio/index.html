@@ -1828,7 +1828,7 @@ h1 { font-size: 18px; margin: 0; letter-spacing: .2px; }
     <span class="zeichen">B</span>
     <div>
       <h1>BPMN Studio</h1>
-      <p class="unterzeile">ADMBw · BPMN 2.0 · Prozesse extrahieren, prüfen, exportieren · <span id="version">3.11.0</span></p>
+      <p class="unterzeile">ADMBw · BPMN 2.0 · Prozesse extrahieren, prüfen, exportieren · <span id="version">3.12.0</span></p>
     </div>
   </div>
   <div class="werkzeuge" role="toolbar" aria-label="Werkzeuge">
@@ -2671,10 +2671,12 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
       var zeichen = $('ki-eingabe').value.length;
       if (status) {
         status.hidden = false;
-        status.className = zeichen > 60000 ? 'warnung fehler' : 'warnung';
+        var grenze = (window.BPMN_GRENZEN && window.BPMN_GRENZEN.zeichen) || 0;
+        var zuLang = grenze > 0 && zeichen > grenze;
+        status.className = zuLang ? 'warnung fehler' : 'warnung';
         status.textContent = 'Gelesen: ' + liste.length + ' Datei(en), ' + zeichen
-          + ' Zeichen im Feld.' + (zeichen > 60000
-            ? ' Das ist zu lang für eine Anfrage (Grenze 60.000 Zeichen) — bitte Abschnitt eingrenzen.'
+          + ' Zeichen im Feld.' + (zuLang
+            ? ' Das überschreitet die eingestellte Grenze von ' + grenze + ' Zeichen.'
             : ' Text prüfen und dann senden.');
       }
     }).catch(function (f) {
@@ -4141,7 +4143,7 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
     // Nach 120 s reisst der Browser die Verbindung selbst ab — das soll er nicht
     // stillschweigend tun, sondern mit einer Meldung, die man lesen kann.
     var abbruch = new AbortController();
-    var uhr = setTimeout(function () { abbruch.abort(); }, 120000);
+    var uhr = setTimeout(function () { abbruch.abort(); }, 300000);
     fetch(endpoint, {
       method: 'POST',
       headers: anfrageKopf,
@@ -4171,7 +4173,9 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
           var meldung = '';
           try {
             var fehler = JSON.parse(roh);
-            meldung = (fehler && fehler.error && (fehler.error.message || fehler.error)) || '';
+            // Der eigene Dienst antwortet mit "fehler", die KI mit error.message.
+            if (fehler && typeof fehler.fehler === 'string') meldung = fehler.fehler;
+            else if (fehler && fehler.error) meldung = fehler.error.message || String(fehler.error);
           } catch (e) {
             meldung = String(roh || '').slice(0, 200);
           }
@@ -4262,7 +4266,7 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
     }).catch(function (fehler) {
       clearTimeout(uhr);
       var grund = fehler && fehler.name === 'AbortError'
-        ? 'Zeitüberschreitung (120 s)'
+        ? 'Zeitüberschreitung (300 s)' 
         : String((fehler && fehler.message) || fehler);
       status.hidden = false;
       status.className = 'warnung fehler';
@@ -4363,7 +4367,7 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
       pruefe: pruefe,
       zerlege: zerlege,
       prozessXml: prozessXml,
-      version: '3.11.0'
+      version: '3.12.0'
     };
   }
 

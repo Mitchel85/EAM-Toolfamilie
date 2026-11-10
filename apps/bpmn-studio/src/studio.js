@@ -301,10 +301,12 @@
       var zeichen = $('ki-eingabe').value.length;
       if (status) {
         status.hidden = false;
-        status.className = zeichen > 60000 ? 'warnung fehler' : 'warnung';
+        var grenze = (window.BPMN_GRENZEN && window.BPMN_GRENZEN.zeichen) || 0;
+        var zuLang = grenze > 0 && zeichen > grenze;
+        status.className = zuLang ? 'warnung fehler' : 'warnung';
         status.textContent = 'Gelesen: ' + liste.length + ' Datei(en), ' + zeichen
-          + ' Zeichen im Feld.' + (zeichen > 60000
-            ? ' Das ist zu lang für eine Anfrage (Grenze 60.000 Zeichen) — bitte Abschnitt eingrenzen.'
+          + ' Zeichen im Feld.' + (zuLang
+            ? ' Das überschreitet die eingestellte Grenze von ' + grenze + ' Zeichen.'
             : ' Text prüfen und dann senden.');
       }
     }).catch(function (f) {
@@ -1771,7 +1773,7 @@
     // Nach 120 s reisst der Browser die Verbindung selbst ab — das soll er nicht
     // stillschweigend tun, sondern mit einer Meldung, die man lesen kann.
     var abbruch = new AbortController();
-    var uhr = setTimeout(function () { abbruch.abort(); }, 120000);
+    var uhr = setTimeout(function () { abbruch.abort(); }, 300000);
     fetch(endpoint, {
       method: 'POST',
       headers: anfrageKopf,
@@ -1801,7 +1803,9 @@
           var meldung = '';
           try {
             var fehler = JSON.parse(roh);
-            meldung = (fehler && fehler.error && (fehler.error.message || fehler.error)) || '';
+            // Der eigene Dienst antwortet mit "fehler", die KI mit error.message.
+            if (fehler && typeof fehler.fehler === 'string') meldung = fehler.fehler;
+            else if (fehler && fehler.error) meldung = fehler.error.message || String(fehler.error);
           } catch (e) {
             meldung = String(roh || '').slice(0, 200);
           }
@@ -1892,7 +1896,7 @@
     }).catch(function (fehler) {
       clearTimeout(uhr);
       var grund = fehler && fehler.name === 'AbortError'
-        ? 'Zeitüberschreitung (120 s)'
+        ? 'Zeitüberschreitung (300 s)' 
         : String((fehler && fehler.message) || fehler);
       status.hidden = false;
       status.className = 'warnung fehler';
