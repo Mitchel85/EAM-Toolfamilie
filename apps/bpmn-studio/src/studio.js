@@ -1774,16 +1774,21 @@
     // stillschweigend tun, sondern mit einer Meldung, die man lesen kann.
     var abbruch = new AbortController();
     var uhr = setTimeout(function () { abbruch.abort(); }, 300000);
+    var rumpf = {
+      model: modell || undefined,
+      temperature: 0,
+      response_format: { type: 'json_object' },
+      messages: nachrichten
+    };
+    // Nur der eigene Dienst kennt den Hintergrund-Auftrag. Ein fremder
+    // Endpunkt bekommt das Feld nicht, sonst lehnt er die Anfrage ab.
+    if (dienst) rumpf.hintergrund = true;
+
     fetch(endpoint, {
       method: 'POST',
       headers: anfrageKopf,
       signal: abbruch.signal,
-      body: JSON.stringify({
-        model: modell || undefined,
-        temperature: 0,
-        response_format: { type: 'json_object' },
-        messages: nachrichten
-      })
+      body: JSON.stringify(rumpf)
     }).then(function (antwort) {
       clearTimeout(uhr);
       var art = (antwort.headers.get('Content-Type') || '').toLowerCase();
@@ -1797,8 +1802,42 @@
         fehler.ohnePunkt = true;
         throw fehler;
       }
+      // 202: Auftrag laeuft, Ergebnis wird abgeholt. So bleibt jede einzelne
+      // Anfrage unter der 100-Sekunden-Grenze von Cloudflare (HTTP 524).
+      if (antwort.status === 202) {
+        return antwort.json().then(function (start) {
+          var kennung = start && start.auftrag;
+          if (!kennung) throw new Error('Dienst hat keinen Auftrag benannt');
+          var beginn = Date.now();
+          var hole = function () {
+            return fetch(endpoint + '/ergebnis?id=' + encodeURIComponent(kennung), {
+              headers: anfrageKopf, signal: abbruch.signal, cache: 'no-store'
+            }).then(function (a) {
+              if (!a.ok) throw new Error('Ergebnisabruf fehlgeschlagen (HTTP ' + a.status + ')');
+              return a.json();
+            }).then(function (stand) {
+              if (stand.status === 'laeuft') {
+                var s = Math.round((Date.now() - beginn) / 1000);
+                status.textContent = 'KI arbeitet … ' + s + ' s';
+                if (s > 300) throw new Error('Zeitüberschreitung (300 s)');
+                return new Promise(function (fertig) { setTimeout(fertig, 2000); }).then(hole);
+              }
+              if (stand.code && stand.code >= 400) {
+                var m = '';
+                if (stand.daten) {
+                  m = stand.daten.fehler || (stand.daten.error && (stand.daten.error.message || stand.daten.error)) || '';
+                }
+                var f = new Error('HTTP ' + stand.code + (m ? ' — ' + m : ''));
+                throw f;
+              }
+              return stand.daten;
+            });
+          };
+          return hole();
+        });
+      }
       if (!antwort.ok) {
-        // Die Gegenstelle sagt meist genau, was fehlt (Schluessel, Guthaben, Modell).
+        // Die Gegenstelle sagt meist genau was fehlt (Schluessel, Guthaben, Modell).
         return antwort.text().then(function (roh) {
           var meldung = '';
           try {
