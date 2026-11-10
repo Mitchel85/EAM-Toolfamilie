@@ -1828,7 +1828,7 @@ h1 { font-size: 18px; margin: 0; letter-spacing: .2px; }
     <span class="zeichen">B</span>
     <div>
       <h1>BPMN Studio</h1>
-      <p class="unterzeile">ADMBw · BPMN 2.0 · Prozesse extrahieren, prüfen, exportieren · <span id="version">3.10.1</span></p>
+      <p class="unterzeile">ADMBw · BPMN 2.0 · Prozesse extrahieren, prüfen, exportieren · <span id="version">3.11.0</span></p>
     </div>
   </div>
   <div class="werkzeuge" role="toolbar" aria-label="Werkzeuge">
@@ -1931,6 +1931,15 @@ h1 { font-size: 18px; margin: 0; letter-spacing: .2px; }
     </div>
     <label class="feld">Pool-Name (optional)
       <input id="ki-name" type="text" placeholder="z. B. Antragsverfahren" autocomplete="off">
+    </label>
+    <label class="feld">Dokument oder Text
+      <input id="ki-datei" type="file" accept=".pdf,.txt,.md,text/plain,application/pdf" multiple>
+      <span class="hilfe">PDF oder Textdatei. Der Text wird im Browser gelesen und mitgeschickt —
+        das Dokument verlässt den Rechner nicht ungeprüft.</span>
+    </label>
+    <label class="feld">Prozessabschnitt (optional)
+      <input id="ki-abschnitt" type="text" placeholder="z. B. Abschnitt 4 oder Vergabeverfahren" autocomplete="off">
+      <span class="hilfe">Große Dokumente: nur den genannten Abschnitt senden, statt des ganzen Textes.</span>
     </label>
     <label class="feld">Prozesstext
       <textarea id="ki-eingabe" rows="10" placeholder="Nur erfundene Beispieldaten oder freigegebene Inhalte."></textarea>
@@ -2616,6 +2625,67 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
     leser.readAsText(datei, 'utf-8');
   }
 
+  // Dateien fuer den KI-Dialog: PDF wird im Browser gelesen, Text direkt.
+  // Nichts geht an einen Dritten; der Text landet nur im Eingabefeld.
+  function kiDateien(dateien) {
+    var liste = Array.prototype.slice.call(dateien || []);
+    if (!liste.length) return;
+    var status = $('ki-status');
+    if (status) {
+      status.hidden = false;
+      status.className = 'warnung';
+      status.textContent = 'Lese ' + liste.length + ' Datei(en) …';
+    }
+    var teile = [];
+    var anhaengen = function (name, text) {
+      var stueck = String(text || '').trim();
+      if (!stueck) return;
+      teile.push(teile.length ? '\n\n=== ' + name + ' ===\n' + stueck : stueck);
+    };
+    var dateiText = function (datei) {
+      if (/pdf$/i.test(datei.type) || /\.pdf$/i.test(datei.name || '')) {
+        return pdfLesen(datei).then(function (ergebnis) {
+          return ergebnis.seiten.join('\n\n').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n');
+        });
+      }
+      return new Promise(function (fertig, fehler) {
+        var leser = new FileReader();
+        leser.onload = function () { fertig(String(leser.result || '')); };
+        leser.onerror = function () { fehler(new Error('Datei nicht lesbar: ' + datei.name)); };
+        leser.readAsText(datei, 'utf-8');
+      });
+    };
+    Promise.all(liste.map(function (d) {
+      return dateiText(d).then(function (text) { anhaengen(d.name || 'Datei', text); })
+        .catch(function (f) { anhaengen(d.name || 'Datei', '');
+          teile.push('(Hinweis: ' + (d.name || 'Datei') + ' nicht lesbar — ' + f.message + ')'); });
+    })).then(function () {
+      var zusammen = teile.join('');
+      if (zusammen.trim()) {
+        var bisher = $('ki-eingabe').value.trim();
+        $('ki-eingabe').value = (bisher ? bisher + '\n\n' : '') + zusammen;
+      }
+      if (!$('ki-name').value.trim() && liste.length === 1) {
+        $('ki-name').value = String(liste[0].name || '').replace(/\.[a-z0-9]+$/i, '');
+      }
+      var zeichen = $('ki-eingabe').value.length;
+      if (status) {
+        status.hidden = false;
+        status.className = zeichen > 60000 ? 'warnung fehler' : 'warnung';
+        status.textContent = 'Gelesen: ' + liste.length + ' Datei(en), ' + zeichen
+          + ' Zeichen im Feld.' + (zeichen > 60000
+            ? ' Das ist zu lang für eine Anfrage (Grenze 60.000 Zeichen) — bitte Abschnitt eingrenzen.'
+            : ' Text prüfen und dann senden.');
+      }
+    }).catch(function (f) {
+      if (status) {
+        status.hidden = false;
+        status.className = 'warnung fehler';
+        status.textContent = 'Datei nicht gelesen: ' + (f && f.message ? f.message : f);
+      }
+    });
+  }
+
   function speichern() {
     modeler.saveXML({ format: true }).then(function (ergebnis) {
       herunterladen(dateiname('bpmn'), new Blob([ergebnis.xml], { type: 'application/xml' }));
@@ -3128,6 +3198,13 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
         }
       }
     }
+    // Zweiter Durchgang: mehrteilige Verben ("prüft ... und gibt frei").
+    for (var i = 0; i < w.length; i++) {
+      for (var k = 2; k <= 4; k++) {
+        var teil = w.slice(i, i + k).join('').toLowerCase();
+        if (VERBEN[teil]) return { inf: VERBEN[teil], index: i, form: w.slice(i, i + k).join(' ') };
+      }
+    }
     return null;
   }
   function rolleImSatz(satz) {
@@ -3520,13 +3597,27 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
     schritte.forEach(function (s, i) {
       var aufgabeId = 'Task_' + (i + 1);
       var p = pos[i];
+      // Entscheidungen aus der KI koennen als Liste oder als Text kommen.
+      var entscheidung = s.entscheidung;
+      if (typeof entscheidung === 'string') {
+        entscheidung = entscheidung.split(/\s*(?:,|;|\/|\bund\b|\boder\b)\s*/i)
+          .map(function (a) { return String(a).trim(); }).filter(Boolean);
+      }
+      s.entscheidung = entscheidung;
       if (s.entscheidung && s.entscheidung.length) {
         // Konvention (Camunda/OMG): erst die Aufgabe, die die Entscheidung
         // verlangt, dann das Gateway, dann je Antwort eine Aufgabe.
         var n = s.entscheidung.length;
         var dSplit = 'Gateway_Split_' + (++gwNr);
         var dJoin = 'Gateway_Merge_' + gwNr;
-        gwNamen[dSplit] = (s.frage || 'Entscheidung').replace(/\bentscheiden\b/i, 'entschieden') + '?';
+        // Das Gateway fragt den ZUSTAND ab, nicht die Taetigkeit: die Aufgabe
+        // davor heisst "Freigabe entscheiden", das Gateway "Freigegeben?".
+        var frage = String(s.frage || 'Entscheidung');
+        if (/freigabe/i.test(frage)) frage = 'Freigegeben';
+        else if (/abnahme/i.test(frage)) frage = 'Abgenommen';
+        else if (/zuschlag/i.test(frage)) frage = 'Zuschlag erteilt';
+        else frage = frage.replace(/\bentscheiden\b/i, 'entschieden');
+        gwNamen[dSplit] = frage + '?';
         knoten.push({ id: aufgabeId, x: p.x, y: p.y, w: 120, h: 68 });
         knotenLane[aufgabeId] = s._lane;
         taskNamen[aufgabeId] = s.frage || 'Entscheidung treffen';
@@ -3908,10 +3999,46 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
     return { prozess: prozess, schritte: schritte, leerLanes: leer, bericht: bericht };
   }
 
+  // Abschnitt aus einem langen Dokument schneiden: von der genannten
+  // Ueberschrift bis zur naechsten gleichrangigen Ueberschrift.
+  function schneideAbschnitt(text, marke) {
+    var roh = String(text || '');
+    var suche = String(marke || '').trim();
+    if (!suche) return '';
+    var zeiger = roh.toLowerCase().indexOf(suche.toLowerCase());
+    if (zeiger < 0) {
+      // "Abschnitt 4" findet auch "4. Vergabeverfahren"
+      var zahl = suche.match(/(\d+)/);
+      if (zahl) {
+        var muster = new RegExp('(^|\n)\\s*' + zahl[1] + '\\.?\\s+\\S');
+        var treffer = muster.exec(roh);
+        if (treffer) zeiger = treffer.index + treffer[0].length - 1;
+      }
+    }
+    if (zeiger < 0) return '';
+    var rest = roh.slice(zeiger);
+    // Naechste Ueberschrift derselben Ebene: Zeilenanfang mit Zahl und Punkt.
+    var ebene = (rest.match(/^\s*(\d+)/) || [])[1];
+    var ende = rest.length;
+    if (ebene) {
+      var naechste = new RegExp('\\n\\s*' + ebene + '\\.(\\d+\\.)?\\s');
+      var m = naechste.exec(rest.slice(10));
+      if (m) ende = 10 + m.index;
+    } else {
+      var leer = rest.indexOf('\n\n\n');
+      if (leer > 400) ende = leer;
+    }
+    return rest.slice(0, ende).trim();
+  }
+
   var KI_REGELN = 'Antworte ausschließlich mit einem JSON-Objekt der Form '
-    + '{"prozess":"...","schritte":[{"rolle":"...","aktion":"...","objekt":"...","bedingung":"..."}]}. '
+    + '{"prozess":"...","schritte":[{"rolle":"...","aktion":"...","objekt":"...","bedingung":"...","entscheidung":["..."]}]}. '
     + 'Jeder Schritt braucht eine Rolle (Aufgabenträger) — sie bestimmt die Lane; '
-    + 'ohne Rolle entsteht keine Lane. Aktion im Infinitiv. Kein Markdown, keine Erklärung.';
+    + 'ohne Rolle entsteht keine Lane. Aktion im Infinitiv. Kein Markdown, keine Erklärung. '
+    + 'Eine Entscheidung im Text wird als eigener Schritt abgebildet: aktion "entscheiden" und '
+    + '"entscheidung" mit den möglichen Ergebnissen (z. B. ["Freigabe","Freigabe mit Auflagen","Ablehnung"]). '
+    + 'Bedingte Schritte tragen die Bedingung in "bedingung" (z. B. "Bei Auflagen"). '
+    + 'Aufgaben heißen Objekt + Verb ("Antrag prüfen"), nie "X ist zu prüfen".';
 
   function kiExtrahieren(weiter) {
     // Serverbetrieb: der Schluessel liegt beim Server, der Browser schickt nur Text.
@@ -3940,6 +4067,24 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
       return;
     }
     var auftrag = $('ki-auftrag') ? $('ki-auftrag').value.trim() : '';
+
+    // Grosses Dokument: nur den genannten Abschnitt senden.
+    var abschnitt = $('ki-abschnitt') ? $('ki-abschnitt').value.trim() : '';
+    if (abschnitt && text) {
+      var geschnitten = schneideAbschnitt(text, abschnitt);
+      if (geschnitten && geschnitten.length >= 200) {
+        text = geschnitten;
+        status.hidden = false;
+        status.className = 'warnung';
+        status.textContent = 'Abschnitt "' + abschnitt + '" ausgewählt: ' + text.length + ' Zeichen '
+          + '(von ' + ($('ki-eingabe').value.length) + ').';
+      } else {
+        status.hidden = false;
+        status.className = 'warnung fehler';
+        status.textContent = 'Abschnitt "' + abschnitt + '" nicht gefunden. Bitte Überschrift oder Nummer genauer angeben.';
+        return;
+      }
+    }
     var stand = null;
     var nachrichten;
     if (weiter) {
@@ -3986,13 +4131,21 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
 
     var endpoint = dienst || (/\/chat\/completions$/.test(basis) ? basis : basis + '/chat/completions');
     var anfrageKopf = { 'Content-Type': 'application/json' };
-    if (!dienst) anfrageKopf['Authorization'] = 'Bearer ' + key;
+    // Lokal geoeffnete Datei (file://): nie einen Schluessel schicken, sonst
+    // bekommt ein Basic-Auth-Dienst eine zweite Authorization-Zeile und
+    // antwortet mit 401.
+    if (!dienst && basis) anfrageKopf['Authorization'] = 'Bearer ' + key;
     status.hidden = false;
     status.className = 'warnung';
     status.textContent = 'Anfrage läuft …';
+    // Nach 120 s reisst der Browser die Verbindung selbst ab — das soll er nicht
+    // stillschweigend tun, sondern mit einer Meldung, die man lesen kann.
+    var abbruch = new AbortController();
+    var uhr = setTimeout(function () { abbruch.abort(); }, 120000);
     fetch(endpoint, {
       method: 'POST',
       headers: anfrageKopf,
+      signal: abbruch.signal,
       body: JSON.stringify({
         model: modell || undefined,
         temperature: 0,
@@ -4000,6 +4153,18 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
         messages: nachrichten
       })
     }).then(function (antwort) {
+      clearTimeout(uhr);
+      var art = (antwort.headers.get('Content-Type') || '').toLowerCase();
+      if (!art.includes('json')) {
+        var gut = antwort.status === 401 || antwort.status === 403
+          ? 'Anmeldung abgelehnt — der Benutzername oder das Passwort des Zugangs stimmt nicht.'
+          : (antwort.status === 502 || antwort.status === 503 || antwort.status === 504
+            ? 'Der Dienst ist nicht erreichbar (HTTP ' + antwort.status + ').'
+            : 'Antwort ist kein JSON (HTTP ' + antwort.status + '). Meist liegt vor der KI ein Login oder Proxy.');
+        var fehler = new Error(gut);
+        fehler.ohnePunkt = true;
+        throw fehler;
+      }
       if (!antwort.ok) {
         // Die Gegenstelle sagt meist genau, was fehlt (Schluessel, Guthaben, Modell).
         return antwort.text().then(function (roh) {
@@ -4015,10 +4180,30 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
       }
       return antwort.json();
     }).then(function (daten) {
-      var inhalt = daten && daten.choices && daten.choices[0] && daten.choices[0].message && daten.choices[0].message.content;
+      var wahl = daten && daten.choices && daten.choices[0];
+      var inhalt = wahl && wahl.message && wahl.message.content;
+      if (wahl && wahl.finish_reason === 'length') {
+        throw new Error('Antwort wurde abgeschnitten: der Prozess ist für eine Antwort zu lang '
+          + '(Token-Grenze). Bitte "Prozessabschnitt" nutzen — z. B. "Abschnitt 4" — oder den Text teilen.');
+      }
       if (!inhalt) throw new Error('Antwort ohne Inhalt');
       var bereinigt = String(inhalt).trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
-      var json = JSON.parse(bereinigt);
+      var json;
+      try {
+        json = JSON.parse(bereinigt);
+      } catch (e) {
+        // Manchmal steht vor oder nach dem JSON noch ein Satz. Das erste
+        // vollstaendige Objekt gewinnt, sonst bleibt die Meldung klar.
+        var anfang = bereinigt.indexOf('{');
+        var ende = bereinigt.lastIndexOf('}');
+        if (anfang >= 0 && ende > anfang) {
+          try { json = JSON.parse(bereinigt.slice(anfang, ende + 1)); } catch (e2) { json = null; }
+        }
+        if (!json) {
+          throw new Error('Antwort war kein gültiges JSON (Anfang: '
+            + bereinigt.slice(0, 80).replace(/\s+/g, ' ') + '…)');
+        }
+      }
 
       // Weiterarbeit: die KI liefert Operationen, ausgeführt wird lokal.
       if (weiter && Array.isArray(json.operationen)) {
@@ -4043,9 +4228,21 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
       var schritte = liste.map(function (s) {
         var bedingung = String(s.bedingung || s.condition || '').trim();
         if (zeitwort.test(bedingung)) bedingung = '';
+        var aktion = String(s.aktion || s.action || 'bearbeiten').trim().toLowerCase();
+        // Ein Entscheidungsschritt ist keine Aufgabe: er wird zum Gateway.
+        if (s.entscheidung || /^(entscheiden?|decision|gateway)$/i.test(aktion)) {
+          return {
+            rolle: String(s.rolle || s.role || '').trim(),
+            aktion: 'entscheiden',
+            objekt: '',
+            frage: String(s.frage || s.entscheidung_frage || '').trim(),
+            entscheidung: s.entscheidung || ['ja', 'nein'],
+            bedingung: bedingung
+          };
+        }
         return {
           rolle: String(s.rolle || s.role || '').trim(),
-          aktion: String(s.aktion || s.action || 'bearbeiten').trim().toLowerCase(),
+          aktion: aktion,
           objekt: String(s.objekt || s.object || '').trim(),
           bedingung: bedingung
         };
@@ -4063,9 +4260,15 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
         pruefe();
       });
     }).catch(function (fehler) {
+      clearTimeout(uhr);
+      var grund = fehler && fehler.name === 'AbortError'
+        ? 'Zeitüberschreitung (120 s)'
+        : String((fehler && fehler.message) || fehler);
       status.hidden = false;
       status.className = 'warnung fehler';
-      status.textContent = 'KI-Aufruf fehlgeschlagen: ' + fehler.message + '. Es wurde nichts übernommen.';
+      status.textContent = 'KI-Aufruf fehlgeschlagen: ' + grund
+        + (String(grund).slice(-1) === '.' ? '' : '.') + ' Es wurde nichts übernommen.';
+      // Der Dialog bleibt offen, damit der Text nicht verloren geht.
     });
   }
 
@@ -4087,6 +4290,13 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
     $('btn-konform').addEventListener('click', konformMachen);
     $('btn-text').addEventListener('click', textDialogOeffnen);
     $('text-abweisen').addEventListener('click', function () { $('text-dialog').close(); });
+    if ($('ki-datei')) {
+      $('ki-datei').addEventListener('change', function (e) {
+        kiDateien(e.target.files);
+        e.target.value = '';
+      });
+    }
+
     var beispielKnopf = $('text-beispiel');
     if (beispielKnopf) {
       beispielKnopf.addEventListener('click', function () {
@@ -4153,7 +4363,7 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
       pruefe: pruefe,
       zerlege: zerlege,
       prozessXml: prozessXml,
-      version: '3.10.1'
+      version: '3.11.0'
     };
   }
 

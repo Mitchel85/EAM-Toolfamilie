@@ -119,6 +119,15 @@
     <label class="feld">Pool-Name (optional)
       <input id="ki-name" type="text" placeholder="z. B. Antragsverfahren" autocomplete="off">
     </label>
+    <label class="feld">Dokument oder Text
+      <input id="ki-datei" type="file" accept=".pdf,.txt,.md,text/plain,application/pdf" multiple>
+      <span class="hilfe">PDF oder Textdatei. Der Text wird im Browser gelesen und mitgeschickt —
+        das Dokument verlässt den Rechner nicht ungeprüft.</span>
+    </label>
+    <label class="feld">Prozessabschnitt (optional)
+      <input id="ki-abschnitt" type="text" placeholder="z. B. Abschnitt 4 oder Vergabeverfahren" autocomplete="off">
+      <span class="hilfe">Große Dokumente: nur den genannten Abschnitt senden, statt des ganzen Textes.</span>
+    </label>
     <label class="feld">Prozesstext
       <textarea id="ki-eingabe" rows="10" placeholder="Nur erfundene Beispieldaten oder freigegebene Inhalte."></textarea>
     </label>
