@@ -1479,7 +1479,12 @@
     $('ki-status').hidden = true;
     // Im Serverbetrieb liegen Schlüssel und Modell beim Dienst — die Felder
     // würden nur verwirren.
-    if ($('ki-zugang')) $('ki-zugang').hidden = !!window.BPMN_KI_DIENST;
+    // Im Serverbetrieb liegen Schlüssel und Modell beim Dienst — die Felder
+    // würden nur verwirren. Ausnahme: Der Dienst speichert keinen Schlüssel
+    // (SharePoint/Offenlegung), dann muss der Absender seinen eintragen können.
+    if ($('ki-zugang')) {
+      $('ki-zugang').hidden = !!window.BPMN_KI_DIENST && window.BPMN_KI_MODUS !== 'pass-through';
+    }
     try {
       if (!$('ki-url').value) $('ki-url').value = localStorage.getItem('bpmn-ki-url') || '';
       if (!$('ki-modell').value) $('ki-modell').value = localStorage.getItem('bpmn-ki-modell') || '';
@@ -1783,6 +1788,19 @@
     // Nur der eigene Dienst kennt den Hintergrund-Auftrag. Ein fremder
     // Endpunkt bekommt das Feld nicht, sonst lehnt er die Anfrage ab.
     if (dienst) rumpf.hintergrund = true;
+    // Offenlegungs-Modus (SharePoint): der Dienst hat keinen eigenen Schluessel,
+    // der Absender schickt seines mit. Uebertragen wird nur ueber https.
+    if (dienst && window.BPMN_KI_MODUS === 'pass-through') {
+      if (!key) {
+        status.hidden = false;
+        status.className = 'warnung fehler';
+        status.textContent = 'Bitte den eigenen API-Schlüssel eintragen — dieser Dienst '
+          + 'speichert keinen. Der Schlüssel bleibt im Browser und wird nur an die '
+          + 'eingetragene Adresse gesendet.';
+        return;
+      }
+      rumpf.zugang = { schluessel: key, adresse: basis || undefined, modell: modell || undefined };
+    }
 
     fetch(endpoint, {
       method: 'POST',
@@ -1982,6 +2000,14 @@
     $('ki-aktiv').addEventListener('change', function () {
       if (this.checked) kiDialogOeffnen();
     });
+    // Offenlegungs-Modus erklaeren, bevor jemand auf "Senden" drueckt.
+    (function () {
+      var hilfe = $('ki-modus-hilfe');
+      if (hilfe && window.BPMN_KI_MODUS === 'pass-through') {
+        hilfe.textContent = 'Dieser Dienst speichert keinen Schlüssel. Ohne eigenen '
+          + 'Schlüssel ist die KI gesperrt; Lesen, Extrahieren und Prüfen laufen ohne KI.';
+      }
+    })();
     $('ki-abweisen').addEventListener('click', function () { $('ki-dialog').close(); });
     $('ki-starten').addEventListener('click', function () { kiExtrahieren(false); });
     $('ki-weiter').addEventListener('click', function () { kiExtrahieren(true); });

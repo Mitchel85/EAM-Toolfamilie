@@ -40,7 +40,7 @@ Eine Zelle ist ein Ordner mit `package.json`. `dependencies` sind Laufzeit-,
 | `apps/html-suite` | eam-ai-suite | 9.1.0 | `@mitchel85/eam-vendor` |
 | `apps/html-editor` | eam-suite | 8.4.0 | `@mitchel85/eam-vendor` |
 | `apps/admbw-extractor/html` | eam-admbw-extractor-html | 2.0.0 | — |
-| `apps/bpmn-studio` | eam-bpmn-studio | 3.13.0 | — |
+| `apps/bpmn-studio` | eam-bpmn-studio | 3.14.0 | — |
 | `apps/mcp` | eam-mcp | 2.4.0 | `@mitchel85/eam-core` |
 | `apps/admbw-extractor` | eam-admbw-extractor | 2.4.0 | `@mitchel85/eam-rules` |
 | `apps/cli` | eam-ai-cli | 2.4.0 | `@mitchel85/eam-core`, `@mitchel85/eam-rules` |
@@ -114,6 +114,7 @@ Eine Zelle ist ein Ordner mit `package.json`. `dependencies` sind Laufzeit-,
 | `EAM-Suite.aspx` | `apps/html-editor/dist/EAM-Suite.aspx` |
 | `EAM-Suite-en.html` | `apps/html-editor/dist/EAM-Suite-en.html` |
 | `BPMN-Studio.html` | `apps/bpmn-studio/dist/BPMN-Studio.html` |
+| `BPMN-Studio.aspx` | `apps/bpmn-studio/dist/BPMN-Studio.aspx` |
 | `ADMBw-Extraktor.html` | `apps/admbw-extractor/html/dist/ADMBw-Extraktor.html` |
 | `admbw-extraktor.py` | `packages/rules/mdg_parser.py` |
 | `EAM-MDG-Parser.html` | `apps/admbw-extractor/html/dist/ADMBw-Extraktor.html` |

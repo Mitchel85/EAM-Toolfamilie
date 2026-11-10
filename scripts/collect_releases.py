@@ -91,6 +91,12 @@ AUSLIEFERUNGEN = [
         "Prozesse als BPMN 2.0 anzeigen, bearbeiten, prüfen, ADMBw-konform machen; Export als XML, SVG und PNG. Offline im Browser.",
     ),
     (
+        "apps/bpmn-studio/dist/BPMN-Studio.aspx",
+        "BPMN-Studio.aspx",
+        "BPMN Studio — SharePoint-Fassung",
+        "Dieselbe Anwendung als ASPX mit BOM für SharePoint/IIS. KI nur mit eigenem Zugang, weil kein Schluessel in der Datei steht.",
+    ),
+    (
         "apps/admbw-extractor/html/dist/ADMBw-Extraktor.html",
         "ADMBw-Extraktor.html",
         "ADMBw Extraktor — eine HTML-Datei",

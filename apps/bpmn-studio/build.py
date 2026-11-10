@@ -37,8 +37,11 @@ PDF_WORKER = ROOT / "vendor" / "pdf.worker.min.js"
 REGELN = ROOT / "knowledge" / "bpmn" / "prozess-regeln.json"
 AUSGABE = HERE / "index.html"
 DIST = HERE / "dist" / "BPMN-Studio.html"
+# SharePoint/IIS-Fassung: dieselben Bytes, UTF-8 mit BOM, beginnt direkt mit
+# <!DOCTYPE html> — keine <%@ %>-Direktive, sonst verweigert ASP.NET den Start.
+ASPY = HERE / "dist" / "BPMN-Studio.aspx"
 
-VERSION = "3.13.0"
+VERSION = "3.14.0"
 BPMN_JS_VERSION = "18.31.1"
 
 MIME = {
@@ -137,7 +140,10 @@ def schreibe(inhalt: str) -> dict[str, Path]:
     AUSGABE.write_text(inhalt, encoding="utf-8")
     DIST.parent.mkdir(parents=True, exist_ok=True)
     DIST.write_text(inhalt, encoding="utf-8")
-    return {"index": AUSGABE, "dist": DIST}
+    # ASPX: gleicher Inhalt, BOM davor. Kein Servercode im Inhalt.
+    assert "<%" not in inhalt, "ASPX darf keine Server-Direktive enthalten"
+    ASPY.write_bytes(b"\xef\xbb\xbf" + inhalt.encode("utf-8"))
+    return {"index": AUSGABE, "dist": DIST, "aspx": ASPY}
 
 
 def main(argv: list[str] | None = None) -> int:
