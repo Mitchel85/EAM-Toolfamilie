@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:uml="http://schema.omg.org/spec/UML/2.1">
+  <xmi:Documentation exporter="Enterprise Architect" exporterVersion="16.0"/>
+  <uml:Model xmi:type="uml:Model" name="EA Model" xmi:id="EAPK_root">
+    <packagedElement xmi:type="uml:Package" xmi:id="EAPK_A" name="Facharchitektur">
+      <packagedElement xmi:type="uml:Class" xmi:id="EAID_C1" name="Kunde">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="EAID_AT1" name="name"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="EAID_AT2" name="nummer"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Class" xmi:id="EAID_C2" name="Vertrag">
+        <generalization xmi:type="uml:Generalization" xmi:id="EAID_G1" general="EAID_C1"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Interface" xmi:id="EAID_I1" name="Pruefbar"/>
+      <packagedElement xmi:type="uml:Association" xmi:id="EAID_AS1" name="hat" memberEnd="EAID_E1 EAID_E2">
+        <ownedEnd xmi:type="uml:Property" xmi:id="EAID_E1" type="EAID_C1"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="EAID_E2" type="EAID_C2"/>
+      </packagedElement>
+      <packagedElement xmi:type="uml:Dependency" xmi:id="EAID_D1" client="EAID_C2" supplier="EAID_I1"/>
+    </packagedElement>
+    <packagedElement xmi:type="uml:Package" xmi:id="EAPK_B" name="Technik">
+      <packagedElement xmi:type="uml:Component" xmi:id="EAID_CO1" name="Fachdienst"/>
+      <packagedElement xmi:type="uml:DataType" xmi:id="EAID_DT1" name="Geldbetrag"/>
+    </packagedElement>
+  </uml:Model>
+</xmi:XMI>

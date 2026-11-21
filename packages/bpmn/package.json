@@ -1,0 +1,13 @@
+{
+  "name": "@mitchel85/eam-bpmn",
+  "version": "3.14.0",
+  "private": true,
+  "description": "BPMN-2.0-Kernbibliothek für ADMBw-Prozessmodellierung (L4), Export und QEA-Brücke",
+  "main": "cli.py",
+  "files": [
+    "**/*"
+  ],
+  "dependencies": {
+    "@mitchel85/eam-core": "*"
+  }
+}

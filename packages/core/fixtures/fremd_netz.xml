@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Synthetische Fremdtechnologie fuer den Generik-Nachweis.
+  Fachgebiet: Energieverteilnetz eines Stadtwerks. Kein Bezug zu ADMBw,
+  NAFv4 oder einer anderen realen Technologie; alle Namen, Stereotypen und
+  Konnektorregeln sind frei erfunden und dienen nur dem Test.
+-->
+<MDG.Technology version="2.4">
+	<Documentation id="Netzplan" name="Stadtwerke Netzplan" version="2.4"
+		notes="Fremde Technologie (synthetisch): Energieverteilnetz mit eigenen Stereotypen, eigenen Konnektorregeln und deutschen Rollenbezeichnungen." />
+	<UMLProfiles>
+		<UMLProfile profiletype="uml2">
+			<Documentation id="Netzplan" name="Netzplan Basis" />
+			<Content>
+				<Stereotypes>
+					<Stereotype name="Betriebsmittel" metatype="Betriebsmittel"
+						notes="Abstrakte Wurzel aller Betriebsmittel; nicht direkt modellierbar."
+						isAbstract="true" />
+					<Stereotype name="Netzsegment" metatype="Netzsegment"
+						notes="Abschnitt des Verteilnetzes." generalizes="Netzplan::Betriebsmittel">
+						<AppliesTo>
+							<Apply type="Class" />
+							<Apply type="Object" />
+						</AppliesTo>
+						<TaggedValues>
+							<Tag name="spannungsebene" type="Enum"
+								description="Nennspannung des Segments" unit=""
+								values="NS;MS;HS" default="NS" />
+							<Tag name="laengeKm" type="Real"
+								description="Trassenlaenge" unit="km" values="" default="0" />
+						</TaggedValues>
+					</Stereotype>
+					<Stereotype name="Messpunkt" metatype="Messpunkt"
+						notes="Messstelle im Netz." generalizes="Netzplan::Betriebsmittel">
+						<AppliesTo>
+							<Apply type="Class" />
+						</AppliesTo>
+						<TaggedValues>
+							<Tag name="messart" type="Enum"
+								description="Gemessene Groesse" unit=""
+								values="Wirkleistung;Blindleistung" default="Wirkleistung" />
+						</TaggedValues>
+					</Stereotype>
+					<Stereotype name="Leitzentrale" metatype="Leitzentrale"
+						notes="Ueberwachende Leitwarte.">
+						<AppliesTo>
+							<Apply type="Class" />
+							<Apply type="Component" />
+						</AppliesTo>
+					</Stereotype>
+				</Stereotypes>
+				<ViewDefinitions>
+					<ViewDefinition name="Netzuebersicht" alias="NU"
+						notes="Alle Segmente und Messpunkte im Ueberblick."
+						diagramID="NU" category="Netzplan" />
+				</ViewDefinitions>
+			</Content>
+		</UMLProfile>
+		<UMLProfile profiletype="uml2">
+			<Documentation id="Netzplan-Kanten" name="Netzplan Kanten" />
+			<Content>
+				<Stereotypes>
+					<Stereotype name="speist" metatype="speist"
+						notes="Ein Messpunkt speist ein Netzsegment (Association).">
+						<AppliesTo>
+							<Apply type="Association" />
+						</AppliesTo>
+						<metaconstraints>
+							<metaconstraint umlRole="source" constraint="Netzplan::Messpunkt" />
+							<metaconstraint umlRole="target" constraint="Netzplan::Netzsegment" />
+						</metaconstraints>
+					</Stereotype>
+					<Stereotype name="uebermittelt" metatype="uebermittelt"
+						notes="Messpunkt liefert Messwerte an die Leitzentrale (InformationFlow).">
+						<AppliesTo>
+							<Apply type="InformationFlow" />
+						</AppliesTo>
+						<metaconstraints>
+							<metaconstraint umlRole="informationSource" constraint="Netzplan::Messpunkt" />
+							<metaconstraint umlRole="informationTarget" constraint="Netzplan::Leitzentrale" />
+						</metaconstraints>
+					</Stereotype>
+					<Stereotype name="bindet" metatype="bindet"
+						notes="Leitzentrale bindet ein Netzsegment ein (Dependency).">
+						<AppliesTo>
+							<Apply type="Dependency" />
+						</AppliesTo>
+						<metaconstraints>
+							<metaconstraint umlRole="client" constraint="Netzplan::Leitzentrale" />
+							<metaconstraint umlRole="supplier" constraint="Netzplan::Netzsegment" />
+						</metaconstraints>
+					</Stereotype>
+					<Stereotype name="meldet" metatype="meldet"
+						notes="Meldung ohne Endpunkt-Restriktion (Message).">
+						<AppliesTo>
+							<Apply type="Message" />
+						</AppliesTo>
+					</Stereotype>
+					<Stereotype name="Netzdiagramm" metatype="Netzdiagramm"
+						notes="Diagramm-Stereotyp; wird zum Viewpoint, nicht zur Modellregel.">
+						<AppliesTo>
+							<Apply type="Diagram_Custom" />
+						</AppliesTo>
+					</Stereotype>
+				</Stereotypes>
+			</Content>
+		</UMLProfile>
+	</UMLProfiles>
+</MDG.Technology>

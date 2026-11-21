@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<MDG.Technology version="1.0">
+	<Documentation id="NAFv4-ADMBw" name="NAFv4-ADMBw" version="2026.05"
+		notes="Auszug der ADMBw-Technologie, synthetisch auf wenige Stereotypen reduziert (nur fuer Tests). Aufbau und Attributschema entsprechen dem Original."
+		supportURI="support@example.invalid" categoryList="NAFv4Cat" />
+	<UMLProfiles>
+		<UMLProfile profiletype="uml2">
+			<Documentation id="NAFv4-ADMBw" name="NAFv4-ADMBw" version="1.0" notes="Kernprofil" />
+			<Content>
+				<Stereotypes>
+					<Stereotype name="MeasurableElement" metatype="MeasurableElement"
+						notes="Abstrakte Wurzel fuer messbare Elemente." isAbstract="true"
+						generalizes="" baseStereotypes="" />
+					<Stereotype name="Process" metatype="Process"
+						notes="Ablauf, der Aktivitaeten ordnet." generalizes="MeasurableElement"
+						baseStereotypes="MeasurableElement">
+						<AppliesTo>
+							<Apply type="Class" />
+						</AppliesTo>
+					</Stereotype>
+					<Stereotype name="Capability" metatype="Capability"
+						notes="Faehigkeit – beabsichtigtes Ergebnis, unabhaengig vom Weg dorthin."
+						generalizes="MeasurableElement" baseStereotypes="MeasurableElement">
+						<AppliesTo>
+							<Apply type="Class">
+								<Property name="isActive" value="" />
+							</Apply>
+						</AppliesTo>
+						<TaggedValues>
+							<Tag name="reifegrad" type="Enum" description="Reifegrad der Faehigkeit"
+								unit="" values="A;B;C" default="B" />
+							<Tag name="genehmigtAm" type="Date" description="" unit="" values=""
+								default="" />
+						</TaggedValues>
+					</Stereotype>
+					<Stereotype name="OperationalActivity" metatype="OperationalActivity"
+						notes="Taetigkeit im operationellen Kontext." generalizes="MeasurableElement"
+						baseStereotypes="MeasurableElement">
+						<AppliesTo>
+							<Apply type="Class" />
+						</AppliesTo>
+						<metaconstraints>
+							<metaconstraint umlRole="classifier" constraint="NAFv4-ADMBw::Process" />
+						</metaconstraints>
+					</Stereotype>
+					<Stereotype name="ServiceSpecification" metatype="ServiceSpecification"
+						notes="Beschreibung eines Dienstes." generalizes="MeasurableElement"
+						baseStereotypes="MeasurableElement">
+						<AppliesTo>
+							<Apply type="Class" />
+						</AppliesTo>
+					</Stereotype>
+					<Stereotype name="ActualProject" metatype="ActualProject"
+						notes="Konkretes Vorhaben." generalizes="MeasurableElement"
+						baseStereotypes="MeasurableElement">
+						<AppliesTo>
+							<Apply type="Class" />
+						</AppliesTo>
+						<metarelationships>
+							<metarelationship metaclass="Composition"
+								constraint="NAFv4-ADMBw::ActualProject" />
+						</metarelationships>
+					</Stereotype>
+					<Stereotype name="CapabilityDependency" metatype="CapabilityDependency"
+						notes="Faehigkeit haengt von einer anderen ab." generalizes="MeasurableElement"
+						baseStereotypes="MeasurableElement">
+						<AppliesTo>
+							<Apply type="Dependency">
+								<Property name="direction" value="Source -&gt; Destination" />
+							</Apply>
+						</AppliesTo>
+						<metaconstraints>
+							<metaconstraint umlRole="client" constraint="NAFv4-ADMBw::Capability" />
+							<metaconstraint umlRole="supplier" constraint="NAFv4-ADMBw::Capability" />
+						</metaconstraints>
+					</Stereotype>
+					<Stereotype name="ActivitySupportsService" metatype="ActivitySupportsService"
+						notes="Aktivitaet unterstuetzt einen Dienst." generalizes="MeasurableElement"
+						baseStereotypes="MeasurableElement">
+						<AppliesTo>
+							<Apply type="Realisation">
+								<Property name="direction" value="Source -&gt; Destination" />
+							</Apply>
+						</AppliesTo>
+						<metaconstraints>
+							<metaconstraint umlRole="client"
+								constraint="NAFv4-ADMBw::OperationalActivity" />
+							<metaconstraint umlRole="supplier"
+								constraint="NAFv4-ADMBw::ServiceSpecification" />
+						</metaconstraints>
+					</Stereotype>
+					<Stereotype name="Exhibits" metatype="Exhibits"
+						notes="Faehigkeit zeigt eine Eigenschaft." generalizes="MeasurableElement"
+						baseStereotypes="MeasurableElement SysML1.4::allocate">
+						<AppliesTo>
+							<Apply type="Abstraction">
+								<Property name="direction" value="Source -&gt; Destination" />
+							</Apply>
+						</AppliesTo>
+						<metaconstraints>
+							<metaconstraint umlRole="client" constraint="NAFv4-ADMBw::Capability" />
+							<metaconstraint umlRole="supplier"
+								constraint="NAFv4-ADMBw::ServiceSpecification" />
+						</metaconstraints>
+					</Stereotype>
+				</Stereotypes>
+				<TaggedValueTypes />
+				<ViewDefinitions />
+				<Metamodel />
+			</Content>
+		</UMLProfile>
+	</UMLProfiles>
+	<DiagramProfile>
+		<UMLProfile>
+			<Documentation id="D-CONCEPT" name="ADMBw Concept Viewpoints" version="1.0"
+				notes="Viewpoint-Gruppe" />
+			<Content>
+				<Stereotypes>
+					<Stereotype name="C1 - Capability Taxonomy" alias="C1 - Capability Taxonomy"
+						notes="Faehigkeiten und ihre Hierarchie.">
+						<AppliesTo>
+							<Apply type="Diagram_Custom">
+								<Property name="alias" value="C1 – Capability Taxonomy" />
+								<Property name="diagramID" value="C1" />
+								<Property name="toolbox" value="ADMBw-C1-Toolbox" />
+							</Apply>
+						</AppliesTo>
+					</Stereotype>
+				</Stereotypes>
+				<TaggedValueTypes />
+				<ViewDefinitions />
+				<Metamodel />
+			</Content>
+		</UMLProfile>
+	</DiagramProfile>
+	<UIToolboxes>
+		<UMLProfile>
+			<Documentation id="TB-C1" name="ADMBw-C1-Toolbox" version="1.0" notes="Werkzeugkasten" />
+			<Content>
+				<Stereotypes>
+					<Stereotype name="Capability" notes="Toolbox-Eintrag (keine Modellregel).">
+						<AppliesTo>
+							<Apply type="ToolboxItem" />
+						</AppliesTo>
+					</Stereotype>
+				</Stereotypes>
+				<TaggedValueTypes />
+				<ViewDefinitions />
+				<Metamodel />
+			</Content>
+		</UMLProfile>
+	</UIToolboxes>
+</MDG.Technology>

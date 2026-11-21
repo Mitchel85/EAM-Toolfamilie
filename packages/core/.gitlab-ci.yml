@@ -1,0 +1,98 @@
+# EAM AI Suite Python -- Pipeline fuer GitLab Community Edition (on-prem).
+#
+# Stages: lint -> test -> build -> release.
+# Nur CE-Bausteine: keine Merge-Trains, keine Ultimate-Security-Templates,
+# kein Auto-DevOps, keine SaaS-Includes. Die Befehlsfolge ist identisch mit
+# .github/workflows/ci.yml; ci/validate_pipeline.py prueft diese Paritaet.
+#
+# Fixtures: MDG und MASC liegen NICHT im Repo. Der Lauf erwartet sie im
+# internen Store unter EAM_FIXTURE_STORE (Runner-Mount) oder per
+# EAM_FIXTURE_STORE_URL. ci/stage_fixtures.py prueft SHA-256 und Groesse gegen
+# ci/fixtures_manifest.json und bricht bei Abweichung laut ab.
+#
+# Release: nur auf Tags vX.Y.Z, legt eine Freigabe ueber die Releases-API an
+# (CI_JOB_TOKEN). Die Pipeline committet und pusht nichts.
+
+stages:
+  - lint
+  - test
+  - build
+  - release
+
+variables:
+  PYTHON_IMAGE: python:3.11-slim
+  PYTHONDONTWRITEBYTECODE: "1"
+  PIP_CACHE_DIR: $CI_PROJECT_DIR/.cache/pip
+  EAM_FIXTURE_STORE: $CI_PROJECT_DIR/.fixture-store
+  EAM_RELEASE_PROVIDER: gitlab
+  EAM_RELEASE_TAG: $CI_COMMIT_TAG
+  EAM_RELEASE_COMMIT: $CI_COMMIT_SHA
+
+default:
+  image: $PYTHON_IMAGE
+  interruptible: true
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_TAG
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+lint:
+  stage: lint
+  script:
+    - python -m ci.lint_core
+    - python -m ci.validate_pipeline
+
+test:
+  stage: test
+  needs:
+    - lint
+  cache:
+    key:
+      files:
+        - ci/requirements-ci.txt
+    paths:
+      - .cache/pip
+  before_script:
+    - python -m pip install --disable-pip-version-check --requirement ci/requirements-ci.txt
+  script:
+    - python -m ci.stage_fixtures --optional
+    - python -m ci.stage_fixtures --check --optional
+    - python -m ci.run_tests
+  artifacts:
+    when: always
+    expire_in: 1 week
+    paths:
+      - reports/
+    reports:
+      junit: reports/junit.xml
+
+build:
+  stage: build
+  needs:
+    - test
+  before_script:
+    - python -m ci.stage_fixtures --optional
+  script:
+    - python -m ci.build_reference
+  artifacts:
+    when: on_success
+    expire_in: 1 week
+    paths:
+      - dist/reference/
+
+release:
+  stage: release
+  needs:
+    - job: build
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/
+  script:
+    - python -m ci.release
+  artifacts:
+    when: on_success
+    expire_in: 1 year
+    paths:
+      - release/

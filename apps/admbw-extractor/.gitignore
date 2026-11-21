@@ -1,0 +1,3 @@
+*.py
+!build_rag.py
+!checks/verify.py

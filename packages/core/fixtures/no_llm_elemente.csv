@@ -1,0 +1,3 @@
+package,name,stereotype,ea_type,notes,tag:Herkunft
+Architektur/Ressourcen,System A,System,Class,Testelement,Regel
+Architektur/Ressourcen,Port A,ServicePort,Port,,

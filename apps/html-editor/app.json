@@ -1,0 +1,17 @@
+{
+  "productName": "EAM Suite",
+  "version": "8.6",
+  "sourceRepo": "Mitchel85/EAM-Suite",
+  "sourceCommit": "3407bc0",
+  "sourceNote": "Titel/H1 ohne Altvermerk EXPERIMENTELL; Befunde (Stereotyp Issue) und Referenzdaten aus dem Regelwerk",
+  "sourceTreeSha256": "7ff5a290751bd900a513967fde91b151d890321af82618161132b48afcc2ddc4",
+  "buildScript": "src/build_release.py",
+  "sourceOutput": "EAM_Suite.html",
+  "sourceAspx": "EAM_Suite.aspx",
+  "output": "EAM-Suite.html",
+  "aspx": "EAM-Suite.aspx",
+  "extra": [
+    "EAM-Suite-en.html"
+  ],
+  "kind": "standalone"
+}

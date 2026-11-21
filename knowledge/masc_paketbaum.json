@@ -1,0 +1,205 @@
+{
+ "Systemarchitektur": {
+  "P5": [
+   "Resource State"
+  ],
+  "P3": [
+   "Resource Connectivity",
+   "Resource Interface"
+  ],
+  "P1": [
+   "Resource Types",
+   "Projektbezug"
+  ],
+  "P8": [
+   "Resource Constraint Realization",
+   "Resource Constraints"
+  ],
+  "Pr": [
+   "Configuration Management"
+  ],
+  "P4": [
+   "Resource Function"
+  ],
+  "P2": [
+   "Resource Structure",
+   "Organization",
+   "Node Realization",
+   "External Dependencies",
+   "Internal Dependencies",
+   "Application Hosting"
+  ],
+  "P7": [
+   "InformationElement Realization",
+   "Data Model",
+   "Data Elements"
+  ],
+  "L4-P4": [
+   "Function To Activity Mapping"
+  ]
+ },
+ "Anforderungen": {
+  "R3": [
+   "Requirements Dependencies"
+  ],
+  "Rr ": [
+   "Requirement Realization"
+  ],
+  "R2": [
+   "Requirements Catalogue"
+  ],
+  "R8": [
+   "Requirements Fullfilment"
+  ],
+  "R7": [
+   "Requirement Derivation"
+  ]
+ },
+ "Architekturauftrag": {
+  "A2": [
+   "Concerns",
+   "Stakeholder",
+   "Viewpoints"
+  ],
+  "A1": [
+   "Architekturbeschreibung"
+  ],
+  "A4": [
+   "Methodology Used"
+  ],
+  "A6": [
+   "Architecture Version"
+  ],
+  "A8": [
+   "Standards"
+  ],
+  "A3": [
+   "Architecture Correspondence"
+  ],
+  "A5": [
+   "Architecture Status"
+  ],
+  "A7": [
+   "Architecture Compliance",
+   "Findings and Recommendations",
+   "Compliance Statement"
+  ]
+ },
+ "Geschäftsarchitektur": {
+  "Lr": [
+   "Lines of Development"
+  ],
+  "C3": [
+   "Capability Dependency"
+  ],
+  "C4": [
+   "Standard Processes"
+  ],
+  "L5": [
+   "Logical States"
+  ],
+  "L6": [
+   "Logical Sequence"
+  ],
+  "L8": [
+   "Logical Constraints"
+  ],
+  "Cr": [
+   "Capability Roadmap"
+  ],
+  "L7": [
+   "Information Model"
+  ],
+  "C2": [
+   "Enterprise Vision"
+  ],
+  "L3": [
+   "Node Interactions"
+  ],
+  "C7": [
+   "Performance Parameters"
+  ],
+  "L2": [
+   "Logical Nodes",
+   "Logical Scenario"
+  ],
+  "L2-L3": [
+   "Logical Concept"
+  ],
+  "Ar": [
+   "Architecture Roadmap"
+  ],
+  "C1": [
+   "Funktionale Bausteine",
+   "NATO Targets",
+   "Fähigkeitsforderungen",
+   "EU Priorities"
+  ],
+  "C8": [
+   "Planning Assumptions"
+  ],
+  "C5": [
+   "Effects"
+  ],
+  "L1": [
+   "Node Types"
+  ]
+ },
+ "Modellelementekatalog": {
+  "InformationElements": [
+   "Informationsmodell MASC"
+  ],
+  "ActualLocations": [
+   "ActualEnvironments"
+  ],
+  "ServiceSpecifications": [
+   "NC3T"
+  ],
+  "ArchitecturalDescriptions": [
+   "Referenzarchitektur Weltraum",
+   "Raumschiff der Zukunft (RdZ)",
+   "MASC - Voranalysephase"
+  ],
+  "DataModels": [
+   "Physikalisches Datenmodell",
+   "Konzeptionelles Datenmodell"
+  ]
+ },
+ "Servicearchitektur": {
+  "S3": [
+   "Logische Kontextsicht"
+  ],
+  "C1-S1": [
+   "Einordnung Fähigkeitslage"
+  ],
+  "S8": [
+   "Service Policy"
+  ],
+  "Sr": [
+   "Service Change",
+   "Service Roadmap"
+  ],
+  "S6": [
+   "Service Interactions"
+  ],
+  "S4": [
+   "Servicefunktionen"
+  ],
+  "S5": [
+   "Service States"
+  ],
+  "S2": [
+   "Warranties",
+   "Serviceabhängigkeiten",
+   "IT-Service Komposition"
+  ],
+  "S7": [
+   "Serviceinterface"
+  ],
+  "S1": [
+   "Charakterisierung - Service",
+   "Einordnung – C3 Taxonomie",
+   "IT-Service Varianten"
+  ]
+ }
+}

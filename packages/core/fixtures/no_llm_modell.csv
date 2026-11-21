@@ -1,0 +1,6 @@
+record,path,package,name,source,target,stereotype,ea_type,notes,tag:Herkunft
+package,Architektur,,Architektur,,,,,,
+package,Architektur/Ressourcen,,Ressourcen,,,ArchitecturalDescription,,,Handbuch
+element,,Architektur/Ressourcen,System A,,,System,Class,Testelement,Regel
+element,,Architektur/Ressourcen,Port A,,,ServicePort,Port,,
+connector,,,,Architektur/Ressourcen::System A,Architektur/Ressourcen::Port A,Provides,Dependency,,

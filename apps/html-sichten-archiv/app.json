@@ -1,0 +1,14 @@
+{
+  "productName": "Sichten-Archiv",
+  "version": "1.0",
+  "sourceRepo": "Mitchel85/EAM-Toolfamilie",
+  "sourceCommit": "1ef12b3",
+  "sourceNote": "Einzeldatei-Werkzeug: Sichten und Layout aus einer .qea auslagern und verlustfrei zurückspielen",
+  "sourceTreeSha256": "6c3c5d459da2c53c78d4eadaca46c3073a46a03f1bfcdd649927b44e0db15fb5",
+  "buildScript": "src/build_release.py",
+  "sourceOutput": "Sichten-Archiv.html",
+  "sourceAspx": "Sichten-Archiv.aspx",
+  "output": "Sichten-Archiv.html",
+  "aspx": "Sichten-Archiv.aspx",
+  "kind": "standalone"
+}

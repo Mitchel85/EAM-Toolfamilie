@@ -1,0 +1,14 @@
+{
+  "productName": "EAM AI Suite",
+  "version": "9.1",
+  "sourceRepo": "Mitchel85/EAM-AI-Suite",
+  "sourceCommit": "897058d",
+  "sourceNote": "Quellstand; ADMBW_DATA wird beim Bauen aus knowledge/regelwerk.json erzeugt",
+  "sourceTreeSha256": "8bc2df1bb907faa101748f63675cabe6db52ba59abc631feb2e0e26c3f0d7af9",
+  "buildScript": "src/build_release.py",
+  "sourceOutput": "EAM-AI-Suite.html",
+  "sourceAspx": "EAM-AI-Suite.aspx",
+  "output": "EAM-AI-Suite.html",
+  "aspx": "EAM-AI-Suite.aspx",
+  "kind": "standalone"
+}

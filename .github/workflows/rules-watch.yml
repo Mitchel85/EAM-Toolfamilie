@@ -1,0 +1,165 @@
+name: regelwerk-waechter
+
+# Prüft alle 3 Wochen (und jederzeit manuell per „Run workflow") die amtlichen
+# Quellen von Bundeswehr/BAAINBw („Methode Architektur": ADMBw, MDG, Leitfäden)
+# und NATO (NAFv4 / NAFv4.1 / UAF- & ArchiMate-Guides).
+#
+# Standardbetrieb (Zeitplan alle 3 Wochen & Default bei manuellem Start):
+#   REINER PING-MODUS — es werden keine Dateien, Branches oder Commits geändert.
+#   Bei neuen oder geänderten Dokumenten erstellt der Workflow ein GitHub-Issue
+#   mit @Mitchel85-Ping und Direktlinks (inkl. Deduplizierung ohne Repo-Commit).
+#
+# Optionaler 1-Klick-Umbau (nur bei manuellem Start mit modus=mdg-uebernehmen):
+#   Übernimmt eine neue ADMBw-MDG automatisch (PII-Neutralisierung, CURRENT,
+#   propagate.py für Wissensbasis & HTML-Daten) auf Branch `rules/auto-update`
+#   als Pull Request zur Prüfung — niemals direkt auf main.
+
+on:
+  schedule:
+    # Jeden Montag um 05:17 UTC; der 3-Wochen-Filter im Job lässt nur jeden
+    # 3. Montag (alle 21 Tage) tatsächlich laufen.
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+    inputs:
+      modus:
+        description: "ping = nur benachrichtigen (Standard) | mdg-uebernehmen = neue ADMBw-MDG automatisch umbauen (PR)"
+        type: choice
+        default: ping
+        options:
+          - ping
+          - mdg-uebernehmen
+
+concurrency:
+  group: regelwerk-waechter
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    if: github.event_name == 'schedule' || inputs.modus == 'ping'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: 3-Wochen-Takt prüfen (nur bei Zeitplan)
+        id: takt
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            week=$(( $(date +%s) / 86400 / 7 ))
+            if [ $(( week % 3 )) -ne 0 ]; then
+              echo "run=nein" >> "$GITHUB_OUTPUT"
+              echo "Kein 3-Wochen-Termin (Woche $week, Rest $(( week % 3 ))) — übersprungen."
+              exit 0
+            fi
+          fi
+          echo "run=ja" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v4
+        if: steps.takt.outputs.run == 'ja'
+
+      - uses: actions/setup-python@v5
+        if: steps.takt.outputs.run == 'ja'
+        with:
+          python-version: "3.12"
+
+      - name: Letzten gemeldeten Snapshot aus Issues holen
+        if: steps.takt.outputs.run == 'ja'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue list \
+            --label "upstream-update" \
+            --state all \
+            --limit 1 \
+            --json body \
+            --jq '.[0].body // ""' > "$RUNNER_TEMP/letzter-snapshot.txt" || true
+
+      - name: Bundeswehr (ADMBw/MDG/Leitfäden) & NATO (NAFv4) prüfen
+        if: steps.takt.outputs.run == 'ja'
+        id: pruefen
+        run: |
+          set +e
+          python3 scripts/upstream_watch.py \
+            --letzter-snapshot "$RUNNER_TEMP/letzter-snapshot.txt" \
+            --bericht "$RUNNER_TEMP/upstream-ping.md"
+          code=$?
+          set -e
+          if [ "$code" -eq 2 ]; then
+            echo "neu=ja" >> "$GITHUB_OUTPUT"
+          elif [ "$code" -eq 0 ]; then
+            echo "neu=nein" >> "$GITHUB_OUTPUT"
+          else
+            exit "$code"
+          fi
+
+      - name: Ping-Issue erstellen (@Mitchel85)
+        if: steps.takt.outputs.run == 'ja' && steps.pruefen.outputs.neu == 'ja'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eu
+          gh label create "upstream-update" \
+            --description "Automatischer Ping bei neuen Bundeswehr- (ADMBw/MDG) oder NATO- (NAFv4) Dokumenten" \
+            --color "0E8A16" \
+            --force || true
+          datum="$(date -u +%Y-%m-%d)"
+          gh issue create \
+            --title "🔔 Neues Update bei Bundeswehr (ADMBw) / NATO (NAFv4) — $datum" \
+            --label "upstream-update" \
+            --assignee "Mitchel85" \
+            --body-file "$RUNNER_TEMP/upstream-ping.md"
+
+  mdg_uebernehmen:
+    if: github.event_name == 'workflow_dispatch' && inputs.modus == 'mdg-uebernehmen'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Neue ADMBw-MDG prüfen
+        id: pruefen
+        run: |
+          set +e
+          python3 scripts/regelwerk_update.py --pruefen
+          code=$?
+          set -e
+          if [ "$code" -eq 2 ]; then
+            echo "neu=ja" >> "$GITHUB_OUTPUT"
+          else
+            echo "neu=nein" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: ADMBw-MDG übernehmen & Wissensbasis/Artefakte umbauen
+        if: steps.pruefen.outputs.neu == 'ja'
+        run: python3 scripts/regelwerk_update.py --uebernehmen --protokoll "$RUNNER_TEMP/regelwerk-protokoll.md"
+
+      - name: Branch und Pull Request zur Prüfung
+        if: steps.pruefen.outputs.neu == 'ja'
+        env:
+          GH_TOKEN: ${{ secrets.REGELWERK_TOKEN || github.token }}
+        run: |
+          set -eu
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "Übernahme brachte keine Änderung — abgeschlossen."
+            exit 0
+          fi
+          git switch -C rules/auto-update
+          git add -A
+          git commit -m "Regelwerk: amtliche ADMBw-MDG übernommen (Wächter)"
+          git push -f origin rules/auto-update
+          if gh pr view rules/auto-update >/dev/null 2>&1; then
+            gh pr edit rules/auto-update --body-file "$RUNNER_TEMP/regelwerk-protokoll.md"
+          else
+            gh pr create \
+              --head rules/auto-update \
+              --title "Regelwerk: amtliche ADMBw-MDG übernommen" \
+              --body-file "$RUNNER_TEMP/regelwerk-protokoll.md"
+          fi

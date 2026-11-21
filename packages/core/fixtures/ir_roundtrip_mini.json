@@ -1,0 +1,100 @@
+{
+  "ir_version": 1,
+  "technology": {
+    "profile": "MiniProfil"
+  },
+  "packages": [
+    {
+      "path": "MiniModell",
+      "notes": "Synthetisches Wurzelpaket. Keine echten Modelldaten."
+    },
+    {
+      "path": "MiniModell/Elemente",
+      "stereotype": "ArchitecturalDescription",
+      "notes": "Synthetisches Elementpaket.",
+      "tags": {
+        "Quelle": "synthetisch"
+      }
+    }
+  ],
+  "elements": [
+    {
+      "package": "MiniModell/Elemente",
+      "name": "",
+      "stereotype": "Note",
+      "ea_type": "Note",
+      "notes": "Synthetische Notiz ohne Namen."
+    },
+    {
+      "package": "MiniModell/Elemente",
+      "name": "Dienst C",
+      "stereotype": "ServiceSpecification",
+      "ea_type": "Class",
+      "notes": "Synthetischer Dienst C.",
+      "tags": {
+        "Herkunft": "synthetisch",
+        "Verfuegbarkeit": "99.5"
+      }
+    },
+    {
+      "package": "MiniModell/Elemente",
+      "name": "Knoten A",
+      "stereotype": "System",
+      "ea_type": "Class",
+      "notes": "Synthetischer Knoten A.",
+      "tags": {
+        "Herkunft": "synthetisch",
+        "Reifegrad": "2"
+      }
+    },
+    {
+      "package": "MiniModell/Elemente",
+      "name": "Knoten B",
+      "stereotype": "System",
+      "ea_type": "Class",
+      "notes": "Synthetischer Knoten B.",
+      "tags": {
+        "Herkunft": "synthetisch"
+      }
+    },
+    {
+      "package": "MiniModell/Elemente",
+      "name": "Schnittstelle X",
+      "stereotype": "ServicePort",
+      "ea_type": "Port",
+      "notes": "Synthetische Schnittstelle X."
+    }
+  ],
+  "connectors": [
+    {
+      "source": "MiniModell/Elemente",
+      "target": "MiniModell/Elemente::Knoten B",
+      "stereotype": "Enthaelt",
+      "ea_type": "Aggregation",
+      "name": "Paketkante"
+    },
+    {
+      "source": "MiniModell/Elemente::Dienst C",
+      "target": "MiniModell/Elemente::Schnittstelle X",
+      "stereotype": "Consumes",
+      "ea_type": "Dependency"
+    },
+    {
+      "source": "MiniModell/Elemente::Knoten A",
+      "target": "MiniModell/Elemente::Knoten B",
+      "stereotype": "Satisfy",
+      "ea_type": "Dependency",
+      "notes": "Synthetische Anforderungsbeziehung.",
+      "tags": {
+        "Begruendung": "synthetisch"
+      }
+    },
+    {
+      "source": "MiniModell/Elemente::Knoten A",
+      "target": "MiniModell/Elemente::Schnittstelle X",
+      "stereotype": "Provides",
+      "ea_type": "Dependency"
+    }
+  ],
+  "diagrams": []
+}

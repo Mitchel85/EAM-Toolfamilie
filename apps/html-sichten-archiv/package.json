@@ -1,0 +1,14 @@
+{
+  "name": "eam-sichten-archiv",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sichten-Archiv — Sichten und Layout aus .qea auslagern, verlustfrei zurückspielen",
+  "main": "dist/Sichten-Archiv.html",
+  "files": [
+    "**/*"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "@mitchel85/eam-vendor": "*"
+  }
+}

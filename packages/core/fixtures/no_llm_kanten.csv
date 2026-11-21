@@ -1,0 +1,2 @@
+source,target,stereotype,ea_type
+Architektur/Ressourcen::System A,Architektur/Ressourcen::Port A,Provides,Dependency

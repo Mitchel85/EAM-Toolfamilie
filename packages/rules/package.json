@@ -1,0 +1,10 @@
+{
+  "name": "@mitchel85/eam-rules",
+  "version": "2.5.0",
+  "private": true,
+  "description": "MDG-Parser und Regelwerk — die einzige Quelle für Stereotype und Verbindungen",
+  "main": "mdg_parser.py",
+  "files": [
+    "**/*"
+  ]
+}

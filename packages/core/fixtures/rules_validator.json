@@ -1,0 +1,544 @@
+{
+  "connectorRules": [
+    {
+      "alias": null,
+      "appliesTo": [
+        {
+          "metaclass": "Realisation",
+          "properties": {
+            "direction": "Source -> Destination"
+          }
+        }
+      ],
+      "baseStereotypes": [],
+      "direction": "Source -> Destination",
+      "generalizes": [],
+      "id": "cr:ActivitySupportsService",
+      "metaclasses": [
+        "Realisation"
+      ],
+      "metaconstraints": [
+        {
+          "constraints": [
+            "OperationalActivity"
+          ],
+          "role": "client"
+        },
+        {
+          "constraints": [
+            "ServiceSpecification"
+          ],
+          "role": "supplier"
+        }
+      ],
+      "metatype": "ActivitySupportsService",
+      "notes": "Taetigkeit unterstuetzt einen Dienst.",
+      "roles": {
+        "source": [
+          "client"
+        ],
+        "target": [
+          "supplier"
+        ]
+      },
+      "source": [
+        "OperationalActivity"
+      ],
+      "stereotype": "ActivitySupportsService",
+      "taggedValues": [],
+      "target": [
+        "ServiceSpecification"
+      ]
+    },
+    {
+      "alias": null,
+      "appliesTo": [
+        {
+          "metaclass": "Dependency",
+          "properties": {
+            "direction": "Source -> Destination"
+          }
+        }
+      ],
+      "baseStereotypes": [],
+      "direction": "Source -> Destination",
+      "generalizes": [],
+      "id": "cr:DependsOn",
+      "metaclasses": [
+        "Dependency"
+      ],
+      "metaconstraints": [
+        {
+          "constraints": [
+            "MeasurableElement"
+          ],
+          "role": "client"
+        },
+        {
+          "constraints": [
+            "MeasurableElement"
+          ],
+          "role": "supplier"
+        }
+      ],
+      "metatype": "DependsOn",
+      "notes": "Messbares Element haengt von einem messbaren Element ab.",
+      "roles": {
+        "source": [
+          "client"
+        ],
+        "target": [
+          "supplier"
+        ]
+      },
+      "source": [
+        "MeasurableElement"
+      ],
+      "stereotype": "DependsOn",
+      "taggedValues": [],
+      "target": [
+        "MeasurableElement"
+      ]
+    },
+    {
+      "alias": null,
+      "appliesTo": [
+        {
+          "metaclass": "Abstraction",
+          "properties": {
+            "direction": "Source -> Destination"
+          }
+        }
+      ],
+      "baseStereotypes": [],
+      "direction": "Source -> Destination",
+      "generalizes": [],
+      "id": "cr:Exhibits",
+      "metaclasses": [
+        "Abstraction"
+      ],
+      "metaconstraints": [
+        {
+          "constraints": [
+            "Capability"
+          ],
+          "role": "client"
+        },
+        {
+          "constraints": [
+            "ServiceSpecification"
+          ],
+          "role": "supplier"
+        }
+      ],
+      "metatype": "Exhibits",
+      "notes": "Faehigkeit zeigt eine Dienstbeschreibung.",
+      "roles": {
+        "source": [
+          "client"
+        ],
+        "target": [
+          "supplier"
+        ]
+      },
+      "source": [
+        "Capability"
+      ],
+      "stereotype": "Exhibits",
+      "taggedValues": [],
+      "target": [
+        "ServiceSpecification"
+      ]
+    },
+    {
+      "alias": null,
+      "appliesTo": [
+        {
+          "metaclass": "Dependency",
+          "properties": {
+            "direction": "Source -> Destination"
+          }
+        }
+      ],
+      "baseStereotypes": [],
+      "direction": "Source -> Destination",
+      "generalizes": [],
+      "id": "cr:LocatedIn",
+      "metaclasses": [
+        "Dependency"
+      ],
+      "metaconstraints": [
+        {
+          "constraints": [
+            "ActualLocation"
+          ],
+          "role": "client"
+        },
+        {
+          "constraints": [
+            "Externprofil::ActualCondition"
+          ],
+          "role": "supplier"
+        }
+      ],
+      "metatype": "LocatedIn",
+      "notes": "Ort liegt in einer fremdprofiligen Bedingung.",
+      "roles": {
+        "source": [
+          "client"
+        ],
+        "target": [
+          "supplier"
+        ]
+      },
+      "source": [
+        "ActualLocation"
+      ],
+      "stereotype": "LocatedIn",
+      "taggedValues": [],
+      "target": [
+        "Externprofil::ActualCondition"
+      ]
+    },
+    {
+      "alias": null,
+      "appliesTo": [
+        {
+          "metaclass": "Dependency",
+          "properties": {
+            "direction": "Source -> Destination"
+          }
+        }
+      ],
+      "baseStereotypes": [],
+      "direction": "Source -> Destination",
+      "generalizes": [],
+      "id": "cr:Provides",
+      "metaclasses": [
+        "Dependency"
+      ],
+      "metaconstraints": [
+        {
+          "constraints": [
+            "System"
+          ],
+          "role": "client"
+        },
+        {
+          "constraints": [
+            "ServicePort"
+          ],
+          "role": "supplier"
+        }
+      ],
+      "metatype": "Provides",
+      "notes": "System stellt einen Dienstzugang bereit.",
+      "roles": {
+        "source": [
+          "client"
+        ],
+        "target": [
+          "supplier"
+        ]
+      },
+      "source": [
+        "System"
+      ],
+      "stereotype": "Provides",
+      "taggedValues": [],
+      "target": [
+        "ServicePort"
+      ]
+    },
+    {
+      "alias": null,
+      "appliesTo": [
+        {
+          "metaclass": "Dependency",
+          "properties": {
+            "direction": "Source -> Destination"
+          }
+        }
+      ],
+      "baseStereotypes": [],
+      "direction": "Source -> Destination",
+      "generalizes": [],
+      "id": "cr:StoredIn",
+      "metaclasses": [
+        "Dependency"
+      ],
+      "metaconstraints": [],
+      "metatype": "StoredIn",
+      "notes": "Kantenstereotyp ohne Endpunkt-Einschraenkung.",
+      "roles": {
+        "source": [],
+        "target": []
+      },
+      "source": [
+        "*"
+      ],
+      "stereotype": "StoredIn",
+      "taggedValues": [],
+      "target": [
+        "*"
+      ]
+    }
+  ],
+  "elementStereotypes": [
+    {
+      "abstract": false,
+      "alias": null,
+      "appliesTo": [
+        {
+          "metaclass": "Class",
+          "properties": {}
+        }
+      ],
+      "baseStereotypes": [],
+      "generalizes": [],
+      "metaclasses": [
+        "Class"
+      ],
+      "metaconstraints": [],
+      "metarelationships": [],
+      "metatype": "ActualCondition",
+      "name": "ActualCondition",
+      "notes": "Synthetische Bedingung.",
+      "taggedValues": []
+    },
+    {
+      "abstract": false,
+      "alias": null,
+      "appliesTo": [
+        {
+          "metaclass": "Class",
+          "properties": {}
+        }
+      ],
+      "baseStereotypes": [
+        "ActualCondition"
+      ],
+      "generalizes": [
+        "ActualCondition"
+      ],
+      "metaclasses": [
+        "Class"
+      ],
+      "metaconstraints": [],
+      "metarelationships": [],
+      "metatype": "ActualLocation",
+      "name": "ActualLocation",
+      "notes": "Synthetischer Ort, Spezialisierung von ActualCondition.",
+      "taggedValues": []
+    },
+    {
+      "abstract": false,
+      "alias": null,
+      "appliesTo": [
+        {
+          "metaclass": "Package",
+          "properties": {}
+        }
+      ],
+      "baseStereotypes": [],
+      "generalizes": [],
+      "metaclasses": [
+        "Package"
+      ],
+      "metaconstraints": [],
+      "metarelationships": [],
+      "metatype": "ArchitecturalDescription",
+      "name": "ArchitecturalDescription",
+      "notes": "Synthetisches Paket-Stereotyp.",
+      "taggedValues": []
+    },
+    {
+      "abstract": false,
+      "alias": null,
+      "appliesTo": [
+        {
+          "metaclass": "Class",
+          "properties": {}
+        }
+      ],
+      "baseStereotypes": [
+        "MeasurableElement"
+      ],
+      "generalizes": [
+        "MeasurableElement"
+      ],
+      "metaclasses": [
+        "Class"
+      ],
+      "metaconstraints": [],
+      "metarelationships": [],
+      "metatype": "Capability",
+      "name": "Capability",
+      "notes": "Synthetische Faehigkeit.",
+      "taggedValues": []
+    },
+    {
+      "abstract": true,
+      "alias": null,
+      "appliesTo": [],
+      "baseStereotypes": [],
+      "generalizes": [],
+      "metaclasses": [],
+      "metaconstraints": [],
+      "metarelationships": [],
+      "metatype": "MeasurableElement",
+      "name": "MeasurableElement",
+      "notes": "Abstrakte Wurzel messbarer Elemente.",
+      "taggedValues": []
+    },
+    {
+      "abstract": false,
+      "alias": null,
+      "appliesTo": [
+        {
+          "metaclass": "Class",
+          "properties": {}
+        }
+      ],
+      "baseStereotypes": [
+        "MeasurableElement"
+      ],
+      "generalizes": [
+        "MeasurableElement"
+      ],
+      "metaclasses": [
+        "Class"
+      ],
+      "metaconstraints": [],
+      "metarelationships": [],
+      "metatype": "OperationalActivity",
+      "name": "OperationalActivity",
+      "notes": "Synthetische Taetigkeit.",
+      "taggedValues": []
+    },
+    {
+      "abstract": false,
+      "alias": null,
+      "appliesTo": [
+        {
+          "metaclass": "Port",
+          "properties": {}
+        }
+      ],
+      "baseStereotypes": [],
+      "generalizes": [],
+      "metaclasses": [
+        "Port"
+      ],
+      "metaconstraints": [],
+      "metarelationships": [],
+      "metatype": "ServicePort",
+      "name": "ServicePort",
+      "notes": "Synthetischer Dienstzugang.",
+      "taggedValues": []
+    },
+    {
+      "abstract": false,
+      "alias": null,
+      "appliesTo": [
+        {
+          "metaclass": "Class",
+          "properties": {}
+        }
+      ],
+      "baseStereotypes": [
+        "MeasurableElement"
+      ],
+      "generalizes": [
+        "MeasurableElement"
+      ],
+      "metaclasses": [
+        "Class"
+      ],
+      "metaconstraints": [],
+      "metarelationships": [],
+      "metatype": "ServiceSpecification",
+      "name": "ServiceSpecification",
+      "notes": "Synthetische Dienstbeschreibung.",
+      "taggedValues": []
+    },
+    {
+      "abstract": false,
+      "alias": null,
+      "appliesTo": [
+        {
+          "metaclass": "Class",
+          "properties": {}
+        }
+      ],
+      "baseStereotypes": [],
+      "generalizes": [],
+      "metaclasses": [
+        "Class"
+      ],
+      "metaconstraints": [],
+      "metarelationships": [],
+      "metatype": "System",
+      "name": "System",
+      "notes": "Synthetisches System.",
+      "taggedValues": []
+    }
+  ],
+  "metaclasses": [
+    {
+      "kind": "connector",
+      "name": "Abstraction",
+      "ruleCount": 1,
+      "stereotypeCount": 0
+    },
+    {
+      "kind": "element",
+      "name": "Class",
+      "ruleCount": 0,
+      "stereotypeCount": 7
+    },
+    {
+      "kind": "connector",
+      "name": "Dependency",
+      "ruleCount": 4,
+      "stereotypeCount": 0
+    },
+    {
+      "kind": "element",
+      "name": "Package",
+      "ruleCount": 0,
+      "stereotypeCount": 1
+    },
+    {
+      "kind": "element",
+      "name": "Port",
+      "ruleCount": 0,
+      "stereotypeCount": 1
+    },
+    {
+      "kind": "connector",
+      "name": "Realisation",
+      "ruleCount": 1,
+      "stereotypeCount": 0
+    }
+  ],
+  "schemaVersion": 1,
+  "source": {
+    "file": "rules_validator.json",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "technologyId": "VALIDATOR-TEST",
+    "technologyName": "Synthetisches Validator-Regelwerk",
+    "technologyNotes": "Rein synthetisch, fuer Tests von validator.py. Keine echten Modelle, keine Personendaten.",
+    "technologyVersion": "1.0"
+  },
+  "stats": {
+    "connectorRules": 6,
+    "elementStereotypes": 9,
+    "metaclasses": 6,
+    "viewpoints": 0,
+    "warnings": 0
+  },
+  "taggedValueTypes": [],
+  "viewpoints": [],
+  "warnings": []
+}

@@ -1,0 +1,26 @@
+# Kanonische Zeilenenden: LF fuer alle Textdateien, damit SHA-256-Pruefsummen
+# (PROVENANCE.json, sourceTreeSha256, dependency_report, BPMN Studio) unter
+# Linux und Windows byte-identisch bleiben.
+* text=auto eol=lf
+
+# Amtliche MDG-XML bleibt byte-exakt unveraendert (Pruefsumme gegen Quelle).
+packages/rules/*.xml binary -eol
+*.mdg binary -eol
+
+# Binaerdateien
+*.qea binary -eol
+*.qeax binary -eol
+*.sqlite binary -eol
+*.wasm binary -eol
+*.png binary -eol
+*.jpg binary -eol
+*.jpeg binary -eol
+*.gif binary -eol
+*.webp binary -eol
+*.ico binary -eol
+*.pdf binary -eol
+*.zip binary -eol
+*.woff binary -eol
+*.woff2 binary -eol
+*.ttf binary -eol
+*.eot binary -eol
