@@ -515,7 +515,8 @@ ${cards}
   <p class="lead">Jede Datei hat eine Prüfsumme. <a href="${sums}">SHA256SUMS herunterladen</a> und danach im Download-Ordner <code>sha256sum -c SHA256SUMS</code> ausführen.</p>
 
   <div class="footer">
-    EAM Toolfamilie · Release ${version} · <a href="${releases}">Alle Releases</a> · <a href="${sums}">SHA256SUMS</a>
+    EAM Toolfamilie · Release ${version} · <a href="${releases}">Alle Releases</a> · <a href="${sums}">SHA256SUMS</a><br>
+    Michael Estel · <a href="https://estel.email/">Übersicht, Bücher &amp; Kontakt (estel.email)</a> · <a href="https://estel.email/impressum.html">Impressum</a> · <a href="https://estel.email/datenschutz.html">Datenschutz</a>
   </div>
 </main>
 </body>

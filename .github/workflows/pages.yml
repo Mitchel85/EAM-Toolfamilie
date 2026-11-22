@@ -72,6 +72,33 @@ jobs:
             mkdir -p "seite/$ziel"
             cp "dist/$quelle" "seite/$ziel/index.html"
           done
+          # Rechtlicher Hinweis-Footer (1 Klick zu Zentrale, Impressum & Datenschutz)
+          # nur auf den gehosteten GitHub-Pages-Kopien der Einzel-Apps (Offline-Artefakte bleiben unverändert).
+          python3 - <<'PY'
+          from pathlib import Path
+
+          footer = (
+              '\n<div id="estel-legal-bar" style="padding:8px 14px;border-top:1px solid #cbd5e1;'
+              'background:#f8fafc;color:#475569;font:12px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;'
+              'text-align:center;">'
+              'Michael Estel &middot; '
+              '<a href="https://estel.email/" style="color:#0f6b63;text-decoration:none;font-weight:600;">Übersicht, Bücher &amp; Kontakt (estel.email)</a> &middot; '
+              '<a href="https://estel.email/impressum.html" style="color:#0f6b63;text-decoration:none;">Impressum</a> &middot; '
+              '<a href="https://estel.email/datenschutz.html" style="color:#0f6b63;text-decoration:none;">Datenschutz</a>'
+              '</div>\n'
+          )
+          targets = [
+              Path("seite/EAM-Suite-en.html"),
+              *Path("seite").glob("*/index.html"),
+          ]
+          for path in targets:
+              text = path.read_text(encoding="utf-8")
+              if "estel-legal-bar" in text:
+                  continue
+              idx = text.lower().rfind("</body>")
+              if idx != -1:
+                  path.write_text(text[:idx] + footer + text[idx:], encoding="utf-8")
+          PY
           # Kein Jekyll: reines HTML, keine Verarbeitung nötig.
           touch seite/.nojekyll
 
