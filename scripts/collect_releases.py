@@ -58,7 +58,7 @@ AUSLIEFERUNGEN = [
         "apps/html-suite/dist/EAM-AI-Suite.html",
         "EAM-AI-Suite.html",
         "EAM AI Suite v9.1 — eine HTML-Datei",
-        "Prosa oder Handbuch hinein, `.qea` heraus: prüfen, ansehen, bearbeiten.",
+        "Prosa oder Handbuch hinein, `.qea` heraus: live prüfen, per Chat with Data befragen, per Sprache weiterbauen.",
     ),
     (
         "apps/html-suite/dist/EAM-AI-Suite.aspx",
@@ -178,12 +178,12 @@ APP_ZIPS: tuple[AppBuendel, ...] = (
     {
         "name": "EAM-AI-Suite",
         "produkt": "EAM AI Suite — komplettes Paket (HTML, ASPX)",
-        "text": "Text, Handbuch, PDF oder Bild einlesen und daraus ein Modell erzeugen; prüfen, ansehen, bearbeiten, als `.qea`, `.xmi` oder `.json` speichern.",
+        "text": "Text, Handbuch, DOCX, PDF oder Bild iterativ einlesen und daraus ein Modell erzeugen; direkt in Explorer/Graph/QS ansehen, per Chat with Data befragen, im Dialog oder per Sprache weiterbauen und als `.qea`, `.xmi`, `.json` oder ArchiMate `.xml` speichern.",
         "dateien": (
             ("EAM-AI-Suite.html", "apps/html-suite/dist/EAM-AI-Suite.html", "Hauptfassung: im Browser öffnen"),
             ("EAM-AI-Suite.aspx", "apps/html-suite/dist/EAM-AI-Suite.aspx", "SharePoint-/IIS-Fassung mit BOM"),
         ),
-        "start": ("EAM-AI-Suite.html im Browser öffnen", "Quelle angeben (Text, Handbuch, PDF, Bild)", "Modell erzeugen und speichern"),
+        "start": ("EAM-AI-Suite.html im Browser öffnen", "Quelle angeben (Text, Handbuch, DOCX, PDF, Bild)", "Modell erzeugen, live prüfen, befragen & weiterbauen"),
     },
     {
         "name": "EAM-Analyzer",
@@ -572,10 +572,10 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
 
     karten = [
         _karte(
-            "EAM AI Suite", "Bauen",
-            "Text, Handbuch, DOCX, PDF, Bild oder Tabelle iterativ (ohne Kontextlimit) einlesen und daraus ein NAFv4/UAF-Modell erzeugen; MDG- & QS-prüfen, wahlweise mit Sichten bauen und als .qea, .xmi, .json oder ArchiMate-Projektion (.xml) speichern.",
+            "EAM AI Suite", "Bauen, Chat & Weiterbau",
+            "Text, Handbuch, DOCX, PDF, Bild oder Tabelle iterativ (ohne Kontextlimit) einlesen und daraus ein NAFv4/UAF-Modell erzeugen; sofort in Explorer/Graph/QS prüfen, per Chat with Data befragen, per Dialog oder Sprache (inkl. neuer Elemente/Pakete) live weiterbauen und als .qea, .xmi, .json oder ArchiMate-Projektion (.xml) speichern.",
             "EAM-AI-Suite.html", "EAM-AI-Suite.html herunterladen",
-            ["Datei herunterladen", "Datei öffnen", "Modell iterativ erzeugen"],
+            ["Datei herunterladen", "Datei öffnen", "Modell erzeugen, live prüfen, befragen & weiterbauen"],
             groesse=groesse("EAM-AI-Suite.html"),
             slug="ai-suite",
             seiten=SEITEN + "eam-ai-suite/",
@@ -630,16 +630,16 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
         ),
         _karte(
             "EAM AI Suite Python", "Für Terminal und Server",
-            "Kommandozeile <code>eam-ai</code> (build, convert, validate, qs, viewer, handbuch, stufe1–4, serve) mit optionalen Sichten und Batch-Lauf. Quellstand als ZIP.",
+            "Kommandozeile <code>eam-ai</code> (build, convert, validate, qs, frage, korrigiere, viewer, handbuch, stufe1–4, serve) sowie WebUI mit eingebettetem Live-Viewer, Chat with Data, NL-Änderung/Ausbau und Prosa-Weiterbau (--modell). Quellstand als ZIP.",
             "eam-ai-suite-python.zip", "eam-ai-suite-python.zip herunterladen",
-            ["ZIP entpacken", "<code>pip install ./eam-ai-suite-python</code>", "<code>eam-ai --version</code>"],
+            ["ZIP entpacken", "<code>pip install ./eam-ai-suite-python</code>", "<code>eam-ai serve</code> oder <code>eam-ai --version</code>"],
             groesse=groesse("eam-ai-suite-python.zip"),
             slug="python",
         ),
         f"""<article class="card wide">
   <span class="badge">Für Server</span>
   <h3>Container</h3>
-  <p>Fertiges Image mit Webdienst, Upload und Job-Status; Python muss auf dem Host nicht installiert sein.</p>
+  <p>Fertiges Image mit Webdienst (Live-Viewer-Vorschau, Chat with Data, NL-Ausbau &amp; Prosa-Weiterbau); Python muss auf dem Host nicht installiert sein.</p>
   <div class="meta">ghcr.io/mitchel85/eam-toolfamilie:v{html.escape(version)}</div>
   <a class="btn" href="{html.escape(REPO_URL + "/pkgs/container/eam-toolfamilie")}">Zur Container-Seite</a>
   <pre><code>docker pull ghcr.io/mitchel85/eam-toolfamilie:v{html.escape(version)}

@@ -6,11 +6,12 @@ Prosa + Technologie → .qea. Generischer Neubau der KI-Variante.
 (Import, Prüfen, Exportieren). Mit KI kommt Prosa-Extraktion dazu.
 
 Entscheidungen:
-- Keine Sichten, kein Layout, kein Editor (bewusst).
+- Optionale Sichten (`--sichten aus|mdg|leitfaden|wizard`, `view_builder.py`); Kern bleibt datei- und regelbasiert.
 - Technologie ist Daten, kein Code (beliebige MDG-XML).
 - Deterministischer Export: gleicher Input, gleiche Bytes (bei gleichem
   Interpreter; SQLite schreibt sein Dateiformat bibliotheksabhängig).
 - Herkunft je KI-Element als Tagged Value + Begleitdatei.
+- Nach dem Bau direkt prüf- und ausbaubar: WebUI (`eam-ai serve`) mit eingebettetem Live-Viewer, **Chat with Data** (`qea_chat.py` / `/chat`), natürlichsprachlichem Ändern & Ausbauen (`nl_edit.py` + `model_edit.py` inkl. `add_element`/`add_package`) sowie Prosa-Weiterbau (`--modell` / `/extend`).
 
 ## Stand
 
@@ -28,8 +29,11 @@ Entscheidungen:
 | `extract.py` | Prosa → IR mit Belegkennung, LLM-Aufruf austauschbar | fertig |
 | `emit.py` | IR → `.qea` mit Herkunfts-Tags + `quellen.json` | fertig |
 | `table_import.py` | CSV/XLSX → IR (stdlib, ohne openpyxl) | fertig |
-| `nl_edit.py` | Anweisung in natürlicher Sprache → geprüfte Operationsliste | fertig |
-| `eam_ai.py` / `eam-ai` | Gesamtlauf mit KI: MDG + Text → `.qea` | fertig |
+| `model_edit.py` | MDG-geprüfte Modelländerungen inkl. `add_package`, `add_element`, `add_connector` | fertig |
+| `nl_edit.py` | Anweisung in natürlicher Sprache → geprüfte Operationsliste (inkl. Ausbau) | fertig |
+| `qea_chat.py` | Chat with Data: lesende Fragen über Modell, Paket oder Element inkl. Quellen | fertig |
+| `webui.py` | Webdienst (`eam-ai serve`): Bau, Live-Viewer-Vorschau, Chat, NL-Edit & Prosa-Weiterbau | fertig |
+| `eam_ai.py` / `eam-ai` | Gesamtlauf mit KI: MDG + Text → `.qea`/`.xmi`/`.xml`/`.json` | fertig |
 | `eam_suite.py` | Regelpfad-CLI: Import, Prüfung, Export (`--no-llm`) | fertig |
 | `build_backend.py` / `tools/build_bundle.py` | deterministisches Wheel + Offline-Bundle | fertig |
 
