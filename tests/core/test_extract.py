@@ -1138,3 +1138,91 @@ def test_endpunkt_aus_bestand_ohne_nennung_im_absatz_bleibt_verworfen(rules):
     )
     assert result.ir["connectors"] == []
     assert "Dienst Lagebild" not in {e["name"] for e in result.ir["elements"]}
+
+
+def test_compact_prompt_ist_deutlich_kuerzer_und_backends_respektieren_context_tokens(rules):
+    segmente = ex.split_documents([PROSE])
+    full_p = ex.build_prompt(segmente, rules, "Architektur", compact=False)
+    compact_p = ex.build_prompt(segmente, rules, "Architektur", compact=True)
+    assert len(compact_p) < len(full_p)
+    assert "Element-Stereotype:" in compact_p
+
+    oai = ex.OpenAICompatibleBackend(model="klein", context_tokens=4096)
+    assert oai.payload("hi")["max_tokens"] <= 2048
+    oll = ex.OllamaBackend(model="lokal", context_tokens=8192)
+    assert oll.payload("hi")["options"]["num_ctx"] == 8192
+
+
+def test_plan_batches_teilt_ueberlangen_einzelabsatz():
+    riesen_absatz = " ".join(f"Satz {i} beschreibt Komponente K{i}." for i in range(60))
+    segmente = ex.split_documents([riesen_absatz])
+    assert len(segmente) == 1
+    batches = ex.plan_batches(segmente, budget_chars=400)
+    assert len(batches) >= 3
+    # Alle Teilstuecke behalten die gueltige Ursprungs-Referenz D1-S1.
+    assert all(seg.ref == "D1-S1" for batch in batches for seg in batch)
+
+
+def test_extract_batched_halbiert_automatisch_bei_context_limit_error(rules):
+    class TightContextBackend:
+        name = "tight-4k"
+
+        def __init__(self) -> None:
+            self.prompts: list[str] = []
+
+        def complete(self, prompt: str) -> str:
+            self.prompts.append(prompt)
+            # Simuliert ein sehr kleines Kontextfenster: jeder Prompt > 1800 Zeichen schlaegt fehl.
+            if len(prompt) > 1800:
+                raise ex.ContextLimitError("maximum context length exceeded")
+            els = []
+            if "Lagebildsystem" in prompt:
+                els.append({"name": "Lagebildsystem", "stereotype": "System", "notes": "Lagebildsystem", "source_ref": "D1-S1", "confidence": 0.9})
+            if "Dienst Lagebild" in prompt:
+                els.append({"name": "Dienst Lagebild", "stereotype": "ServicePort", "notes": "Dienst Lagebild", "source_ref": "D1-S2", "confidence": 0.85})
+            return json.dumps({"elements": els, "connectors": []})
+
+    backend = TightContextBackend()
+    big_prose = (
+        "Das Lagebildsystem erfasst Sensordaten. " + ("Zusatztext zum System. " * 35)
+        + "\n\n"
+        + "Der Dienst Lagebild liefert Karten. " + ("Zusatztext zum Dienst. " * 35)
+    )
+    result = ex.extract_batched([big_prose], rules=rules, backend=backend, package="Architektur")
+    names = {e["name"] for e in result.ir["elements"]}
+    assert names == {"Lagebildsystem", "Dienst Lagebild"}
+    assert len(backend.prompts) >= 3
+    assert len(result.ir["meta"]["extraction"]["chargen"]) >= 2
+
+
+def test_extract_batched_context_tokens_4k_nutzt_kompaktmodus(rules):
+    seen: list[str] = []
+
+    class RecordingBackend:
+        name = "small-4k"
+        context_tokens = 4096
+
+        def complete(self, prompt: str) -> str:
+            seen.append(prompt)
+            return json.dumps({
+                "elements": [{"name": "Kernkomponente", "stereotype": "System", "notes": "ok", "source_ref": "D1-S1", "confidence": 0.9}],
+                "connectors": [],
+            })
+
+    result = ex.extract_batched(
+        ["Die Kernkomponente verarbeitet Daten."],
+        rules=rules,
+        backend=RecordingBackend(),
+        package="Architektur",
+        context_tokens=4096,
+    )
+    assert len(seen) == 1
+    full_prompt = ex.build_prompt(
+        ex.split_documents(["Die Kernkomponente verarbeitet Daten."]),
+        rules,
+        "Architektur",
+        compact=False,
+    )
+    assert "Profil: " in seen[0]
+    assert len(seen[0]) < len(full_prompt)
+    assert {e["name"] for e in result.ir["elements"]} == {"Kernkomponente"}

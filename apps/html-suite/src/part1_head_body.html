@@ -817,8 +817,16 @@
               <span id="ki-files-info" class="dim"></span>
             </div>
             <div class="ki-grid" style="margin-top:8px">
+              <label class="ki-field"><span>Kontextprofil (LLM-Fenster)</span>
+                <select id="ki-ctx" onchange="KI.applyCtxProfile()" style="padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:#fff">
+                  <option value="">Standard (groß, 64k+)</option>
+                  <option value="16384">Mittel (16k Tokens)</option>
+                  <option value="8192">Klein (8k — lokales LLM)</option>
+                  <option value="4096">Sehr klein (4k Tokens)</option>
+                </select>
+              </label>
               <label class="ki-field"><span>Pause zwischen Abschnitten (Sekunden)</span><input type="number" id="ki-pause" value="120" min="0" step="10" title="Wartezeit zwischen zwei KI-Aufrufen; verhindert das Zugriffslimit"></label>
-              <label class="ki-field"><span>Zeichen je Abschnitt</span><input type="number" id="ki-charge" value="6000" min="1000" step="500" title="Kleinere Abschnitte = kleinere Antworten = weniger Limit-Risiko"></label>
+              <label class="ki-field"><span>Zeichen je Abschnitt</span><input type="number" id="ki-charge" value="6000" min="600" step="200" title="Kleinere Abschnitte = kleinere Antworten = weniger Limit-Risiko"></label>
               <label class="ki-field"><span>Laufstand</span><button type="button" class="btn-sm" id="ki-reset-run" onclick="KI.resetRun()">↺ Zurücksetzen</button></label>
             </div>
             <div class="ki-note">Lange Texte werden in Abschnitten verarbeitet. Zwischen zwei Abschnitten wird gewartet; nach einem Abbruch setzt derselbe Lauf beim nächsten Start an der ersten fehlenden Stelle fort (Laufstand im Browser).</div>

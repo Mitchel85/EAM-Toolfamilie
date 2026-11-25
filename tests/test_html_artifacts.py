@@ -23,7 +23,7 @@ APPS = {
         "product": "EAM AI Suite",
         "version": "v9.1",
         "title": "EAM AI Suite — QEA-Architekturen analysieren, erkunden, bearbeiten &amp; exportieren",
-        "bytes": 3_708_273,
+        "bytes": 3_711_286,
         "min_size": 3_000_000,
         "max_size": 4_000_000,
         "markers": ("window.KI", "var EDIT =", "var MERGE", "var STDIMPORT =", "function openAny(", "function exportXmi(", "syncToApp", "applyLive"),
@@ -270,6 +270,8 @@ def test_suite_chat_live_sync_und_nl_ausbau(gebaut: dict[str, dict]) -> None:
         "NL.applyLive()",
         "op.op === 'add_package'",
         "op.op === 'add_element'",
+        'id="ki-ctx"',
+        "function ctxProfile()",
     ):
         assert marker in html, f"Suite-Marker fehlt: {marker}"
 

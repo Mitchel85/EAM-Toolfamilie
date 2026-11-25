@@ -39,4 +39,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
     CMD ["python", "-c", "import sys, urllib.request; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=4).status == 200 else 1)"]
 
 CMD ["python", "-m", "eam_ai", "serve", "--host", "0.0.0.0", "--port", "8080", \
-     "--max-upload-mb", "25", "--max-seconds", "120", "--jobs", "2"]
+     "--max-upload-mb", "25", "--max-seconds", "1800", "--jobs", "2"]

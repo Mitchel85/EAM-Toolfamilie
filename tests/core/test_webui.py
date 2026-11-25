@@ -666,3 +666,22 @@ def test_post_build_chat_edit_extend_und_live_viewer(server: webui.WebServer) ->
     assert ext["job"]["revision"] == applied["job"]["revision"] + 1
     assert any("Wetterdienst" in el for el in ext["job"]["model_info"]["elements"])
 
+
+def test_webui_defaults_und_context_tokens(tmp_path: Path) -> None:
+    """WebUI bricht mehrstufige Laeufe nicht nach 120 s ab und reicht --kontext-tokens durch."""
+    assert webui.DEFAULT_MAX_SECONDS >= 1800.0
+    assert webui.DEFAULT_HTTP_TIMEOUT == 120.0
+    parts = {
+        "mdg_source": [webui.UploadPart("mdg_source", None, "", b"beispiel")],
+        "backend": [webui.UploadPart("backend", None, "", b"datei")],
+        "text": [webui.UploadPart("text", None, "", TEXT.encode("utf-8"))],
+        "context_tokens": [webui.UploadPart("context_tokens", None, "", b"8192")],
+    }
+    prepared = webui.prepare_request(parts, tmp_path, EXAMPLE)
+    assert prepared.context_tokens == 8192
+    cmd = webui.build_command(prepared, tmp_path, 1800.0)
+    assert "--kontext-tokens" in cmd
+    assert cmd[cmd.index("--kontext-tokens") + 1] == "8192"
+    # HTTP-Timeout je Charge bleibt auf 120 s gedeckelt, auch bei 1800 s Gesamtlimit.
+    assert float(cmd[cmd.index("--timeout") + 1]) == 120.0
+

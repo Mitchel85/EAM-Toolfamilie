@@ -329,7 +329,31 @@
   }
 
   /* ---------- System-Prompt ---------- */
-  function systemPrompt(voc, ruleText) {
+  function ctxProfile() {
+    var v = el('ki-ctx') ? String(el('ki-ctx').value || '') : '';
+    if (v === '4096') return { compact: true, maxTokens: 1024, catalogLimit: 20, defaultCharge: 900 };
+    if (v === '8192') return { compact: true, maxTokens: 2048, catalogLimit: 40, defaultCharge: 1800 };
+    if (v === '16384') return { compact: true, maxTokens: 4096, catalogLimit: 80, defaultCharge: 3500 };
+    return { compact: false, maxTokens: 8000, catalogLimit: 300, defaultCharge: TEIL_GRENZE };
+  }
+  function applyCtxProfile() {
+    var p = ctxProfile();
+    var c = el('ki-charge');
+    if (c) c.value = String(p.defaultCharge);
+  }
+  function systemPrompt(voc, ruleText, compact) {
+    if (compact) {
+      var shortRules = ruleText ? String(ruleText).split('\n').slice(0, 60).join('; ') : '';
+      var compactLines = [
+        'Du bist Enterprise-Architekt (ADMBw / NAFv4). Extrahiere Elemente, Beziehungen, Pakete und Sichten als reines JSON (kein Markdown):',
+        '{"name":"...","beschreibung":"...","packages":[{"name":"...","parent":null}],"elements":[{"name":"...","stereotype":"...","package":"...","note":"..."}],"connectors":[{"from":"...","to":"...","stereotype":"...","name":""}],"diagrams":[{"name":"...","package":"...","elements":["..."],"code":"C1"}]}',
+        'ELEMENT-STEREOTYPEN: ' + voc.els.join(', '),
+        'BEZIEHUNGS-STEREOTYPEN: ' + voc.rels.join(', '),
+        'Regeln: Namen deutsch, Stereotypen exakt wie gelistet, nichts erfinden, nur MDG-konforme Endpunkte.'
+      ];
+      if (shortRules) compactLines.push('REGELN: ' + shortRules);
+      return compactLines.join('\n');
+    }
     var base = [
       'Du bist ein Enterprise-Architekt fuer die Domäne ADMBw (NAFv4/ADMBw-Metamodell).',
       'Deine Aufgabe: Extrahiere aus der bereitgestellten Beschreibung (Text und/oder Bild) ein vollstaendiges Architekturmodell als JSON.',
@@ -646,7 +670,7 @@
   }
 
   function pauseSekunden() { return zahlAus('ki-pause', KI_PAUSE_DEFAULT, 0); }
-  function teilGrenze() { return zahlAus('ki-charge', TEIL_GRENZE, 1000); }
+  function teilGrenze() { return zahlAus('ki-charge', ctxProfile().defaultCharge || TEIL_GRENZE, 600); }
 
   function runKey(text, sysMsg, grenze) {
     try {
@@ -742,14 +766,15 @@
 
   /* Ein Abschnitt, dessen Antwort nicht ins Limit passt, wird halbiert und
      erneut versucht. So passt sich der Lauf der tatsaechlichen Ausgabemenge
-     an, statt an einer festen Groesse zu scheitern. */
+     und dem Kontextfenster des Modells an, statt an einer festen Groesse zu scheitern. */
   function holeAbschnitt(set, sysMsg, teil, nummer, gesamt, images) {
     statusMsg('⏳ Abschnitt ' + nummer + ' von ' + gesamt + ' wird ausgewertet …');
     var hinweis = 'Dies ist Abschnitt ' + nummer + ' von ' + gesamt +
       ' derselben Beschreibung. Extrahiere die darin genannten Elemente und Beziehungen. ' +
       'Weitere Abschnitte liefern weitere Elemente desselben Modells.\n\n';
     var userContent;
-    var opts = { maxTokens: 8000 };
+    var prof = ctxProfile();
+    var opts = { maxTokens: prof.maxTokens };
     if (images && images.length) {
       opts.model = set.vision || set.model;
       userContent = [{ type: 'text', text: hinweis + teil }];
@@ -761,8 +786,8 @@
     }
     return chatComplete(set, [{ role: 'system', content: sysMsg }, { role: 'user', content: userContent }], opts)
       .catch(function (e) {
-        var zuLang = /Tokenlimit|finish_reason=length/.test(e && e.message ? e.message : '');
-        if (!zuLang || teil.length < 1500) throw e;
+        var zuLang = /Tokenlimit|finish_reason=length|context[_ ]?length|maximum context|too many tokens|max_tokens|prompt is too long/i.test(e && e.message ? e.message : '');
+        if (!zuLang || teil.length < 600) throw e;
         var mitte = teil.lastIndexOf('\n\n', Math.floor(teil.length / 2));
         if (mitte < teil.length * 0.2) mitte = teil.lastIndexOf('\n', Math.floor(teil.length / 2));
         if (mitte < teil.length * 0.2) mitte = Math.floor(teil.length / 2);
@@ -1116,8 +1141,9 @@
     statusMsg('⏳ Modell wird generiert …');
     var voc = mdgVocab();
     var ruleText = mdgRuleText();
+    var prof = ctxProfile();
     var inv = (S.templateInv && !el('ki-clearmodel').checked) ? S.templateInv : '';
-    var sysMsg = systemPrompt(voc, ruleText) + (inv ? '\n' + inv : '') + catalogInventory(300);
+    var sysMsg = systemPrompt(voc, ruleText, prof.compact) + (inv ? '\n' + inv : '') + catalogInventory(prof.catalogLimit);
     var userParts = [{ type: 'text', text: promptText || 'Bitte extrahiere das Architekturmodell aus den beigefügten Dokumenten/Bildern.' }];
     collectParts(files).then(function (parts) {
       var images = parts.filter(function (p) { return p.type === 'image'; });
@@ -1161,7 +1187,13 @@
         if (gesamt.length > grenze) {
           return inTeilenHolen(set, sysMsg, gesamt, grenze, pauseSekunden());
         }
-        return chatComplete(set, [{ role: 'system', content: sysMsg }, { role: 'user', content: gesamt }]);
+        return chatComplete(set, [{ role: 'system', content: sysMsg }, { role: 'user', content: gesamt }], { maxTokens: prof.maxTokens })
+          .catch(function (e) {
+            var zuLang = /Tokenlimit|finish_reason=length|context[_ ]?length|maximum context|too many tokens|max_tokens|prompt is too long/i.test(e && e.message ? e.message : '');
+            if (!zuLang || gesamt.length < 600) throw e;
+            var compactSys = systemPrompt(voc, ruleText, true) + catalogInventory(Math.min(prof.catalogLimit, 40));
+            return inTeilenHolen(set, compactSys, gesamt, Math.max(600, Math.floor(gesamt.length / 2)), pauseSekunden());
+          });
       });
     }).then(function (content) {
       var ir = parseAndNormalize(content, voc);
@@ -2267,7 +2299,7 @@
     statusMsg('↺ Gespeicherter Laufstand gelöscht — der nächste Lauf beginnt bei Abschnitt 1.');
   }
 
-  window.KI = { init: init, pickTemplate: pickTemplate, setTemplate: setTemplate, pickMdg: pickMdg, setMdgFromBytes: setMdgFromBytes, loadMdg: loadMdg, validateModel: validateModel, getModel: function () { return S.model; }, newArchitecture: newArchitecture, requireMdg: requireMdg, fillExample: fillExample, generate: generate, exportQea: exportQea, analyzeInApp: analyzeInApp, syncToApp: syncToApp, openInTab: openInTab, report: report, chatSend: chatSend, chatAdd: chatAdd, modelToText: modelToText, modelInventory: modelInventory, mergeModels: mergeModels, resetRun: resetRun, stableGuid: stableGuid, elementGuid: elementGuid, loadCatalogBytes: loadCatalogBytes, pickCatalog: pickCatalog, applyCatalog: applyCatalog, getCatalog: function () { return S.katalog || []; }, runOps: runOps, Op: Op, buildBytes: function () { return buildQea(true); },
+  window.KI = { init: init, pickTemplate: pickTemplate, setTemplate: setTemplate, pickMdg: pickMdg, setMdgFromBytes: setMdgFromBytes, loadMdg: loadMdg, validateModel: validateModel, getModel: function () { return S.model; }, newArchitecture: newArchitecture, requireMdg: requireMdg, fillExample: fillExample, generate: generate, exportQea: exportQea, analyzeInApp: analyzeInApp, syncToApp: syncToApp, openInTab: openInTab, applyCtxProfile: applyCtxProfile, ctxProfile: ctxProfile, report: report, chatSend: chatSend, chatAdd: chatAdd, modelToText: modelToText, modelInventory: modelInventory, mergeModels: mergeModels, resetRun: resetRun, stableGuid: stableGuid, elementGuid: elementGuid, loadCatalogBytes: loadCatalogBytes, pickCatalog: pickCatalog, applyCatalog: applyCatalog, getCatalog: function () { return S.katalog || []; }, runOps: runOps, Op: Op, buildBytes: function () { return buildQea(true); },
     /* Nur LESENDER Zugriff auf die bestehende KI-Konfiguration (Felder des KI-Tabs,
        Fallback: zuletzt gespeicherte Einstellungen). Wird vom Rückweg (Teil 7)
        genutzt, damit es KEINE zweite Konfiguration gibt. Kein Schreiben. */

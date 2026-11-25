@@ -81,7 +81,8 @@ __all__ = [
 ]
 
 DEFAULT_MAX_UPLOAD = 25 * 1024 * 1024
-DEFAULT_MAX_SECONDS = 120.0
+DEFAULT_MAX_SECONDS = 1800.0
+DEFAULT_HTTP_TIMEOUT = 120.0
 DEFAULT_MAX_JOBS = 2
 DEFAULT_JOB_TTL = 600.0
 MAX_LOG_LINES = 400
@@ -297,6 +298,7 @@ class Prepared:
     text_paths: tuple[Path, ...] = ()
     sichten: str = "leitfaden"
     wizard_dir: Path | None = None
+    context_tokens: int | None = None
 
 
 def check_base_url(url: str) -> str:
@@ -542,6 +544,17 @@ def prepare_request(
     if sichten not in ("aus", "mdg", "leitfaden", "wizard"):
         sichten = "leitfaden"
 
+    raw_ctx = _field(parts, "context_tokens", "").strip()
+    context_tokens: int | None = None
+    if raw_ctx:
+        try:
+            ctx_val = int(raw_ctx)
+        except ValueError as exc:
+            raise RequestError("Kontextfenster muss eine ganze Zahl in Tokens sein.") from exc
+        if ctx_val < 2048 or ctx_val > 2_000_000:
+            raise RequestError("Kontextfenster muss zwischen 2048 und 2000000 Tokens liegen.")
+        context_tokens = ctx_val
+
     return Prepared(
         backend=backend,
         package=package,
@@ -559,6 +572,7 @@ def prepare_request(
         image_paths=tuple(image_paths),
         text_paths=tuple(text_paths),
         sichten=sichten,
+        context_tokens=context_tokens,
     )
 
 
@@ -569,7 +583,9 @@ def prepare_request(
 
 def build_command(prepared: Prepared, job_dir: Path, max_seconds: float) -> list[str]:
     """Kommandozeile des Laufs. Einziger Weg zum Kern, auch aus der Weboberflaeche."""
-    http_timeout = max(5.0, float(max_seconds) - 10.0)
+    # HTTP-Timeout gilt pro einzelner Charge (max. 120 s), entkoppelt vom Gesamt-Zeitlimit
+    # fuer mehrstufige Chargenlaeufe (Default 1800 s).
+    http_timeout = min(DEFAULT_HTTP_TIMEOUT, max(5.0, float(max_seconds) - 10.0))
     command = [
         sys.executable,
         "-m",
@@ -617,6 +633,8 @@ def build_command(prepared: Prepared, job_dir: Path, max_seconds: float) -> list
         command += ["--sichten", prepared.sichten]
     if prepared.wizard_dir:
         command += ["--wizard-dir", str(prepared.wizard_dir)]
+    if prepared.context_tokens is not None:
+        command += ["--kontext-tokens", str(prepared.context_tokens)]
     return command
 
 
@@ -2155,6 +2173,14 @@ aus dem Startpaket. Gleicher Kern wie die Kommandozeile.</p>
         <label>Zielpaket
           <input type="text" name="package" value="Architektur"></label>
       </div>
+      <label>Kontextfenster des Sprachmodells
+        <select name="context_tokens" id="context_tokens">
+          <option value="" selected>Standard (gro&szlig;, z.B. 64k+ Tokens &ndash; automatisches Chunking &amp; Halbierung)</option>
+          <option value="16384">Mittel (16k Tokens &ndash; kompaktes Regelwerk, kleinere Chargen)</option>
+          <option value="8192">Klein (8k Tokens &ndash; z.B. lokales Ollama / kleines LLM)</option>
+          <option value="4096">Sehr klein (4k Tokens &ndash; Mini-Chargen, kompaktes Regelwerk)</option>
+        </select>
+      </label>
     </div>
   </section>
 

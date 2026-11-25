@@ -520,6 +520,7 @@ def build(
     repair_rounds: int = 6,
     batch_chars: int | None = None,
     batch_threshold: int | None = None,
+    context_tokens: int | None = None,
     startpaket: str | Path | None = None,
     katalog: str | Path | None = None,
     modell: str | Path | None = None,
@@ -688,6 +689,7 @@ def build(
                         base_url=base_url,
                         answer_file=answer_file,
                         timeout=timeout,
+                        context_tokens=context_tokens,
                     )
                 except ExtractionError as exc:
                     raise BuildError(f"Backend: {exc}") from exc
@@ -798,6 +800,7 @@ def build(
                     backend=chosen,
                     package=package,
                     known=tuple(bekannte),
+                    context_tokens=context_tokens,
                     **(
                         {"budget_chars": batch_chars}
                         if batch_chars is not None
@@ -1491,6 +1494,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="ab dieser Quelltextlaenge wird geteilt (Default: 16000 Zeichen)",
     )
     p_build.add_argument(
+        "--kontext-tokens",
+        type=int,
+        default=None,
+        help=(
+            "Kontextfenster des Sprachmodells in Tokens (z.B. 8192 oder 4096 fuer kleine lokale LLMs). "
+            "Verdichtet das Regelwerk im Prompt, begrenzt max_tokens/num_ctx und verkleinert Chargen automatisch"
+        ),
+    )
+    p_build.add_argument(
         "--modell",
         type=Path,
         default=None,
@@ -1561,8 +1573,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_serve.add_argument(
         "--max-seconds",
         type=float,
-        default=120.0,
-        help="Zeitlimit je Lauf in Sekunden (Default: 120)",
+        default=1800.0,
+        help="Gesamt-Zeitlimit je Lauf in Sekunden (Default: 1800 = 30 Min., fuer mehrstufige Chargen)",
     )
     p_serve.add_argument(
         "--jobs", type=int, default=2, help="gleichzeitige Laeufe (Default: 2)"
@@ -2415,6 +2427,7 @@ def cmd_build(args: argparse.Namespace) -> int:
             wizard_dir=getattr(args, "wizard_dir", None),
             batch_chars=args.chargen_zeichen,
             batch_threshold=args.chargen_schwelle,
+            context_tokens=getattr(args, "kontext_tokens", None),
             skeleton=getattr(args, "geruest", None),
             ziel_format=getattr(args, "ziel_format", "qea"),
             startpaket=args.startpaket,

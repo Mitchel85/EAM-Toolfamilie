@@ -102,6 +102,22 @@ class ExtractionError(ValueError):
     """Eingabe-, Backend- oder Antwortfehler. Immer laut, nie still."""
 
 
+class ContextLimitError(ExtractionError):
+    """Prompt oder Antwort hat das Kontext-/Tokenlimit des Sprachmodells ueberschritten."""
+
+
+_CONTEXT_ERR_RE = re.compile(
+    r"context[_ ]?length|maximum context|too many tokens|token ?limit|"
+    r"finish_reason=length|done_reason=length|exceeds? (?:the )?(?:context|max)|"
+    r"max_tokens|prompt is too long|reduce (?:the )?(?:length|size)",
+    re.IGNORECASE,
+)
+
+
+def _is_context_limit_error(exc: Exception) -> bool:
+    return isinstance(exc, ContextLimitError) or bool(_CONTEXT_ERR_RE.search(str(exc)))
+
+
 class AnswerError(ValueError):
     """Modellantwort ist ungueltig; traegt alle Einzelmeldungen."""
 
@@ -568,12 +584,15 @@ def build_prompt(
     package: str = DEFAULT_PACKAGE,
     *,
     known: Sequence[tuple[str, str]] = (),
+    compact: bool = False,
 ) -> str:
     """Baut den Extraktions-Prompt; deterministisch und ohne Zeitbezug.
 
     ``known`` sind bereits erfasste Elemente (Name, Stereotyp) aus vorherigen
     Chargen. Sie stehen im Prompt, damit ein Kapitel Querverweise auf frueher
     Gelesenes bilden kann, statt ein zweites Element gleichen Namens zu erfinden.
+    Mit ``compact=True`` wird das Regelwerk fuer kleine Kontextfenster (4k-16k
+    Tokens) stark verdichtet, ohne Stereotype oder Belegregeln zu verlieren.
     """
     if not segments:
         raise ExtractionError("Prompt: keine Absaetze uebergeben")
@@ -582,13 +601,49 @@ def build_prompt(
     header = f"Du bist ein Architektur-Extraktor fuer ein Modell nach {technology}." if technology \
         else "Du bist ein Architektur-Extraktor."
 
+    source_block = "\n".join(f"[{segment.ref}] {segment.text}" for segment in segments)
+
+    if compact:
+        concrete_els = sorted(
+            name for name, rule in rules.elements.items() if not rule.abstract
+        )
+        el_csv = ", ".join(concrete_els) if concrete_els else "(keine)"
+        conn_compact = []
+        for cname in sorted(rules.connectors):
+            crule = rules.connectors[cname]
+            s_lbl = "/".join(_local_element_name(n) for n in crule.source[:3]) or "*"
+            t_lbl = "/".join(_local_element_name(n) for n in crule.target[:3]) or "*"
+            conn_compact.append(f"{cname}({s_lbl}->{t_lbl})")
+        conn_csv = "; ".join(conn_compact) if conn_compact else "(keine)"
+        known_compact = ""
+        if known:
+            known_compact = (
+                "Bekannte Elemente (exakt wiederverwenden): "
+                + ", ".join(f"{n}«{s}»" for n, s in known)
+                + "\n\n"
+            )
+        return (
+            f"{header}\n"
+            f"Profil: {rules.profile or '-'} | Paket: {package}\n\n"
+            f"{known_compact}"
+            f"Element-Stereotype: {el_csv}\n\n"
+            f"Beziehungs-Stereotype: {conn_csv}\n\n"
+            "Regeln:\n"
+            "1. Nur gelistete Stereotype nutzen; nichts erfinden; Ueberschriften (#) sind keine Elemente.\n"
+            "2. Jedes Element/jede Beziehung braucht source_ref (Absatz-ID wie D1-S1), exakten name, woertliche notes und confidence (0..1).\n"
+            "3. Beziehungen nur zwischen extrahierten/bekannten Elementen mit passenden Stereotypen.\n"
+            "4. Antworte NUR mit JSON:\n"
+            '{"elements":[{"name":"...","stereotype":"...","notes":"...","source_ref":"D1-S1","confidence":0.9}],'
+            '"connectors":[{"source":"...","target":"...","stereotype":"...","notes":"...","source_ref":"D1-S1","confidence":0.8}]}\n\n'
+            f"Quelltext:\n{source_block}\n"
+        )
+
     element_lines = _element_lines(rules)
     connector_lines = _connector_lines(rules)
     element_block = "\n".join(element_lines)
     connector_block = "\n".join(connector_lines) if connector_lines else "(keine Beziehungs-Stereotype im Regelwerk)"
     role_block = "\n".join(_role_lines(rules)) or "(keine Sammelrollen im Regelwerk)"
 
-    source_block = "\n".join(f"[{segment.ref}] {segment.text}" for segment in segments)
     known_block = ""
     if known:
         lines = "\n".join(f"- {name} «{stereotype}»" for name, stereotype in known)
@@ -1362,7 +1417,10 @@ class OpenAICompatibleBackend:
     #: fuer eine volle Charge nicht: Bei 12.000 Zeichen Quelltext braucht die
     #: Antwort rund 30.000 Zeichen. Ohne dieses Feld schneidet der Anbieter
     #: mitten im JSON ab -- die Antwort ist dann ungueltig und wird verworfen.
+    #: Ist ``context_tokens`` gesetzt, wird ``max_tokens`` automatisch passend
+    #: begrenzt, damit auch kleine 4k/8k/16k-Endpunkte die Anfrage akzeptieren.
     max_tokens: int = 32768
+    context_tokens: int | None = None
 
     @property
     def name(self) -> str:
@@ -1375,8 +1433,12 @@ class OpenAICompatibleBackend:
             "temperature": 0,
             "stream": False,
         }
-        if self.max_tokens:
-            payload["max_tokens"] = int(self.max_tokens)
+        effective_max = int(self.max_tokens) if self.max_tokens else 0
+        if self.context_tokens is not None and self.context_tokens > 0:
+            ctx_cap = max(512, int(self.context_tokens * 0.35))
+            effective_max = min(effective_max, ctx_cap) if effective_max else ctx_cap
+        if effective_max:
+            payload["max_tokens"] = effective_max
         if self.json_mode:
             payload["response_format"] = {"type": "json_object"}
         return payload
@@ -1391,6 +1453,10 @@ class OpenAICompatibleBackend:
         first = choices[0]
         if not isinstance(first, Mapping):
             raise ExtractionError(f"{self.name}: choices[0] ist kein Objekt")
+        if first.get("finish_reason") == "length":
+            raise ContextLimitError(
+                f"{self.name}: Antwort durch Tokenlimit abgeschnitten (finish_reason=length)"
+            )
         message = first.get("message")
         if not isinstance(message, Mapping):
             raise ExtractionError(f"{self.name}: choices[0].message fehlt")
@@ -1407,23 +1473,31 @@ class OllamaBackend:
     model: str
     base_url: str = "http://localhost:11434"
     timeout: float = 120.0
+    context_tokens: int | None = None
 
     @property
     def name(self) -> str:
         return f"ollama:{self.model}"
 
     def payload(self, prompt: str) -> dict[str, Any]:
+        options: dict[str, Any] = {"temperature": 0}
+        if self.context_tokens is not None and self.context_tokens > 0:
+            options["num_ctx"] = int(self.context_tokens)
         return {
             "model": self.model,
             "messages": [{"role": "user", "content": prompt}],
             "stream": False,
             "format": "json",
-            "options": {"temperature": 0},
+            "options": options,
         }
 
     def complete(self, prompt: str) -> str:
         url = self.base_url.rstrip("/") + "/api/chat"
         parsed = _post_json(url, self.payload(prompt), {}, self.timeout, self.name)
+        if parsed.get("done_reason") == "length":
+            raise ContextLimitError(
+                f"{self.name}: Antwort durch Tokenlimit abgeschnitten (done_reason=length)"
+            )
         message = parsed.get("message")
         if not isinstance(message, Mapping):
             raise ExtractionError(f"{self.name}: Antwort enthaelt kein message-Objekt")
@@ -1483,6 +1557,7 @@ def make_backend(
     api_key: str | None = None,
     answer_file: str | Path | None = None,
     timeout: float = 120.0,
+    context_tokens: int | None = None,
 ) -> Backend:
     """Backend aus Konfiguration bauen; fehlende Pflichtwerte brechen laut ab.
 
@@ -1523,6 +1598,7 @@ def make_backend(
             base_url=resolved_base,
             api_key=resolved_key,
             timeout=timeout,
+            context_tokens=context_tokens,
         )
     if normalized == "ollama":
         resolved_model = model or os.environ.get("EXTRACT_MODEL") or os.environ.get("OLLAMA_MODEL")
@@ -1534,6 +1610,7 @@ def make_backend(
             model=resolved_model,
             base_url=base_url or os.environ.get("OLLAMA_BASE_URL") or "http://localhost:11434",
             timeout=timeout,
+            context_tokens=context_tokens,
         )
     if normalized in ("datei", "static", "static-datei"):
         if answer_file is None:
@@ -1603,10 +1680,40 @@ def extract(
     )
 
 
+def _split_long_segment(segment: Segment, max_chars: int) -> list[Segment]:
+    """Teilt einen ueberlangen Absatz an Satz-/Zeilengrenzen unter Erhalt von ``ref``."""
+    text = segment.text
+    if len(text) <= max_chars or max_chars < 200:
+        return [segment]
+    pieces: list[Segment] = []
+    rest = text
+    while len(rest) > max_chars:
+        cut = rest.rfind("\n", 0, max_chars)
+        step = 1
+        if cut < max_chars * 0.4:
+            cut = rest.rfind(". ", 0, max_chars)
+            step = 2 if cut >= 0 else 0
+            if cut >= 0:
+                cut += 1  # Punkt am Satzende belassen
+        if cut < max_chars * 0.3:
+            cut = rest.rfind(" ", 0, max_chars)
+            step = 1
+        if cut < max_chars * 0.2:
+            cut = max_chars
+            step = 0
+        head = rest[:cut].strip()
+        if head:
+            pieces.append(Segment(ref=segment.ref, document=segment.document, number=segment.number, text=head))
+        rest = rest[cut + step :].strip()
+    if rest:
+        pieces.append(Segment(ref=segment.ref, document=segment.document, number=segment.number, text=rest))
+    return pieces or [segment]
+
+
 def plan_batches(
     segments: Sequence[Segment], budget_chars: int
 ) -> tuple[tuple[Segment, ...], ...]:
-    """Teilt Absaetze in Chargen, ohne einen Absatz zu zerreissen.
+    """Teilt Absaetze in Chargen; ueberlange Einzelabsaetze werden sauber unterteilt.
 
     Ein Umbruch liegt bevorzugt vor einer Ueberschrift: Sie eroeffnet ein
     Kapitel, und ein Kapitel beginnt besser eine neue Charge als mittendrin.
@@ -1616,10 +1723,17 @@ def plan_batches(
     if not segments:
         raise ExtractionError("Chargen: keine Absaetze uebergeben")
 
+    expanded: list[Segment] = []
+    for seg in segments:
+        if len(seg.text) + len(seg.ref) + 4 > budget_chars:
+            expanded.extend(_split_long_segment(seg, max(200, budget_chars - len(seg.ref) - 4)))
+        else:
+            expanded.append(seg)
+
     batches: list[tuple[Segment, ...]] = []
     current: list[Segment] = []
     size = 0
-    for segment in segments:
+    for segment in expanded:
         length = len(segment.text) + len(segment.ref) + 4
         is_heading = _ist_ueberschrift(segment.text)
         over_budget = current and size + length > budget_chars
@@ -1684,6 +1798,35 @@ def merge_answers(answers: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     return {"elements": elements, "connectors": connectors}
 
 
+def _halve_batch(batch: Sequence[Segment]) -> tuple[tuple[Segment, ...], tuple[Segment, ...]] | None:
+    """Halbiert eine Charge (nach Segmenten oder bei 1 Segment nach Textlaenge)."""
+    if len(batch) > 1:
+        mid = len(batch) // 2
+        return tuple(batch[:mid]), tuple(batch[mid:])
+    if len(batch) == 1 and len(batch[0].text) > 600:
+        seg = batch[0]
+        parts = _split_long_segment(seg, max(300, len(seg.text) // 2))
+        if len(parts) >= 2:
+            mid = len(parts) // 2
+            return tuple(parts[:mid]), tuple(parts[mid:])
+    return None
+
+
+def _budget_for_context(
+    context_tokens: int, rules: RuleBook, package: str, compact: bool
+) -> tuple[int, int]:
+    """Berechnet sicheres Quelltext-Budget (Zeichen) und known_limit fuer ``context_tokens``."""
+    dummy = Segment(ref="D1-S1", document="D1", number=1, text=".")
+    overhead_chars = len(build_prompt([dummy], rules, package, compact=compact))
+    # Konservativ: ~3 Zeichen pro Token, ~60 % des Kontexts fuer Eingabe-Prompt.
+    input_chars = int(context_tokens * 3.0 * 0.60)
+    known_limit = 40 if context_tokens <= 8192 else (80 if context_tokens <= 16384 else 200)
+    known_reserve = known_limit * 35
+    available = input_chars - overhead_chars - known_reserve
+    budget = max(800, min(DEFAULT_BATCH_CHARS, available))
+    return budget, known_limit
+
+
 def extract_batched(
     texts: str | Sequence[str],
     *,
@@ -1694,49 +1837,55 @@ def extract_batched(
     threshold_chars: int = DEFAULT_BATCH_THRESHOLD,
     known_limit: int = 200,
     known: Sequence[tuple[str, str]] = (),
+    context_tokens: int | None = None,
+    compact: bool = False,
 ) -> ExtractionResult:
-    """Prosa -> IR, bei grossen Quellen kapitelweise.
+    """Prosa -> IR, bei grossen Quellen oder kleinem Kontextfenster kapitelweise.
 
     Bis ``threshold_chars`` Promptlaenge bleibt es bei einem Aufruf: gleiches
-    Ergebnis wie ``extract``, nur ohne Chargenverwaltung. Darueber wird der
-    Text in Chargen von ``budget_chars`` Zeichen geteilt. Jede Charge sieht die
-    bereits erfassten Elementnamen, damit Querverweise nicht zu Doppeln werden.
-    Die Antworten werden vor der IR-Bildung zusammengefuehrt; Belege, Notizen
-    und die Pruefung laufen danach ueber das Gesamtmodell.
+    Ergebnis wie ``extract``, nur ohne Chargenverwaltung. Darueber (oder bei
+    kleinem ``context_tokens``) wird der Text in Chargen geteilt. Reicht das
+    Kontext- oder Antwortlimit eines Modells fuer eine Charge dennoch nicht aus,
+    wechselt der Lauf automatisch in den Kompaktmodus und halbiert die Charge
+    rekursiv, bis sie passt.
     """
     segments = split_documents(texts)
     seed = list(known)
-    quelltext = sum(len(segment.text) for segment in segments)
-    if budget_chars <= 0 or quelltext <= threshold_chars:
-        full_prompt = build_prompt(segments, rules, package, known=tuple(seed))
-        answer, attempts = _request_answer(backend, full_prompt, rules)
-        return answer_to_ir(
-            answer,
-            segments,
-            rules,
-            package=package,
-            backend=backend.name,
-            attempts=attempts,
-            bekannte=tuple(seed),
-        )
+    inferred_ctx = context_tokens if context_tokens is not None else getattr(backend, "context_tokens", None)
+    compact_mode = bool(compact or (inferred_ctx is not None and inferred_ctx <= 24_000))
+    eff_budget = budget_chars
+    eff_threshold = threshold_chars
+    eff_known_limit = known_limit
+    if inferred_ctx is not None and inferred_ctx > 0:
+        ctx_budget, ctx_known = _budget_for_context(inferred_ctx, rules, package, compact_mode)
+        if eff_budget == DEFAULT_BATCH_CHARS or eff_budget > ctx_budget:
+            eff_budget = ctx_budget
+        eff_threshold = min(eff_threshold, eff_budget)
+        eff_known_limit = min(eff_known_limit, ctx_known)
 
-    batches = plan_batches(segments, budget_chars)
-    answers: list[Mapping[str, Any]] = []
-    known = list(seed)
-    bericht: list[dict[str, Any]] = []
-    attempts_total = 0
-    for number, batch in enumerate(batches, start=1):
-        prompt = build_prompt(batch, rules, package, known=_bekannte_fuer(batch, known, known_limit))
-        answer, attempts = _request_answer(backend, prompt, rules, allow_empty=True)
-        attempts_total += attempts
-        answers.append(answer)
-        for entry in answer.get("elements", ()):
-            name = str(entry.get("name", "")).strip()
-            if name:
-                known.append((name, str(entry.get("stereotype", "")).strip()))
-        bericht.append(
-            {
-                "charge": number,
+    def _run_adaptive(
+        batch: Sequence[Segment],
+        cur_known: list[tuple[str, str]],
+        *,
+        use_compact: bool,
+        allow_empty: bool,
+        depth: int = 0,
+    ) -> tuple[list[Mapping[str, Any]], int, list[dict[str, Any]]]:
+        k_lim = min(eff_known_limit, 40) if use_compact else eff_known_limit
+        prompt = build_prompt(
+            batch,
+            rules,
+            package,
+            known=_bekannte_fuer(batch, cur_known, k_lim),
+            compact=use_compact,
+        )
+        try:
+            answer, attempts = _request_answer(backend, prompt, rules, allow_empty=allow_empty)
+            for entry in answer.get("elements", ()):
+                name = str(entry.get("name", "")).strip()
+                if name:
+                    cur_known.append((name, str(entry.get("stereotype", "")).strip()))
+            info = {
                 "von": batch[0].ref,
                 "bis": batch[-1].ref,
                 "absaetze": len(batch),
@@ -1744,13 +1893,71 @@ def extract_batched(
                 "beziehungen": len(answer.get("connectors", ())),
                 "versuche": attempts,
                 "prompt_zeichen": len(prompt),
+                "kompakt": use_compact,
             }
+            return [answer], attempts, [info]
+        except ExtractionError as exc:
+            if not _is_context_limit_error(exc) or depth >= 6:
+                raise
+            # 1. Zuerst in den Kompaktmodus wechseln (spart ~80 % Regelwerk-Tokens)
+            if not use_compact:
+                return _run_adaptive(
+                    batch, cur_known, use_compact=True, allow_empty=allow_empty, depth=depth + 1
+                )
+            # 2. Danach die Charge halbieren und beide Haelften getrennt extrahieren
+            split = _halve_batch(batch)
+            if split is None:
+                raise
+            left, right = split
+            ans_l, att_l, rep_l = _run_adaptive(
+                left, cur_known, use_compact=True, allow_empty=True, depth=depth + 1
+            )
+            ans_r, att_r, rep_r = _run_adaptive(
+                right, cur_known, use_compact=True, allow_empty=True, depth=depth + 1
+            )
+            return ans_l + ans_r, att_l + att_r, rep_l + rep_r
+
+    quelltext = sum(len(segment.text) for segment in segments)
+    if eff_budget <= 0 or quelltext <= eff_threshold:
+        cur_known = list(seed)
+        answers_one, attempts_one, rep_one = _run_adaptive(
+            segments, cur_known, use_compact=compact_mode, allow_empty=False
         )
+        merged_one = answers_one[0] if len(answers_one) == 1 else merge_answers(answers_one)
+        result_one = answer_to_ir(
+            merged_one,
+            segments,
+            rules,
+            package=package,
+            backend=backend.name,
+            attempts=attempts_one,
+            bekannte=tuple(cur_known),
+        )
+        if len(rep_one) > 1:
+            for idx, item in enumerate(rep_one, start=1):
+                item["charge"] = idx
+            result_one.ir["meta"]["extraction"]["chargen"] = rep_one
+        return result_one
+
+    batches = plan_batches(segments, eff_budget)
+    answers: list[Mapping[str, Any]] = []
+    cur_known = list(seed)
+    bericht: list[dict[str, Any]] = []
+    attempts_total = 0
+    for batch in batches:
+        b_ans, b_att, b_rep = _run_adaptive(
+            batch, cur_known, use_compact=compact_mode, allow_empty=True
+        )
+        attempts_total += b_att
+        answers.extend(b_ans)
+        bericht.extend(b_rep)
+    for number, item in enumerate(bericht, start=1):
+        item["charge"] = number
 
     merged = merge_answers(answers)
     if not merged["elements"]:
         raise ExtractionError(
-            f"Chargen: {len(batches)} Aufrufe, aber kein Element mit Beleg -- "
+            f"Chargen: {len(bericht)} Aufrufe, aber kein Element mit Beleg -- "
             "Abbruch statt leerem Erfolg"
         )
     result = answer_to_ir(
@@ -1760,7 +1967,7 @@ def extract_batched(
         package=package,
         backend=backend.name,
         attempts=attempts_total,
-        bekannte=tuple(known),
+        bekannte=tuple(cur_known),
     )
     result.ir["meta"]["extraction"]["chargen"] = bericht
     return result
@@ -1821,6 +2028,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--base-url", default=None, help="Basis-URL des Endpunkts (Default aus Umgebung)")
     parser.add_argument("--antwort", default=None, help="Antwortdatei fuer --backend datei (offline)")
     parser.add_argument("--timeout", type=float, default=120.0, help="HTTP-Zeitueberschreitung in Sekunden")
+    parser.add_argument("--kontext-tokens", type=int, default=None, help="Kontextfenster des LLM in Tokens (z.B. 8192 fuer kleine lokale Modelle)")
     parser.add_argument("-q", "--quiet", action="store_true", help="Zusammenfassung nicht ausgeben")
     args = parser.parse_args(list(argv) if argv is not None else None)
 
@@ -1833,13 +2041,20 @@ def main(argv: Sequence[str] | None = None) -> int:
             base_url=args.base_url,
             answer_file=args.antwort,
             timeout=args.timeout,
+            context_tokens=args.kontext_tokens,
         )
     except ExtractionError as exc:
         print(f"Fehler: {exc}", file=sys.stderr)
         return 3
 
     try:
-        result = extract(texts, rules=rules, backend=backend, package=args.package)
+        result = extract_batched(
+            texts,
+            rules=rules,
+            backend=backend,
+            package=args.package,
+            context_tokens=args.kontext_tokens,
+        )
     except ExtractionError as exc:
         print(f"Fehler: {exc}", file=sys.stderr)
         return 1
