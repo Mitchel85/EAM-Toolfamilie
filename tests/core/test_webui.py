@@ -574,3 +574,95 @@ def test_direct_validate_endpoint(server: webui.WebServer, tmp_path: Path) -> No
         assert "summary" in res
         assert "findings" in res
 
+
+def _post_json(url: str, payload: dict) -> tuple[int, dict]:
+    request = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=60) as response:
+            return response.status, json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        return exc.code, json.loads(exc.read().decode("utf-8"))
+
+
+def test_post_build_chat_edit_extend_und_live_viewer(server: webui.WebServer) -> None:
+    """Nach dem Bau: Viewer-Vorschau, Chat with Data, NL-Weiterbau und Prosa-Extend."""
+    # Startseite bietet die neuen Bereiche und erlaubt same-origin iframe fuer den Viewer.
+    status, body, headers = get(base_url(server) + "/")
+    assert status == 200
+    page = body.decode("utf-8")
+    assert "Chat with Data" in page
+    assert "Architektur weiterbauen" in page
+    assert 'id="viewer-frame"' in page
+    assert "frame-src 'self'" in headers["Content-Security-Policy"]
+
+    # 1. Modell bauen
+    status, payload = post_build(
+        server,
+        {"mdg_source": "beispiel", "backend": "datei", "package": "Architektur", "text": TEXT},
+    )
+    assert status == 202, payload
+    state = wait_for(server, payload)
+    assert state["state"] == "done", state["error"]
+    for key in ("viewer", "validate", "qs", "handbuch", "chat", "edit", "extend"):
+        assert key in state["links"], f"Link {key!r} fehlt"
+    assert state["model_info"]["elements"]
+
+    # Viewer erlaubt Einbettung im selben Origin
+    v_status, _, v_headers = get(base_url(server) + state["links"]["viewer"])
+    assert v_status == 200
+    assert "frame-ancestors 'self'" in v_headers["Content-Security-Policy"]
+
+    # 2. Chat with Data (offline ohne KI -> strukturierter Auszug + Quellen)
+    c_status, chat = _post_json(
+        base_url(server) + state["links"]["chat"],
+        {"question": "Welche Elemente enthaelt das Modell?", "use_ki": False},
+    )
+    assert c_status == 200, chat
+    assert chat["ok"] is True
+    assert chat["model"] == "ohne KI"
+    assert "Faehigkeit B" in chat["answer"]
+    assert chat["sources"]
+
+    # 3. NL-Edit: neues Paket + Element + Beziehung vorschlagen & anwenden
+    inst = (
+        'Lege Paket "Architektur/Erweiterung" an und '
+        'erstelle Element "Wetterdienst" als ServiceSpecification in Paket "Architektur/Erweiterung" und '
+        'verbinde "Faehigkeit B" mit "Wetterdienst" ueber Exhibits.'
+    )
+    p_status, prop = _post_json(
+        base_url(server) + state["links"]["edit"],
+        {"action": "propose", "instruction": inst, "use_ki": False},
+    )
+    assert p_status == 200, prop
+    assert [op["op"] for op in prop["ops"]] == ["add_package", "add_element", "add_connector"]
+
+    a_status, applied = _post_json(
+        base_url(server) + state["links"]["edit"],
+        {"action": "apply", "ops": prop["ops"]},
+    )
+    assert a_status == 200, applied
+    assert applied["ok"] is True
+    assert applied["applied"] == 3
+    assert applied["job"]["revision"] == state["revision"] + 1
+    assert any("Wetterdienst" in el for el in applied["job"]["model_info"]["elements"])
+
+    # Viewer wurde invalidiert und enthaelt das neue Element sofort
+    v2_status, v2_body, _ = get(base_url(server) + state["links"]["viewer"])
+    assert v2_status == 200
+    assert "Wetterdienst" in v2_body.decode("utf-8")
+
+    # 4. Weiterbau mit zusaetzlicher Prosa ueber --modell (offline Datei-Backend)
+    e_status, ext = _post_json(
+        base_url(server) + state["links"]["extend"],
+        {"text": "Ergaenzende Beschreibung fuer den Dienst C.", "backend": "datei"},
+    )
+    assert e_status == 200, ext
+    assert ext["ok"] is True
+    assert ext["job"]["revision"] == applied["job"]["revision"] + 1
+    assert any("Wetterdienst" in el for el in ext["job"]["model_info"]["elements"])
+

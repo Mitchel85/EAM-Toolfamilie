@@ -157,6 +157,27 @@ def test_add_and_delete_connector(tmp_path: Path) -> None:
     assert result.applied == 1
 
 
+def test_add_package_and_element_with_connector_via_nl(tmp_path: Path) -> None:
+    qea = _qea(tmp_path / "modell.qea")
+    cmd = (
+        'Lege Paket "Architektur/Dienste" an und '
+        'erstelle Element "Wetterdienst" vom Typ ServiceSpecification in Paket "Architektur/Dienste" und '
+        'verbinde "Lagedienst" mit "Wetterdienst" ueber Exhibits.'
+    )
+    proposal = nl_edit.propose(qea, cmd)
+    assert [op["op"] for op in proposal.ops] == ["add_package", "add_element", "add_connector"]
+    lines = nl_edit.preview_lines(proposal)
+    assert any("Paket anlegen: Architektur/Dienste" in line for line in lines)
+    assert any("Element anlegen: Architektur/Dienste::Wetterdienst" in line for line in lines)
+
+    out = tmp_path / "erweitert.qea"
+    result = nl_edit.apply(proposal, out, mdg=MDG if MDG.is_file() else None)
+    assert result.applied == 3
+    assert result.rejected == []
+    assert _value(out, "Stereotype", "Wetterdienst") == "ServiceSpecification"
+    assert _rows(out, "SELECT COUNT(*) FROM t_connector WHERE Stereotype = 'Exhibits'")[0][0] == 1
+
+
 def test_llm_json_with_static_backend_and_unknown_name(tmp_path: Path) -> None:
     qea = _qea(tmp_path / "modell.qea")
     answer = json.dumps(

@@ -176,7 +176,7 @@ var EDIT = (function () {
     var b = el('editbtn'); if (b) b.className = n ? 'btn-sm amber hot' : 'btn-sm amber';
     if (el('eh-stat')) { try { hubRender(); } catch (e) { } }
   }
-  var ICONS = { 'el.set': '📦', 'pkg.set': '📁', 'diag.set': '🖼️', 'conn.set': '🔗', 'tag.set': '🏷️', 'tag.add': '🏷️', 'tag.del': '🏷️', 'el.create': '➕', 'conn.create': '➕', 'el.del': '🗑️', 'conn.del': '🗑️' };
+  var ICONS = { 'el.set': '📦', 'pkg.set': '📁', 'pkg.create': '📁', 'diag.set': '🖼️', 'conn.set': '🔗', 'tag.set': '🏷️', 'tag.add': '🏷️', 'tag.del': '🏷️', 'el.create': '➕', 'conn.create': '➕', 'el.del': '🗑️', 'conn.del': '🗑️' };
   function renderDrawer() {
     var d = el('editdrawer');
     if (!d) return;
@@ -767,9 +767,61 @@ var EDIT = (function () {
     }
   }
 
+  /* Hilfen fuer Paketpfade & neue Elemente innerhalb einer Schreib-Transaktion */
+  function ensurePkgPathInDb(db, pkgPath, now) {
+    var segs = s0(pkgPath).split('/').map(function (s) { return s.trim(); }).filter(Boolean);
+    if (!segs.length) {
+      var first = one(db, 'SELECT Package_ID FROM t_package ORDER BY Package_ID LIMIT 1');
+      return first ? Number(first.Package_ID) : 1;
+    }
+    var parentId = 0, curId = null, i;
+    var pcols = colNames(db, 't_package');
+    var ocols = colNames(db, 't_object');
+    for (i = 0; i < segs.length; i++) {
+      var seg = segs[i];
+      var existing = one(db, 'SELECT Package_ID FROM t_package WHERE Name=? AND Parent_ID=?', [seg, parentId]);
+      if (existing) {
+        curId = Number(existing.Package_ID);
+      } else {
+        var pg = newGuid();
+        var prow = { Name: seg, Parent_ID: parentId, ea_guid: pg };
+        if (pcols.indexOf('CreatedDate') >= 0) prow.CreatedDate = now;
+        if (pcols.indexOf('ModifiedDate') >= 0) prow.ModifiedDate = now;
+        var pc = [], pp = [], pv = [];
+        for (var pk in prow) if (has(prow, pk) && pcols.indexOf(pk) >= 0) { pc.push(pk); pp.push('?'); pv.push(prow[pk]); }
+        db.run('INSERT INTO t_package (' + pc.join(',') + ') VALUES (' + pp.join(',') + ')', pv);
+        var rid = one(db, 'SELECT last_insert_rowid() AS id');
+        curId = rid ? Number(rid.id) : 1;
+        if (parentId > 0) {
+          var orow = { Object_Type: 'Package', Name: seg, Package_ID: parentId, PDATA1: String(curId), NType: 0, ea_guid: pg, Status: 'Proposed' };
+          if (ocols.indexOf('CreatedDate') >= 0) orow.CreatedDate = now;
+          if (ocols.indexOf('ModifiedDate') >= 0) orow.ModifiedDate = now;
+          var oc = [], op2 = [], ov = [];
+          for (var ok in orow) if (has(orow, ok) && ocols.indexOf(ok) >= 0) { oc.push(ok); op2.push('?'); ov.push(orow[ok]); }
+          db.run('INSERT INTO t_object (' + oc.join(',') + ') VALUES (' + op2.join(',') + ')', ov);
+        }
+      }
+      parentId = curId;
+    }
+    return curId;
+  }
+
+  function resolveObjIdInDb(db, oid, name, txMap) {
+    if (oid != null && Number(oid) > 0) return Number(oid);
+    var key = nlNorm(name);
+    if (txMap && txMap[key] != null) return txMap[key];
+    var row = one(db, "SELECT Object_ID FROM t_object WHERE LOWER(Name)=LOWER(?) AND Object_Type <> 'Package' ORDER BY Object_ID DESC LIMIT 1", [s0(name)]);
+    if (row && row.Object_ID != null) return Number(row.Object_ID);
+    throw new Error('Element „' + name + '“ in der Datenbank nicht gefunden.');
+  }
+
   /* Eine Änderung auf die SQLite-Verbindung anwenden */
-  function applyChange(db, ch) {
+  function applyChange(db, ch, txCtx) {
     var now = nowStamp(), f = ch.fields || {}, i, t;
+    if (ch.kind === 'pkg.create') {
+      ensurePkgPathInDb(db, ch.path, now);
+      return;
+    }
     if (ch.kind === 'el.set') {
       var sets = [], vals = [];
       if (has(f, 'Name')) { sets.push('Name=?'); vals.push(f.Name); }
@@ -869,7 +921,7 @@ var EDIT = (function () {
       row.Stereotype = ch.stereotype || null;
       row.Alias = null;
       row.Note = ch.note ? encNote(ch.note) : null;
-      row.Package_ID = ch.pkgId;
+      row.Package_ID = (ch.pkgId != null && Number(ch.pkgId) > 0) ? Number(ch.pkgId) : ensurePkgPathInDb(db, ch.pkgPath || '', now);
       row.ea_guid = newGuid();
       if (has(row, 'CreatedDate')) row.CreatedDate = now;
       if (has(row, 'ModifiedDate')) row.ModifiedDate = now;
@@ -881,6 +933,10 @@ var EDIT = (function () {
       var ic = [], ph = [], iv = [];
       for (var k1 in row) if (has(row, k1)) { ic.push(k1); ph.push('?'); iv.push(row[k1] === undefined ? null : row[k1]); }
       db.run('INSERT INTO t_object (' + ic.join(',') + ') VALUES (' + ph.join(',') + ')', iv);
+      if (txCtx && txCtx.newObjs) {
+        var newOid = one(db, 'SELECT last_insert_rowid() AS id');
+        if (newOid && newOid.id != null) txCtx.newObjs[nlNorm(ch.name)] = Number(newOid.id);
+      }
       stereoXrefSync(db, row.ea_guid, 'element property', ch.stereotype);
       return;
     }
@@ -892,8 +948,8 @@ var EDIT = (function () {
       var crow = {};
       for (i = 0; i < ccols.length; i++) crow[ccols[i]] = has(tmpl2, ccols[i]) ? tmpl2[ccols[i]] : null;
       crow.Connector_Type = ch.connType;
-      crow.Start_Object_ID = ch.a;
-      crow.End_Object_ID = ch.b;
+      crow.Start_Object_ID = resolveObjIdInDb(db, ch.a, ch.aName, txCtx && txCtx.newObjs);
+      crow.End_Object_ID = resolveObjIdInDb(db, ch.b, ch.bName, txCtx && txCtx.newObjs);
       crow.Name = ch.name || null;
       crow.Stereotype = ch.stereotype || null;
       crow.Notes = ch.note ? encNote(ch.note) : null;
@@ -1022,8 +1078,9 @@ var EDIT = (function () {
         try {
           _tables = tablesSet(db);
           var before = snapCounts(db);
+          var txCtx = { newObjs: {} };
           db.run('BEGIN');
-          for (i = 0; i < grp.list.length; i++) applyChange(db, grp.list[i]);
+          for (i = 0; i < grp.list.length; i++) applyChange(db, grp.list[i], txCtx);
           var chk = db.exec('PRAGMA integrity_check');
           var okv = (chk.length && chk[0].values.length) ? String(chk[0].values[0][0]) : '?';
           if (okv.toLowerCase() !== 'ok') throw new Error('SQLite-Integritätsprüfung (M' + grp.srcNo + ') meldet: ' + okv);
@@ -1084,6 +1141,40 @@ var EDIT = (function () {
       }, 80);
     }, function (e) {
       failSave('SQLite-Engine konnte nicht geladen werden: ' + (e && e.message ? e.message : e));
+    });
+  }
+
+  /* Direkt in den Arbeitsspeicher anwenden (ohne Download), sofort in Explorer/Graph/QS/Fragen sichtbar */
+  function applyLive(cb) {
+    if (!changes.length) { if (cb) cb('Keine Änderungen vorgemerkt.'); return; }
+    if (!srcBytes || srcCount > 1) { if (cb) cb('Direktübernahme steht im Einzelmodell-Modus zur Verfügung.'); return; }
+    var list = changes.slice();
+    _tables = {};
+    loadSQL().then(function (SQL) {
+      var db = new SQL.Database(srcBytes);
+      try {
+        _tables = tablesSet(db);
+        var txCtx = { newObjs: {} };
+        db.run('BEGIN');
+        for (var i = 0; i < list.length; i++) applyChange(db, list[i], txCtx);
+        var chk = db.exec('PRAGMA integrity_check');
+        var okv = (chk.length && chk[0].values.length) ? String(chk[0].values[0][0]) : '?';
+        if (okv.toLowerCase() !== 'ok') throw new Error('SQLite-Integritätsprüfung: ' + okv);
+        db.run('COMMIT');
+        var out = db.export();
+        var probe = qeaOpen(out.slice().buffer);
+        if (!probe) throw new Error('Ausgabemodell nicht lesbar.');
+        loadQea(out.slice().buffer, srcName || MODELLNAME || 'Architektur', true);
+        toast('Modell aktualisiert — alle Ansichten sind auf dem neuesten Stand.');
+        if (cb) cb(null);
+      } catch (e) {
+        try { db.run('ROLLBACK'); } catch (e2) { }
+        if (cb) cb(e && e.message ? e.message : String(e));
+      } finally {
+        try { db.close(); } catch (e3) { }
+      }
+    }, function (e) {
+      if (cb) cb(e && e.message ? e.message : String(e));
     });
   }
 
@@ -1148,7 +1239,7 @@ var EDIT = (function () {
   }
   function exportCSV() {
     if (!changes.length) { toast('Keine Änderungen vorgemerkt.'); return; }
-    var labels = { 'el.set': 'Element geändert', 'pkg.set': 'Paket geändert', 'diag.set': 'Sicht geändert', 'conn.set': 'Beziehung geändert', 'tag.set': 'Tag geändert', 'tag.add': 'Tag neu', 'tag.del': 'Tag entfernt', 'el.create': 'Element neu', 'conn.create': 'Beziehung neu', 'el.del': 'Element gelöscht', 'conn.del': 'Beziehung gelöscht' };
+    var labels = { 'el.set': 'Element geändert', 'pkg.set': 'Paket geändert', 'pkg.create': 'Paket neu', 'diag.set': 'Sicht geändert', 'conn.set': 'Beziehung geändert', 'tag.set': 'Tag geändert', 'tag.add': 'Tag neu', 'tag.del': 'Tag entfernt', 'el.create': 'Element neu', 'conn.create': 'Beziehung neu', 'el.del': 'Element gelöscht', 'conn.del': 'Beziehung gelöscht' };
     var lines = ['Nr;Aktion;Objekt;Details'];
     for (var i = 0; i < changes.length; i++) {
       var c = changes[i];
@@ -1297,7 +1388,42 @@ var EDIT = (function () {
     for (i = 0; i < (ops || []).length; i++) {
       var op = ops[i];
       try {
-        if (op.op === 'set_name' || op.op === 'set_note' || op.op === 'set_status' || op.op === 'set_alias' || op.op === 'set_stereotype') {
+        if (op.op === 'add_package') {
+          var pPath = s0(op.path || op.package).trim().replace(/^\/+|\/+$/g, '');
+          if (!pPath) throw new Error('Paketpfad fehlt.');
+          nlQueue({
+            kind: 'pkg.create', key: 'pkgcreate:' + nlNorm(pPath), path: pPath, srcNo: 1,
+            label: 'KI: Neues Paket „' + shortLabel(pPath, 42) + '“',
+            sub: 'Legt den Paketpfad im Modell an.'
+          });
+          results.push({ ok: true, msg: 'Paket neu: ' + pPath });
+        } else if (op.op === 'add_element') {
+          var newNm = s0(op.name).trim();
+          if (!newNm) throw new Error('Elementname fehlt.');
+          var targetPkg = s0(op.package).trim().replace(/^\/+|\/+$/g, '');
+          var pkgIdFound = null;
+          if (targetPkg) {
+            for (var pkKey in PKG) {
+              if (!has(PKG, pkKey)) continue;
+              if (nlNorm(PKG[pkKey].path || PKG[pkKey].name) === nlNorm(targetPkg)) {
+                pkgIdFound = Number(groupOf(PKG[pkKey].id).l);
+                break;
+              }
+            }
+          } else if (PKG_ROOTS && PKG_ROOTS.length) {
+            pkgIdFound = Number(groupOf(PKG_ROOTS[0].id).l);
+            targetPkg = (PKG[PKG_ROOTS[0].id] && (PKG[PKG_ROOTS[0].id].path || PKG[PKG_ROOTS[0].id].name)) || '';
+          }
+          nlQueue({
+            kind: 'el.create', key: null,
+            pkgId: pkgIdFound, pkgPath: targetPkg, srcNo: 1,
+            objType: op.ea_type || 'Class', name: newNm,
+            stereotype: op.stereotype || '', note: op.note || '',
+            label: 'KI: Neues Element „' + shortLabel(newNm, 40) + '“',
+            sub: (op.stereotype ? '«' + op.stereotype + '» · ' : '') + (targetPkg || 'Wurzelpaket')
+          });
+          results.push({ ok: true, msg: 'Element neu: ' + newNm });
+        } else if (op.op === 'set_name' || op.op === 'set_note' || op.op === 'set_status' || op.op === 'set_alias' || op.op === 'set_stereotype') {
           var o = nlElement(op), g = groupOf(o.id);
           var raw = findRow('t_object', 'Object_ID', g.l, g.db);
           if (!raw) throw new Error('Elementzeile nicht gefunden.');
@@ -1327,18 +1453,22 @@ var EDIT = (function () {
           });
           results.push({ ok: true, msg: 'löschen: ' + od.name });
         } else if (op.op === 'add_connector') {
-          var sa = nlElement({ oid: op.source_oid, name: op.source_name });
-          var ta = nlElement({ oid: op.target_oid, name: op.target_name });
-          var ga = groupOf(sa.id), gb = groupOf(ta.id);
+          var sa = null, ta = null, ga = null, gb = null;
+          try { sa = nlElement({ oid: op.source_oid, name: op.source_name, package: op.source_pkg }); ga = groupOf(sa.id); } catch (eS) { sa = null; }
+          try { ta = nlElement({ oid: op.target_oid, name: op.target_name, package: op.target_pkg }); gb = groupOf(ta.id); } catch (eT) { ta = null; }
+          if (!sa && !op.source_name) throw new Error('Quelle fehlt.');
+          if (!ta && !op.target_name) throw new Error('Ziel fehlt.');
           nlQueue({
             kind: 'conn.create', key: null,
-            a: Number(ga.l), b: Number(gb.l), aGlobal: sa.id, bGlobal: ta.id, srcNo: ga.n,
+            a: ga ? Number(ga.l) : null, b: gb ? Number(gb.l) : null,
+            aName: sa ? sa.name : op.source_name, bName: ta ? ta.name : op.target_name,
+            aGlobal: sa ? sa.id : null, bGlobal: ta ? ta.id : null, srcNo: ga ? ga.n : (gb ? gb.n : 1),
             connType: op.ea_type || 'Dependency', name: op.name || '', stereotype: op.stereotype || '',
             direction: op.direction || 'Source -> Destination', note: '',
             label: 'KI: Neue Beziehung „' + shortLabel(op.stereotype || op.ea_type || 'Dependency', 40) + '“',
-            sub: shortLabel(sa.nameBase || sa.name, 34) + ' → ' + shortLabel(ta.nameBase || ta.name, 34)
+            sub: shortLabel(sa ? (sa.nameBase || sa.name) : op.source_name, 34) + ' → ' + shortLabel(ta ? (ta.nameBase || ta.name) : op.target_name, 34)
           });
-          results.push({ ok: true, msg: 'Beziehung: ' + sa.name + ' → ' + ta.name });
+          results.push({ ok: true, msg: 'Beziehung: ' + (sa ? sa.name : op.source_name) + ' → ' + (ta ? ta.name : op.target_name) });
         } else if (op.op === 'delete_connector') {
           var c = nlConnector(op), gc = groupOf(c.id), craw = findRow('t_connector', 'Connector_ID', gc.l, gc.db);
           var ca = OBJS[c.a], cb = OBJS[c.b];
@@ -1367,6 +1497,7 @@ var EDIT = (function () {
     normalizeToLocal: normalizeToLocal,
     q: q,
     save: save,
+    applyLive: applyLive,
     removeChange: removeChange,
     clearAll: clearAll,
     clearAllConfirm: clearAllConfirm,

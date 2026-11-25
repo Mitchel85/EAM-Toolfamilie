@@ -91,6 +91,8 @@ OPERATIONS: tuple[str, ...] = (
     "set_alias",
     "add_tag",
     "remove_tag",
+    "add_package",
+    "add_element",
     "delete_element",
     "add_connector",
     "delete_connector",
@@ -1091,6 +1093,150 @@ class _Editor:
         self._delete_connector_row(connector, journal)
         return f"Kante {name!r} geloescht"
 
+    # -- Paket & Element anlegen ----------------------------------------
+    def _ensure_package_path(self, raw_path: str, journal: _Journal) -> tuple[int, str, bool]:
+        """Stellt einen Paketpfad (z. B. ``A/B/C``) sicher; liefert ``(pkg_id, pfad, neu_angelegt)``."""
+        segments = [seg.strip() for seg in raw_path.strip().strip("/").split("/") if seg.strip()]
+        if not segments:
+            raise _Reject("Paketpfad darf nicht leer sein")
+        for seg in segments:
+            if "::" in seg:
+                raise _Reject("Paketname darf '::' nicht enthalten")
+        by_path = {p: pid for pid, p in self.model.package_paths.items()}
+        full = "/".join(segments)
+        if full in by_path:
+            return by_path[full], full, False
+
+        pkg_cols = _columns(self.con, self.model.package_table)
+        obj_cols = _columns(self.con, self.model.object_table)
+        parent_id = 0
+        current = ""
+        created_any = False
+        for seg in segments:
+            current = f"{current}/{seg}" if current else seg
+            if current in by_path:
+                parent_id = by_path[current]
+                continue
+            pkg_id = _max_int(self.con, self.model.package_table, "Package_ID") + 1
+            guid = self._free_guid(
+                self.model.package_table, "ea_guid", f"model_edit|package|{current}"
+            )
+            pvals: dict[str, Any] = {
+                _require_column(pkg_cols, self.model.package_table, "Package_ID"): pkg_id,
+                _require_column(pkg_cols, self.model.package_table, "Name"): seg,
+                _require_column(pkg_cols, self.model.package_table, "Parent_ID"): parent_id,
+            }
+            if (hit := _column(pkg_cols, "ea_guid")) is not None:
+                pvals[hit] = guid
+            if (hit := _column(pkg_cols, "TPos")) is not None:
+                pvals[hit] = pkg_id
+            journal.insert(self.model.package_table, pvals)
+
+            # EA-Paketspiegel in t_object (wie qea_writer)
+            obj_id = _max_int(self.con, self.model.object_table, "Object_ID") + 1
+            ovals: dict[str, Any] = {
+                _require_column(obj_cols, self.model.object_table, "Object_ID"): obj_id,
+                _require_column(obj_cols, self.model.object_table, "Object_Type"): "Package",
+                _require_column(obj_cols, self.model.object_table, "Name"): seg,
+                _require_column(obj_cols, self.model.object_table, "Package_ID"): parent_id,
+                _require_column(obj_cols, self.model.object_table, "ea_guid"): guid,
+            }
+            if (hit := _column(obj_cols, "PDATA1")) is not None:
+                ovals[hit] = str(pkg_id)
+            if (hit := _column(obj_cols, "Status")) is not None:
+                ovals[hit] = "Proposed"
+            journal.insert(self.model.object_table, ovals)
+
+            self.model.package_paths[pkg_id] = current
+            by_path[current] = pkg_id
+            parent_id = pkg_id
+            created_any = True
+        return parent_id, full, created_any
+
+    def _op_add_package(self, op, index, journal) -> str:
+        raw_path = _as_text(op.get("path") or op.get("package") or op.get("name")).strip()
+        if not raw_path:
+            raise _Reject("Feld 'path' oder 'package' fehlt")
+        _pkg_id, full, created = self._ensure_package_path(raw_path, journal)
+        if not created:
+            raise _Reject(f"Paket {full!r} existiert bereits")
+        return f"Paket {full!r} angelegt"
+
+    def _op_add_element(self, op, index, journal) -> str:
+        name = _as_text(op.get("name")).strip()
+        if not name:
+            raise _Reject("Feld 'name' fehlt")
+        if "::" in name:
+            raise _Reject("Name darf '::' nicht enthalten (IR-Referenzen waeren nicht darstellbar)")
+        raw_pkg = _as_text(op.get("package")).strip().strip("/")
+        if raw_pkg:
+            pkg_id, pkg_path, _ = self._ensure_package_path(raw_pkg, journal)
+        else:
+            if not self.model.package_paths:
+                pkg_id, pkg_path, _ = self._ensure_package_path("Architektur", journal)
+            else:
+                pkg_id = min(self.model.package_paths)
+                pkg_path = self.model.package_paths[pkg_id]
+
+        stereotype = _as_text(op.get("stereotype")).strip()
+        ea_type = _as_text(op.get("ea_type") or op.get("object_type")).strip() or "Class"
+        note = _as_text(op.get("note") if "note" in op else op.get("notes"))
+        status = _as_text(op.get("status")).strip() or "Proposed"
+        alias = _as_text(op.get("alias")).strip()
+        guid = _as_text(op.get("guid")).strip()
+        if guid:
+            hit = self.con.execute(
+                f"SELECT 1 FROM {_quote(self.model.object_table)} WHERE upper(ea_guid) = upper(?) LIMIT 1",
+                (guid,),
+            ).fetchone()
+            if hit:
+                raise _Reject(f"Element mit ea_guid {guid} existiert bereits")
+        else:
+            guid = self._free_guid(
+                self.model.object_table,
+                "ea_guid",
+                f"model_edit|element|{pkg_path}|{stereotype}|{name}",
+            )
+
+        obj_cols = _columns(self.con, self.model.object_table)
+        obj_id = _max_int(self.con, self.model.object_table, "Object_ID") + 1
+        values: dict[str, Any] = {
+            _require_column(obj_cols, self.model.object_table, "Object_ID"): obj_id,
+            _require_column(obj_cols, self.model.object_table, "Object_Type"): ea_type,
+            _require_column(obj_cols, self.model.object_table, "Name"): name,
+            _require_column(obj_cols, self.model.object_table, "Package_ID"): pkg_id,
+            _require_column(obj_cols, self.model.object_table, "ea_guid"): guid,
+        }
+        if (hit := _column(obj_cols, "Stereotype")) is not None:
+            values[hit] = stereotype
+        if (hit := _column(obj_cols, "Note", "Notes")) is not None and note:
+            values[hit] = note
+        if (hit := _column(obj_cols, "Status")) is not None:
+            values[hit] = status
+        if (hit := _column(obj_cols, "Alias")) is not None and alias:
+            values[hit] = alias
+        rowid = journal.insert(self.model.object_table, values)
+
+        if stereotype:
+            elem = _Element(
+                rowid=rowid,
+                object_id=obj_id,
+                package_id=pkg_id,
+                name=name,
+                stereotype=stereotype,
+                guid=guid,
+                note=note,
+                status=status,
+                alias=alias,
+            )
+            self._write_stereotype_xref(elem, stereotype, op, journal)
+
+        return (
+            f"Element {pkg_path}::{name!r}"
+            + (f" «{stereotype}»" if stereotype else "")
+            + " angelegt"
+        )
+
     # -- Kante anlegen --------------------------------------------------
     def _op_add_connector(self, op, index, journal) -> str:
         source = self.model.endpoint(op.get("source"), "source")
@@ -1313,6 +1459,7 @@ def edit_model(
                     con.commit()
                 except _Reject as rejection:
                     con.rollback()
+                    model.package_paths = model._package_paths()
                     rejected.append(
                         {
                             "op": index,
@@ -1324,6 +1471,7 @@ def edit_model(
                     continue
                 except sqlite3.Error as error:
                     con.rollback()
+                    model.package_paths = model._package_paths()
                     rejected.append(
                         {
                             "op": index,
@@ -1340,6 +1488,7 @@ def edit_model(
                     except (validator.ValidatorError, EditError) as error:
                         journal.restore()
                         con.commit()
+                        model.package_paths = model._package_paths()
                         rejected.append(
                             {
                                 "op": index,
@@ -1353,6 +1502,7 @@ def edit_model(
                     if fresh:
                         journal.restore()
                         con.commit()
+                        model.package_paths = model._package_paths()
                         rejected.append(
                             {
                                 "op": index,

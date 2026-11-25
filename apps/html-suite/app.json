@@ -4,7 +4,7 @@
   "sourceRepo": "Mitchel85/EAM-AI-Suite",
   "sourceCommit": "897058d",
   "sourceNote": "Quellstand; ADMBW_DATA wird beim Bauen aus knowledge/regelwerk.json erzeugt",
-  "sourceTreeSha256": "8bc2df1bb907faa101748f63675cabe6db52ba59abc631feb2e0e26c3f0d7af9",
+  "sourceTreeSha256": "b2b716ce29f720b3ad2f17d30b4a888683d25660644c707963c61391c44262c7",
   "buildScript": "src/build_release.py",
   "sourceOutput": "EAM-AI-Suite.html",
   "sourceAspx": "EAM-AI-Suite.aspx",

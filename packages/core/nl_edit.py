@@ -70,6 +70,16 @@ _OP_ALIASES: dict[str, str] = {
     "removeconnector": "delete_connector",
     "deleteconnector": "delete_connector",
     "delete_connector": "delete_connector",
+    "addelement": "add_element",
+    "add_element": "add_element",
+    "createelement": "add_element",
+    "create_element": "add_element",
+    "neues_element": "add_element",
+    "addpackage": "add_package",
+    "add_package": "add_package",
+    "createpackage": "add_package",
+    "create_package": "add_package",
+    "neues_paket": "add_package",
 }
 
 _SIMPLE_OPS = ("set_name", "set_note", "set_status", "set_alias", "set_stereotype")
@@ -102,7 +112,7 @@ _CONNECTOR_TYPES: dict[str, str] = {
 _VERBS = (
     "benenne|nenne|umbenennen|umbenenne|setze|aendere|ändere|ergaenze|ergänze|"
     "ueberschreibe|überschreibe|loesche|lösche|entferne|verbinde|verknuepfe|"
-    "verknüpfe|trenne|loese|löse"
+    "verknüpfe|trenne|loese|löse|lege|erstelle|fuege|füge"
 )
 
 
@@ -442,7 +452,68 @@ def _parse_clause(clause: str) -> list[dict[str, Any]]:
             raise NlEditError("Neuer Name fehlt")
         return [{"op": "set_name", "name": _clean_ref(match.group(1)), "value": new_name}]
 
-    # 5. Loeschen.
+    # 5. Neues Paket anlegen.
+    match = re.match(
+        r"^(?:lege|erstelle|fuege|füge)\s+(?:ein\s+)?(?:neues\s+)?paket\s+(.+?)(?:\s+(?:an|hinzu))?$",
+        text,
+        flags=re.I,
+    )
+    if match:
+        pkg_path = _clean_ref(match.group(1))
+        if not pkg_path:
+            raise NlEditError("Paketpfad fehlt")
+        return [{"op": "add_package", "path": pkg_path}]
+
+    # 6. Neues Element anlegen:
+    #    "Lege Element X als Capability in Paket Y an"
+    #    "Erstelle Element X vom Typ ServiceSpecification in Paket Y"
+    #    "Fuege X in Paket Y als Capability hinzu"
+    add_el = re.match(
+        r"^(?:lege|erstelle|fuege|füge)\s+(?:ein\s+)?(?:neues\s+)?(element\s+)?(.+?)(?:\s+(?:an|hinzu))?$",
+        text,
+        flags=re.I,
+    )
+    if add_el:
+        has_el_kw = bool(add_el.group(1))
+        rest = add_el.group(2).strip()
+        stereotype = ""
+        package = ""
+        # Optionales Paket und optionalen Stereotyp in beliebiger Reihenfolge herausziehen.
+        for _ in range(2):
+            m_pkg = re.search(r"\s+in\s+(?:dem\s+)?(?:paket\s+)?(\"[^\"]+\"|'[^']+'|.+)$", rest, flags=re.I)
+            if m_pkg and not package:
+                # Falls dahinter noch "als/vom Typ" kommt, nicht gierig schlucken.
+                cand = m_pkg.group(1).strip()
+                m_tail = re.search(r"\s+(?:als|vom\s+typ|mit\s+stereotyp)\s+", cand, flags=re.I)
+                if m_tail:
+                    pkg_end = m_pkg.start(1) + m_tail.start()
+                    package = _clean_ref(rest[m_pkg.start(1):pkg_end])
+                    rest = (rest[:m_pkg.start()] + rest[pkg_end:]).strip()
+                else:
+                    package = _clean_ref(cand)
+                    rest = rest[:m_pkg.start()].strip()
+                continue
+            m_st = re.search(
+                r"\s+(?:als|vom\s+typ|mit\s+stereotyp)\s+(\"[^\"]+\"|'[^']+'|[^\s,]+)",
+                rest,
+                flags=re.I,
+            )
+            if m_st and not stereotype:
+                stereotype = _clean_ref(m_st.group(1))
+                rest = (rest[:m_st.start()] + rest[m_st.end():]).strip()
+                continue
+            break
+        if has_el_kw or stereotype or package:
+            el_name = _clean_ref(rest)
+            if el_name:
+                return [{
+                    "op": "add_element",
+                    "name": el_name,
+                    "stereotype": stereotype,
+                    "package": package,
+                }]
+
+    # 7. Loeschen.
     match = re.match(
         rf"^(?:loesche|lösche|entferne)\s+(?:das\s+)?(?:element\s+)?(.+)$",
         text,
@@ -488,14 +559,15 @@ def _inventory_text(inventory: Inventory, *, max_elements: int = 400) -> str:
 
 
 _SYSTEM_PROMPT = """Du bist ein Assistent fuer Enterprise-Architekturmodelle.
-Der Nutzer will ein vorhandenes Modell in natuerlicher Sprache korrigieren.
-Du erfindest keine Elemente, Pakete oder Beziehungen. Du verwendest ausschliesslich
-Namen, die im mitgelieferten Inventar vorkommen.
+Der Nutzer will ein vorhandenes Modell in natuerlicher Sprache korrigieren oder gezielt weiterbauen.
+Fuer bestehende Ziele verwendest du ausschliesslich Namen aus dem mitgelieferten Inventar; neue Pakete und Elemente legst du nur mit add_package / add_element an, wenn der Nutzer es verlangt.
 
 Antworte NUR mit gueltigem JSON in genau dieser Form:
 {"reply":"kurze Antwort auf Deutsch","ops":[{...}]}
 
 Erlaubte Operationen (Feld op):
+- add_package:     {"op":"add_package","path":"Architektur/NeuesPaket"}
+- add_element:     {"op":"add_element","package":"Paket/Pfad","name":"NeuesElement","stereotype":"Capability","ea_type":"Class","note":"Beschreibung"}
 - set_name:        {"op":"set_name","package":"Paket/Pfad","name":"Alt","value":"Neu"}
 - set_note:        {"op":"set_note","package":"Paket/Pfad","name":"Element","value":"Neuer Text"}
 - set_status:      {"op":"set_status","package":"Paket/Pfad","name":"Element","value":"Proposed"}
@@ -509,9 +581,10 @@ Regeln:
 1. "package" ist der vollstaendige Paketpfad mit "/" als Trenner.
 2. Wenn ein Name im Inventar nicht eindeutig ist, nimm den Paketpfad mit auf.
 3. Loeschen nur, wenn der Nutzer es ausdruecklich verlangt.
-4. Keine Operation erfinden, um die Anweisung "irgendwie" zu erfuellen; lieber
+4. Wenn du ein neues Element anlegst und sofort verbinden willst, erst add_element, dann add_connector.
+5. Keine Operation erfinden, um die Anweisung "irgendwie" zu erfuellen; lieber
    eine leere ops-Liste und eine erklaerende reply.
-5. Antworte auf Deutsch, ohne Markdown."""
+6. Antworte auf Deutsch, ohne Markdown."""
 
 
 def _parse_llm_json(raw: str) -> tuple[str, list[dict[str, Any]]]:
@@ -576,6 +649,14 @@ def _normalize_op(op: Mapping[str, Any]) -> dict[str, Any]:
             result["source"] = result.get("from", result.get("quelle", ""))
         if "target" not in result:
             result["target"] = result.get("to", result.get("ziel", ""))
+    elif canonical == "add_element":
+        result.setdefault("stereotype", "")
+        result.setdefault("ea_type", "Class")
+        result.setdefault("note", result.get("notes", ""))
+        result.setdefault("package", "")
+    elif canonical == "add_package":
+        if not result.get("path"):
+            result["path"] = result.get("package", result.get("name", ""))
     return result
 
 
@@ -584,11 +665,54 @@ def _prepare_ops(
 ) -> tuple[list[dict[str, Any]], list[str]]:
     ops: list[dict[str, Any]] = []
     warnings: list[str] = []
+    pending_elements: list[Element] = []
+    default_pkg = inventory.packages[0] if inventory.packages else "Architektur"
+
+    def _resolve_with_pending(ref: str, pkg: str | None = None) -> tuple[Element, bool]:
+        try:
+            return resolve_element(inventory, ref, pkg), False
+        except NlEditError:
+            cleaned = _clean_ref(ref)
+            req_pkg = pkg
+            if "::" in cleaned and not req_pkg:
+                req_pkg, cleaned = cleaned.rsplit("::", 1)
+            hits = [
+                el for el in pending_elements
+                if _norm(el.name) == _norm(cleaned) and _package_matches(el, req_pkg)
+            ]
+            if len(hits) == 1:
+                return hits[0], True
+            raise
+
     for index, raw in enumerate(raw_ops, start=1):
         try:
             op = _normalize_op(raw)
             kind = op["op"]
-            if kind in _SIMPLE_OPS:
+            if kind == "add_package":
+                pkg_path = str(op.get("path") or "").strip().strip("/")
+                if not pkg_path:
+                    raise NlEditError("Paketpfad fehlt")
+                ops.append({"op": "add_package", "path": pkg_path})
+            elif kind == "add_element":
+                el_name = str(op.get("name") or "").strip()
+                if not el_name:
+                    raise NlEditError("Elementname fehlt")
+                pkg_path = str(op.get("package") or "").strip().strip("/") or default_pkg
+                stereotype = str(op.get("stereotype") or "").strip()
+                ea_type = str(op.get("ea_type") or "Class").strip() or "Class"
+                note = str(op.get("note") or "")
+                ops.append({
+                    "op": "add_element",
+                    "package": pkg_path,
+                    "name": el_name,
+                    "stereotype": stereotype,
+                    "ea_type": ea_type,
+                    "note": note,
+                })
+                pending_elements.append(
+                    Element(guid="", name=el_name, package=pkg_path, stereotype=stereotype, note=note)
+                )
+            elif kind in _SIMPLE_OPS:
                 element = resolve_element(inventory, str(op.get("name") or ""), op.get("package"))
                 value = op.get("value")
                 if not isinstance(value, str):
@@ -626,9 +750,11 @@ def _prepare_ops(
                     }
                 )
             elif kind == "add_connector":
-                source = resolve_element(inventory, str(op.get("source") or ""))
-                target = resolve_element(inventory, str(op.get("target") or ""))
-                if source.guid == target.guid:
+                source, src_pending = _resolve_with_pending(str(op.get("source") or ""))
+                target, tgt_pending = _resolve_with_pending(str(op.get("target") or ""))
+                if not src_pending and not tgt_pending and source.guid == target.guid:
+                    raise NlEditError("Quelle und Ziel sind dasselbe Element")
+                if src_pending and tgt_pending and _norm(source.name) == _norm(target.name) and source.package == target.package:
                     raise NlEditError("Quelle und Ziel sind dasselbe Element")
                 stereotype = str(op.get("stereotype") or "").strip()
                 if stereotype:
@@ -636,8 +762,8 @@ def _prepare_ops(
                 ops.append(
                     {
                         "op": "add_connector",
-                        "source": {"guid": source.guid},
-                        "target": {"guid": target.guid},
+                        "source": {"package": source.package, "name": source.name} if src_pending else {"guid": source.guid},
+                        "target": {"package": target.package, "name": target.name} if tgt_pending else {"guid": target.guid},
                         "source_name": f"{source.package}::{source.name}",
                         "target_name": f"{target.package}::{target.name}",
                         "stereotype": stereotype,
@@ -708,6 +834,11 @@ def preview_lines(proposal: Proposal) -> list[str]:
             lines.append(
                 f"{index}. {label}: {op.get('package')}::{op.get('name')} -> {op.get('value')!r}"
             )
+        elif kind == "add_package":
+            lines.append(f"{index}. Paket anlegen: {op.get('path')}")
+        elif kind == "add_element":
+            st = f" «{op.get('stereotype')}»" if op.get("stereotype") else ""
+            lines.append(f"{index}. Element anlegen: {op.get('package')}::{op.get('name')}{st}")
         elif kind == "delete_element":
             lines.append(f"{index}. LOESCHEN: {op.get('package')}::{op.get('name')} (samt Kanten)")
         elif kind == "add_connector":

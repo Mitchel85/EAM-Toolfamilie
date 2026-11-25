@@ -486,6 +486,54 @@ def test_add_connector_ist_deterministisch(modell: Path, tmp_path: Path) -> None
     assert first.read_bytes() == second.read_bytes()
 
 
+def test_add_package_und_add_element_mit_kante(modell: Path, tmp_path: Path) -> None:
+    ops = [
+        {"op": "add_package", "path": "P/Neu"},
+        {
+            "op": "add_element",
+            "package": "P/Neu",
+            "name": "Dienst Neu",
+            "stereotype": "ServiceSpecification",
+            "ea_type": "Class",
+            "note": "Frisch angelegt",
+        },
+        {
+            "op": "add_connector",
+            "source": "P::A",
+            "target": "P/Neu::Dienst Neu",
+            "stereotype": "Exhibits",
+            "ea_type": "Dependency",
+        },
+    ]
+    out, result = _edit(modell, ops, tmp_path, mdg=MDG if MDG.is_file() else None)
+    assert result.applied == 3
+    assert result.rejected == []
+    assert _value(out, "Stereotype", "Dienst Neu") == "ServiceSpecification"
+    assert _value(out, "Note", "Dienst Neu") == "Frisch angelegt"
+    ir = qea_reader.read_qea(out)
+    assert "P/Neu" in {pkg["path"] for pkg in ir["packages"]}
+    assert any(el["name"] == "Dienst Neu" and el["package"] == "P/Neu" for el in ir["elements"])
+    assert any(
+        c["source"] == "P::A" and c["target"] == "P/Neu::Dienst Neu" and c["stereotype"] == "Exhibits"
+        for c in ir["connectors"]
+    )
+    assert _rows(out, "PRAGMA integrity_check") == [("ok",)]
+
+
+@pytest.mark.skipif(not MDG.is_file(), reason="MDG-Belegdatei fehlt")
+def test_add_element_mit_ungueltigem_mdg_stereotyp_wird_abgelehnt(modell: Path, tmp_path: Path) -> None:
+    out, result = _edit(
+        modell,
+        [{"op": "add_element", "package": "P", "name": "Falsch", "stereotype": "GibtEsNicht"}],
+        tmp_path,
+        mdg=MDG,
+    )
+    assert result.applied == 0
+    assert len(result.rejected) == 1
+    assert "MDG-Verstoss" in result.rejected[0]["grund"]
+    assert _rows(out, "SELECT Name FROM t_object WHERE Name = 'Falsch'") == []
+
+
 # --------------------------------------------------------------------------
 # MDG-Pruefung
 # --------------------------------------------------------------------------

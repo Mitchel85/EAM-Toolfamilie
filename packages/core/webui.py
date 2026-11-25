@@ -91,9 +91,10 @@ MAX_TEXT_CHARS = 4 * 1024 * 1024
 MAX_API_KEY_CHARS = 512
 ZIP_NAME = "ergebnis.zip"
 # Die Modellansicht bringt Stil und Skript inline mit (eine Datei, kein Netz).
+# frame-ancestors 'self' erlaubt die direkte Vorschau-Einbettung auf der Hauptseite.
 VIEWER_CSP = (
     "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; "
-    "img-src data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+    "img-src data:; base-uri 'none'; form-action 'none'; frame-ancestors 'self'"
 )
 # Muss zu extract.DEFAULT_PACKAGE passen; tests/test_webui.py prueft das.
 DEFAULT_PACKAGE_NAME = "Architektur"
@@ -695,9 +696,21 @@ class Job:
     files: list[dict[str, Any]] = field(default_factory=list)
     zip_name: str | None = None
     viewer_page: str | None = None
+    mdg_path: Path | None = None
+    package: str = DEFAULT_PACKAGE_NAME
+    format: str = "qea"
+    backend_model: str = ""
+    base_url: str = ""
+    startpaket_path: Path | None = None
+    katalog_path: Path | None = None
+    sichten: str = "leitfaden"
+    project: str = ""
+    revision: int = 1
+    model_info: dict[str, Any] = field(default_factory=dict)
     created: float = field(default_factory=time.time)
     finished: float | None = None
     thread: threading.Thread | None = field(default=None, repr=False)
+    _op_lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
     def scrub(self, text: str, *, secret: str = "") -> str:
         """Interne Pfade und Geheimnisse aus einer Zeile entfernen."""
@@ -733,12 +746,71 @@ class Job:
         """Name der erzeugten .qea im Manifest (oder None, abwaertskompatibler Alias)."""
         return self.model_name()
 
+    def ensure_qea(self) -> Path:
+        """Liefert eine les- und bearbeitbare .qea fuer das aktuelle Auftragsmodell."""
+        name = self.model_name()
+        if not name:
+            raise RequestError("Zu diesem Auftrag gibt es kein Modell.", status=404)
+        model_path = self.directory / name
+        if not model_path.is_file():
+            raise RequestError("Modelldatei ist nicht mehr vorhanden.", status=410)
+        if model_path.suffix.lower() == ".qea":
+            return model_path
+        work_qea = self.directory / "_work.qea"
+        if not work_qea.is_file() or work_qea.stat().st_mtime < model_path.stat().st_mtime:
+            import model_io  # noqa: PLC0415
+            import qea_writer  # noqa: PLC0415
+
+            ir = model_io.read_model(model_path)
+            qea_writer.write_qea(ir, work_qea)
+        return work_qea
+
+    def refresh_model_info(self) -> None:
+        """Pakete, Elemente und Kanten fuer Chat-Scope und Zusammenfassung einlesen."""
+        name = self.model_name()
+        if not name:
+            self.model_info = {}
+            return
+        model_path = self.directory / name
+        if not model_path.is_file():
+            self.model_info = {}
+            return
+        try:
+            import model_io  # noqa: PLC0415
+
+            ir = model_io.read_model(model_path)
+            packages = sorted({str(p.get("path") or "") for p in ir.get("packages", []) if p.get("path")})
+            elements = sorted(
+                {
+                    f"{el.get('package')}::{el.get('name')}" if el.get("package") else str(el.get("name") or "")
+                    for el in ir.get("elements", [])
+                    if el.get("name")
+                }
+            )
+            self.model_info = {
+                "packages": packages[:200],
+                "elements": elements[:400],
+                "package_count": len(packages),
+                "element_count": len(ir.get("elements", [])),
+                "connector_count": len(ir.get("connectors", [])),
+            }
+            self.summary["elements"] = len(ir.get("elements", []))
+            self.summary["connectors"] = len(ir.get("connectors", []))
+        except Exception:  # noqa: BLE001
+            self.model_info = {}
+
     def as_json(self) -> dict[str, Any]:
         links: dict[str, Any] = {"files": []}
         if self.zip_name is not None:
             links["zip"] = f"/api/jobs/{self.token}/{quote(self.zip_name)}"
         if self.state == "done" and self.model_name():
             links["viewer"] = f"/api/jobs/{self.token}/viewer"
+            links["validate"] = f"/api/jobs/{self.token}/validate"
+            links["qs"] = f"/api/jobs/{self.token}/qs"
+            links["handbuch"] = f"/api/jobs/{self.token}/handbuch"
+            links["chat"] = f"/api/jobs/{self.token}/chat"
+            links["edit"] = f"/api/jobs/{self.token}/edit"
+            links["extend"] = f"/api/jobs/{self.token}/extend"
         links["files"] = [
             {
                 "name": entry["name"],
@@ -751,10 +823,12 @@ class Job:
             "job": self.token,
             "state": self.state,
             "backend": self.backend,
+            "revision": self.revision,
             "log": list(self.log),
             "error": self.error,
             "result_line": self.result_line,
             "summary": dict(self.summary),
+            "model_info": dict(self.model_info),
             "findings": list(self.findings),
             "files": list(self.files),
             "links": links,
@@ -873,7 +947,20 @@ class WebServer(ThreadingHTTPServer):
             self._slots.release()
             raise
 
-        job = Job(token=token, directory=job_dir, backend=prepared.backend)
+        job = Job(
+            token=token,
+            directory=job_dir,
+            backend=prepared.backend,
+            mdg_path=prepared.mdg_path,
+            package=prepared.package,
+            format=prepared.format,
+            backend_model=prepared.model,
+            base_url=prepared.base_url,
+            startpaket_path=prepared.startpaket_path,
+            katalog_path=prepared.katalog_path,
+            sichten=prepared.sichten,
+            project=prepared.package,
+        )
         with self._lock:
             self.jobs[token] = job
         thread = threading.Thread(
@@ -986,6 +1073,7 @@ class WebServer(ThreadingHTTPServer):
             )
             job.files = _manifest([out_path, findings_path, quellen_path])
             job.zip_name = zip_path.name
+            job.refresh_model_info()
             job.state = "done"
             job.finished = time.time()
             log(f"Fertig: {job.result_line}")
@@ -1152,6 +1240,80 @@ def _run_cli_qs(model_path: Path, mdg_path: Path, project: str) -> dict[str, Any
         out_path.unlink(missing_ok=True)
 
 
+def _resolve_job_mdg(job: Job) -> Path | None:
+    """Liefert die MDG-Datei des Auftrags (oder die mitgelieferte Standard-MDG)."""
+    if job.mdg_path and job.mdg_path.is_file():
+        return job.mdg_path
+    for candidate in (
+        job.directory / "input" / "technologie.xml",
+        job.directory / "input" / "technologie.mdg",
+        job.directory / "technologie.xml",
+        Path(__file__).resolve().parents[1] / "rules" / "NAFv4-ADMBw-MDG-2026.05.xml",
+    ):
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def _build_optional_backend(
+    payload: Mapping[str, Any], job: Job, *, max_seconds: float
+) -> Any:
+    """Erstellt bei Bedarf ein Sprachmodell-Backend fuer Chat/NL-Edit (sonst None = ohne KI)."""
+    use_ki = payload.get("use_ki", True)
+    if use_ki is False:
+        return None
+    kind = str(payload.get("backend") or job.backend or "datei").strip().lower()
+    if kind in ("", "datei", "offline", "none"):
+        return None
+    api_key = str(payload.get("api_key") or "").strip()
+    if len(api_key) > MAX_API_KEY_CHARS or "\n" in api_key or "\r" in api_key:
+        raise RequestError("API-Schluessel ungueltig.")
+    if kind == "openai" and not api_key and not (
+        os.environ.get("OPENAI_API_KEY") or os.environ.get("DEEPSEEK_API_KEY")
+    ):
+        return None
+    model = str(payload.get("model") or job.backend_model or "").strip()
+    base_url = str(payload.get("base_url") or job.base_url or "").strip()
+    if base_url:
+        base_url = check_base_url(base_url)
+    import extract  # noqa: PLC0415
+
+    try:
+        return extract.make_backend(
+            kind,
+            model=model or None,
+            base_url=base_url or None,
+            api_key=api_key or None,
+            timeout=max(10.0, float(max_seconds) - 5.0),
+        )
+    except extract.ExtractionError as exc:
+        raise RequestError(str(exc), status=400) from exc
+
+
+def _refresh_job_after_mutation(job: Job, qea_path: Path) -> None:
+    """Synchronisiert Zielformat, ZIP, Manifest, Viewer-Cache und Modell-Info nach Aenderungen."""
+    model_name = job.model_name()
+    if not model_name:
+        return
+    out_path = job.directory / model_name
+    if out_path.resolve() != qea_path.resolve():
+        import model_io  # noqa: PLC0415
+        import qea_reader  # noqa: PLC0415
+
+        ir = qea_reader.read_qea(qea_path)
+        model_io.write_model(ir, out_path, fmt=job.format)
+    job.viewer_page = None
+    (job.directory / "handbuch.md").unlink(missing_ok=True)
+    findings_path = job.directory / "findings.json"
+    quellen_path = job.directory / "quellen.json"
+    zip_path = _write_zip(job.directory / ZIP_NAME, [out_path, findings_path, quellen_path])
+    job.files = _manifest([out_path, findings_path, quellen_path])
+    job.zip_name = zip_path.name
+    job.revision += 1
+    job.refresh_model_info()
+    job.finished = time.time()
+
+
 class Handler(BaseHTTPRequestHandler):
     server: WebServer
     server_version = "eam-ai-web"
@@ -1165,7 +1327,7 @@ class Handler(BaseHTTPRequestHandler):
     def _common_headers(self) -> None:
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Referrer-Policy", "no-referrer")
-        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("X-Frame-Options", "SAMEORIGIN")
         self.send_header("Cache-Control", "no-store")
 
     def _send_bytes(
@@ -1213,7 +1375,7 @@ class Handler(BaseHTTPRequestHandler):
                     "Content-Security-Policy": (
                         "default-src 'none'; style-src 'unsafe-inline'; "
                         "script-src 'unsafe-inline'; connect-src 'self'; "
-                        "form-action 'self'; img-src data:; base-uri 'none'"
+                        "frame-src 'self'; form-action 'self'; img-src data:; base-uri 'none'"
                     )
                 },
             )
@@ -1309,9 +1471,10 @@ class Handler(BaseHTTPRequestHandler):
             self._error(HTTPStatus.NOT_FOUND, "Zu diesem Auftrag gibt es kein Modell.")
             return
         model_path = job.directory / name
-        mdg_path = job.directory / "technologie.xml"
-        if not mdg_path.is_file():
-            mdg_path = Path(__file__).resolve().parents[1] / "rules" / "NAFv4-ADMBw-MDG-2026.05.xml"
+        mdg_path = _resolve_job_mdg(job)
+        if mdg_path is None:
+            self._error(HTTPStatus.NOT_FOUND, "Keine MDG-Datei fuer die Validierung verfuegbar.")
+            return
         try:
             payload = _run_cli_validate(model_path, mdg_path)
             self._send_json(HTTPStatus.OK, payload)
@@ -1362,11 +1525,12 @@ class Handler(BaseHTTPRequestHandler):
             self._error(HTTPStatus.NOT_FOUND, "Zu diesem Auftrag gibt es kein Modell.")
             return
         model_path = job.directory / name
-        mdg_path = job.directory / "technologie.xml"
-        if not mdg_path.is_file():
-            mdg_path = Path(__file__).resolve().parents[1] / "rules" / "NAFv4-ADMBw-MDG-2026.05.xml"
+        mdg_path = _resolve_job_mdg(job)
+        if mdg_path is None:
+            self._error(HTTPStatus.NOT_FOUND, "Keine MDG-Datei fuer die QS-Pruefung verfuegbar.")
+            return
         try:
-            payload = _run_cli_qs(model_path, mdg_path, job.prepared.project)
+            payload = _run_cli_qs(model_path, mdg_path, job.project)
             self._send_json(HTTPStatus.OK, payload)
         except Exception as exc:  # noqa: BLE001
             self._error(HTTPStatus.INTERNAL_SERVER_ERROR, f"QS-Fehler: {exc}")
@@ -1400,10 +1564,335 @@ class Handler(BaseHTTPRequestHandler):
         )
 
     # -- POST --------------------------------------------------------------
+    def _read_json_body(self) -> dict[str, Any]:
+        raw_length = self.headers.get("Content-Length")
+        if raw_length is None:
+            raise RequestError("Content-Length fehlt.", status=411)
+        try:
+            length = int(raw_length)
+        except ValueError as exc:
+            raise RequestError("Content-Length ist keine Zahl.", status=400) from exc
+        if length <= 0:
+            raise RequestError("Leerer Anfragekoerper.", status=400)
+        if length > self.server.config.max_upload:
+            raise RequestError("Anfrage zu gross.", status=413)
+        body = self._read_body(length)
+        try:
+            parsed = json.loads(body.decode("utf-8"))
+        except (UnicodeDecodeError, ValueError) as exc:
+            raise RequestError("Anfragekoerper ist kein gueltiges JSON.", status=400) from exc
+        if not isinstance(parsed, dict):
+            raise RequestError("JSON-Objekt erwartet.", status=400)
+        return parsed
+
+    def _require_done_job(self, token: str) -> Job | None:
+        job = self.server.get_job(token)
+        if job is None:
+            self._error(HTTPStatus.NOT_FOUND, "Unbekannter Auftrag (abgelaufen oder falsche ID).")
+            return None
+        if job.state == "running":
+            self._error(HTTPStatus.CONFLICT, "Der Lauf ist noch nicht fertig.")
+            return None
+        if job.state != "done" or job.model_name() is None:
+            self._error(HTTPStatus.NOT_FOUND, "Zu diesem Auftrag gibt es kein fertiges Modell.")
+            return None
+        return job
+
+    def _job_chat(self, token: str) -> None:
+        """Chat with Data: lesende Frage an das erzeugte Modell stellen."""
+        job = self._require_done_job(token)
+        if job is None:
+            return
+        try:
+            payload = self._read_json_body()
+            question = str(payload.get("question") or "").strip()
+            if not question:
+                raise RequestError("Bitte eine Frage eingeben.", status=400)
+            scope_kind = str(payload.get("scope_kind") or "model").strip().lower()
+            scope_value = str(payload.get("scope_value") or "").strip()
+            scope: dict[str, str] | None = None
+            if scope_kind == "package" and scope_value:
+                scope = {"package": scope_value}
+            elif scope_kind == "element" and scope_value:
+                scope = {"element": scope_value}
+
+            import qea_chat  # noqa: PLC0415
+
+            backend = _build_optional_backend(
+                payload, job, max_seconds=self.server.config.max_seconds
+            )
+            with job._op_lock:
+                qea_path = job.ensure_qea()
+                answer = qea_chat.ask_qea(qea_path, question, backend=backend, scope=scope)
+            self._send_json(
+                HTTPStatus.OK,
+                {
+                    "ok": True,
+                    "answer": answer.text,
+                    "sources": answer.sources,
+                    "scope": answer.scope_label,
+                    "model": answer.model,
+                    "question": answer.question,
+                },
+            )
+        except RequestError as exc:
+            self._error(exc.status, str(exc))
+        except Exception as exc:  # noqa: BLE001
+            self._error(HTTPStatus.BAD_REQUEST, f"Chat-Fehler: {exc}")
+
+    def _job_edit(self, token: str) -> None:
+        """Natuerlichsprachliche Aenderung/Erweiterung am fertigen Modell (propose/apply)."""
+        job = self._require_done_job(token)
+        if job is None:
+            return
+        try:
+            payload = self._read_json_body()
+            action = str(payload.get("action") or "propose").strip().lower()
+            if action not in ("propose", "apply"):
+                raise RequestError("action muss 'propose' oder 'apply' sein.", status=400)
+
+            import model_edit  # noqa: PLC0415
+            import nl_edit  # noqa: PLC0415
+
+            if action == "propose":
+                instruction = str(payload.get("instruction") or "").strip()
+                if not instruction:
+                    raise RequestError("Bitte eine Aenderungsanweisung eingeben.", status=400)
+                backend = _build_optional_backend(
+                    payload, job, max_seconds=self.server.config.max_seconds
+                )
+                with job._op_lock:
+                    qea_path = job.ensure_qea()
+                    proposal = nl_edit.propose(qea_path, instruction, backend=backend)
+                self._send_json(
+                    HTTPStatus.OK,
+                    {
+                        "ok": True,
+                        "action": "propose",
+                        "ops": proposal.ops,
+                        "preview": nl_edit.preview_lines(proposal),
+                        "reply": proposal.reply,
+                        "backend": proposal.backend,
+                        "warnings": proposal.warnings,
+                        "destructive": proposal.destructive,
+                    },
+                )
+                return
+
+            # action == "apply"
+            ops = payload.get("ops")
+            confirm = bool(payload.get("confirm", False))
+            mdg_check = bool(payload.get("mdg_check", True))
+            if ops is None:
+                instruction = str(payload.get("instruction") or "").strip()
+                if not instruction:
+                    raise RequestError("Weder 'ops' noch 'instruction' angegeben.", status=400)
+                backend = _build_optional_backend(
+                    payload, job, max_seconds=self.server.config.max_seconds
+                )
+                with job._op_lock:
+                    qea_path = job.ensure_qea()
+                    proposal = nl_edit.propose(qea_path, instruction, backend=backend)
+                    ops = proposal.ops
+            if not isinstance(ops, list) or not ops:
+                raise RequestError("Keine gueltigen Operationen zum Anwenden.", status=400)
+            if any(isinstance(op, dict) and op.get("op") in nl_edit.DESTRUCTIVE for op in ops) and not confirm:
+                raise RequestError(
+                    "Loeschoperationen muessen ausdruecklich bestaetigt werden (confirm=true).",
+                    status=400,
+                )
+
+            mdg_path = _resolve_job_mdg(job) if mdg_check else None
+            with job._op_lock:
+                qea_path = job.ensure_qea()
+                tmp_out = job.directory / f"_edit_{job.revision + 1}.qea"
+                try:
+                    result = model_edit.edit_model(qea_path, ops, tmp_out, mdg=mdg_path)
+                    if result.applied > 0:
+                        os.replace(tmp_out, qea_path)
+                        _refresh_job_after_mutation(job, qea_path)
+                        job.add_log(
+                            f"Modell geaendert (Rev {job.revision}): {result.applied} von {len(ops)} Operationen angewendet"
+                        )
+                    else:
+                        tmp_out.unlink(missing_ok=True)
+                except BaseException:
+                    tmp_out.unlink(missing_ok=True)
+                    raise
+
+            self._send_json(
+                HTTPStatus.OK,
+                {
+                    "ok": result.applied > 0 or not result.rejected,
+                    "action": "apply",
+                    "applied": result.applied,
+                    "total": len(ops),
+                    "changes": result.changes,
+                    "rejected": result.rejected,
+                    "job": job.as_json(),
+                },
+            )
+        except RequestError as exc:
+            self._error(exc.status, str(exc))
+        except Exception as exc:  # noqa: BLE001
+            self._error(HTTPStatus.BAD_REQUEST, f"Bearbeitungsfehler: {exc}")
+
+    def _job_extend(self, token: str) -> None:
+        """Bestehende Architektur per weiterer Prosa ueber `eam_ai build --modell` weiterbauen."""
+        job = self._require_done_job(token)
+        if job is None:
+            return
+        try:
+            payload = self._read_json_body()
+            text = str(payload.get("text") or "").strip()
+            if not text:
+                raise RequestError("Bitte weiteren Architektur-Text zum Weiterbauen eingeben.", status=400)
+            if len(text) > MAX_TEXT_CHARS:
+                raise RequestError("Text ist zu lang.", status=413)
+
+            kind = str(payload.get("backend") or job.backend or "datei").strip().lower()
+            if kind not in ("datei", "openai", "ollama"):
+                raise RequestError(f"Unbekanntes Backend {kind!r}.", status=400)
+            api_key = str(payload.get("api_key") or "").strip()
+            if len(api_key) > MAX_API_KEY_CHARS or "\n" in api_key or "\r" in api_key:
+                raise RequestError("API-Schluessel ungueltig.", status=400)
+            model = str(payload.get("model") or job.backend_model or "").strip()
+            base_url = str(payload.get("base_url") or job.base_url or "").strip()
+            if base_url:
+                base_url = check_base_url(base_url)
+
+            mdg_path = _resolve_job_mdg(job)
+            if mdg_path is None:
+                raise RequestError("Keine MDG-Datei fuer den Weiterbau vorhanden.", status=400)
+
+            with job._op_lock:
+                qea_path = job.ensure_qea()
+                ext_txt = job.directory / "input" / f"extend_{job.revision + 1}.txt"
+                ext_txt.parent.mkdir(parents=True, exist_ok=True)
+                ext_txt.write_text(text, encoding="utf-8")
+
+                tmp_out = job.directory / f"_extend_{job.revision + 1}.qea"
+                findings_tmp = job.directory / "findings.json"
+                quellen_tmp = job.directory / "quellen.json"
+                http_timeout = max(5.0, float(self.server.config.max_seconds) - 10.0)
+                cmd = [
+                    sys.executable,
+                    "-m",
+                    "eam_ai",
+                    "build",
+                    "--mdg",
+                    str(mdg_path),
+                    "--text",
+                    str(ext_txt),
+                    "--modell",
+                    str(qea_path),
+                    "--out",
+                    str(tmp_out),
+                    "--format",
+                    "qea",
+                    "--package",
+                    job.package or DEFAULT_PACKAGE_NAME,
+                    "--backend",
+                    kind,
+                    "--findings",
+                    str(findings_tmp),
+                    "--quellen",
+                    str(quellen_tmp),
+                    "--timeout",
+                    f"{http_timeout:g}",
+                ]
+                if kind == "datei":
+                    ans = job.directory / "antwort.json"
+                    if not ans.is_file():
+                        bundled = self.server.config.assets / "antwort.json"
+                        if not bundled.is_file():
+                            raise RequestError("Beispielantwort fehlt fuer Datei-Backend.", status=500)
+                        shutil.copyfile(bundled, ans)
+                    cmd += ["--antwort", str(ans)]
+                else:
+                    if not model:
+                        raise RequestError("Modellname fehlt fuer den Weiterbau.", status=400)
+                    cmd += ["--model", model]
+                    if base_url:
+                        cmd += ["--base-url", base_url]
+                if job.katalog_path and job.katalog_path.is_file():
+                    cmd += ["--katalog", str(job.katalog_path)]
+                if job.sichten and job.sichten != "leitfaden":
+                    cmd += ["--sichten", job.sichten]
+
+                env = dict(os.environ)
+                module_root = str(Path(__file__).resolve().parent)
+                existing_pp = env.get("PYTHONPATH", "")
+                env["PYTHONPATH"] = module_root + (os.pathsep + existing_pp if existing_pp else "")
+                env["PYTHONIOENCODING"] = "utf-8"
+                env["PYTHONUNBUFFERED"] = "1"
+                env["PYTHONDONTWRITEBYTECODE"] = "1"
+                if kind == "datei":
+                    env.pop("OPENAI_API_KEY", None)
+                elif api_key:
+                    env["OPENAI_API_KEY"] = api_key
+
+                try:
+                    proc = subprocess.run(
+                        cmd,
+                        cwd=str(job.directory),
+                        env=env,
+                        capture_output=True,
+                        text=True,
+                        encoding="utf-8",
+                        errors="replace",
+                        timeout=self.server.config.max_seconds,
+                        check=False,
+                    )
+                    for line in (proc.stderr or "").splitlines():
+                        job.add_log(line, secret=api_key)
+                    if proc.returncode != 0 or not tmp_out.is_file():
+                        err_line = next(
+                            (l for l in reversed((proc.stderr or "").splitlines()) if "FEHLER:" in l),
+                            f"Weiterbau fehlgeschlagen (Exit {proc.returncode}).",
+                        )
+                        raise RequestError(job.scrub(err_line, secret=api_key), status=400)
+
+                    res_line = next(
+                        (l.strip() for l in reversed((proc.stdout or "").splitlines()) if l.strip()),
+                        "",
+                    )
+                    if res_line:
+                        job.result_line = job.scrub(res_line, secret=api_key)
+                        job.summary = parse_result_line(job.result_line)
+                    job.findings = _load_findings(findings_tmp)
+                    os.replace(tmp_out, qea_path)
+                    _refresh_job_after_mutation(job, qea_path)
+                    job.add_log(f"Architektur erweitert (Rev {job.revision})")
+                finally:
+                    tmp_out.unlink(missing_ok=True)
+
+            self._send_json(HTTPStatus.OK, {"ok": True, "job": job.as_json()})
+        except subprocess.TimeoutExpired:
+            self._error(HTTPStatus.GATEWAY_TIMEOUT, "Zeitlimit beim Weiterbau ueberschritten.")
+        except RequestError as exc:
+            self._error(exc.status, str(exc))
+        except Exception as exc:  # noqa: BLE001
+            self._error(HTTPStatus.INTERNAL_SERVER_ERROR, f"Weiterbau-Fehler: {exc}")
+
     def do_POST(self) -> None:  # noqa: N802 - Vorgabe von http.server
         path = urlsplit(self.path).path
+        if path.startswith("/api/jobs/"):
+            rest = [segment for segment in path[len("/api/jobs/") :].split("/") if segment]
+            if len(rest) == 2 and rest[1] in ("chat", "edit", "extend"):
+                token = unquote(rest[0])
+                if rest[1] == "chat":
+                    self._job_chat(token)
+                elif rest[1] == "edit":
+                    self._job_edit(token)
+                else:
+                    self._job_extend(token)
+                return
         if path not in ("/build", "/validate"):
-            self._error(HTTPStatus.NOT_FOUND, "Nur /build und /validate nehmen Daten an.")
+            self._error(
+                HTTPStatus.NOT_FOUND,
+                "Erlaubt sind /build, /validate sowie /api/jobs/<id>/(chat|edit|extend).",
+            )
             return
         try:
             raw_length = self.headers.get("Content-Length")
@@ -1560,6 +2049,31 @@ button.link { background: none; color: var(--accent); padding: 0; font-weight: 5
 .downloads a { display: inline-block; text-decoration: none; color: var(--text);
   border: 1px solid var(--line); background: #0d1629; border-radius: 9px; padding: 10px 14px; }
 .downloads a.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.downloads button { padding: 10px 14px; font-size: 0.92rem; border-radius: 9px;
+  border: 1px solid var(--line); background: #0d1629; color: var(--text); font-weight: 500; }
+.downloads button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.viewer-wrap { margin: 14px 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #0b1222; }
+.viewer-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 8px 12px; background: #101a30; border-bottom: 1px solid var(--line); font-size: 0.9rem; }
+.viewer-bar button, .sub-actions button { padding: 6px 12px; font-size: 0.86rem; border-radius: 7px; }
+.viewer-frame { width: 100%; height: 620px; border: 0; background: #fff; display: block; }
+.post-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; align-items: start; }
+@media (max-width: 960px) { .post-grid { grid-template-columns: 1fr; } }
+.subcard { background: #101a30; border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+.subcard h3 { margin: 0 0 8px; font-size: 0.98rem; color: var(--text); }
+.sub-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+.out-box { margin-top: 10px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--line);
+  background: #0b1222; font-size: 0.9rem; white-space: pre-wrap; max-height: 320px; overflow: auto; }
+.out-box.ok { border-color: #166534; }
+.out-box.bad { border-color: var(--bad); color: #fecaca; }
+.sources { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+.src-pill { font-size: 12px; padding: 2px 8px; border-radius: 99px; background: #1e293b; color: #cbd5e1;
+  border: 1px solid var(--line); font-family: ui-monospace, Menlo, Consolas, monospace; }
+.mode-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+.mode-tabs button { padding: 6px 12px; font-size: 0.85rem; background: #0d1629; border: 1px solid var(--line); color: var(--muted); }
+.mode-tabs button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.preview-list { margin: 8px 0; padding-left: 20px; font-size: 0.88rem; }
+.preview-list li.danger { color: #fca5a5; font-weight: 600; }
 .error { border-color: var(--bad); }
 .error h2 { color: var(--bad); }
 details { margin-top: 14px; }
@@ -1659,10 +2173,82 @@ aus dem Startpaket. Gleicher Kern wie die Kommandozeile.</p>
 </section>
 
 <section id="result" class="card" hidden>
-  <h2>Ergebnis</h2>
+  <h2>Ergebnis <span id="rev-badge" class="badge"></span></h2>
   <p id="summary"></p>
   <p id="result-line" class="mono"></p>
   <div id="downloads" class="downloads"></div>
+  <div id="inspect-out" class="out-box" hidden></div>
+
+  <div id="viewer-wrap" class="viewer-wrap" hidden>
+    <div class="viewer-bar">
+      <strong>Architektur-Ansicht (live)</strong>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button type="button" id="viewer-reload">Aktualisieren</button>
+        <button type="button" id="viewer-toggle">Einklappen</button>
+      </div>
+    </div>
+    <iframe id="viewer-frame" class="viewer-frame" title="Architektur-Ansicht"></iframe>
+  </div>
+
+  <div id="post-tools" class="post-grid" hidden>
+    <div class="subcard">
+      <h3>Chat with Data &mdash; Fragen an das Modell</h3>
+      <p class="hint">Liest ausschlie&szlig;lich das aktuelle Modell. Ohne API-Schl&uuml;ssel wird der Ausschnitt lokal als Text ausgegeben.</p>
+      <div class="two">
+        <label>Ausschnitt
+          <select id="chat-scope">
+            <option value="model">Ganzes Modell</option>
+            <option value="package">Paket</option>
+            <option value="element">Element</option>
+          </select>
+        </label>
+        <label id="chat-val-wrap" hidden>Auswahl
+          <select id="chat-scope-val"></select>
+        </label>
+      </div>
+      <textarea id="chat-q" rows="3" placeholder="z.B. Welche Dienste unterst&uuml;tzen welche F&auml;higkeiten und wo fehlen Beziehungen?"></textarea>
+      <div class="sub-actions">
+        <button type="button" id="chat-send">Fragen</button>
+        <label class="row" style="margin:0;font-size:0.86rem;color:var(--muted)"><input type="checkbox" id="chat-no-ki"> ohne KI (nur Auszug)</label>
+        <span id="chat-status" class="limits"></span>
+      </div>
+      <div id="chat-answer" class="out-box" hidden></div>
+      <div id="chat-sources" class="sources"></div>
+    </div>
+
+    <div class="subcard">
+      <h3>Architektur weiterbauen &amp; ver&auml;ndern</h3>
+      <div class="mode-tabs">
+        <button type="button" id="tab-nl" class="active">Per Anweisung &auml;ndern / erg&auml;nzen</button>
+        <button type="button" id="tab-ext">Mit weiterer Prosa weiterbauen</button>
+      </div>
+
+      <div id="panel-nl">
+        <p class="hint">Elemente/Pakete anlegen, verbinden, umbenennen, Notizen/Stereotypen &auml;ndern oder l&ouml;schen &mdash; erst Vorschau, dann MDG-gepr&uuml;ft anwenden.</p>
+        <textarea id="nl-inst" rows="3" placeholder="z.B. Lege Element &quot;Wetterdienst&quot; als ServiceSpecification an und verbinde &quot;Faehigkeit B&quot; mit &quot;Wetterdienst&quot; ueber Exhibits."></textarea>
+        <div class="sub-actions">
+          <button type="button" id="nl-propose">Vorschau pr&uuml;fen</button>
+          <label class="row" style="margin:0;font-size:0.86rem;color:var(--muted)"><input type="checkbox" id="nl-no-ki"> ohne KI</label>
+          <span id="nl-status" class="limits"></span>
+        </div>
+        <div id="nl-preview" class="out-box" hidden></div>
+        <div id="nl-apply-row" class="sub-actions" hidden>
+          <label id="nl-confirm-wrap" class="row" hidden style="margin:0;font-size:0.86rem;color:#fca5a5"><input type="checkbox" id="nl-confirm"> L&ouml;schen best&auml;tigen</label>
+          <button type="button" id="nl-apply">Anwenden &amp; Ansicht aktualisieren</button>
+        </div>
+      </div>
+
+      <div id="panel-ext" hidden>
+        <p class="hint">Erg&auml;nzt das bestehende Modell um weitere Prosa (<code>--modell</code>). Vorhandene Elemente &amp; Kennungen bleiben erhalten.</p>
+        <textarea id="ext-text" rows="4" placeholder="Weitere Fachbeschreibung oder neue Anforderungen einf&uuml;gen &hellip;"></textarea>
+        <div class="sub-actions">
+          <button type="button" id="ext-go">Architektur erweitern</button>
+          <span id="ext-status" class="limits"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <details id="findings-box" hidden>
     <summary>Findings</summary>
     <ul id="findings"></ul>
@@ -1691,6 +2277,9 @@ const SAMPLE = "Der Ablauf A steuert die Faehigkeit B.\\n\\n" +
 const form = $("f");
 const backend = $("backend");
 let timer = null;
+let currentJob = null;
+let pendingOps = null;
+let pendingDestructive = false;
 
 function show(id) { $(id).hidden = false; }
 function hide(id) { $(id).hidden = true; }
@@ -1774,9 +2363,76 @@ function size(size) {
   return size + " B";
 }
 
-function done(state) {
+function btn(label, onClick, primary) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.textContent = label;
+  if (primary) b.className = "primary";
+  b.addEventListener("click", onClick);
+  return b;
+}
+
+function kiPayload(noKiChecked) {
+  const fd = new FormData(form);
+  return {
+    use_ki: !noKiChecked,
+    backend: fd.get("backend") || "datei",
+    base_url: fd.get("base_url") || "",
+    model: fd.get("model") || "",
+    api_key: fd.get("api_key") || ""
+  };
+}
+
+function refreshScopeOptions(info) {
+  const kind = $("chat-scope").value;
+  const wrap = $("chat-val-wrap");
+  const sel = $("chat-scope-val");
+  sel.innerHTML = "";
+  const items = kind === "package" ? ((info && info.packages) || [])
+    : kind === "element" ? ((info && info.elements) || []) : [];
+  wrap.hidden = kind === "model";
+  items.forEach((item) => {
+    const opt = document.createElement("option");
+    opt.value = item;
+    opt.textContent = item;
+    sel.appendChild(opt);
+  });
+}
+
+function loadViewerFrame(state) {
+  if (!(state && state.links && state.links.viewer)) {
+    $("viewer-wrap").hidden = true;
+    return;
+  }
+  $("viewer-wrap").hidden = false;
+  const frame = $("viewer-frame");
+  frame.hidden = false;
+  $("viewer-toggle").textContent = "Einklappen";
+  frame.src = state.links.viewer + "?rev=" + encodeURIComponent(String(state.revision || 1));
+}
+
+async function runInspect(url, label) {
+  const out = $("inspect-out");
+  out.hidden = false;
+  out.className = "out-box";
+  out.textContent = label + " laeuft ...";
+  try {
+    const r = await fetch(url, { cache: "no-store" });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || ("HTTP " + r.status));
+    out.className = "out-box " + (data.ok === false ? "bad" : "ok");
+    out.textContent = JSON.stringify(data, null, 2);
+  } catch (err) {
+    out.className = "out-box bad";
+    out.textContent = "Fehler: " + err.message;
+  }
+}
+
+function done(state, keepScroll) {
+  currentJob = state;
   $("bar").style.width = "100%";
   show("result");
+  $("rev-badge").textContent = state.revision ? ("Stand #" + state.revision) : "";
   const s = state.summary || {};
   const parts = [];
   if (s.elements !== undefined) parts.push(s.elements + " Elemente");
@@ -1790,10 +2446,19 @@ function done(state) {
   const box = $("downloads");
   box.innerHTML = "";
   if (state.links && state.links.viewer) {
-    const viewer = link(state.links.viewer, "Modell ansehen", true);
+    const viewer = link(state.links.viewer, "Modell ansehen (neuer Tab)", true);
     viewer.target = "_blank";
     viewer.rel = "noopener";
     box.appendChild(viewer);
+  }
+  if (state.links && state.links.validate) {
+    box.appendChild(btn("MDG pruefen", () => runInspect(state.links.validate, "MDG-Validierung")));
+  }
+  if (state.links && state.links.qs) {
+    box.appendChild(btn("QS-Bericht", () => runInspect(state.links.qs, "QS-Pruefung")));
+  }
+  if (state.links && state.links.handbuch) {
+    box.appendChild(link(state.links.handbuch, "Handbuch (.md)"));
   }
   if (state.links && state.links.zip) {
     box.appendChild(link(state.links.zip, "Alles als ZIP", !(state.links && state.links.viewer)));
@@ -1801,6 +2466,10 @@ function done(state) {
   ((state.links && state.links.files) || []).forEach((file) => {
     box.appendChild(link(file.href, file.name + " (" + size(file.size) + ")"));
   });
+
+  loadViewerFrame(state);
+  $("post-tools").hidden = !(state.links && state.links.chat);
+  refreshScopeOptions(state.model_info || {});
 
   const findings = $("findings");
   findings.innerHTML = "";
@@ -1812,8 +2481,179 @@ function done(state) {
   const log = $("result-log");
   log.innerHTML = "";
   (state.log || []).forEach((line) => addLog(log, line));
-  $("result").scrollIntoView({ behavior: "smooth", block: "start" });
+  if (!keepScroll) $("result").scrollIntoView({ behavior: "smooth", block: "start" });
 }
+
+$("viewer-reload").addEventListener("click", () => { if (currentJob) loadViewerFrame(currentJob); });
+$("viewer-toggle").addEventListener("click", () => {
+  const frame = $("viewer-frame");
+  frame.hidden = !frame.hidden;
+  $("viewer-toggle").textContent = frame.hidden ? "Einblenden" : "Einklappen";
+});
+$("chat-scope").addEventListener("change", () => refreshScopeOptions(currentJob && currentJob.model_info));
+
+$("tab-nl").addEventListener("click", () => {
+  $("tab-nl").classList.add("active");
+  $("tab-ext").classList.remove("active");
+  $("panel-nl").hidden = false;
+  $("panel-ext").hidden = true;
+});
+$("tab-ext").addEventListener("click", () => {
+  $("tab-ext").classList.add("active");
+  $("tab-nl").classList.remove("active");
+  $("panel-ext").hidden = false;
+  $("panel-nl").hidden = true;
+});
+
+$("chat-send").addEventListener("click", async () => {
+  if (!(currentJob && currentJob.links && currentJob.links.chat)) return;
+  const q = $("chat-q").value.trim();
+  if (!q) { $("chat-status").textContent = "Bitte eine Frage eingeben."; return; }
+  $("chat-send").disabled = true;
+  $("chat-status").textContent = "Antwort wird ermittelt ...";
+  try {
+    const body = Object.assign(kiPayload($("chat-no-ki").checked), {
+      question: q,
+      scope_kind: $("chat-scope").value,
+      scope_value: $("chat-scope-val").value
+    });
+    const r = await fetch(currentJob.links.chat, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || ("HTTP " + r.status));
+    const ans = $("chat-answer");
+    ans.hidden = false;
+    ans.className = "out-box ok";
+    ans.textContent = data.answer || "";
+    $("chat-status").textContent = (data.model || "") + " · " + (data.scope || "");
+    const srcBox = $("chat-sources");
+    srcBox.innerHTML = "";
+    (data.sources || []).slice(0, 30).forEach((s) => {
+      const span = document.createElement("span");
+      span.className = "src-pill";
+      span.textContent = s;
+      srcBox.appendChild(span);
+    });
+  } catch (err) {
+    const ans = $("chat-answer");
+    ans.hidden = false;
+    ans.className = "out-box bad";
+    ans.textContent = err.message;
+    $("chat-status").textContent = "Fehler";
+  } finally {
+    $("chat-send").disabled = false;
+  }
+});
+
+$("nl-propose").addEventListener("click", async () => {
+  if (!(currentJob && currentJob.links && currentJob.links.edit)) return;
+  const inst = $("nl-inst").value.trim();
+  if (!inst) { $("nl-status").textContent = "Bitte Anweisung eingeben."; return; }
+  $("nl-propose").disabled = true;
+  $("nl-status").textContent = "Vorschlag wird geprueft ...";
+  pendingOps = null;
+  $("nl-apply-row").hidden = true;
+  try {
+    const body = Object.assign(kiPayload($("nl-no-ki").checked), {
+      action: "propose",
+      instruction: inst
+    });
+    const r = await fetch(currentJob.links.edit, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || ("HTTP " + r.status));
+    pendingOps = data.ops || [];
+    pendingDestructive = !!data.destructive;
+    const prev = $("nl-preview");
+    prev.hidden = false;
+    prev.className = "out-box ok";
+    const lines = [];
+    if (data.reply) lines.push(data.reply, "");
+    (data.preview || []).forEach((l) => lines.push(l));
+    if ((data.warnings || []).length) lines.push("", "Hinweise:", ...data.warnings);
+    prev.textContent = lines.join("\\n") || "Keine Operationen erkannt.";
+    $("nl-status").textContent = (data.backend || "") + " · " + pendingOps.length + " Operation(en)";
+    $("nl-confirm").checked = false;
+    $("nl-confirm-wrap").hidden = !pendingDestructive;
+    $("nl-apply-row").hidden = !pendingOps.length;
+  } catch (err) {
+    const prev = $("nl-preview");
+    prev.hidden = false;
+    prev.className = "out-box bad";
+    prev.textContent = err.message;
+    $("nl-status").textContent = "Fehler";
+  } finally {
+    $("nl-propose").disabled = false;
+  }
+});
+
+$("nl-apply").addEventListener("click", async () => {
+  if (!(currentJob && currentJob.links && currentJob.links.edit) || !pendingOps) return;
+  if (pendingDestructive && !$("nl-confirm").checked) {
+    $("nl-status").textContent = "Bitte Loeschvorgang bestaetigen.";
+    return;
+  }
+  $("nl-apply").disabled = true;
+  $("nl-status").textContent = "Wird angewendet ...";
+  try {
+    const r = await fetch(currentJob.links.edit, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "apply", ops: pendingOps, confirm: $("nl-confirm").checked })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || ("HTTP " + r.status));
+    const prev = $("nl-preview");
+    prev.hidden = false;
+    const msg = [data.applied + " von " + data.total + " Operation(en) angewendet."];
+    (data.changes || []).forEach((c) => msg.push("  + " + c));
+    (data.rejected || []).forEach((rej) => msg.push("  ! Abgelehnt: " + (rej.grund || JSON.stringify(rej))));
+    prev.className = "out-box " + ((data.rejected || []).length ? "bad" : "ok");
+    prev.textContent = msg.join("\\n");
+    $("nl-status").textContent = data.applied ? "Modell & Ansicht aktualisiert." : "Keine Aenderung uebernommen.";
+    pendingOps = null;
+    $("nl-apply-row").hidden = true;
+    if (data.applied && data.job) {
+      $("nl-inst").value = "";
+      done(data.job, true);
+    }
+  } catch (err) {
+    $("nl-status").textContent = "Fehler: " + err.message;
+  } finally {
+    $("nl-apply").disabled = false;
+  }
+});
+
+$("ext-go").addEventListener("click", async () => {
+  if (!(currentJob && currentJob.links && currentJob.links.extend)) return;
+  const txt = $("ext-text").value.trim();
+  if (!txt) { $("ext-status").textContent = "Bitte Text zum Weiterbauen eingeben."; return; }
+  $("ext-go").disabled = true;
+  $("ext-status").textContent = "Architektur wird erweitert ...";
+  try {
+    const body = Object.assign(kiPayload(false), { text: txt });
+    const r = await fetch(currentJob.links.extend, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || ("HTTP " + r.status));
+    $("ext-status").textContent = "Erweitert & Ansicht aktualisiert.";
+    $("ext-text").value = "";
+    if (data.job) done(data.job, true);
+  } catch (err) {
+    $("ext-status").textContent = "Fehler: " + err.message;
+  } finally {
+    $("ext-go").disabled = false;
+  }
+});
 
 function fail(message, state) {
   hide("result");

@@ -1123,7 +1123,7 @@ function exportArchimate() {
   } catch (e) { alert('ArchiMate-Export fehlgeschlagen: ' + e.message); }
 }
 
-function loadQea(buffer, name) {
+function loadQea(buffer, name, keepView) {
   if (SINGLE && !MULTI_MODE) {
     try { DB = openAny(buffer, name); }
     catch (e) { alert('Datei konnte nicht gelesen werden:\n\n' + e.message + '\n\nUnterstützt werden QEA-/EAPX-Dateien im SQLite-Format sowie .xmi (UML 2.x und UML 1.3) und .json (Batch).'); return; }
@@ -1158,9 +1158,10 @@ function loadQea(buffer, name) {
       for (var j = 0; j < PKG_ROOTS[0].children.length; j++) PKG_OPEN[PKG_ROOTS[0].children[j].id] = true;
     }
     renderPkgTree();
-    showView('explorer');
+    if (!keepView) showView('explorer');
     if (startPkg != null) openPackage(startPkg, true);
     if (window.QA && QA.onModelChanged) QA.onModelChanged();
+    if (typeof EDIT !== 'undefined' && EDIT.hubRender) { try { EDIT.hubRender(); } catch (eH) { } }
   } else {
     addModelToMerge(buffer, name);
   }

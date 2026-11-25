@@ -422,6 +422,12 @@
       }
       function dup(prefix) { var n = prefix || 'Element'; var i = 2; while (byName(n)) n = (prefix || 'Element') + i++; return n; }
       switch (typ) {
+        case 'addPackage': {
+          var pnm = String(op.name || op.path || '').trim();
+          if (!pnm) return { err: 'Paketname fehlt.' };
+          if (!pkgByName(pnm)) m.packages.push({ name: pnm, parent: op.parent || (m.packages[0] && m.packages[0].name) || null });
+          return { ok: true, name: pnm, summary: 'Paket „' + pnm + '“ hinzugefügt.' };
+        }
         case 'addElement': {
           var nm = dup(op.name);
           m.elements.push({ name: nm, stereotype: op.stereotype || 'Class', type: stereotypeType(op.stereotype || 'Class'), package: op.package || (m.packages[0] && m.packages[0].name || ''), note: op.note || '' });
@@ -527,7 +533,9 @@
       var errCount = results.length - okCount;
       ir.validation = validateModel(ir);
       ir.mdgCoverage = mdgCoverage(ir);
+      S.bytes = null;
       renderResult(ir, voc);
+      syncToApp(true);
       // Chat-Feedback
       chatAdd('ai', '<b>' + esc(reply) + '</b>');
       if (results.length) {
@@ -587,6 +595,7 @@
       '{"reply": "<kurze Antwort an den Nutzer>", "ops": [ {"op": "...", "..."}, ... ]}',
       '',
       'ERLAUBTE OPERATIONEN (op-Feld):',
+      '  addPackage:    {"op":"addPackage","name":"...","parent":"..."}',
       '  addElement:    {"op":"addElement","name":"...","stereotype":"...","package":"...","note":"..."}',
       '  addConnector:  {"op":"addConnector","from":"A","to":"B","stereotype":"...","name":""}',
       '  removeElement: {"op":"removeElement","name":"..."}',
@@ -1167,8 +1176,10 @@
       ir.validation = validateModel(ir);
       ir.mdgCoverage = mdgCoverage(ir);
       S.model = ir;
+      S.bytes = null;
       startChat(ir, voc);
       renderResult(ir, voc);
+      syncToApp(true);
       var vn = (ir.validation && ir.validation.viol) ? ir.validation.viol.length : 0;
       statusMsg('✔ Modell: ' + ir.elements.length + ' Elemente, ' + ir.connectors.length + ' Beziehungen' +
         (katalogBericht.katalog ? ' — ' + katalogBericht.katalog + ' aus dem Katalog übernommen' : '') +
@@ -1727,12 +1738,36 @@
     return best;
   }
 
-  function buildQea() {
+  function createMinimalEaDb(SQL) {
+    var db = new SQL.Database();
+    db.run(
+      'CREATE TABLE t_package (Package_ID INTEGER PRIMARY KEY, Name TEXT, Parent_ID INTEGER, CreatedDate TEXT, ModifiedDate TEXT, Notes TEXT, ea_guid TEXT);' +
+      'CREATE TABLE t_object (Object_ID INTEGER PRIMARY KEY, Object_Type TEXT, Diagram_ID INTEGER, Name TEXT, Alias TEXT, Author TEXT, Version TEXT, Note TEXT, Package_ID INTEGER, Stereotype TEXT, NType INTEGER, CreatedDate TEXT, ModifiedDate TEXT, Status TEXT, Abstract INTEGER, PDATA1 TEXT, PDATA2 TEXT, PDATA3 TEXT, PDATA4 TEXT, PDATA5 TEXT, TPos INTEGER, ParentID INTEGER, Classifier INTEGER, StyleEx TEXT, StateFlags TEXT, ActionFlags TEXT, EventFlags TEXT, PackageFlags TEXT, Classifier_guid TEXT, ea_guid TEXT);' +
+      'CREATE TABLE t_connector (Connector_ID INTEGER PRIMARY KEY, Name TEXT, Direction TEXT, Notes TEXT, Connector_Type TEXT, SubType TEXT, SourceAccess TEXT, DestAccess TEXT, Start_Object_ID INTEGER, End_Object_ID INTEGER, Stereotype TEXT, RouteStyle INTEGER, DiagramID INTEGER, Top_Start_Label TEXT, Top_Mid_Label TEXT, Top_End_Label TEXT, Btm_Start_Label TEXT, Btm_Mid_Label TEXT, Btm_End_Label TEXT, PDATA1 TEXT, PDATA2 TEXT, PDATA3 TEXT, PDATA4 TEXT, PDATA5 TEXT, StyleEx TEXT, StateFlags TEXT, ActionFlags TEXT, EventFlags TEXT, ea_guid TEXT);' +
+      'CREATE TABLE t_diagram (Diagram_ID INTEGER PRIMARY KEY, Package_ID INTEGER, ParentID INTEGER, Diagram_Type TEXT, Name TEXT, Version TEXT, Author TEXT, ShowDetails INTEGER, Notes TEXT, Stereotype TEXT, AttPub INTEGER, AttPri INTEGER, AttPro INTEGER, Orientation TEXT, cx INTEGER, cy INTEGER, Scale INTEGER, CreatedDate TEXT, ModifiedDate TEXT, HTMLPath TEXT, ShowForeign INTEGER, ShowBorder INTEGER, ShowPackageContents INTEGER, PDATA TEXT, Locked INTEGER, ea_guid TEXT, TPos INTEGER, Swimlanes TEXT, StyleEx TEXT);' +
+      'CREATE TABLE t_diagramobjects (Diagram_ID INTEGER, Object_ID INTEGER, RectTop INTEGER, RectLeft INTEGER, RectRight INTEGER, RectBottom INTEGER, Sequence INTEGER, ObjectStyle TEXT, Instance_ID INTEGER PRIMARY KEY);' +
+      'CREATE TABLE t_diagramlinks (DiagramID INTEGER, ConnectorID INTEGER, Geometry TEXT, Style TEXT, Hidden INTEGER, Path TEXT, Instance_ID INTEGER PRIMARY KEY);' +
+      'CREATE TABLE t_objectproperties (PropertyID INTEGER PRIMARY KEY, Object_ID INTEGER, Property TEXT, Value TEXT, Notes TEXT, ea_guid TEXT);' +
+      'CREATE TABLE t_connectortag (PropertyID INTEGER PRIMARY KEY, ElementID INTEGER, Property TEXT, VALUE TEXT, NOTES TEXT, ea_guid TEXT);' +
+      'CREATE TABLE t_attribute (Object_ID INTEGER, Name TEXT, Stereotype TEXT, Type TEXT, ID INTEGER PRIMARY KEY, ea_guid TEXT);' +
+      'CREATE TABLE t_attributetag (PropertyID INTEGER PRIMARY KEY, ElementID INTEGER, Property TEXT, VALUE TEXT, NOTES TEXT, ea_guid TEXT);' +
+      'CREATE TABLE t_xref (XrefID TEXT PRIMARY KEY, Name TEXT, Type TEXT, Visibility TEXT, Namespace TEXT, Requirement TEXT, Constraint_ TEXT, Behavior TEXT, Partition TEXT, Description TEXT, Client TEXT, Supplier TEXT, Link TEXT);'
+    );
+    return db;
+  }
+
+  function buildQea(allowFallback) {
     return ensureSql().then(function (SQL) {
       var ir = S.model;
       if (!ir) throw new Error('Zuerst Modell generieren (Schritt 3).');
-      if (!S.template) throw new Error('Bitte zuerst EABase-Grundgerüst wählen (Schritt 1).');
-      var db = new SQL.Database(new Uint8Array(S.template));
+      var db;
+      if (S.template) {
+        db = new SQL.Database(new Uint8Array(S.template));
+      } else if (allowFallback) {
+        db = createMinimalEaDb(SQL);
+      } else {
+        throw new Error('Bitte zuerst EABase-Grundgerüst wählen (Schritt 1).');
+      }
       var st, r;
       var clear = el('ki-clearmodel').checked;
 
@@ -2019,24 +2054,36 @@
     });
   }
 
-  /* ---------- In der App analysieren (Roundtrip durch den nativen Reader) ---------- */
-  function analyzeInApp() {
-    if (S.bytes) {
-      SINGLE = true; MULTI_MODE = false;
-      try {
-        loadQea(S.bytes, (S.model && S.model.name) || 'KI-Architektur');
-        statusMsg('✔ Modell geladen — erkunden Sie es in den Tabs.');
-        return;
-      } catch (e) { statusMsg('⚠ Laden fehlgeschlagen: ' + e.message); }
-    }
-    buildQea().then(function (bytes) {
+  /* ---------- In der App analysieren & Live-Sync (Roundtrip durch den nativen Reader) ---------- */
+  function syncToApp(keepView) {
+    if (!S.model) return Promise.resolve(false);
+    return buildQea(true).then(function (bytes) {
       S.bytes = bytes;
       SINGLE = true; MULTI_MODE = false;
-      try {
-        loadQea(bytes, (S.model && S.model.name) || 'KI-Architektur');
-        statusMsg('✔ Modell geladen — erkunden Sie es in den Tabs.');
-      } catch (e) { statusMsg('⚠ Laden fehlgeschlagen: ' + e.message); }
-    }).catch(function (e) { statusMsg('⚠ ' + e.message); });
+      loadQea(bytes, (S.model && S.model.name) || 'KI-Architektur', !!keepView);
+      return true;
+    }).catch(function () { return false; });
+  }
+
+  function openInTab(target) {
+    var ready = S.bytes
+      ? Promise.resolve(true).then(function () {
+          if (!DB || !Object.keys(OBJS).length) return syncToApp(true);
+          return true;
+        })
+      : syncToApp(true);
+    return ready.then(function (ok) {
+      if (!ok) { statusMsg('⚠ Zuerst ein Modell generieren.'); return; }
+      if (target === 'graph') { openGlobalGraph(); }
+      else if (target === 'qs') { openQsModal(); }
+      else { showView(target || 'explorer'); }
+    });
+  }
+
+  function analyzeInApp() {
+    return openInTab('explorer').then(function () {
+      statusMsg('✔ Modell geladen — erkunden Sie es in Explorer, Graph, QS, Fragen & Bearbeiten.');
+    });
   }
 
   /* ---------- KI-Analysebericht ---------- */
@@ -2220,7 +2267,7 @@
     statusMsg('↺ Gespeicherter Laufstand gelöscht — der nächste Lauf beginnt bei Abschnitt 1.');
   }
 
-  window.KI = { init: init, pickTemplate: pickTemplate, setTemplate: setTemplate, pickMdg: pickMdg, setMdgFromBytes: setMdgFromBytes, loadMdg: loadMdg, validateModel: validateModel, getModel: function () { return S.model; }, newArchitecture: newArchitecture, requireMdg: requireMdg, fillExample: fillExample, generate: generate, exportQea: exportQea, analyzeInApp: analyzeInApp, report: report, chatSend: chatSend, chatAdd: chatAdd, modelToText: modelToText, modelInventory: modelInventory, mergeModels: mergeModels, resetRun: resetRun, stableGuid: stableGuid, elementGuid: elementGuid, loadCatalogBytes: loadCatalogBytes, pickCatalog: pickCatalog, applyCatalog: applyCatalog, getCatalog: function () { return S.katalog || []; }, runOps: runOps, Op: Op, buildBytes: function () { return buildQea(); },
+  window.KI = { init: init, pickTemplate: pickTemplate, setTemplate: setTemplate, pickMdg: pickMdg, setMdgFromBytes: setMdgFromBytes, loadMdg: loadMdg, validateModel: validateModel, getModel: function () { return S.model; }, newArchitecture: newArchitecture, requireMdg: requireMdg, fillExample: fillExample, generate: generate, exportQea: exportQea, analyzeInApp: analyzeInApp, syncToApp: syncToApp, openInTab: openInTab, report: report, chatSend: chatSend, chatAdd: chatAdd, modelToText: modelToText, modelInventory: modelInventory, mergeModels: mergeModels, resetRun: resetRun, stableGuid: stableGuid, elementGuid: elementGuid, loadCatalogBytes: loadCatalogBytes, pickCatalog: pickCatalog, applyCatalog: applyCatalog, getCatalog: function () { return S.katalog || []; }, runOps: runOps, Op: Op, buildBytes: function () { return buildQea(true); },
     /* Nur LESENDER Zugriff auf die bestehende KI-Konfiguration (Felder des KI-Tabs,
        Fallback: zuletzt gespeicherte Einstellungen). Wird vom Rückweg (Teil 7)
        genutzt, damit es KEINE zweite Konfiguration gibt. Kein Schreiben. */

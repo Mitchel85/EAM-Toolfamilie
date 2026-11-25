@@ -23,10 +23,10 @@ APPS = {
         "product": "EAM AI Suite",
         "version": "v9.1",
         "title": "EAM AI Suite — QEA-Architekturen analysieren, erkunden, bearbeiten &amp; exportieren",
-        "bytes": 3_690_351,
+        "bytes": 3_708_273,
         "min_size": 3_000_000,
         "max_size": 4_000_000,
-        "markers": ("window.KI", "var EDIT =", "var MERGE", "var STDIMPORT =", "function openAny(", "function exportXmi("),
+        "markers": ("window.KI", "var EDIT =", "var MERGE", "var STDIMPORT =", "function openAny(", "function exportXmi(", "syncToApp", "applyLive"),
         "forbidden": (),
     },
     "html-editor": {
@@ -255,5 +255,22 @@ def test_natives_archimate_vermeidet_mdg_fehlalarme(gebaut: dict[str, dict]) -> 
         assert "dbArch.__x.nativeArchimate = isNativeArchimate;" in html, app
         assert "var isNativeArchimate =" in html, app
         assert "eam-ai archimate-check" in html, app
+
+
+def test_suite_chat_live_sync_und_nl_ausbau(gebaut: dict[str, dict]) -> None:
+    """Nach dem KI-Bau: Live-Sync in die App, Direkt-Buttons, Chat with Data & NL-Ausbau."""
+    html = gebaut["html-suite"]["html"].read_text(encoding="utf-8")
+    for marker in (
+        "function syncToApp(",
+        "function openInTab(",
+        "KI.openInTab('qa')",
+        "KI.openInTab('graph')",
+        "KI.openInTab('qs')",
+        "function applyLive(",
+        "NL.applyLive()",
+        "op.op === 'add_package'",
+        "op.op === 'add_element'",
+    ):
+        assert marker in html, f"Suite-Marker fehlt: {marker}"
 
 

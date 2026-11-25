@@ -826,11 +826,15 @@
           </div>
 
           <div id="ki-output" style="display:none" class="card">
-            <h3>5 · Ergebnis</h3>
+            <h3>5 · Ergebnis — direkt prüfen, befragen &amp; weiterbauen</h3>
             <div id="ki-stats" class="ki-stats"></div>
             <div class="ki-row" style="gap:8px;margin-top:10px">
               <button class="btn-pri" id="ki-export-btn" onclick="KI.exportQea()">💾 Als .qea exportieren</button>
-              <button class="btn-sm" id="ki-analyze-btn" onclick="KI.analyzeInApp()">🔍 In der App analysieren</button>
+              <button class="btn-sm" id="ki-analyze-btn" onclick="KI.openInTab('explorer')">🧭 Im Explorer prüfen</button>
+              <button class="btn-sm" id="ki-graph-btn" onclick="KI.openInTab('graph')">🕸️ Im Graph ansehen</button>
+              <button class="btn-sm" id="ki-qs-btn" onclick="KI.openInTab('qs')">⚡ QS-Prüfung</button>
+              <button class="btn-sm" id="ki-qa-btn" onclick="KI.openInTab('qa')">💬 Chat with Data (Fragen)</button>
+              <button class="btn-sm" id="ki-edit-btn" onclick="KI.openInTab('edit')">✏️ Per Sprache ändern</button>
               <button class="btn-sm" id="ki-report-btn" onclick="KI.report()">📋 KI-Analysebericht</button>
             </div>
             <div id="ki-export-warn" style="display:none;margin-top:8px" class="ki-note warn"></div>
@@ -904,9 +908,9 @@
           <p class="ki-intro">Dies ist die Bedienoberfläche der vorhandenen Bearbeitung: Änderungen werden nur <b>vorgemerkt</b> und beim Speichern in eine <b>neue .qea</b> geschrieben. Die geladene Datei bleibt unverändert. Die eigentlichen Formulare liegen unverändert im Bearbeiten-Modul.</p>
 
           <div class="nl-box">
-            <h3>💬 KI-Korrektur — in Worten ändern</h3>
-            <p class="nl-sub">Sagen Sie in einem Satz, was am geladenen Modell geändert werden soll. Der Vorschlag wird gegen das Modell geprüft; erst „In Änderungsliste vormerken“ übernimmt ihn. Gespeichert wird wie gewohnt in eine <b>neue .qea</b> — das Original bleibt unberührt.</p>
-            <textarea id="nl-input" placeholder="Beispiel: Benenne „Lagedienst“ in „Lagedienst Bw“ um und setze die Notiz auf „Zentraler Dienst für Lageinformationen“."></textarea>
+            <h3>💬 KI-Ausbau &amp; Korrektur — in Worten weiterbauen oder ändern</h3>
+            <p class="nl-sub">Legen Sie neue Elemente und Pakete an, verbinden Sie Elemente, benennen Sie um oder passen Sie Notizen/Stereotypen an. Der Vorschlag wird gegen das Modell geprüft; mit „Direkt übernehmen &amp; ansehen“ wird das laufende Modell sofort in Explorer, Graph, QS &amp; Fragen aktualisiert (Export bleibt über „Als neue .qea speichern“ möglich).</p>
+            <textarea id="nl-input" placeholder="Beispiel: Lege Paket „Architektur/Dienste“ an und erstelle Element „Wetterdienst“ als ServiceSpecification in Paket „Architektur/Dienste“ und verbinde „Lagedienst“ mit „Wetterdienst“ über Dependency."></textarea>
             <div class="qa-row" style="margin-top:8px">
               <button id="nl-propose" class="btn-sm pri" onclick="NL.propose()">🔎 Vorschlag erzeugen</button>
               <label class="nl-check"><input type="checkbox" id="nl-no-ki"> ohne KI (Befehlsgrammatik)</label>
@@ -914,6 +918,7 @@
             </div>
             <div id="nl-preview" class="nl-preview" hidden></div>
             <div id="nl-actions" class="qa-row nl-actions" hidden>
+              <button id="nl-apply-live" class="btn-sm pri" onclick="NL.applyLive()">⚡ Direkt übernehmen &amp; ansehen</button>
               <button id="nl-apply" class="btn-sm green" onclick="NL.apply()">✓ In Änderungsliste vormerken</button>
               <button class="btn-sm" onclick="NL.reset()">Verwerfen</button>
             </div>

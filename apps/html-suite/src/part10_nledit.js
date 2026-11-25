@@ -112,7 +112,7 @@ var NL = (function () {
 
   /* ---------- Deutsche Befehlsgrammatik (ohne KI) ---------- */
   function splitClauses(text) {
-    var verbs = 'benenne|nenne|umbenennen|umbenenne|setze|ändere|aendere|ergänze|ergaenze|loesche|lösche|entferne|verbinde|verknüpfe|verknuepfe|trenne|loese|löse';
+    var verbs = 'benenne|nenne|umbenennen|umbenenne|setze|ändere|aendere|ergänze|ergaenze|lege|erstelle|fuege|füge|loesche|lösche|entferne|verbinde|verknüpfe|verknuepfe|trenne|loese|löse';
     var parts = text.split(/\s*;\s*/), out = [], i, chunks;
     for (i = 0; i < parts.length; i++) {
       chunks = parts[i].split(new RegExp('\\s+und\\s+(?=(?:' + verbs + ')\\b)', 'i'));
@@ -152,6 +152,46 @@ var NL = (function () {
     m = text.match(/^(?:benenne|umbenennen|umbenenne|nenne)\s+(?:das\s+)?(?:element\s+)?(.+?)\s+(?:in|zu)\s+(.+)$/i);
     if (m) return [{ op: 'set_name', name: cleanRef(m[1]), value: cleanRef(m[2]) }];
 
+    m = text.match(/^(?:lege|erstelle|fuege|füge)\s+(?:ein\s+)?(?:neues\s+)?paket\s+(.+?)(?:\s+(?:an|hinzu))?$/i);
+    if (m) {
+      var pPath = cleanRef(m[1]);
+      if (!pPath) throw new Error('Paketpfad fehlt.');
+      return [{ op: 'add_package', path: pPath }];
+    }
+
+    m = text.match(/^(?:lege|erstelle|fuege|füge)\s+(?:ein\s+)?(?:neues\s+)?(element\s+)?(.+?)(?:\s+(?:an|hinzu))?$/i);
+    if (m) {
+      var hasElKw = !!m[1];
+      var rest = s0(m[2]).trim(), st = '', pkg = '';
+      for (var pass = 0; pass < 2; pass++) {
+        var mp = rest.match(/\s+in\s+(?:dem\s+)?(?:paket\s+)?("[^"]+"|'[^']+'|.+)$/i);
+        if (mp && !pkg) {
+          var cand = mp[1].trim();
+          var mt = cand.match(/\s+(?:als|vom\s+typ|mit\s+stereotyp)\s+/i);
+          if (mt) {
+            var pEnd = mp.index + mp[0].indexOf(mp[1]) + mt.index;
+            pkg = cleanRef(rest.slice(mp.index + mp[0].indexOf(mp[1]), pEnd));
+            rest = (rest.slice(0, mp.index) + rest.slice(pEnd)).trim();
+          } else {
+            pkg = cleanRef(cand);
+            rest = rest.slice(0, mp.index).trim();
+          }
+          continue;
+        }
+        var ms = rest.match(/\s+(?:als|vom\s+typ|mit\s+stereotyp)\s+("[^"]+"|'[^']+'|[^\s,]+)/i);
+        if (ms && !st) {
+          st = cleanRef(ms[1]);
+          rest = (rest.slice(0, ms.index) + rest.slice(ms.index + ms[0].length)).trim();
+          continue;
+        }
+        break;
+      }
+      if (hasElKw || st || pkg) {
+        var elName = cleanRef(rest);
+        if (elName) return [{ op: 'add_element', name: elName, stereotype: st, package: pkg }];
+      }
+    }
+
     m = text.match(/^(?:loesche|lösche|entferne)\s+(?:das\s+)?(?:element\s+)?(.+)$/i);
     if (m) return [{ op: 'delete_element', name: cleanRef(m[1]) }];
 
@@ -172,6 +212,8 @@ var NL = (function () {
       set_status: 'set_status', setStatus: 'set_status', status: 'set_status',
       set_alias: 'set_alias', setAlias: 'set_alias', alias: 'set_alias',
       set_stereotype: 'set_stereotype', setStereotype: 'set_stereotype', stereotype: 'set_stereotype',
+      add_package: 'add_package', addPackage: 'add_package', create_package: 'add_package', createPackage: 'add_package',
+      add_element: 'add_element', addElement: 'add_element', create_element: 'add_element', createElement: 'add_element',
       delete_element: 'delete_element', removeElement: 'delete_element', deleteElement: 'delete_element',
       add_connector: 'add_connector', addConnector: 'add_connector',
       delete_connector: 'delete_connector', removeConnector: 'delete_connector', deleteConnector: 'delete_connector'
@@ -184,6 +226,14 @@ var NL = (function () {
     if (['set_note', 'set_status', 'set_alias', 'set_stereotype'].indexOf(op.op) >= 0 && op.value == null) {
       op.value = op.to != null ? op.to : (op.text != null ? op.text : op.new);
     }
+    if (op.op === 'add_package') {
+      if (!op.path) op.path = op.package || op.name || '';
+    }
+    if (op.op === 'add_element') {
+      if (!op.name) op.name = op.element || '';
+      if (!op.package) op.package = op.paket || '';
+      if (op.note == null && op.notes != null) op.note = op.notes;
+    }
     if (op.op === 'add_connector' || op.op === 'delete_connector') {
       if (op.source == null) op.source = op.from || op.quelle || '';
       if (op.target == null) op.target = op.to || op.ziel || '';
@@ -191,11 +241,56 @@ var NL = (function () {
     return op;
   }
 
+  function defaultPackagePath() {
+    if (typeof PKG_ROOTS !== 'undefined' && PKG_ROOTS && PKG_ROOTS.length) {
+      var r = PKG[PKG_ROOTS[0].id];
+      if (r) return r.path || r.name || 'Architektur';
+    }
+    for (var pk in PKG) if (Object.prototype.hasOwnProperty.call(PKG, pk)) return PKG[pk].path || PKG[pk].name || 'Architektur';
+    return 'Architektur';
+  }
+
   function prepare(rawOps) {
-    var ops = [], i, op, target, source, dest;
+    var ops = [], pending = [], i, op, target, source, dest;
+    var defPkg = defaultPackagePath();
+
+    function resolveWithPending(ref) {
+      try {
+        return { el: resolveRef(ref), pending: false };
+      } catch (e) {
+        var text = s0(ref).trim(), reqPkg = '';
+        var cut = text.lastIndexOf('::');
+        if (cut >= 0) { reqPkg = text.slice(0, cut); text = text.slice(cut + 2); }
+        var wanted = norm(cleanRef(text));
+        var hits = pending.filter(function (p) {
+          if (norm(p.name) !== wanted) return false;
+          if (!reqPkg) return true;
+          return norm(p.package) === norm(reqPkg) || norm(p.package).slice(-norm(reqPkg).length - 1) === '/' + norm(reqPkg);
+        });
+        if (hits.length === 1) return { el: hits[0], pending: true };
+        throw e;
+      }
+    }
+
     for (i = 0; i < rawOps.length; i++) {
       op = normalizeOp(rawOps[i]);
-      if (['set_name', 'set_note', 'set_status', 'set_alias', 'set_stereotype', 'delete_element'].indexOf(op.op) >= 0) {
+      if (op.op === 'add_package') {
+        var pkgPath = s0(op.path).trim().replace(/^\/+|\/+$/g, '');
+        if (!pkgPath) throw new Error('Paketpfad fehlt.');
+        ops.push({ op: 'add_package', path: pkgPath, package: pkgPath });
+      } else if (op.op === 'add_element') {
+        var elName = s0(op.name).trim();
+        if (!elName) throw new Error('Elementname fehlt.');
+        var elPkg = s0(op.package).trim().replace(/^\/+|\/+$/g, '') || defPkg;
+        var elSt = s0(op.stereotype).trim();
+        var elType = s0(op.ea_type || op.type || 'Class').trim() || 'Class';
+        var elNote = s0(op.note || '');
+        ops.push({
+          op: 'add_element', name: elName, package: elPkg,
+          stereotype: elSt, ea_type: elType, note: elNote
+        });
+        pending.push({ id: null, name: elName, package: elPkg, stereotype: elSt });
+      } else if (['set_name', 'set_note', 'set_status', 'set_alias', 'set_stereotype', 'delete_element'].indexOf(op.op) >= 0) {
         var ref = op.name || (op.target && op.target.name) || '';
         target = (ref.indexOf('::') >= 0 && !op.package) ? resolveRef(ref) : resolveElement(ref, op.package || (op.target && op.target.package) || '');
         if (['set_name', 'set_note', 'set_status', 'set_alias', 'set_stereotype'].indexOf(op.op) >= 0) {
@@ -209,12 +304,16 @@ var NL = (function () {
           label: target.name
         });
       } else if (op.op === 'add_connector') {
-        source = resolveRef(op.source);
-        dest = resolveRef(op.target);
-        if (String(source.id) === String(dest.id)) throw new Error('Quelle und Ziel sind dasselbe Element.');
+        var sRes = resolveWithPending(op.source);
+        var dRes = resolveWithPending(op.target);
+        source = sRes.el; dest = dRes.el;
+        if (!sRes.pending && !dRes.pending && String(source.id) === String(dest.id)) throw new Error('Quelle und Ziel sind dasselbe Element.');
+        if (sRes.pending && dRes.pending && norm(source.name) === norm(dest.name) && source.package === dest.package) throw new Error('Quelle und Ziel sind dasselbe Element.');
         ops.push({
           op: 'add_connector', source_name: source.name, target_name: dest.name,
-          source_oid: source.id, target_oid: dest.id,
+          source_oid: sRes.pending ? null : source.id, target_oid: dRes.pending ? null : dest.id,
+          source_pkg: source.package || source.pkgFull || source.pkg || '',
+          target_pkg: dest.package || dest.pkgFull || dest.pkg || '',
           stereotype: op.stereotype || 'Dependency', ea_type: op.ea_type || 'Dependency',
           name: op.name || '', direction: op.direction || 'Source -> Destination'
         });
@@ -233,6 +332,8 @@ var NL = (function () {
 
   function describe(op) {
     var q = function (v) { return '„' + esc(v) + '“'; };
+    if (op.op === 'add_package') return 'Paket anlegen: ' + q(op.path);
+    if (op.op === 'add_element') return 'Element anlegen: ' + q(op.name) + (op.stereotype ? ' «' + esc(op.stereotype) + '»' : '');
     if (op.op === 'set_name') return 'Umbenennen: ' + q(op.name) + ' → ' + q(op.value);
     if (op.op === 'set_note') return 'Notiz ändern: ' + q(op.name) + ' → ' + q(op.value);
     if (op.op === 'set_status') return 'Status setzen: ' + q(op.name) + ' → ' + q(op.value);
@@ -277,13 +378,15 @@ var NL = (function () {
   function systemPrompt() {
     return [
       'Du bist ein Assistent fuer Enterprise-Architekturmodelle.',
-      'Der Nutzer will ein vorhandenes Modell in natuerlicher Sprache korrigieren.',
-      'Du erfindest keine Elemente, Pakete oder Beziehungen. Du verwendest ausschliesslich Namen aus dem Inventar.',
+      'Der Nutzer will ein vorhandenes Modell in natuerlicher Sprache korrigieren oder weiterbauen.',
+      'Bestehende Namen nimmst du exakt aus dem Inventar. Neue Elemente oder Pakete legst du nur an, wenn der Nutzer es ausdruecklich verlangt.',
       '',
       'Antworte NUR mit gueltigem JSON:',
       '{"reply":"kurze Antwort auf Deutsch","ops":[{...}]}',
       '',
       'Erlaubte Operationen:',
+      '- add_package:     {"op":"add_package","path":"Paket/Unterpaket"}',
+      '- add_element:     {"op":"add_element","package":"Paket/Pfad","name":"NeuerName","stereotype":"Capability","note":""}',
       '- set_name:        {"op":"set_name","package":"Paket/Pfad","name":"Alt","value":"Neu"}',
       '- set_note:        {"op":"set_note","package":"Paket/Pfad","name":"Element","value":"Neuer Text"}',
       '- set_status:      {"op":"set_status","package":"Paket/Pfad","name":"Element","value":"Proposed"}',
@@ -385,7 +488,7 @@ var NL = (function () {
     });
   }
 
-  function applyProposal() {
+  function applyProposal(liveNow) {
     if (!proposal || !proposal.ops.length) return;
     var destructive = proposal.ops.some(function (op) { return op.op === 'delete_element' || op.op === 'delete_connector'; });
     var confirmBox = el('nl-confirm-del');
@@ -396,11 +499,24 @@ var NL = (function () {
     var results = EDIT.applyNlOps(proposal.ops);
     var ok = results.filter(function (r) { return r.ok; }).length;
     var bad = results.length - ok;
-    status('✓ ' + ok + ' Änderung(en) vorgemerkt' + (bad ? ' · ' + bad + ' abgelehnt' : '') + ' — jetzt „Als neue .qea speichern“.', bad ? 'bad' : 'ok');
     proposal = null;
     render();
     if (el('nl-input')) el('nl-input').value = '';
+    if (liveNow && ok && EDIT.applyLive) {
+      status('⏳ ' + ok + ' Änderung(en) werden ins laufende Modell übernommen …');
+      EDIT.applyLive(function (err) {
+        if (err) {
+          status('⚠ Direktübernahme fehlgeschlagen: ' + err, 'bad');
+        } else {
+          status('✓ ' + ok + ' Änderung(en) direkt übernommen — Explorer, Graph, QS & Fragen sind aktualisiert.', bad ? 'bad' : 'ok');
+        }
+      });
+      return;
+    }
+    status('✓ ' + ok + ' Änderung(en) vorgemerkt' + (bad ? ' · ' + bad + ' abgelehnt' : '') + ' — jetzt „Als neue .qea speichern“.', bad ? 'bad' : 'ok');
   }
+
+  function applyLive() { return applyProposal(true); }
 
   function reset() {
     proposal = null;
@@ -408,5 +524,5 @@ var NL = (function () {
     status('');
   }
 
-  return { propose: propose, apply: applyProposal, reset: reset, _parseLocal: parseLocal, _inventoryText: inventoryText };
+  return { propose: propose, apply: function () { return applyProposal(false); }, applyLive: applyLive, reset: reset, _parseLocal: parseLocal, _inventoryText: inventoryText };
 })();
