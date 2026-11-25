@@ -1165,38 +1165,6 @@ function loadQea(buffer, name) {
   }
 }
 
-function buildArchitectureWithViews() {
-  var nodes = [
-    { id: 'pkg_root', name: 'Modell', metaclass: 'Package' },
-    { id: 'el_sys', name: 'Systemkontext', package: 'Modell', metaclass: 'Class', stereotype: 'EnterprisePhase', properties: { notes: 'Startpaket-Kontext' } }
-  ];
-  var diags = [];
-  if (typeof ADMBW_DATA !== 'undefined' && ADMBW_DATA.vp) {
-    var vps = Object.keys(ADMBW_DATA.vp);
-    for (var i = 0; i < vps.length; i++) {
-      var k = vps[i];
-      var vp = ADMBW_DATA.vp[k];
-      diags.push({
-        name: k + ' — ' + (vp.n || k),
-        package: 'Modell',
-        type: 'Custom',
-        notes: vp.desc || ('ADMBw-Sicht ' + k),
-        elements: [
-          { name: 'Systemkontext', left: 40, top: 40, right: 260, bottom: 110 }
-        ]
-      });
-    }
-  }
-  var json = JSON.stringify({
-    schema_version: '1.0',
-    nodes: nodes,
-    edges: [],
-    diagrams: diags
-  });
-  loadQea(json, 'Neue_Architektur_mit_Sichten.json');
-}
-window.buildArchitectureWithViews = buildArchitectureWithViews;
-
 function renderModelStats(nPkg, nDiag, nObj, nCon) {
   var s = el('stats');
   if (!s) return;

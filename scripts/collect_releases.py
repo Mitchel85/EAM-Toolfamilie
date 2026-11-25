@@ -473,7 +473,7 @@ ${cards}
   <ul class="decision">
     <li><b>Ich habe Text, ein Handbuch, DOCX, PDF, ein Bild oder Tabellen und will iterativ ein Modell bauen.</b> → EAM AI Suite</li>
     <li><b>Ich habe ein Modell (.qea, .xmi, ArchiMate-.xml oder .json) und will es verstehen, MDG-prüfen und QS-absichern (ohne KI).</b> → EAM Suite</li>
-    <li><b>Ich will Modelle bearbeiten, verschmelzen oder wahlweise mit Sichten neu aufbauen.</b> → EAM Suite / EAM AI Suite</li>
+    <li><b>Ich will vorhandene Modelle analysieren, verschmelzen oder bearbeiten (ohne KI).</b> → EAM Suite</li>
     <li><b>Ich will Sichten und Layout verlustfrei auslagern und zurückspielen (SHA-256).</b> → Sichten-Archiv</li>
     <li><b>Ich will nur das Regelwerk nachschlagen oder als JSON/Markdown exportieren.</b> → ADMBw Extraktor</li>
     <li><b>Ich will ein Modell abfragen, Pfade/Impact prüfen oder gegen MDG validieren — in Open WebUI oder per MCP.</b> → EAM Analyzer</li>
@@ -582,7 +582,7 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
         ),
         _karte(
             "EAM Suite", "Prüfen und bearbeiten",
-            "Modelle (.qea, .xmi, .json sowie ArchiMate-.xml zur Ansicht/Brücke) analysieren (Explorer, Sichten, Graph, Pfade), mit Auto-QS & MDG prüfen (erkennt natives ArchiMate ohne Fehlalarme), verschmelzen, bearbeiten oder wahlweise mit Sichten bauen; ohne KI.",
+            "Vorhandene Modelle (.qea, .xmi, .json sowie ArchiMate-.xml zur Ansicht/Brücke) laden, analysieren (Explorer, Sichten, Graph, Pfade), mit Auto-QS & MDG prüfen (erkennt natives ArchiMate ohne Fehlalarme), verschmelzen und bearbeiten; ohne KI, bewusst kein Neuaufbau von null.",
             "EAM-Suite.html", "EAM-Suite.html herunterladen",
             ["Datei herunterladen", "Datei öffnen", "Modelle prüfen & bearbeiten"],
             groesse=groesse("EAM-Suite.html"),

@@ -33,11 +33,11 @@ APPS = {
         "product": "EAM Suite",
         "version": "v8.6",
         "title": "EAM Suite — QEA-Architekturen analysieren, erkunden, bearbeiten &amp; exportieren",
-        "bytes": 1_554_498,
+        "bytes": 1_553_338,
         "min_size": 1_000_000,
         "max_size": 2_000_000,
         "markers": ("var EDIT =", "var MERGE", "var ISSUE =", "var STDIMPORT =", "function openAny(", "function exportXmi("),
-        "forbidden": ("window.KI", "var DIAG =", "BPMN.modus", "part7_bpmn"),
+        "forbidden": ("window.KI", "var DIAG =", "BPMN.modus", "part7_bpmn", "buildArchitectureWithViews"),
     },
     "html-sichten-archiv": {
         "product": "Sichten-Archiv",

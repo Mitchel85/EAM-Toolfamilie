@@ -26,7 +26,7 @@ Modelle zusammenfinden.
 | **4 · Architektur bauen** | Native Ausgabe in `.qea`, `.xmi` (UML 2.x/1.3) und `.json`; zusätzlich Projektion nach ArchiMate 3.2 Exchange `.xml` | **EAM AI Suite** · **EAM Suite** · `eam-ai build`/`convert`/`archimate` |
 | **5 · MDG-Validierung** | Dynamische Konformitätsprüfung gegen die geladene MDG-XML (Endpunkte, Metaklassen, abstrakte Stereotypen, Tags, GUIDs); für natives ArchiMate 3.2 Matrixprüfung via `archimate-check` | **EAM AI Suite** · **EAM Suite** · `eam-ai validate`/`archimate-check` · **EAM Analyzer** · **BPMN Studio** |
 | **6 · QS & Zusammenhänge** | Nachbarschaft, Pfadsuche, Impact-Analyse, Waisen-Erkennung, Befund-Overlay (`Issue`) & Quellbelege (`source_ref`) | **EAM AI Suite** (`⚡ QS-Prüfung`) · **EAM Suite** (`⚡ Auto-QS`) · `eam-ai qs`/`viewer`/`graph`/`handbuch`/`ea-check` · **EAM Analyzer** |
-| **7 · Sparx-EA-Sichten & Archiv** | Wahlweise Sichten gemäß MDG, Leitfaden oder Model Wizard (`--sichten`, `--wizard-dir`, Button `🖼️ Architektur mit Sichten bauen`) + SHA-256-Sichten-Archiv | **EAM AI Suite** · **EAM Suite** · `eam-ai` · **Sichten-Archiv** · **BPMN Studio** |
+| **7 · Sparx-EA-Sichten & Archiv** | Wahlweise Sichten gemäß MDG, Leitfaden oder Model Wizard (`--sichten`, `--wizard-dir`, Button `🖼️ Architektur mit Sichten bauen`) + SHA-256-Sichten-Archiv | **EAM AI Suite** · `eam-ai` · **Sichten-Archiv** · **BPMN Studio** |
 
 ### Metamodelle & Formate: NAF 4 / UAF vs. ArchiMate 3.2
 
@@ -50,7 +50,7 @@ Kurz, was jedes Werkzeug kann — und wie sie sich unterscheiden.
 |---|---|---|---|---|
 | **EAM AI Suite** (HTML) | `.qea` · `.xmi` · `.json` · ArchiMate `.xml` (Brücke) | ja (eigener Zugang, iterativ) | Die ganze 7-Stufen-Kette in einer Datei: aus Text, DOCX, PDF oder Bild iterativ (mit Tokenlimit-Halbierung) ein MDG-geprüftes NAFv4/UAF-Modell bauen, QS-prüfen, wahlweise mit Sichten anlegen und nach `.qea`/`.xmi`/`.json` oder als ArchiMate-Projektion exportieren | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/eam-ai-suite/) |
 | **EAM AI Suite** (Python `eam-ai`) | `.qea` · `.xmi` · `.json` · ArchiMate `.xml` (Brücke & Matrix-QS) | ja (Backend, Batch/Stufen) | Dieselbe Kette ohne Browser — für große Quellen (Batch/Stufen 1–4), WebUI (`serve`), MDG-Validierung, ArchiMate-3.2-Projektion & `archimate-check`, QS-Kombilauf (`qs`), Viewer, Handbuch & Konvertierung | — |
-| **EAM Suite** (HTML) | `.qea` · `.xmi` (UML 2.x/1.3) · `.json` · ArchiMate `.xml` (Ansicht/Brücke) | nein (bewusst offline/ohne KI) | Vorhandene Modelle analysieren, verschmelzen, bearbeiten, mit `⚡ Auto-QS` gegen MDG/Waisen/GUIDs prüfen (erkennt natives ArchiMate ohne Fehlalarme) und wahlweise `🖼️ Architektur mit Sichten bauen` | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/eam-suite/) |
+| **EAM Suite** (HTML) | `.qea` · `.xmi` (UML 2.x/1.3) · `.json` · ArchiMate `.xml` (Ansicht/Brücke) | nein (bewusst offline/ohne KI) | Vorhandene Modelle laden, analysieren, verschmelzen, bearbeiten und mit `⚡ Auto-QS` gegen MDG/Waisen/GUIDs prüfen (erkennt natives ArchiMate ohne Fehlalarme; kein Neuaufbau von Grund auf) | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/eam-suite/) |
 | **Sichten-Archiv** (HTML, Python) | `.qea` · `.archiv` | nein | Sichten und Layout aus einer `.qea` mit bit-identischer SHA-256-Prüfsumme auslagern und verlustfrei zurückspielen | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/sichten-archiv/) |
 | **EAM Analyzer** (Open WebUI, MCP) | `.qea` · `.xmi` · ArchiMate `.xml` · `.json` | über das KI-Modell des Werkzeugs | Modelle befragen, gegen MDG validieren, Impact-/Nachbarschafts-/Pfadanalysen und umfassende QS-Prüfungen fahren | — |
 | **ADMBw Extraktor** (HTML, Python) | MDG-XML · JSON | nein | Regelwerk durchsuchen und als sechs Markdown-Dateien oder maschinenlesbares JSON (`rules.json`, `stereotypes`, `aliases`) exportieren | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/admbw-extraktor/) |
@@ -82,7 +82,7 @@ Sichten sind in allen Pipelines optional steuerbar:
 
 - **Python CLI (`build`, `stufe3`, `alle`) & WebUI (`serve`)**: `--sichten {aus,mdg,leitfaden,wizard}` (bzw. `--ohne-sichten` als Alias für `aus`) sowie `--wizard-dir <ordner>` für lokale Model-Wizard-XMI-Vorlagen; `view_builder.py` platziert Elemente deterministisch (`RectTop > RectBottom`) und setzt `DefaultDiagram` in `usys_system`.
 - **EAM AI Suite (HTML)**: `🆕 Architektur neu bauen` startet ohne Sichten, `🖼️ Architektur mit Sichten bauen` legt die 52 ADMBw-Sichten vorab an.
-- **EAM Suite (HTML, ohne KI)**: `🖼️ Architektur mit Sichten bauen` erzeugt eine bearbeitbare Startarchitektur mit den 52 ADMBw-Sichten.
+- **EAM Suite (HTML, ohne KI)**: Lädt, analysiert, verschmilzt und bearbeitet bestehende Modelle inkl. vorhandener Sichten (kein Neuaufbau von Grund auf — dafür ist die **EAM AI Suite** bzw. `eam-ai` vorgesehen).
 - **BPMN (`qea_bpmn.py`)**: `als_ir(..., sichten=True|False)` steuert, ob pro Prozess ein BPMN-Aktivitätsdiagramm erzeugt wird.
 
 ## Architektur — der Wissensgraph
