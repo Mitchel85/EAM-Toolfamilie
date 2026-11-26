@@ -142,6 +142,10 @@ def test_manifest_nennt_nur_ausgelieferte_dateien(tmp_path: Path) -> None:
     dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
     assert "COPY knowledge/regelwerk.json /app/knowledge/regelwerk.json" in dockerfile
     assert "COPY packages/rules/CURRENT /app/rules/CURRENT" in dockerfile
+    dockerignore = (ROOT / ".dockerignore").read_text(encoding="utf-8")
+    assert "!knowledge/regelwerk.json" in dockerignore
+    assert "!packages/rules/CURRENT" in dockerignore
+    assert "!packages/rules/NAFv4-ADMBw-MDG-*.xml" in dockerignore
     container_wf = (ROOT / ".github" / "workflows" / "container.yml").read_text(encoding="utf-8")
     assert "branches: [main]" in container_wf
     assert "type=raw,value=latest" in container_wf

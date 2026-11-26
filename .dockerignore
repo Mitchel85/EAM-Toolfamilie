@@ -13,7 +13,10 @@ packages/rules/*
 !packages/rules/mdg_parser.py
 !packages/rules/documents.py
 !packages/rules/documents_format.py
-knowledge
+!packages/rules/CURRENT
+!packages/rules/NAFv4-ADMBw-MDG-*.xml
+knowledge/*
+!knowledge/regelwerk.json
 scripts
 tools
 vendor
