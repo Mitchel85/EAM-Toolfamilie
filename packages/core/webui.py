@@ -1341,7 +1341,10 @@ def _resolve_job_mdg(job: Job) -> Path | None:
         job.directory / "input" / "technologie.xml",
         job.directory / "input" / "technologie.mdg",
         job.directory / "technologie.xml",
+        Path(__file__).resolve().parent / "rules" / "NAFv4-ADMBw-MDG-2026.05.xml",
         Path(__file__).resolve().parents[1] / "rules" / "NAFv4-ADMBw-MDG-2026.05.xml",
+        Path(__file__).resolve().parent / "knowledge" / "regelwerk.json",
+        Path(__file__).resolve().parents[1] / "knowledge" / "regelwerk.json",
     ):
         if candidate.is_file():
             return candidate
@@ -2125,7 +2128,16 @@ class Handler(BaseHTTPRequestHandler):
                         h_g.write(mdg_part[0].data)
                         tmp_mdg = Path(h_g.name)
                 else:
-                    tmp_mdg = Path(__file__).resolve().parents[1] / "rules" / "NAFv4-ADMBw-MDG-2026.05.xml"
+                    here = Path(__file__).resolve().parent
+                    for cand in (
+                        here / "rules" / "NAFv4-ADMBw-MDG-2026.05.xml",
+                        here.parent / "rules" / "NAFv4-ADMBw-MDG-2026.05.xml",
+                        here / "knowledge" / "regelwerk.json",
+                        here.parent / "knowledge" / "regelwerk.json",
+                    ):
+                        if cand.is_file():
+                            tmp_mdg = cand
+                            break
 
                 try:
                     payload = _run_cli_validate(tmp_model, tmp_mdg)

@@ -100,7 +100,7 @@ FINDINGS_NAME = "findings.json"
 
 # Eine Quelle fuer die Version: hier. pyproject.toml und CHANGELOG.md muessen
 # dazu passen; tests/test_packaging.py prueft die drei Stellen gegeneinander.
-__version__ = "3.9.0"
+__version__ = "3.15.0"
 
 # DOCX ist eine ZIP-Datei mit genau diesem Pfad fuer den sichtbaren Text.
 _DOCX_MAIN = "word/document.xml"
@@ -2279,8 +2279,17 @@ def cmd_qs(args: argparse.Namespace) -> int:
 
     rules_path = args.mdg
     if not rules_path:
-        default_mdg = Path(__file__).resolve().parents[1] / "rules" / "NAFv4-ADMBw-MDG-2026.05.xml"
-        rules_path = default_mdg if default_mdg.is_file() else Path(__file__).resolve().parents[1] / "knowledge" / "regelwerk.json"
+        here = Path(__file__).resolve().parent
+        for cand in (
+            here / "rules" / "NAFv4-ADMBw-MDG-2026.05.xml",
+            here.parent / "rules" / "NAFv4-ADMBw-MDG-2026.05.xml",
+            here / "knowledge" / "regelwerk.json",
+            here.parent / "knowledge" / "regelwerk.json",
+            here.parent.parent / "knowledge" / "regelwerk.json",
+        ):
+            if cand.is_file():
+                rules_path = cand
+                break
 
     if rules_path and Path(rules_path).is_file():
         ruleset = validator.load_rules(rules_path)
@@ -3139,8 +3148,17 @@ def cmd_repair(args: argparse.Namespace) -> int:
         return 1
     rules_path = args.mdg
     if not rules_path:
-        default_mdg = Path(__file__).resolve().parents[1] / "rules" / "NAFv4-ADMBw-MDG-2026.05.xml"
-        rules_path = default_mdg if default_mdg.is_file() else Path(__file__).resolve().parents[1] / "knowledge" / "regelwerk.json"
+        here = Path(__file__).resolve().parent
+        for cand in (
+            here / "rules" / "NAFv4-ADMBw-MDG-2026.05.xml",
+            here.parent / "rules" / "NAFv4-ADMBw-MDG-2026.05.xml",
+            here / "knowledge" / "regelwerk.json",
+            here.parent / "knowledge" / "regelwerk.json",
+            here.parent.parent / "knowledge" / "regelwerk.json",
+        ):
+            if cand.is_file():
+                rules_path = cand
+                break
     if not rules_path or not Path(rules_path).is_file():
         print("FEHLER: Regelwerk fehlt (--mdg angeben)", file=sys.stderr)
         return 1

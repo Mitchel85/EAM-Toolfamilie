@@ -309,6 +309,16 @@ def quellstand_dateien() -> list[tuple[str, Path]]:
                 for pfad in sorted(ordner.glob("*"))
                 if pfad.is_file()
             ]
+    regelwerk_json = ROOT / "knowledge" / "regelwerk.json"
+    if regelwerk_json.is_file():
+        dateien.append(("eam-ai-suite-python/knowledge/regelwerk.json", regelwerk_json))
+    current_mdg_file = ROOT / "packages" / "rules" / "CURRENT"
+    if current_mdg_file.is_file():
+        dateien.append(("eam-ai-suite-python/rules/CURRENT", current_mdg_file))
+        mdg_name = current_mdg_file.read_text(encoding="utf-8").strip()
+        mdg_xml = ROOT / "packages" / "rules" / mdg_name
+        if mdg_xml.is_file():
+            dateien.append((f"eam-ai-suite-python/rules/{mdg_name}", mdg_xml))
     return sorted(dateien, key=lambda eintrag: eintrag[0])
 
 
@@ -487,18 +497,18 @@ ${cards}
   <ol class="decision">
     <li><b>MDG rein.</b> Die Technologie-Datei (MDG-XML) wird dynamisch geladen. Daraus entsteht das Regelwerk: Stereotype, <code>metarelationships</code>, <code>TaggedValueTypes</code>, Viewpoints und <code>&lt;ModelTemplates&gt;</code>.</li>
     <li><b>Startpaket rein — mit GUID-Treue.</b> Standardelemente (StEKa, Kataloge) werden mit ihren EA-GUIDs, NATO-GUIDs (<code>OriginalGUID</code>, <code>URI</code>, <code>Uuid</code>), <code>StandardElement</code> und <code>t_xref</code> wörtlich übernommen.</li>
-    <li><b>Prosa rein (multimodal &amp; iterativ).</b> Text, DOCX (inkl. Tabellen &amp; Bildern), PDF, Bilder oder CSV/TSV-Tabellen. Große Quellen werden in der <b>EAM AI Suite</b> (<code>inTeilenHolen</code>, rekursive Halbierung bei Tokenlimit) und in <b>Python</b> (<code>extract_batched</code> mit <code>known_limit=200</code> / Stufenlauf 1–4) iterativ ohne Kontextlimit verarbeitet.</li>
-    <li><b>Architektur bauen (3 native Formate + ArchiMate-Brücke).</b> Verlustfreie NAFv4/UAF-Ausgabe und Konvertierung in <code>.qea</code>, <code>.xmi</code> (UML 2.x/1.3) und <code>.json</code>; zusätzlich regelbasierte Projektion nach ArchiMate 3.2 Exchange <code>.xml</code> (im Python-Kern mit Matrixprüfung und Näherungsreport) sowie native ArchiMate-Prüfung per <code>eam-ai archimate-check</code>.</li>
-    <li><b>Gegen die MDG validieren.</b> Dynamische Prüfung aller Elemente, Beziehungen, Metaklassen, Tags, GUIDs und abstrakten Stereotype gegen NAFv4/UAF-MDG (bzw. eigene MDG-XMLs); native ArchiMate-3.2-Modelle werden ohne Fehlalarme erkannt und in Python/MCP gegen die ArchiMate-3.2-Matrix geprüft.</li>
-    <li><b>QS-fähig machen &amp; Zusammenhänge zeigen.</b> Nachbarschaft, Pfadsuche, Impact-Analyse, Waisen-Erkennung, Befund-Overlay (<code>Issue</code>) und Quellbelege (<code>source_ref</code>) per <code>⚡ QS-Prüfung</code>, <code>⚡ Auto-QS</code>, Viewer, Handbuch und MCP.</li>
+    <li><b>Prosa rein (multimodal &amp; auch für kleine LLMs).</b> Text, DOCX (inkl. Tabellen &amp; Bildern), PDF, Bilder oder CSV/TSV-Tabellen. Große Quellen werden in der <b>EAM AI Suite</b> (Kontextprofile <code>4k</code>–<code>16k</code>, <code>inTeilenHolen</code>, rekursive Halbierung) und in <b>Python</b> (<code>extract_batched</code>, <code>--kontext-tokens</code>, Stufenlauf 1–4 mit dynamischem Stereotyp-Filter) iterativ ohne Kontextlimit verarbeitet.</li>
+    <li><b>Architektur bauen (3 native Formate + ArchiMate-Brücke).</b> Verlustfreie NAFv4/UAF-Ausgabe und Konvertierung in <code>.qea</code>, <code>.xmi</code> (UML 2.x/1.3) und <code>.json</code>; zusätzlich regelbasierte Projektion nach ArchiMate 3.2 Exchange <code>.xml</code> sowie native ArchiMate-Prüfung per <code>eam-ai archimate-check</code> und direkt im Browser.</li>
+    <li><b>Gegen die MDG validieren &amp; regelbasiert reparieren.</b> Dynamische Prüfung aller Elemente, Beziehungen, Metaklassen, Tags, GUIDs und abstrakten Stereotype gegen NAFv4/UAF-MDG, interaktive <b>Reparatur-Vorschau ohne KI</b> (<code>repair</code> / <code>🔧 Auto-Repair</code>) sowie offizielle <b>ArchiMate-3.2-Matrixprüfung</b> in Python, MCP und Browser.</li>
+    <li><b>QS, Modell-Diff &amp; Quellbelege.</b> Nachbarschaft, Pfadsuche, Impact-Analyse, Waisen, <b>Vorher-Nachher-Modell-Diff &amp; Undo</b> (<code>diff</code> / <code>🔀 Modell-Diff</code>), Pflichtenheft-Textabdeckung (<code>qs --text</code>) und klickbarer Sprung zum Original-Quellabsatz (<code>source_ref</code>).</li>
     <li><b>Wahlweise Sparx-EA-Sichten &amp; Sichten-Archiv.</b> Sichten optional gemäß MDG, Leitfaden oder Model Wizard (<code>--sichten</code>, <code>--wizard-dir</code> bzw. Button <code>🖼️ Architektur mit Sichten bauen</code>) erzeugen — oder per <b>Sichten-Archiv</b> bit-identisch (SHA-256) auslagern und zurückspielen.</li>
   </ol>
 
   <h2>ArchiMate 3.2 — Was geht &amp; was nicht</h2>
   <p class="lead">Das Kern-Metamodell der Toolfamilie ist <b>NAF 4 / UAF</b> (Standard-MDG: ADMBw, offen für eigene MDG-XMLs) in den nativen Formaten <code>.qea</code>, <code>.xmi</code> und <code>.json</code>. <b>ArchiMate 3.2</b> ist ein eigenes Metamodell und wird gezielt als Brücken- und Prüf-Format unterstützt:</p>
   <ul class="decision">
-    <li><b>Was geht:</b> NAF 4 / UAF → ArchiMate 3.2 Export-Projektion (Mapping gemäß <b>NAFv4.1-ArchiMate-Guide</b>; Python <code>eam-ai archimate</code> inkl. <b>ArchiMate-3.2-Beziehungsmatrix</b> aus Archi/EPL-2.0 &amp; Näherungsreport; Browser vereinfacht) · bestehende ArchiMate-3.2-Modelle einlesen und über <code>eam-ai archimate-check</code> / MCP nativ gegen alle 7 Schichten &amp; Beziehungsmatrix prüfen · im Browser ohne NAFv4/UAF-Fehlalarme analysieren · verlustfreier Rückweg für eigene Exporte.</li>
-    <li><b>Was nicht geht:</b> Kein nativer KI-Modellbau direkt in ArchiMate 3.2 (KI baut NAF 4 / UAF bzw. geladene MDG) · keine automatische 1:1-Übersetzung fremder ArchiMate-Modelle in NAF 4 / UAF · keine ArchiMate-3.2-Matrixprüfung im Browser (dafür CLI/MCP nutzen) · keine verlustfreie 1:1-Gleichheit zwischen UAF und ArchiMate.</li>
+    <li><b>Was geht:</b> NAF 4 / UAF → ArchiMate 3.2 Export-Projektion (Mapping gemäß <b>NAFv4.1-ArchiMate-Guide</b>; Python <code>eam-ai archimate</code> inkl. <b>ArchiMate-3.2-Beziehungsmatrix</b> aus Archi/EPL-2.0 &amp; Näherungsreport) · bestehende ArchiMate-3.2-Modelle einlesen und über <code>eam-ai archimate-check</code>, MCP <b>und direkt im Browser</b> (<code>EAMMDG.validateArchimate</code>) nativ gegen die 61×61-Beziehungsmatrix prüfen · verlustfreier Rückweg für eigene Exporte.</li>
+    <li><b>Was nicht geht:</b> Kein nativer KI-Modellbau direkt in ArchiMate 3.2 (KI baut NAF 4 / UAF bzw. geladene MDG) · keine automatische 1:1-Übersetzung fremder ArchiMate-Modelle in NAF 4 / UAF · keine verlustfreie 1:1-Gleichheit zwischen UAF und ArchiMate.</li>
   </ul>
   <h2>Regeldateien in einem Chatbot nutzen</h2>
   <p class="lead">Die sechs Markdown-Dateien aus dem ADMBw Extraktor sind reine Fachdaten. Jeder Chatbot kann sie als Wissensquelle lesen — ChatGPT, Claude, Gemini, Open WebUI oder ein lokales Modell. Der Chatbot schlägt dann vor; prüfen tut er nicht.</p>
@@ -572,8 +582,8 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
 
     karten = [
         _karte(
-            "EAM AI Suite", "Bauen, Chat & Weiterbau",
-            "Text, Handbuch, DOCX, PDF, Bild oder Tabelle iterativ (ohne Kontextlimit) einlesen und daraus ein NAFv4/UAF-Modell erzeugen; sofort in Explorer/Graph/QS prüfen, per Chat with Data befragen, per Dialog oder Sprache (inkl. neuer Elemente/Pakete) live weiterbauen und als .qea, .xmi, .json oder ArchiMate-Projektion (.xml) speichern.",
+            "EAM AI Suite", "Bauen, Diff, Chat & Weiterbau",
+            "Text, Handbuch, DOCX, PDF, Bild oder Tabelle iterativ (auch mit 4k–16k LLMs) einlesen und daraus ein NAFv4/UAF-Modell erzeugen; live in Explorer/Graph/QS prüfen (inkl. ArchiMate-Matrix, Modell-Diff, Undo, Auto-Repair & Textabdeckung), per Chat with Data befragen, per Sprache weiterbauen und exportieren.",
             "EAM-AI-Suite.html", "EAM-AI-Suite.html herunterladen",
             ["Datei herunterladen", "Datei öffnen", "Modell erzeugen, live prüfen, befragen & weiterbauen"],
             groesse=groesse("EAM-AI-Suite.html"),
@@ -581,10 +591,10 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
             seiten=SEITEN + "eam-ai-suite/",
         ),
         _karte(
-            "EAM Suite", "Prüfen und bearbeiten",
-            "Vorhandene Modelle (.qea, .xmi, .json sowie ArchiMate-.xml zur Ansicht/Brücke) laden, analysieren (Explorer, Sichten, Graph, Pfade), mit Auto-QS & MDG prüfen (erkennt natives ArchiMate ohne Fehlalarme), verschmelzen und bearbeiten; ohne KI, bewusst kein Neuaufbau von null.",
+            "EAM Suite", "Prüfen, Diff & Bearbeiten (ohne KI)",
+            "Vorhandene Modelle (.qea, .xmi, .json, ArchiMate-.xml) offline laden, verschmelzen, vergleichen (Modell-Diff & Undo), regelbasiert reparieren (Auto-Repair) und per Auto-QS gegen MDG bzw. ArchiMate-3.2-Matrix prüfen; ohne KI, bewusst kein Neuaufbau von null.",
             "EAM-Suite.html", "EAM-Suite.html herunterladen",
-            ["Datei herunterladen", "Datei öffnen", "Modelle prüfen & bearbeiten"],
+            ["Datei herunterladen", "Datei öffnen", "Modelle prüfen, vergleichen & bearbeiten"],
             groesse=groesse("EAM-Suite.html"),
             slug="suite",
             seiten=SEITEN + "eam-suite/",
@@ -599,10 +609,10 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
             seiten=SEITEN + "sichten-archiv/",
         ),
         _karte(
-            "BPMN Studio", "Prozesse",
-            "BPMN 2.0 lesen, zeichnen und gegen 15 L4-Regeln prüfen; ADMBw-konform machen; Export inkl. Aktivitätsdiagramm nach .qea, .xmi, ArchiMate-.xml, .json, SVG und PNG.",
+            "BPMN Studio", "Prozesse (L3 ↔ L4)",
+            "BPMN 2.0 lesen, zeichnen, gegen 15 L4-Regeln prüfen, ADMBw-konform machen und gegen L3-Architekturkataloge (GUIDs & Represents) abgleichen; Export inkl. Aktivitätsdiagramm nach .qea, .xmi, ArchiMate-.xml, .json, SVG und PNG.",
             "BPMN-Studio.html", "BPMN-Studio.html herunterladen",
-            ["Datei herunterladen", "Datei öffnen", "Prozess bearbeiten"],
+            ["Datei herunterladen", "Datei öffnen", "Prozess bearbeiten & mit Katalog abgleichen"],
             groesse=groesse("BPMN-Studio.html"),
             slug="bpmn",
             seiten=SEITEN + "bpmn-studio/",
@@ -619,7 +629,7 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
         ),
         _karte(
             "EAM Analyzer", "Abfragen & QS",
-            "Vorhandene Modelle (.qea, .xmi, ArchiMate-.xml, .json) befragen, gegen MDG validieren sowie Impact-, Pfad- und QS-Prüfungen fahren — als Open-WebUI-Tool oder MCP-Server.",
+            "Vorhandene Modelle (.qea, .xmi, ArchiMate-.xml, .json) befragen, gegen MDG/ArchiMate validieren sowie Impact-, Pfad- und QS-Prüfungen fahren — als Open-WebUI-Tool oder MCP-Server (ergänzt um eam-ai mcp ohne Fremdpakete).",
             "eam_qea_analyzer_openwebui.py", "Open-WebUI-Tool herunterladen",
             ["Open-WebUI-Tool herunterladen", "Modell laden (.qea/.xmi/.xml/.json)", "Modell fragen & prüfen"],
             groesse=groesse("eam_qea_analyzer_openwebui.py"),
@@ -629,22 +639,22 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
             ],
         ),
         _karte(
-            "EAM AI Suite Python", "Für Terminal und Server",
-            "Kommandozeile <code>eam-ai</code> (build, convert, validate, qs, frage, korrigiere, viewer, handbuch, stufe1–4, serve) sowie WebUI mit eingebettetem Live-Viewer, Chat with Data, NL-Änderung/Ausbau und Prosa-Weiterbau (--modell). Quellstand als ZIP.",
+            "EAM AI Suite Python", "CLI, WebUI & Stdlib-MCP",
+            "Kommandozeile <code>eam-ai</code> (build, convert, validate, qs, diff, repair, mcp, frage, korrigiere, viewer, handbuch, stufe1–4, serve) sowie WebUI mit Live-Viewer, Chat with Data, NL-Edit, Diff, Auto-Repair, Undo und Prosa-Weiterbau. Quellstand als ZIP.",
             "eam-ai-suite-python.zip", "eam-ai-suite-python.zip herunterladen",
-            ["ZIP entpacken", "<code>pip install ./eam-ai-suite-python</code>", "<code>eam-ai serve</code> oder <code>eam-ai --version</code>"],
+            ["ZIP entpacken", "<code>pip install ./eam-ai-suite-python</code>", "<code>eam-ai serve</code>, <code>eam-ai mcp</code> oder <code>eam-ai --version</code>"],
             groesse=groesse("eam-ai-suite-python.zip"),
             slug="python",
         ),
         f"""<article class="card wide">
-  <span class="badge">Für Server</span>
+  <span class="badge">Für Server · Automatisch synchron</span>
   <h3>Container</h3>
-  <p>Fertiges Image mit Webdienst (Live-Viewer-Vorschau, Chat with Data, NL-Ausbau &amp; Prosa-Weiterbau); Python muss auf dem Host nicht installiert sein.</p>
-  <div class="meta">ghcr.io/mitchel85/eam-toolfamilie:v{html.escape(version)}</div>
+  <p>Fertiges Image mit Webdienst (Live-Viewer, Chat with Data, NL-Edit, Modell-Diff, Auto-Repair, Undo &amp; Prosa-Weiterbau) und <code>eam-ai</code>-CLI inkl. Regelwerk; baut bei jedem grünen Push auf <code>main</code> automatisch neu.</p>
+  <div class="meta">ghcr.io/mitchel85/eam-toolfamilie:latest &nbsp;·&nbsp; Release-Tag: ghcr.io/mitchel85/eam-toolfamilie:v{html.escape(version)}</div>
   <a class="btn" href="{html.escape(REPO_URL + "/pkgs/container/eam-toolfamilie")}">Zur Container-Seite</a>
-  <pre><code>docker pull ghcr.io/mitchel85/eam-toolfamilie:v{html.escape(version)}
+  <pre><code>docker pull ghcr.io/mitchel85/eam-toolfamilie:latest
 docker run --rm -p 8080:8080 \\
-  ghcr.io/mitchel85/eam-toolfamilie:v{html.escape(version)}</code></pre>
+  ghcr.io/mitchel85/eam-toolfamilie:latest</code></pre>
   <ol><li>Docker starten</li><li>Befehl kopieren</li><li>http://localhost:8080 öffnen</li></ol>
 </article>""",
     ]

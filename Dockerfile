@@ -1,8 +1,8 @@
 # EAM Toolfamilie — Container fuer die Python-Auslieferung.
 #
 # Der Kern ist stdlib-only; kein pip, keine Build-Tools im Image.
-#   docker build -t eam-toolfamilie:3.9.0 .
-#   docker run --rm -p 127.0.0.1:8080:8080 eam-toolfamilie:3.9.0
+#   docker build -t eam-toolfamilie:3.15.0 .
+#   docker run --rm -p 127.0.0.1:8080:8080 eam-toolfamilie:3.15.0
 
 FROM python:3.12-slim
 
@@ -20,6 +20,9 @@ COPY packages/core/eam-ai /usr/local/bin/eam-ai
 # liegen beide flach in /app, weil der Kern flache Modulnamen importiert.
 COPY packages/rules/mdg_parser.py /app/
 COPY packages/rules/documents.py packages/rules/documents_format.py /app/
+COPY packages/rules/CURRENT /app/rules/CURRENT
+COPY packages/rules/NAFv4-ADMBw-MDG-*.xml /app/rules/
+COPY knowledge/regelwerk.json /app/knowledge/regelwerk.json
 COPY packages/core/rules.schema.json packages/core/batch-schema.json /app/
 COPY packages/core/archimate /app/archimate
 COPY packages/core/README.md packages/core/CHANGELOG.md packages/core/PACKAGING.md /app/

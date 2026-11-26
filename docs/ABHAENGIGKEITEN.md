@@ -39,7 +39,7 @@ Eine Zelle ist ein Ordner mit `package.json`. `dependencies` sind Laufzeit-,
 | Zelle | Name | Version | Abhängigkeiten |
 |---|---|---|---|
 | `packages/rules` | @mitchel85/eam-rules | 2.5.0 | — |
-| `packages/core` | @mitchel85/eam-core | 3.9.0 | `@mitchel85/eam-rules` |
+| `packages/core` | @mitchel85/eam-core | 3.15.0 | `@mitchel85/eam-rules` |
 | `packages/bpmn` | @mitchel85/eam-bpmn | 3.14.0 | `@mitchel85/eam-core` |
 | `vendor` | @mitchel85/eam-vendor | 1.0.0 | — |
 | `apps/html-suite` | eam-ai-suite | 9.1.0 | `@mitchel85/eam-vendor` |

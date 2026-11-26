@@ -4,6 +4,30 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 3.15.0 - 2026-11-26
+
+### Modell-Diff, Undo, Textabdeckung, Auto-Repair, kleiner Kontext-Support & Stdlib-MCP
+
+- **Modell-Diff & Undo (`model_diff.py`, `eam-ai diff`, WebUI `/diff` & `/undo`):**
+  Semantischer Vorher-Nachher-Vergleich ueber alle vier Formate (`.qea`, `.xmi`,
+  ArchiMate `.xml`, `.json`) inklusive Befund-Delta sowie Revisions-Snapshots in
+  `eam-ai serve`.
+- **Kleine Kontextfenster (`4k`–`16k`) & Stufenlauf-Filter (`extract.py`, `stufen.py`):**
+  `--kontext-tokens` in `build`, `stufe2`, `alle` und `serve` mit Kompaktmodus,
+  rekursiver Chargen-Halbierung, Wortstamm-Abgleich in `_bekannte_fuer()` und
+  dynamischer Filterung der Konnektor-Regeln auf aktive Element-Stereotype;
+  HTTP-Timeout (`120 s`) sauber vom Gesamt-Joblimit (`1800 s`) entkoppelt.
+- **Pflichtenheft-Textabdeckung & Quellsprung (`text_coverage.py`, `viewer_html.py`):**
+  `eam-ai qs --text` prueft prozentual je Absatz und Kapitel die `source_ref`-Belegung;
+  der HTML-Viewer bindet `quellen.json` automatisch ein.
+- **Regelbasierte MDG-Reparatur (`eam-ai repair`, WebUI `/repair`):**
+  Interaktive Vorschau und Anwendung deterministischer MDG-Korrekturen ohne KI.
+- **Abhaengigkeitsfreier 4-Format-MCP-Server (`mcp_stdio.py`, `eam-ai mcp`):**
+  Neun MCP-Werkzeuge ueber JSON-RPC 2.0 / stdio rein mit der Python-Standardbibliothek.
+- **Container & Quellarchiv selbsttragend:** `Dockerfile` und `eam-ai-suite-python.zip`
+  liefern `knowledge/regelwerk.json` sowie die Referenz-MDG direkt mit; das
+  GHCR-Image baut bei jedem gruenen Push auf `main` automatisch neu.
+
 ## 3.9.0 - 2026-11-19
 
 ### Sichten abschaltbar, Sichten kleiner

@@ -134,7 +134,17 @@ def test_manifest_nennt_nur_ausgelieferte_dateien(tmp_path: Path) -> None:
         assert "eam-ai-suite-python/pyproject.toml" in namen
         assert "eam-ai-suite-python/rules.schema.json" in namen
         assert "eam-ai-suite-python/mdg_parser.py" in namen
+        assert "eam-ai-suite-python/knowledge/regelwerk.json" in namen
+        assert "eam-ai-suite-python/rules/CURRENT" in namen
         assert all(info.date_time == (1980, 1, 1, 0, 0, 0) for info in gepackt.infolist())
+
+    # Dockerfile und Auto-Container-Workflow auf main vorhanden und selbsttragend.
+    dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+    assert "COPY knowledge/regelwerk.json /app/knowledge/regelwerk.json" in dockerfile
+    assert "COPY packages/rules/CURRENT /app/rules/CURRENT" in dockerfile
+    container_wf = (ROOT / ".github" / "workflows" / "container.yml").read_text(encoding="utf-8")
+    assert "branches: [main]" in container_wf
+    assert "type=raw,value=latest" in container_wf
 
     # Derselbe Quellstand ergibt dieselben Bytes.
     erst = _sha256(archiv)
