@@ -95,9 +95,10 @@ class ViewerModel:
     packages: tuple[dict[str, Any], ...]
     groups: tuple[dict[str, Any], ...]
     counts: dict[str, Any]
+    quellen: Mapping[str, str] = ()  # type: ignore[assignment]
 
     def payload(self) -> dict[str, Any]:
-        return {
+        out: dict[str, Any] = {
             "viewer_version": VIEWER_VERSION,
             "nodes": list(self.nodes),
             "edges": list(self.edges),
@@ -105,6 +106,9 @@ class ViewerModel:
             "groups": list(self.groups),
             "counts": dict(self.counts),
         }
+        if self.quellen:
+            out["quellen"] = dict(self.quellen)
+        return out
 
 
 def _open_readonly(path: Path) -> sqlite3.Connection:
@@ -254,6 +258,28 @@ def _initial_positions(
             node["y"] = round(center_y + ring * math.sin(theta), 1)
 
 
+def _discover_quellen(target: Path) -> dict[str, str]:
+    """Liest Begleitdatei quellen.json neben der .qea, falls vorhanden."""
+    for cand in (
+        target.with_name(target.stem + ".quellen.json"),
+        target.with_suffix(".quellen.json"),
+        target.parent / "quellen.json",
+    ):
+        if cand.is_file():
+            try:
+                raw = json.loads(cand.read_text(encoding="utf-8-sig"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            if isinstance(raw, Mapping):
+                inner = raw.get("quellen") if isinstance(raw.get("quellen"), Mapping) else raw
+                return {
+                    str(k).strip().upper(): str(v)
+                    for k, v in inner.items()
+                    if isinstance(v, str) and str(k).strip()
+                }
+    return {}
+
+
 def read_model(path: str | Path, *, max_nodes: int = DEFAULT_MAX_NODES) -> ViewerModel:
     """Liest die .qea (oder konvertiert .xmi/.xml/.json temporaer) und baut den Graph.
     ``max_nodes`` kappt sehr grosse Modelle
@@ -279,6 +305,7 @@ def read_model(path: str | Path, *, max_nodes: int = DEFAULT_MAX_NODES) -> Viewe
                 packages=m.packages,
                 groups=m.groups,
                 counts=counts,
+                quellen=_discover_quellen(target) or m.quellen,
             )
     con = _open_readonly(target)
     try:
@@ -478,6 +505,7 @@ def read_model(path: str | Path, *, max_nodes: int = DEFAULT_MAX_NODES) -> Viewe
             packages=tuple(package_list),
             groups=tuple(groups),
             counts=counts,
+            quellen=_discover_quellen(target),
         )
     finally:
         con.close()
@@ -1433,6 +1461,21 @@ button.primary { background: var(--accent); border-color: var(--accent); color: 
     addRow("Grad", node.degree + " (" + incoming[node.i].length + " ein / " +
       outgoing[node.i].length + " aus)");
     box.appendChild(kv);
+
+    if (node.source_ref && DATA.quellen) {
+      const refKey = String(node.source_ref).trim().toUpperCase();
+      const qTxt = DATA.quellen[refKey];
+      if (qTxt) {
+        const qHead = document.createElement("h2");
+        qHead.textContent = "Original-Quellabsatz (" + refKey + ")";
+        box.appendChild(qHead);
+        const qBox = document.createElement("div");
+        qBox.className = "note";
+        qBox.style.borderLeft = "3px solid #4ade80";
+        qBox.textContent = qTxt;
+        box.appendChild(qBox);
+      }
+    }
 
     if (node.note) {
       const noteHead = document.createElement("h2");

@@ -578,6 +578,56 @@ def _connector_lines(rules: RuleBook) -> list[str]:
     return lines
 
 
+def connector_lines_for_stereotypes(
+    rules: RuleBook,
+    stereotypes: Iterable[str],
+    *,
+    compact: bool = False,
+) -> list[str]:
+    """Filtert Beziehungs-Stereotype dynamisch auf die im Kontext aktiven Element-Stereotype.
+
+    Stehen in einer Charge z. B. nur ``OperationalActivity`` und
+    ``ServiceSpecification``, enthaelt die Liste ausschliesslich Kantenregeln,
+    deren Quell- UND Ziel-Endpunkte von mindestens einem dieser Stereotype
+    erfuellt werden. Das spart bis zu ~90 % Prompt-Tokens und verhindert
+    MDG-ungueltige Kantenvorschlaege bereits vor dem Aufruf.
+    """
+    active = sorted(
+        {
+            _local_element_name(s)
+            for s in stereotypes
+            if str(s or "").strip() and _local_element_name(s) in rules.all_elements
+        }
+    )
+    if not active:
+        if not compact:
+            return _connector_lines(rules)
+        out_all: list[str] = []
+        for cname in sorted(rules.connectors):
+            crule = rules.connectors[cname]
+            s_lbl = "/".join(_local_element_name(n) for n in crule.source[:3]) or "*"
+            t_lbl = "/".join(_local_element_name(n) for n in crule.target[:3]) or "*"
+            out_all.append(f"- {cname}: {s_lbl} -> {t_lbl}")
+        return out_all
+
+    lines: list[str] = []
+    for name in sorted(rules.connectors):
+        rule = rules.connectors[name]
+        fitting_src = [s for s in active if rules.endpoint_allowed(s, rule.source)]
+        if not fitting_src:
+            continue
+        fitting_tgt = [t for t in active if rules.endpoint_allowed(t, rule.target)]
+        if not fitting_tgt:
+            continue
+        src_lbl = "*" if ANY_ENDPOINT in rule.source and len(fitting_src) == len(active) else ", ".join(fitting_src[:6])
+        tgt_lbl = "*" if ANY_ENDPOINT in rule.target and len(fitting_tgt) == len(active) else ", ".join(fitting_tgt[:6])
+        if compact:
+            lines.append(f"{name}({src_lbl}->{tgt_lbl})")
+        else:
+            lines.append(f"- {name}: {src_lbl} -> {tgt_lbl}")
+    return lines
+
+
 def build_prompt(
     segments: Sequence[Segment],
     rules: RuleBook,
@@ -1752,13 +1802,25 @@ def plan_batches(
 def _bekannte_fuer(
     batch: Sequence[Segment], known: Sequence[tuple[str, str]], limit: int
 ) -> tuple[tuple[str, str], ...]:
-    """Bestand fuer eine Charge: zuerst, was der Abschnitt woertlich nennt,
-    dann das zuletzt Erfasste -- bis zur Obergrenze. Ein grosser Katalog
-    passt nicht in jeden Prompt; gezeigt wird, was der Text braucht."""
+    """Bestand fuer eine Charge: zuerst woertliche Treffer, dann signifikante
+    Teilwort-Treffer (>= 5 Zeichen, fuer Kurzformen ueber Kapitelgrenzen),
+    zuletzt das juengst Erfasste -- bis zur Obergrenze."""
     text = _flach(" ".join(segment.text for segment in batch))
-    genannt = [item for item in known if item[0] and _flach(item[0]) in text]
+    genannt: list[tuple[str, str]] = []
+    teilwort: list[tuple[str, str]] = []
+    for item in known:
+        raw_name = item[0]
+        if not raw_name:
+            continue
+        flat = _flach(raw_name)
+        if flat and flat in text:
+            genannt.append(item)
+            continue
+        tokens = [tok for tok in re.split(r"[^a-z0-9äöüß]+", flat) if len(tok) >= 5]
+        if any(tok in text for tok in tokens):
+            teilwort.append(item)
     zuletzt = list(reversed(known))
-    auswahl = list(dict.fromkeys([*genannt, *zuletzt]))
+    auswahl = list(dict.fromkeys([*genannt, *teilwort, *zuletzt]))
     return tuple(auswahl[:limit])
 
 

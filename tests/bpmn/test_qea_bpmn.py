@@ -136,3 +136,44 @@ def test_datei_hat_die_pflicht_tabellen(modell: m.Modell, tmp_path: Path) -> Non
         con.close()
     assert objekte >= 10
     assert kanten >= 10
+
+
+def test_l3_l4_katalog_kopplung_uebernimmt_guid_und_zieht_bruecken(
+    modell: m.Modell, tmp_path: Path
+) -> None:
+    l3_katalog = {
+        "ir_version": 1,
+        "packages": [{"path": "L2_Operativ"}],
+        "elements": [
+            {
+                "package": "L2_Operativ",
+                "name": "Sachbearbeiter",
+                "stereotype": "OperationalPerformer",
+                "ea_type": "Class",
+                "guid": "{AAAA1111-1111-4111-8111-111111111111}",
+                "tags": {"OriginalGUID": "NATO-PERF-1"},
+            },
+            {
+                "package": "L2_Operativ",
+                "name": "Antrag pruefen",
+                "stereotype": "OperationalActivity",
+                "ea_type": "Activity",
+                "guid": "{BBBB2222-2222-4222-8222-222222222222}",
+            },
+        ],
+        "connectors": [],
+    }
+    ziel = qea_bpmn.schreibe_qea(modell, tmp_path / "gekoppelt.qea", katalog=l3_katalog)
+    ir = qea_reader.read_qea(ziel)
+
+    lane = _find(ir, "Sachbearbeiter", "OperationalPerformer")
+    assert lane["guid"].upper() == "{AAAA1111-1111-4111-8111-111111111111}"
+    assert lane["package"] == "L2_Operativ"
+    assert lane.get("tags", {}).get("OriginalGUID") == "NATO-PERF-1"
+
+    l3_act = _find(ir, "Antrag pruefen", "OperationalActivity")
+    assert l3_act["guid"].upper() == "{BBBB2222-2222-4222-8222-222222222222}"
+
+    bruecken = [k for k in ir["connectors"] if k.get("stereotype") == "Implements"]
+    assert len(bruecken) >= 1
+    assert bruecken[0]["target"] == "L2_Operativ::Antrag pruefen"

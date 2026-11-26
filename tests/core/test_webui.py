@@ -685,3 +685,56 @@ def test_webui_defaults_und_context_tokens(tmp_path: Path) -> None:
     # HTTP-Timeout je Charge bleibt auf 120 s gedeckelt, auch bei 1800 s Gesamtlimit.
     assert float(cmd[cmd.index("--timeout") + 1]) == 120.0
 
+
+def test_webui_diff_repair_und_undo(server: webui.WebServer) -> None:
+    """WebUI bietet Vorher-Nachher-Diff, regelbasierte Reparatur-Vorschau und 1-Klick-Undo."""
+    status, payload = post_build(
+        server,
+        {"mdg_source": "beispiel", "backend": "datei", "package": "Architektur", "text": TEXT},
+    )
+    assert status == 202, payload
+    state = wait_for(server, payload)
+    assert state["state"] == "done", state["error"]
+    for key in ("diff", "repair", "undo"):
+        assert key in state["links"], f"Link {key!r} fehlt"
+
+    # Aenderung anwenden (legt automatisch Snapshot _rev_0.qea an)
+    inst = 'Erstelle Element "Testknoten" als Capability in Paket "Architektur".'
+    p_status, prop = _post_json(
+        base_url(server) + state["links"]["edit"],
+        {"action": "propose", "instruction": inst, "use_ki": False},
+    )
+    assert p_status == 200, prop
+    a_status, applied = _post_json(
+        base_url(server) + state["links"]["edit"],
+        {"action": "apply", "ops": prop["ops"]},
+    )
+    assert a_status == 200 and applied["applied"] == 1
+    assert applied["job"]["can_undo"] is True
+
+    # Diff pruefen: Testknoten als hinzugefuegt gemeldet
+    d_status, diff_raw, _ = get(base_url(server) + applied["job"]["links"]["diff"])
+    assert d_status == 200
+    diff_data = json.loads(diff_raw.decode("utf-8"))
+    assert diff_data["identical"] is False
+    assert any(e["name"] == "Testknoten" for e in diff_data["elements"]["added"])
+
+    # Regelbasierte Reparatur-Vorschau ohne KI
+    r_status, rep = _post_json(
+        base_url(server) + state["links"]["repair"],
+        {"action": "propose"},
+    )
+    assert r_status == 200, rep
+    assert rep["ok"] is True
+    assert "changes" in rep
+
+    # Undo stellt den vorherigen Stand wieder her
+    u_status, undone = _post_json(
+        base_url(server) + state["links"]["undo"],
+        {},
+    )
+    assert u_status == 200, undone
+    assert undone["ok"] is True
+    assert not any("Testknoten" in el for el in undone["job"]["model_info"]["elements"])
+
+

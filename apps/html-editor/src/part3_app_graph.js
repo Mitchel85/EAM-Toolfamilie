@@ -580,7 +580,12 @@ function openElement(oid, mode, focusModel) {
   else {
     h.push('<table class="data"><thead><tr><th>Eigenschaft</th><th>Wert</th><th>Notiz</th></tr></thead><tbody>');
     for (i = 0; i < tags.length && i < 150; i++) {
-      h.push('<tr><td><b>' + esc(tags[i].p) + '</b></td><td>' + esc(shortLabel(tags[i].v, 140)) + '</td><td class="dim">' + esc(shortLabel(tags[i].n, 90)) + '</td></tr>');
+      var tpLow = String(tags[i].p || '').toLowerCase();
+      var tvCell = esc(shortLabel(tags[i].v, 140));
+      if ((tpLow === 'source_ref' || tpLow === 'herkunft' || tpLow === 'quellbeleg') && tags[i].v) {
+        tvCell = '<a href="javascript:void(0)" onclick="openSourceRefModal(\'' + esc(tags[i].v).replace(/'/g, '') + '\')" style="font-weight:700;color:var(--bw-blue);text-decoration:underline" title="Original-Quellabsatz anzeigen">📄 ' + tvCell + '</a>';
+      }
+      h.push('<tr><td><b>' + esc(tags[i].p) + '</b></td><td>' + tvCell + '</td><td class="dim">' + esc(shortLabel(tags[i].n, 90)) + '</td></tr>');
     }
     h.push('</tbody></table>');
   }

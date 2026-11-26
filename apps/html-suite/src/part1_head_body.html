@@ -661,8 +661,12 @@
           <button class="btn-sm" onclick="exportXmi()" title="Geladenes Modell als XMI 2.1 exportieren (UML + EA-Erweiterungen)">⤓ XMI</button>
           <button class="btn-sm" onclick="exportJson()" title="Geladenes Modell als JSON-Batch exportieren (Knoten/Kanten)">⤓ JSON</button>
           <button class="btn-sm" onclick="exportArchimate()" title="Geladenes Modell als ArchiMate 3.2 Exchange XML exportieren (NAFv4/UAF-Projektion gemäß NAFv4.1-ArchiMate-Guide; volle Matrixprüfung via eam-ai archimate)">⤓ ArchiMate</button>
-          <button class="btn-sm" onclick="openQsModal()" title="Qualitätssicherung: MDG-Konformität, Waisenelemente, NATO-GUIDs &amp; Quellbelege prüfen">⚡ QS-Prüfung</button>
+          <button class="btn-sm" onclick="openQsModal()" title="Qualitätssicherung: MDG-Konformität, ArchiMate-3.2-Matrix, Textabdeckung, Auto-Reparatur, Waisenelemente &amp; Quellbelege">⚡ QS-Prüfung</button>
+          <button class="btn-sm" onclick="openDiffModal()" title="Architektur-Diff: Vorher/Nachher oder Vergleich gegen eine zweite Modelldatei (.qea/.xmi/.xml/.json)">🔀 Modell-Diff</button>
+          <button class="btn-sm" id="undobtn" style="display:none" onclick="EDIT.undoLive()" title="Letzte Direktänderung oder KI-Erweiterung rückgängig machen">↩️ Undo</button>
           <button class="btn-sm amber" id="editbtn" onclick="EDIT.openPanel()" title="Änderungen vormerken &amp; als neue QEA-Datei speichern">✏️ Bearbeiten <span id="editcnt">0</span></button>
+          <input type="file" id="diff-file-in" accept=".qea,.qeax,.eapx,.sqlite,.xmi,.xml,.archimate,.json" style="display:none" onchange="onDiffFileChosen(this)">
+          <input type="file" id="cov-file-in" accept=".txt,.md" style="display:none" onchange="onCoverageFileChosen(this)">
         </div>
       </div>
 

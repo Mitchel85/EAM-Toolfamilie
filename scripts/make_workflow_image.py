@@ -68,19 +68,19 @@ ZUSATZ = ("zusätzlich", "Chat with Data", "Fragen & Rückweg")
 #: (Titel, Untertitel, sieben Schritte, Chat/Rueckweg)
 #: "voll", "teil", "nein", "chat"
 ZEILEN = [
-    ("EAM AI Suite", "HTML · 9.1 · Bauen, Live-Sync, Chat & Weiterbau",
+    ("EAM AI Suite", "HTML · 9.1 · Bauen, Diff/Undo, Auto-Repair & Chat",
      ["voll", "voll", "voll", "voll", "voll", "voll", "voll"], "chat"),
-    ("EAM AI Suite Python", "CLI & WebUI · Live-Viewer, Chat & Weiterbau",
+    ("EAM AI Suite Python", "CLI, WebUI & Stdlib-MCP · Diff, Repair & Weiterbau",
      ["voll", "voll", "voll", "voll", "voll", "voll", "voll"], "chat"),
-    ("EAM Suite", "HTML · 8.6 · ohne KI (kein Neuaufbau von null)",
+    ("EAM Suite", "HTML · 8.6 · ohne KI (Auto-QS, Matrix, Diff & Repair)",
      ["voll", "voll", "nein", "nein", "voll", "voll", "voll"], "nein"),
     ("Sichten-Archiv", "HTML · 1.0 + Python · SHA-256 Sichten-Transfer",
      ["nein", "nein", "nein", "nein", "nein", "teil", "teil"], "nein"),
-    ("BPMN Studio", "HTML + Python · BPMN 2.0 & 15 L4-Regeln",
-     ["nein", "nein", "voll", "voll", "voll", "voll", "voll"], "nein"),
+    ("BPMN Studio", "HTML + Python · BPMN 2.0, L4-Regeln & L3-Katalogbrücke",
+     ["nein", "teil", "voll", "voll", "voll", "voll", "voll"], "nein"),
     ("ADMBw Extraktor", "HTML + Python · MDG-Regelwerk & 6 Exporte",
      ["voll", "nein", "nein", "nein", "nein", "nein", "teil"], "nein"),
-    ("EAM Analyzer", "Open WebUI + MCP · Abfragen, Impact & QS",
+    ("EAM Analyzer", "Open WebUI + MCP · Abfragen, Impact, Diff & QS",
      ["voll", "nein", "nein", "nein", "voll", "nein", "nein"], "chat"),
 ]
 

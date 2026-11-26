@@ -1313,6 +1313,316 @@ function openModal(title, bodyHtml, footHtml) {
   m.removeAttribute('hidden');
 }
 
+function buildCurrentMdgRules() {
+  var rules = { elementStereotypes: [], connectorRules: [] };
+  if (typeof ADMBW_DATA !== 'undefined' && ADMBW_DATA.vp) {
+    var seenEl = {};
+    for (var v in ADMBW_DATA.vp) {
+      var els = ADMBW_DATA.vp[v].els || [];
+      for (var ei = 0; ei < els.length; ei++) {
+        if (!seenEl[els[ei]]) {
+          seenEl[els[ei]] = true;
+          rules.elementStereotypes.push({ name: els[ei], metaclasses: ['Class'], generalizes: [] });
+        }
+      }
+    }
+  }
+  return rules;
+}
+
+function openQsModal() {
+  if (typeof DB === 'undefined' || !DB) {
+    toast('Kein Modell geladen.');
+    return;
+  }
+  var isNativeArchimate = !!(DB && DB.__x && (DB.__x.nativeArchimate === true || String(DB.__x.technology || '').toLowerCase() === 'archimate 3.2'));
+  var rules = isNativeArchimate ? { elementStereotypes: [], connectorRules: [] } : buildCurrentMdgRules();
+  var findings = [];
+  if (isNativeArchimate) {
+    findings.push({
+      severity: 'info',
+      object_label: 'Metamodell',
+      check: 'metamodelNotice',
+      message: 'Natives ArchiMate-3.2-Modell erkannt: NAFv4/UAF-MDG-Prüfung übersprungen; stattdessen läuft die vollständige ArchiMate-3.2-Matrixprüfung im Browser (analog zu „eam-ai archimate-check“).'
+    });
+    if (typeof EAMMDG !== 'undefined' && EAMMDG.validateArchimate) {
+      findings = findings.concat(EAMMDG.validateArchimate(DB));
+    }
+  } else if (typeof EAMMDG !== 'undefined' && EAMMDG.validateModel) {
+    findings = EAMMDG.validateModel(DB, rules);
+  }
+
+  var connRows = DB.rows ? DB.rows('t_connector') : [];
+  var connected = {};
+  for (var ci = 0; ci < connRows.length; ci++) {
+    connected[connRows[ci].Start_Object_ID] = true;
+    connected[connRows[ci].End_Object_ID] = true;
+  }
+  var objRows = DB.rows ? DB.rows('t_object') : [];
+  var waisenCount = 0;
+  for (var oi = 0; oi < objRows.length; oi++) {
+    var o = objRows[oi];
+    if (o.Object_Type === 'Package') continue;
+    if (!connected[o.Object_ID]) {
+      waisenCount++;
+      findings.push({
+        severity: 'warning',
+        object_label: o.Name,
+        check: 'isolatedElement',
+        message: "Element '" + (o.Name || 'ID:' + o.Object_ID) + "': isolierter Knoten ohne Beziehungen (Waise)."
+      });
+    }
+  }
+
+  var propRows = DB.rows ? DB.rows('t_objectproperties') : [];
+  var hasSource = {};
+  for (var pi = 0; pi < propRows.length; pi++) {
+    var prop = propRows[pi];
+    var pName = (prop.Property || '').toLowerCase();
+    if (pName === 'source_ref' || pName === 'source_doc' || pName === 'herkunft' || pName === 'quellbeleg') {
+      if (prop.Value && String(prop.Value).trim()) hasSource[prop.Object_ID] = true;
+    }
+  }
+  var missingSourceCount = 0;
+  for (var oj = 0; oj < objRows.length; oj++) {
+    var ob = objRows[oj];
+    if (ob.Object_Type === 'Package') continue;
+    if (!hasSource[ob.Object_ID]) {
+      missingSourceCount++;
+      findings.push({
+        severity: 'info',
+        object_label: ob.Name,
+        check: 'missingSourceRef',
+        message: "Element '" + (ob.Name || 'ID:' + ob.Object_ID) + "': kein Quellbeleg (source_ref) hinterlegt."
+      });
+    }
+  }
+
+  var cov = null;
+  var srcInput = window.__EAM_LAST_SOURCE_TEXT || window.__EAM_LAST_QUELLEN || null;
+  if (srcInput && typeof EAMMDG !== 'undefined' && EAMMDG.evaluateCoverage) {
+    cov = EAMMDG.evaluateCoverage(DB, srcInput);
+    if (cov && cov.quellen) window.__EAM_LAST_QUELLEN = cov.quellen;
+  }
+
+  var fehler = findings.filter(function (f) { return f.severity === 'error'; });
+  var warnungen = findings.filter(function (f) { return f.severity === 'warning'; });
+  var hinweise = findings.filter(function (f) { return f.severity === 'info'; });
+
+  var h = ['<div class="qs-dialog-body" style="max-height:62vh;overflow-y:auto">'];
+  h.push('<div class="qs-summary" style="margin-bottom:12px;padding:8px 12px;background:#f3f4f6;border-radius:6px;font-size:13px">');
+  h.push('<b>Ergebnis der Qualitätssicherung:</b> ');
+  h.push('<span style="color:#dc2626;font-weight:bold">' + fehler.length + ' Fehler</span> · ');
+  h.push('<span style="color:#d97706;font-weight:bold">' + warnungen.length + ' Warnungen</span> (davon ' + waisenCount + ' Waisen) · ');
+  h.push('<span style="color:#2563eb;font-weight:bold">' + hinweise.length + ' Hinweise</span> (' + missingSourceCount + ' ohne Quellbeleg)');
+  if (cov) {
+    h.push(' · <span style="color:#0f766e;font-weight:bold">Textabdeckung: ' + cov.coverage_pct + '%</span> (' + cov.covered_segments + '/' + cov.content_segments + ' Absätze)');
+  }
+  h.push('</div>');
+
+  if (cov && cov.uncovered && cov.uncovered.length) {
+    h.push('<details style="margin-bottom:10px;padding:8px 10px;background:#f0fdfa;border:1px solid #99f6e4;border-radius:6px;font-size:12px">');
+    h.push('<summary style="cursor:pointer;font-weight:bold;color:#0f766e">📄 Noch unmodellierte Quellabsätze (' + cov.uncovered.length + ' von ' + cov.content_segments + ')</summary>');
+    h.push('<ul style="margin:6px 0 0 18px;padding:0">');
+    for (var ui = 0; ui < cov.uncovered.length && ui < 25; ui++) {
+      var u = cov.uncovered[ui];
+      h.push('<li style="margin:3px 0"><code>' + esc(u.ref) + '</code> <b>[' + esc(u.chapter) + ']</b>: ' + esc(u.preview) + '</li>');
+    }
+    h.push('</ul></details>');
+  }
+
+  if (!findings.length) {
+    h.push('<div style="padding:20px;text-align:center;color:#16a34a;font-weight:bold">✓ Keine QS-Auffälligkeiten im Modell gefunden.</div>');
+  } else {
+    h.push('<table class="data-table" style="width:100%;font-size:12px;border-collapse:collapse">');
+    h.push('<thead><tr style="background:#e5e7eb;text-align:left"><th style="padding:4px 8px">Schwere</th><th style="padding:4px 8px">Regel / Prüfung</th><th style="padding:4px 8px">Element</th><th style="padding:4px 8px">Meldung</th></tr></thead><tbody>');
+    for (var fi = 0; fi < findings.length; fi++) {
+      var it = findings[fi];
+      var col = it.severity === 'error' ? '#dc2626' : (it.severity === 'warning' ? '#d97706' : '#2563eb');
+      var bg = fi % 2 === 0 ? '#ffffff' : '#f9fafb';
+      h.push('<tr style="background:' + bg + ';border-bottom:1px solid #e5e7eb">');
+      h.push('<td style="padding:4px 8px;font-weight:bold;color:' + col + '">' + esc(it.severity.toUpperCase()) + '</td>');
+      h.push('<td style="padding:4px 8px"><code>' + esc(it.check || it.rule || '') + '</code></td>');
+      h.push('<td style="padding:4px 8px"><b>' + esc(it.object_label || '') + '</b></td>');
+      h.push('<td style="padding:4px 8px">' + esc(it.message || '') + '</td>');
+      h.push('</tr>');
+    }
+    h.push('</tbody></table>');
+  }
+  h.push('</div>');
+
+  var repairBtn = (!isNativeArchimate && fehler.length > 0 && typeof EAMMDG !== 'undefined' && EAMMDG.proposeRepairs)
+    ? '<button class="btn-sm amber" onclick="openRepairPreviewModal()">🔧 Regelbasierte Reparatur-Vorschau</button> '
+    : '';
+  var covBtn = '<button class="btn-sm" onclick="el(\'cov-file-in\').click()" title="Pflichtenheft (.txt/.md) für Textabdeckungs-Gegenprüfung wählen">📄 Textabdeckung prüfen</button> ';
+  var foot = repairBtn + covBtn +
+             '<button class="btn-sm pri" onclick="exportQsJson()">⤓ Befunde als JSON</button> ' +
+             '<button class="btn-sm" onclick="modalClose()">Schließen</button>';
+
+  window.__LAST_QS_FINDINGS = findings;
+  openModal('⚡ Qualitätssicherungs-Prüfung (QS)', h.join(''), foot);
+}
+
+function exportQsJson() {
+  var arr = window.__LAST_QS_FINDINGS || [];
+  var blob = new Blob([JSON.stringify(arr, null, 2)], { type: 'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'eam_qs_befunde.json';
+  a.click();
+}
+
+function onCoverageFileChosen(inp) {
+  var f = inp && inp.files && inp.files[0];
+  if (!f) return;
+  var r = new FileReader();
+  r.onload = function () {
+    window.__EAM_LAST_SOURCE_TEXT = String(r.result || '');
+    inp.value = '';
+    openQsModal();
+  };
+  r.readAsText(f, 'utf-8');
+}
+
+function openSourceRefModal(ref) {
+  var key = String(ref || '').trim().replace(/^\[|\]$/g, '').toUpperCase();
+  var qMap = window.__EAM_LAST_QUELLEN || {};
+  var txt = qMap[key];
+  var h = '<div style="font-size:13px;line-height:1.55">';
+  if (txt) {
+    h += '<div style="padding:10px 12px;background:#f0fdf4;border-left:4px solid #16a34a;border-radius:6px;white-space:pre-wrap">' + esc(txt) + '</div>';
+  } else {
+    h += '<p class="dim">Für <code>' + esc(key) + '</code> ist aktuell kein Quelltext geladen. Über „📄 Textabdeckung prüfen“ im QS-Dialog können Sie die zugehörige Quelldatei (.txt/.md) wählen.</p>';
+  }
+  h += '</div>';
+  openModal('📄 Quellbeleg ' + esc(key), h, '<button class="btn-sm" onclick="modalClose()">Schließen</button>');
+}
+
+function openRepairPreviewModal() {
+  if (typeof DB === 'undefined' || !DB || typeof EAMMDG === 'undefined' || !EAMMDG.proposeRepairs) return;
+  var prop = EAMMDG.proposeRepairs(DB, buildCurrentMdgRules());
+  window.__LAST_REPAIR_PROPOSAL = prop;
+  if (!prop.changes.length) {
+    openModal('🔧 Regelbasierte MDG-Reparatur', '<div style="padding:14px;font-size:13px">Keine eindeutig regelbasiert ableitbaren Reparaturen gefunden (verbleibende Befunde erfordern fachliche Entscheidung).</div>', '<button class="btn-sm" onclick="openQsModal()">Zurück zur QS</button>');
+    return;
+  }
+  var h = ['<div style="max-height:58vh;overflow-y:auto;font-size:12.5px">'];
+  h.push('<p style="margin:0 0 10px"><b>' + prop.changes.length + ' deterministische Korrektur(en)</b> aus dem Regelwerk abgeleitet (rein regelbasiert, ohne KI):</p>');
+  h.push('<table class="data-table" style="width:100%;font-size:12px;border-collapse:collapse"><thead><tr style="background:#e5e7eb;text-align:left"><th style="padding:4px 8px">Art</th><th style="padding:4px 8px">Objekt</th><th style="padding:4px 8px">Vorher</th><th style="padding:4px 8px">Nachher</th></tr></thead><tbody>');
+  for (var i = 0; i < prop.changes.length; i++) {
+    var c = prop.changes[i];
+    h.push('<tr style="border-bottom:1px solid #e5e7eb"><td style="padding:4px 8px"><code>' + esc(c.kind) + '</code></td><td style="padding:4px 8px"><b>' + esc(c.target) + '</b></td><td style="padding:4px 8px">' + esc(c.before) + '</td><td style="padding:4px 8px;color:#15803d;font-weight:bold">' + esc(c.after) + '</td></tr>');
+  }
+  h.push('</tbody></table></div>');
+  var foot = '<button class="btn-sm pri" onclick="applyRepairProposal(true)">⚡ Direkt anwenden (mit Undo)</button> ' +
+             '<button class="btn-sm amber" onclick="applyRepairProposal(false)">✏️ Nur vormerken</button> ' +
+             '<button class="btn-sm" onclick="openQsModal()">Abbrechen</button>';
+  openModal('🔧 Regelbasierte MDG-Reparatur-Vorschau', h.join(''), foot);
+}
+
+function applyRepairProposal(liveNow) {
+  var prop = window.__LAST_REPAIR_PROPOSAL;
+  if (!prop || !prop.ops || !prop.ops.length || typeof EDIT === 'undefined' || !EDIT.applyRepairOps) return;
+  EDIT.applyRepairOps(prop.ops);
+  modalClose();
+  if (liveNow && EDIT.applyLive) {
+    EDIT.applyLive(function (err) {
+      if (err) toast('⚠ Direktübernahme: ' + err);
+      else toast('✓ ' + prop.ops.length + ' Regel-Reparatur(en) angewendet.');
+    });
+  }
+}
+
+function renderDiffReportHtml(diff, altLbl, neuLbl) {
+  var s = diff.summary;
+  var h = ['<div style="max-height:60vh;overflow-y:auto;font-size:12.5px">'];
+  h.push('<div style="margin-bottom:10px;padding:8px 12px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px">');
+  h.push('<b>Altstand:</b> ' + esc(altLbl) + ' &nbsp;→&nbsp; <b>Neustand:</b> ' + esc(neuLbl) + '<br>');
+  if (diff.identical) {
+    h.push('<span style="color:#16a34a;font-weight:bold">✓ Fachlich identisch (keine Abweichungen bei Paketen, Elementen oder Beziehungen).</span>');
+  } else {
+    h.push('Pakete: <b style="color:#16a34a">+' + s.packages_added + '</b> / <b style="color:#dc2626">-' + s.packages_removed + '</b> &nbsp;·&nbsp; ');
+    h.push('Elemente: <b style="color:#16a34a">+' + s.elements_added + '</b> / <b style="color:#dc2626">-' + s.elements_removed + '</b> / <b style="color:#d97706">~' + s.elements_changed + '</b> &nbsp;·&nbsp; ');
+    h.push('Beziehungen: <b style="color:#16a34a">+' + s.connectors_added + '</b> / <b style="color:#dc2626">-' + s.connectors_removed + '</b>');
+  }
+  h.push('</div>');
+  function sec(title, col, items, fmtFn) {
+    if (!items || !items.length) return;
+    h.push('<h4 style="margin:10px 0 4px;color:' + col + '">' + esc(title) + ' (' + items.length + ')</h4><ul style="margin:0 0 8px 18px;padding:0">');
+    for (var i = 0; i < items.length && i < 60; i++) h.push('<li style="margin:2px 0">' + fmtFn(items[i]) + '</li>');
+    if (items.length > 60) h.push('<li class="dim">… +' + (items.length - 60) + ' weitere</li>');
+    h.push('</ul>');
+  }
+  sec('Neue Elemente (+)', '#15803d', diff.elements.added, function (e) { return '<b>' + esc((e.package ? e.package + '::' : '') + e.name) + '</b>' + (e.stereotype ? ' <code>«' + esc(e.stereotype) + '»</code>' : ''); });
+  sec('Entfernte Elemente (-)', '#dc2626', diff.elements.removed, function (e) { return '<b>' + esc((e.package ? e.package + '::' : '') + e.name) + '</b>' + (e.stereotype ? ' <code>«' + esc(e.stereotype) + '»</code>' : ''); });
+  sec('Geänderte Elemente (~)', '#b45309', diff.elements.changed, function (e) { return '<b>' + esc((e.package ? e.package + '::' : '') + e.name) + '</b>: ' + esc((e.diffs || []).join('; ')); });
+  sec('Neue Beziehungen (+)', '#15803d', diff.connectors.added, function (c) { return esc(c.source) + ' <code>[' + esc(c.stereotype) + ']</code> → ' + esc(c.target); });
+  sec('Entfernte Beziehungen (-)', '#dc2626', diff.connectors.removed, function (c) { return esc(c.source) + ' <code>[' + esc(c.stereotype) + ']</code> → ' + esc(c.target); });
+  h.push('</div>');
+  return h.join('');
+}
+
+function openDiffModal() {
+  if (typeof DB === 'undefined' || !DB || typeof EAMMDG === 'undefined' || !EAMMDG.diffModels) {
+    toast('Bitte zuerst ein Modell laden.');
+    return;
+  }
+  var prev = (typeof EDIT !== 'undefined' && EDIT.prevBytes) ? EDIT.prevBytes() : null;
+  var body = '<div style="font-size:13px"><p>Wählen Sie eine zweite Architekturdatei (<code>.qea</code>, <code>.xmi</code>, ArchiMate <code>.xml</code>, <code>.json</code>), um sie offline gegen das aktuell geladene Modell zu vergleichen.</p></div>';
+  if (prev) {
+    try {
+      var prevDb = qeaOpen(prev.slice().buffer);
+      var d = EAMMDG.diffModels(prevDb, DB);
+      window.__LAST_DIFF_RESULT = d;
+      body = renderDiffReportHtml(d, 'Vorheriger Arbeitsstand (Undo)', MODELLNAME || 'Aktueller Stand');
+    } catch (e) { }
+  }
+  var foot = '<button class="btn-sm pri" onclick="el(\'diff-file-in\').click()">📂 Vergleichsdatei wählen (.qea/.xmi/.xml/.json)</button> ' +
+             (window.__LAST_DIFF_RESULT ? '<button class="btn-sm" onclick="exportDiffJson()">⤓ Diff als JSON</button> ' : '') +
+             '<button class="btn-sm" onclick="modalClose()">Schließen</button>';
+  openModal('🔀 Architektur-Standsvergleich (Modell-Diff)', body, foot);
+}
+
+function onDiffFileChosen(inp) {
+  var f = inp && inp.files && inp.files[0];
+  if (!f || typeof DB === 'undefined' || !DB) return;
+  var r = new FileReader();
+  r.onload = function () {
+    inp.value = '';
+    try {
+      var buf = r.result;
+      var otherDb = null;
+      var low = f.name.toLowerCase();
+      if (/\.(qea|qeax|eapx|sqlite)$/.test(low)) {
+        otherDb = qeaOpen(buf);
+      } else if (typeof EAMFMT !== 'undefined' && EAMFMT.toDb) {
+        var txt = new TextDecoder('utf-8').decode(new Uint8Array(buf));
+        otherDb = EAMFMT.toDb(txt, f.name);
+      }
+      if (!otherDb) throw new Error('Vergleichsdatei konnte nicht gelesen werden.');
+      var diff = EAMMDG.diffModels(otherDb, DB);
+      window.__LAST_DIFF_RESULT = diff;
+      var html = renderDiffReportHtml(diff, f.name + ' (Referenz/Alt)', (MODELLNAME || 'Geladenes Modell') + ' (Neu)');
+      var foot = '<button class="btn-sm pri" onclick="el(\'diff-file-in\').click()">📂 Andere Vergleichsdatei</button> ' +
+                 '<button class="btn-sm" onclick="exportDiffJson()">⤓ Diff als JSON</button> ' +
+                 '<button class="btn-sm" onclick="modalClose()">Schließen</button>';
+      openModal('🔀 Architektur-Standsvergleich (Modell-Diff)', html, foot);
+    } catch (e) {
+      toast('⚠ Diff-Fehler: ' + (e && e.message ? e.message : e));
+    }
+  };
+  r.readAsArrayBuffer(f);
+}
+
+function exportDiffJson() {
+  if (!window.__LAST_DIFF_RESULT) return;
+  var blob = new Blob([JSON.stringify(window.__LAST_DIFF_RESULT, null, 2)], { type: 'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'eam_modell_diff.json';
+  a.click();
+}
+
 /* Steuerleiste für den Mehrfach-Modus */
 function renderMergeBar() {
   var bar = el('mergebar');

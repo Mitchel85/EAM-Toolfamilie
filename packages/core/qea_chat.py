@@ -463,3 +463,24 @@ def export_answer(answer: Answer, path: str | Path) -> Path:
     except OSError as exc:
         raise QeaChatError(f"export_answer: {target} nicht schreibbar ({exc})") from exc
     return target
+
+
+def make_optional_backend(
+    kind: str,
+    *,
+    model: str | None = None,
+    base_url: str | None = None,
+    api_key: str | None = None,
+    timeout: float = 120.0,
+) -> Any:
+    """Baut ein optionales LLM-Backend fuer Chat/NL-Edit und kapselt ExtractionError."""
+    try:
+        return extract.make_backend(
+            kind,
+            model=model,
+            base_url=base_url,
+            api_key=api_key,
+            timeout=timeout,
+        )
+    except extract.ExtractionError as exc:
+        raise QeaChatError(str(exc)) from exc

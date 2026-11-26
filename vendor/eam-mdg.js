@@ -690,11 +690,535 @@
     };
   }
 
+  /* ================= ArchiMate 3.2 Matrix-Pruefung (Archi EPL-2.0) ================= */
+
+  var ARCHIMATE_CONCEPTS = ["ApplicationCollaboration","ApplicationComponent","ApplicationEvent","ApplicationFunction","ApplicationInteraction","ApplicationInterface","ApplicationProcess","ApplicationService","Artifact","Assessment","BusinessActor","BusinessCollaboration","BusinessEvent","BusinessFunction","BusinessInteraction","BusinessInterface","BusinessObject","BusinessProcess","BusinessRole","BusinessService","Capability","CommunicationNetwork","Constraint","Contract","CourseOfAction","DataObject","Deliverable","Device","DistributionNetwork","Driver","Equipment","Facility","Gap","Goal","Grouping","ImplementationEvent","Junction","Location","Material","Meaning","Node","Outcome","Path","Plateau","Principle","Product","Representation","Requirement","Resource","Stakeholder","SystemSoftware","TechnologyCollaboration","TechnologyEvent","TechnologyFunction","TechnologyInteraction","TechnologyInterface","TechnologyProcess","TechnologyService","Value","ValueStream","WorkPackage"];
+  var ARCHIMATE_MATRIX_B64 = "dObMbUbUbUbObUbUBBBgZEZEbEbEbEbEBBbEZEbEDAZEDgBBDABBBAZEZEBgZEZEBADgf/BAf/ZEBBBgZEDgZEBADgZEBBDgDABgZEZEZEZEZEZEZEZEBgDABAZEfObUbUbUbObUbUBBBgZEZEbEbEbEbEBBbEZEbEDAZEDgBBDABBBAZEZEBgZEZEBADgf/BAf/ZEBBBgZEDgZEBADgZEBBDgDABgZEZEZEZEZEZEZEZEBgDABAZEZEdOZEZEZEZEZEBBBgZEZEbEZEZEZEBBZEZEZEBAZEDgBBBABBBAZEZEBgZEZEBADgfvBAf/ZEBBBgZEDgZEBADgZEBBDgBABgZEZEZEZEZEZEZEZEBgBABAZEZEZEdOZOZEZObEBBBgZEZEZEbEbEZEBBbEZEbEDAZEDgBBDABBBAZEZEBgZEZEBADgfvBAf/ZEBBBgZEDgZEBADgZEBBDgBABgZEZEZEZEZEZEZEZEBgDABAZEZEZEZOdOZEZObEBBBgZEZEZEbEbEZEBBbEZEbEDAZEDgBBDABBBAZEZEBgZEZEBADgfvBAf/ZEBBBgZEDgZEBADgZEBBDgBABgZEZEZEZEZEZEZEZEBgDABAZEZEZEZEZEdOZEZUBBBgZEZEZEZEZEbEBBZEZEbEDAZEDgBBDABBBAZEZEBgZEZEBADgf/BAf/ZEBBBgZEDgZEBADgZEBBDgDABgZEZEZEZEZEZEZEZEBgDABAZEZEZEZOZOZEdObEBBBgZEZEZEbEbEZEBBbEZEbEDAZEDgBBDABBBAZEZEBgZEZEBADgfvBAf/ZEBBBgZEDgZEBADgZEBBDgBABgZEZEZEZEZEZEZEZEBgDABAZEZEZEZEZEZEZEdOBBBgZEZEZEZEZEZEBBZEZEbEDAZEDgBBDABBBAZEZEBgZEZEBADgfvBAf/ZEBBBgZEDgZEBADgZEBBDgBABgZEZEZEZEZEZEZEZEBgDABADADADADADADADADAHKBgBABADADADADADADABADADABADgDADADABABABABgBABABADgHqBAf/BABABgBADgBABADgBABADgDABgDABADADADADADADABgDABABABABABABABABABABABAFqBABABABABABABABABABABABABgBABABABABABABgBABABABgFqBAf/BABABgBABgBABABgBABABgBABgBABABABABABABABABgBABAZEZEZEZEZEZEZEZEBBBgdOZEZUZUZUZeBBZUZUbUDAZEDgBBDABBBAZEZEBgZEZEBADgf/BQf/ZEBBBgZEDgZEBADgZEBBDgDABwZEZEZEZEZEZEZEZEBgDABQZEZEZEZEZEZEZEZEBBBgZMdOZUZUZUZeBBZUZcbUDAZEDgBBDABBBAZEZEBgZEZEBADgf/BQf/ZEBBBgZEDgZEBADgZEBBDgDABwZEZEZEZEZEZEZEZEBgDABQZEZEZEZEZEZEZEZEBBBgZEZEdOZEZEZEBBZEZEZEBAZEDgBBBABBBAZEZEBgZEZEBADgfvBAf/ZEBBBgZEDgZEBADgZEBBDgBABgZEZEZEZEZEZEZEZEBgBABAZEZEZEZEZEZEZEZEBBBgZEZEZEdOZOZEBBZOZEbEDAZEDgBBDABBBAZEZEBgZEZEBADgfvBAf/ZEBBBgZEDgZEBADgZEBBDgBABgZEZEZEZEZEZEZEZEBgDABAZEZEZEZEZEZEZEZEBBBgZEZEZEZOdOZEBBZOZEbEDAZEDgBBDABBBAZEZEBgZEZEBADgfvBAf/ZEBBBgZEDgZEBADgZEBBDgBABgZEZEZEZEZEZEZEZEBgDABAZEZEZEZEZEZEZEZEBBBgZEZEZEZEZEdOBBZEZEZUDAZEDgBBDABBBAZEZEBgZEZEBADgf/BAf/ZEBBBgZEDgZEBADgZEBBDgDABgZEZEZEZEZEZEZEZEBgDABABABABABABABABABABABgBABABABABABAFKBABABADABADgFKDABABABABABgBABABADgHqBAf/BABABgBADgBABADgBABADgDABgBABABABABABABABABgDABAZEZEZEZEZEZEZEZEBBBgZEZEZEZOZOZEBBdOZEbEDAZEDgBBDABBBAZEZEBgZEZEBADgfvBAf/ZEBBBgZEDgZEBADgZEBBDgBABgZEZEZEZEZEZEZEZEBgDABAZEZEZEZEZEZEZEZEBBBgZEZEZUZUZUZOBBZUdObUDAZEDgBBDABBBAZEZEBgZEZEBADgf/BQf/ZEBBBgZEDgZEBADgZEBBDgDABwZEZEZEZEZEZEZEZEBgDABQZEZEZEZEZEZEZEZEBBBgZEZEZEZEZEZEBBZEZEdODAZEDgBBDABBBAZEZEBgZEZEBADgfvBAf/ZEBBBgZEDgZEBADgZEBBDgBABgZEZEZEZEZEZEZEZEBgDABABABABABABABABABABABgBABABABABABABABABABAdOBADgBAbEBABABABABgBABABADgfuBAf/BABABgBADgBABADgBABADgZEBgBABABABABABABABABgZEBAbEbEbEbEbEbEbEbEBRBgbEbEbEbEbEbEBBbEbEbEDAdODgBBDABBBAbMZEBgbEbEBADgf/BAf/ZEBBBgbEDgbEBADgZEBBDgDADgbcbEbUbUbUbcbUbUBgDABABABABABABABABABABABgBABABABABABABABABABABABAFqBABABABABABABgBABABADgHqBAf/BABABgBADgBABADgBABAFqBABgBABABABABABABABABgBABABABABABABABABABABABgBABABABABABAFKBABABADABADgFKDABABABABABgBABABADgHqBAf/BABABgBADgBABADgBABADgDABgBABABABABABABABABgDABABABABABABABABABABABgBABABABABABABABABABAZEBADgBAdOBABABABABgBABABADgfuBAf/BABABgBADgBABADgBABADgZEBgBABABABABABABABABgZEBABABABABABABABABABABgBABABABABABADABABABADABADgDADAFKBABABABgBABABADgHqBAf/BABABgBADgBABADgBABADgDABgBABABABABABABABABgDABADADADADADADADADADABgDADADADADADADADADADADADADgDADADAFKDADABgDADABADgHqBAf/DADABgDADgDADADgDADADgDADgDADADADADADADADABgDABAbEbEbEbEbEbEbEbEBRBgZEZEbEbEbEbEBBbEZEbEDAZEDgBBDABBBAdOZEBgZEZEBADgf/BAf/ZEBBBgZEDgZEBADgZEBBDgDABgbeZEbUbUbUbebUbUBgDABAbEbEbEbEbEbEbEbEBRBgbUbUbUbUbUbUBBbUbUbUDAZEDgBBDABBBAbcdOBgbcbcBADgf/BQf/ZEBRBgbcDgbEBADgZEBBDgDADwbcbEbUbUbUbcbUbUBgDABQBABABABABABABABABABgBABABABABABABABABABABABABgBABABABABABAFqBABABABgFqBAf/BABABgBABgBABABgBABABgBABgBABABABABABABABABgBABAbEbEbEbEbEbEbEbEBRBgZEZEbEbEbEbEBBbEZEbEDAZEDgBBDABBBAbOZEBgfOZEBADgf/BAf/ZEBRBgZEDgZEBADgZEBBDgDABgbeZEbUbUbUbebUbUBgDABAbEbEbEbEbEbEbEbEBRBgZUZUbUbUbUbUBBbUZUbUDAZEDgBBDABBBAbeZEBgbedeBADgf/BQf/ZEBRBgZeDgZEBADgZEBBDgDABwbeZEbUbUbUbebUbUBgDABQBABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABAFKBAFKBAf/BABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABABgBABABABABABABABABABABABABgBABABABABABABgBABABAFqFqBAf/BABABgBABgBABABgBABABgBABgBABABABABABABABABgBABAfOfOfefefefOfefeHbFqfefefefefefeHLfefefefefOHqHLfOHLHLfefOFqfefeFKHqf/Nef/fOHbFqfeHqfOPOHqfOHLHqfOH6fefOfefefefefefeFqfeNeBABABABABABABABABABgBABABABABABABABABABABABABgBABABABBBABABgBABABABgNvNOf/BABABgBABgBAJEBgBABABgBABgBABABABABABABABABgBAJEbEbEbUbUbUbEbUbUDRBgbUbUbUbUbUbUDBbUbUbUbUbEDgDBbEDBDBbUbEBgbUbUBADgb1JUf/bEDRBgbUDgbELEDgbEDBDgbEDwbUbEbUbUbUbUbUbUBgbUJUbObObebebebObebeBbBqbebebebebebeBLbebebeDKZODqBLDKBLBKbeZOBqbebeBKDqf/Baf/dOBbBqbeDqbOBKDqZOBLDqDKD6bebObebebebebebeBqDKBaDADADADADADADADADABgBABADADADADADADABADADABADgDADADABADABABgDABABADgHqBAf/BAHKBgBADgBABADgBABADgDABgDABADADADADADADABgDABABABABABABABABABABABgBABABABABABABABABABABABABgBABABABABABABgBABABABgFqBAf/BABAFqBABgBABABgBABABgBABgBABABABABABABABABgBABAbEbEbEbEbEbEbEbEBRBgZUZUbUbUbUbUBBbUZUbUDAZEDgBBDABBBAbeZEBgbeZeBADgf/BQf/ZEBRBgdeDgZEBADgZEBBDgDABwbeZEbUbUbUbebUbUBgDABQBABABABABABABABABABgBABABABABABABABABABABABABgBABABABABABABgBABABADgHqBAf/BABABgBAFqBABABgBABABgBABgBABABABABABABABABgBABAbEbEbEbEbEbEbEbEBRBgZUZUbUbUbUbUBBbUZUbUDAZEDgBBDABBBAbcZEBgbcZcBADgf/BQf/ZEBRBgZcDgdOBADgZEBBDgDABwbcZMbUbUbUbcbUbUBgDABQDKDKDKDKDKDKDKDKDKBgDKDKDKDKDKDKDKDKDKDKDKDKDqDKDKDKBBDKDKBgDKDKBADqP/JEf/DKDKBgDKDqDKNODgDKDKDqDKDwDKDKDKDKDKDKDKDKBgDKJEBABABABABABABABABABgBABABABABABABABABABABABABgBABABABABABABgBABABADgHqBAf/BABABgBADgBABAFqBABABgBABgBABABABABABABABABgBABAbEbEbEbEbEbEbEbOBLBgZEZEbEbEbEbEBLbEZEbODAZEDgBLDABLBAbEZEBgbEZEBADgfvBAf/ZEBLBgZEDgZEBADgdOBLDgDABgbEZEbEbEbEbEbEbOBgDABABABABABABABABABABABgBABABABABABADABABABADABADgDADABABABABABgBABABADgHqBAf/BABABgBADgBABADgBAFKDgDABgBABABABABABABABABgDABABABABABABABABABABABgBABABABABABABABABABABABAFqBABABABABABABgBABABADgHqBAf/BABABgBADgBABADgBABAFqBABgBABABABABABABABABgBABABABABABABABABABABABgBABABABABABABABABABAZUBADgBAbEBABABABABgBABABADgf+BAf/BABABgBADgBABADgBABADgdOBgBABABABABABABABABgZUBABABABABABABABABABABgBABABABABABABABABABABABABgBABABABABABABgBABABABgFqBAf/BABABgBABgBABABgBABABgBAFqBABABABABABABABABgBABAbEbEbEbEbEbEbEbEBRBgZEZEbEbEbEbEBBbEZEbEDAZEDgBBDABBBAZEZEBgZEZEBADgf/BAf/ZEBBBgZEDgZEBADgZEBBDgDABgfeZEbUbUbUbebUbUBgDABAbEbEbEbEbEbEbEbEBRBgZUZUbUbUbUbUBBbUZUbUDAZEDgBBDABBBAbcZEBgbcZcBADgf/BQf/ZEBRBgZcDgZEBADgZEBBDgDABwbcdObUbUbUbebUbUBgDABQZEZEbEZEZEZEZEZEBBBgZEZEbEZEZEZEBBZEZEZEBAZEDgBBBABBBAZEZEBgZEZEBADgfvBAf/ZEBBBgZEDgZEBADgZEBBDgBABgZEZEdOZEZEZEZEZEBgBABAZEZEZEbEbEZEbEbEBBBgZEZEZEbEbEZEBBbEZEbEDAZEDgBBDABBBAZEZEBgZEZEBADgfvBAf/ZEBBBgZEDgZEBADgZEBBDgBABgZEZEZEdOZOZEZObEBgDABAZEZEZEbEbEZEbEbEBBBgZEZEZEbEbEZEBBbEZEbEDAZEDgBBDABBBAZEZEBgZEZEBADgfvBAf/ZEBBBgZEDgZEBADgZEBBDgBABgZEZEZEZOdOZEZObEBgDABAZEZEZEZEZEbEZEbEBBBgZEZEZEZEZEbEBBZEZEbEDAZEDgBBDABBBAZEZEBgZEZEBADgf/BAf/ZEBBBgZEDgZEBADgZEBBDgDABgZEZEZEZEZEdOZEZUBgDABAZEZEZEbEbEZEbEbEBBBgZEZEZEbEbEZEBBbEZEbEDAZEDgBBDABBBAZEZEBgZEZEBADgfvBAf/ZEBBBgZEDgZEBADgZEBBDgBABgZEZEZEZOZOZEdObEBgDABAZEZEZEZEZEZEZEbEBBBgZEZEZEZEZEZEBBZEZEbEDAZEDgBBDABBBAZEZEBgZEZEBADgfvBAf/ZEBBBgZEDgZEBADgZEBBDgBABgZEZEZEZEZEZEZEdOBgDABABABABABABABABABABABgBABABABABABABABABABABABABgBABABABABABABgBABABABgFqBAf/BABABgBABgBABABgBABABgBABgBABABABABABABABAFqBABABABABABABABABABABABgBABABABABABABABABABAZEBADgBAbEBABABABABgBABABADgfuBAf/BABABgBADgBABADgBABADgZEBgBABABABABABABABABgdOBADADADADADADADADADABgDADADADADADADADADADADADADgDADADADBDADABgDADABADgPvJEf/DADABgDADgDALEDgDADADgDADgDADADADADADADADABgDANO";
+  var ARCHIMATE_REL_BITS = 'acfginorstv';
+  var ARCHIMATE_REL_NAMES = [
+    'Access', 'Composition', 'Flow', 'Aggregation', 'Assignment',
+    'Influence', 'Association', 'Realization', 'Specialization', 'Triggering', 'Serving'
+  ];
+  var ARCHIMATE_B64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+  var ARCHIMATE_CONCEPT_MAP = (function () {
+    var m = {};
+    for (var i = 0; i < ARCHIMATE_CONCEPTS.length; i++) {
+      m[ARCHIMATE_CONCEPTS[i].toLowerCase()] = { name: ARCHIMATE_CONCEPTS[i], idx: i };
+    }
+    m['andjunction'] = { name: 'Junction', idx: m['junction'].idx };
+    m['orjunction'] = { name: 'Junction', idx: m['junction'].idx };
+    return m;
+  })();
+
+  var ARCHIMATE_REL_MAP = (function () {
+    var m = {};
+    for (var i = 0; i < ARCHIMATE_REL_NAMES.length; i++) {
+      var n = ARCHIMATE_REL_NAMES[i].toLowerCase();
+      m[n] = { name: ARCHIMATE_REL_NAMES[i], bit: i };
+      m[n + 'relationship'] = { name: ARCHIMATE_REL_NAMES[i], bit: i };
+    }
+    m['realisation'] = m['realization'];
+    m['realisationrelationship'] = m['realization'];
+    m['specialisation'] = m['specialization'];
+    m['specialisationrelationship'] = m['specialization'];
+    m['usedby'] = m['serving'];
+    m['usedbyrelationship'] = m['serving'];
+    return m;
+  })();
+
+  function archimateCellMask(sIdx, tIdx) {
+    var n = ARCHIMATE_CONCEPTS.length;
+    var pos = (sIdx * n + tIdx) * 2;
+    var hi = ARCHIMATE_B64_CHARS.indexOf(ARCHIMATE_MATRIX_B64.charAt(pos));
+    var lo = ARCHIMATE_B64_CHARS.indexOf(ARCHIMATE_MATRIX_B64.charAt(pos + 1));
+    if (hi < 0 || lo < 0) return 0;
+    return (hi << 6) | lo;
+  }
+
+  function archimateAllowedNames(mask) {
+    var out = [];
+    for (var i = 0; i < ARCHIMATE_REL_NAMES.length; i++) {
+      if (mask & (1 << i)) out.push(ARCHIMATE_REL_NAMES[i]);
+    }
+    return out;
+  }
+
+  function extractModelItems(dbOrIr) {
+    var packages = [];
+    var elements = [];
+    var connectors = [];
+    var idToElement = {};
+    var pkgById = {};
+
+    if (dbOrIr && typeof dbOrIr.rows === 'function') {
+      var tPkg = dbOrIr.rows('t_package') || [];
+      var rawPkg = {};
+      for (var pi = 0; pi < tPkg.length; pi++) {
+        rawPkg[tPkg[pi].Package_ID] = tPkg[pi];
+      }
+      function buildPkgPath(pid) {
+        var cur = rawPkg[pid], parts = [], guard = 0;
+        while (cur && guard++ < 40) {
+          if (cur.x_path) { parts.unshift(cur.x_path); break; }
+          if (cur.Name) parts.unshift(cur.Name);
+          cur = cur.Parent_ID ? rawPkg[cur.Parent_ID] : null;
+        }
+        return parts.join('/');
+      }
+      for (var pj = 0; pj < tPkg.length; pj++) {
+        var pk = tPkg[pj];
+        var pPath = buildPkgPath(pk.Package_ID);
+        pkgById[pk.Package_ID] = pPath;
+        packages.push({ id: pk.Package_ID, path: pPath, name: pk.Name || '', stereotype: pk.Stereotype || '' });
+      }
+      var tProp = dbOrIr.rows('t_objectproperties') || [];
+      var tagsByObj = {};
+      for (var p = 0; p < tProp.length; p++) {
+        var tp = tProp[p];
+        if (!tagsByObj[tp.Object_ID]) tagsByObj[tp.Object_ID] = {};
+        if (tp.Property) tagsByObj[tp.Object_ID][tp.Property] = String(tp.Value == null ? '' : tp.Value);
+      }
+      var tObj = dbOrIr.rows('t_object') || [];
+      for (var e = 0; e < tObj.length; e++) {
+        var ob = tObj[e];
+        if (String(ob.Object_Type || '') === 'Package') continue;
+        var elItem = {
+          id: ob.Object_ID,
+          ea_guid: String(ob.ea_guid || ''),
+          package: pkgById[ob.Package_ID] || '',
+          name: String(ob.Name || ''),
+          stereotype: String(ob.Stereotype || ''),
+          ea_type: String(ob.Object_Type || 'Class'),
+          notes: String(ob.Note != null ? ob.Note : (ob.Notes || '')),
+          status: String(ob.Status || ''),
+          alias: String(ob.Alias || ''),
+          tags: tagsByObj[ob.Object_ID] || {}
+        };
+        elements.push(elItem);
+        idToElement[ob.Object_ID] = elItem;
+      }
+      var tConn = dbOrIr.rows('t_connector') || [];
+      for (var cn = 0; cn < tConn.length; cn++) {
+        var tc = tConn[cn];
+        connectors.push({
+          id: tc.Connector_ID,
+          ea_guid: String(tc.ea_guid || ''),
+          name: String(tc.Name || ''),
+          stereotype: String(tc.Stereotype || ''),
+          connector_type: String(tc.Connector_Type || tc.Type || ''),
+          start_id: tc.Start_Object_ID,
+          end_id: tc.End_Object_ID
+        });
+      }
+    } else if (dbOrIr && typeof dbOrIr === 'object') {
+      var irPkgs = dbOrIr.packages || [];
+      for (var ip = 0; ip < irPkgs.length; ip++) {
+        packages.push({ id: ip + 1, path: String(irPkgs[ip].path || ''), name: String(irPkgs[ip].name || irPkgs[ip].path || ''), stereotype: String(irPkgs[ip].stereotype || '') });
+      }
+      var irElements = dbOrIr.elements || [];
+      for (var ie = 0; ie < irElements.length; ie++) {
+        var iel = irElements[ie];
+        var elObj = {
+          id: iel.ref || iel.guid || iel.ea_guid || ('elem_' + ie),
+          ea_guid: String(iel.ea_guid || iel.guid || ''),
+          package: String(iel.package || ''),
+          name: String(iel.name || ''),
+          stereotype: String(iel.stereotype || ''),
+          ea_type: String(iel.ea_type || iel.metaclass || 'Class'),
+          notes: String(iel.notes || ''),
+          status: String(iel.status || ''),
+          alias: String(iel.alias || ''),
+          tags: iel.tags || {}
+        };
+        elements.push(elObj);
+        idToElement[elObj.id] = elObj;
+        if (elObj.name) idToElement[elObj.name] = elObj;
+        if (elObj.package && elObj.name) idToElement[elObj.package + '::' + elObj.name] = elObj;
+      }
+      var irConns = dbOrIr.connectors || [];
+      for (var ic = 0; ic < irConns.length; ic++) {
+        var iconn = irConns[ic];
+        connectors.push({
+          id: iconn.guid || iconn.ea_guid || ('conn_' + ic),
+          ea_guid: String(iconn.ea_guid || iconn.guid || ''),
+          name: String(iconn.name || ''),
+          stereotype: String(iconn.stereotype || ''),
+          connector_type: String(iconn.ea_type || 'Association'),
+          source: iconn.source,
+          target: iconn.target
+        });
+      }
+    }
+    return { packages: packages, elements: elements, connectors: connectors, idToElement: idToElement };
+  }
+
+  function validateArchimate(dbOrIr) {
+    var m = extractModelItems(dbOrIr);
+    var findings = [];
+    function add(sev, lbl, rule, chk, msg) {
+      findings.push({ severity: sev, object_label: lbl || '', rule: rule || '', check: chk || '', message: msg || '' });
+    }
+    var elConcept = {};
+    for (var i = 0; i < m.elements.length; i++) {
+      var el = m.elements[i];
+      var lbl = el.name || el.ea_guid || ('Element #' + el.id);
+      if (!String(el.name || '').trim()) {
+        add('warning', lbl, 'archimate:name', 'unnamedElement', "Element '" + lbl + "' hat keinen Namen.");
+      }
+      var rawConcept = String(el.stereotype || el.ea_type || '').split(':').pop().trim();
+      var cEntry = ARCHIMATE_CONCEPT_MAP[rawConcept.toLowerCase()];
+      if (!cEntry) {
+        add('error', lbl, 'archimate:concept', 'unknownArchimateConcept', "Element '" + lbl + "': unbekanntes ArchiMate-3.2-Konzept '" + rawConcept + "'.");
+      } else {
+        elConcept[el.id] = cEntry;
+      }
+    }
+    for (var j = 0; j < m.connectors.length; j++) {
+      var c = m.connectors[j];
+      var src = c.start_id != null ? m.idToElement[c.start_id] : m.idToElement[c.source];
+      var tgt = c.end_id != null ? m.idToElement[c.end_id] : m.idToElement[c.target];
+      var cLbl = (src ? (src.name || src.id) : String(c.source || c.start_id || '?')) + ' -> ' + (tgt ? (tgt.name || tgt.id) : String(c.target || c.end_id || '?'));
+      if (!src || !tgt) {
+        add('error', cLbl, 'archimate:ref', 'unresolvedConnectorEndpoint', "Beziehung '" + cLbl + "': Quell- oder Ziel-Element konnte nicht aufgeloest werden.");
+        continue;
+      }
+      var rawRel = String(c.stereotype || c.connector_type || 'Association').split(':').pop().trim();
+      var rEntry = ARCHIMATE_REL_MAP[rawRel.toLowerCase()];
+      if (!rEntry) {
+        add('error', cLbl, 'archimate:rel', 'unknownArchimateRelationship', "Beziehung '" + cLbl + "': unbekannte ArchiMate-3.2-Beziehungsart '" + rawRel + "'.");
+        continue;
+      }
+      var sc = elConcept[src.id], tc = elConcept[tgt.id];
+      if (!sc || !tc) continue;
+      var mask = archimateCellMask(sc.idx, tc.idx);
+      if (!(mask & (1 << rEntry.bit))) {
+        var allowed = archimateAllowedNames(mask);
+        add(
+          'error',
+          cLbl,
+          'archimate:matrix',
+          'archimateMatrixViolation',
+          "Beziehung '" + cLbl + "' (" + rEntry.name + "): laut ArchiMate-3.2-Matrix zwischen '" + sc.name + "' und '" + tc.name + "' nicht erlaubt" +
+          (allowed.length ? ' (erlaubt: ' + allowed.join(', ') + ').' : ' (keine direkte Beziehung erlaubt).')
+        );
+      }
+    }
+    findings.sort(function (a, b) {
+      if (a.severity !== b.severity) return a.severity === 'error' ? -1 : 1;
+      return a.object_label < b.object_label ? -1 : (a.object_label > b.object_label ? 1 : 0);
+    });
+    return findings;
+  }
+
+  /* ================= Deterministische Regel-Reparatur (ohne KI) ================= */
+
+  function proposeRepairs(dbOrIr, mdgXmlOrRules) {
+    var rules = typeof mdgXmlOrRules === 'string' ? parseMdg(mdgXmlOrRules) : (mdgXmlOrRules || {});
+    var m = extractModelItems(dbOrIr);
+    var elemRules = {}, elList = rules.elementStereotypes || [];
+    for (var i = 0; i < elList.length; i++) {
+      if (elList[i] && elList[i].name) elemRules[elList[i].name.toLowerCase()] = elList[i];
+    }
+    var connRules = {}, crList = rules.connectorRules || [];
+    for (var j = 0; j < crList.length; j++) {
+      if (crList[j] && crList[j].name) connRules[crList[j].name.toLowerCase()] = crList[j];
+    }
+
+    function connAllows(cRule, srcEl, tgtEl) {
+      var mcs = cRule.metaconstraints || [];
+      for (var k = 0; k < mcs.length; k++) {
+        var mc = mcs[k], role = String(mc.role || '').toLowerCase(), allowed = mc.constraints || [];
+        var testEl = SOURCE_ROLES[role] ? srcEl : (TARGET_ROLES[role] ? tgtEl : null);
+        if (testEl && allowed.length && allowed.indexOf('*') < 0) {
+          var stLow = String(testEl.stereotype || '').toLowerCase();
+          var tyLow = String(testEl.ea_type || '').toLowerCase();
+          var hit = false;
+          for (var a = 0; a < allowed.length; a++) {
+            var al = String(allowed[a] || '').toLowerCase();
+            if (al === stLow || al === tyLow) { hit = true; break; }
+          }
+          if (!hit) return false;
+        }
+      }
+      return true;
+    }
+
+    var changes = [], ops = [];
+    for (var ei = 0; ei < m.elements.length; ei++) {
+      var el = m.elements[ei];
+      if (!el.stereotype) continue;
+      var stLow = el.stereotype.trim().toLowerCase();
+      var er = elemRules[stLow];
+      if (!er) {
+        changes.push({
+          kind: 'stereotype_removed',
+          target: (el.package ? el.package + '::' : '') + el.name,
+          before: el.stereotype,
+          after: '',
+          reason: 'unknownElementStereotype'
+        });
+        ops.push({ op: 'set_stereotype', oid: el.id, package: el.package, name: el.name, value: '' });
+      } else if (er.name !== el.stereotype.trim()) {
+        changes.push({
+          kind: 'stereotype_changed',
+          target: (el.package ? el.package + '::' : '') + el.name,
+          before: el.stereotype,
+          after: er.name,
+          reason: 'stereotypeCaseMismatch'
+        });
+        ops.push({ op: 'set_stereotype', oid: el.id, package: el.package, name: el.name, value: er.name });
+      }
+    }
+
+    for (var ci = 0; ci < m.connectors.length; ci++) {
+      var c = m.connectors[ci];
+      if (!c.stereotype) continue;
+      var src = c.start_id != null ? m.idToElement[c.start_id] : m.idToElement[c.source];
+      var tgt = c.end_id != null ? m.idToElement[c.end_id] : m.idToElement[c.target];
+      if (!src || !tgt) continue;
+      var cLbl = (src.name || src.id) + ' -> ' + (tgt.name || tgt.id);
+      var cRule = connRules[c.stereotype.toLowerCase()];
+      var validNow = cRule ? connAllows(cRule, src, tgt) : false;
+      if (validNow) continue;
+
+      // Suche deterministisch nach passendem Kantenstereotyp fuer (src, tgt)
+      var candidates = [];
+      for (var rk in connRules) {
+        if (!Object.prototype.hasOwnProperty.call(connRules, rk)) continue;
+        var cand = connRules[rk];
+        if (connAllows(cand, src, tgt)) candidates.push(cand);
+      }
+      candidates.sort(function (a, b) { return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0); });
+
+      if (candidates.length === 1) {
+        changes.push({
+          kind: 'connector_retyped',
+          target: cLbl,
+          before: c.stereotype,
+          after: candidates[0].name,
+          reason: cRule ? 'forbiddenConnectorEnd' : 'unknownConnectorStereotype'
+        });
+        ops.push({ op: 'set_connector_stereotype', cid: c.id, source: src.name, target: tgt.name, oldStereotype: c.stereotype, value: candidates[0].name });
+      } else if (!cRule) {
+        changes.push({
+          kind: 'connector_removed',
+          target: cLbl,
+          before: c.stereotype,
+          after: '(entfernt)',
+          reason: 'unknownConnectorStereotype'
+        });
+        ops.push({ op: 'delete_connector', cid: c.id, source: src.name, target: tgt.name, stereotype: c.stereotype });
+      }
+    }
+    return { changes: changes, ops: ops };
+  }
+
+  /* ================= Modell-Diff (Vorher/Nachher & Datei-Vergleich) ================= */
+
+  function diffModels(altDbOrIr, neuDbOrIr) {
+    var a = extractModelItems(altDbOrIr);
+    var b = extractModelItems(neuDbOrIr);
+
+    function elGuid(e) {
+      if (e.ea_guid) return e.ea_guid.toLowerCase();
+      var t = e.tags || {};
+      var og = t.OriginalGUID || t.originalguid || t.StandardElementGUID || '';
+      return String(og).trim().toLowerCase();
+    }
+
+    var pAlt = {}, pNeu = {}, pAdded = [], pRemoved = [];
+    for (var i = 0; i < a.packages.length; i++) if (a.packages[i].path) pAlt[a.packages[i].path] = a.packages[i];
+    for (var j = 0; j < b.packages.length; j++) if (b.packages[j].path) pNeu[b.packages[j].path] = b.packages[j];
+    for (var pk in pNeu) if (Object.prototype.hasOwnProperty.call(pNeu, pk) && !pAlt[pk]) pAdded.push(pk);
+    for (var pk2 in pAlt) if (Object.prototype.hasOwnProperty.call(pAlt, pk2) && !pNeu[pk2]) pRemoved.push(pk2);
+    pAdded.sort(); pRemoved.sort();
+
+    var matchA2B = {}, usedB = {}, bByGuid = {}, bByPkgName = {};
+    for (var bi = 0; bi < b.elements.length; bi++) {
+      var bg = elGuid(b.elements[bi]);
+      if (bg) { if (!bByGuid[bg]) bByGuid[bg] = []; bByGuid[bg].push(bi); }
+    }
+    for (var ai = 0; ai < a.elements.length; ai++) {
+      var ag = elGuid(a.elements[ai]);
+      if (ag && bByGuid[ag]) {
+        for (var x = 0; x < bByGuid[ag].length; x++) {
+          var candIdx = bByGuid[ag][x];
+          if (!usedB[candIdx]) { matchA2B[ai] = candIdx; usedB[candIdx] = true; break; }
+        }
+      }
+    }
+    for (var bi2 = 0; bi2 < b.elements.length; bi2++) {
+      if (usedB[bi2]) continue;
+      var kpn = (b.elements[bi2].package + '::' + b.elements[bi2].name).toLowerCase();
+      if (!bByPkgName[kpn]) bByPkgName[kpn] = [];
+      bByPkgName[kpn].push(bi2);
+    }
+    for (var ai2 = 0; ai2 < a.elements.length; ai2++) {
+      if (matchA2B[ai2] !== undefined) continue;
+      var kpnA = (a.elements[ai2].package + '::' + a.elements[ai2].name).toLowerCase();
+      var list = bByPkgName[kpnA] || [];
+      for (var y = 0; y < list.length; y++) {
+        if (!usedB[list[y]]) { matchA2B[ai2] = list[y]; usedB[list[y]] = true; break; }
+      }
+    }
+
+    var elAdded = [], elRemoved = [], elChanged = [];
+    var canonA = {}, canonB = {}, canonLbl = {};
+    for (var ai3 = 0; ai3 < a.elements.length; ai3++) {
+      var ea = a.elements[ai3];
+      if (matchA2B[ai3] === undefined) {
+        elRemoved.push({ package: ea.package, name: ea.name, stereotype: ea.stereotype });
+        canonA[ea.id] = 'A#' + ai3;
+        canonLbl['A#' + ai3] = (ea.package ? ea.package + '::' : '') + ea.name;
+      } else {
+        var bj = matchA2B[ai3], eb = b.elements[bj];
+        var cid = 'M#' + ai3;
+        canonA[ea.id] = cid; canonB[eb.id] = cid;
+        canonLbl[cid] = (eb.package ? eb.package + '::' : '') + eb.name;
+        var diffs = [];
+        if (ea.name !== eb.name) diffs.push('Name: „' + ea.name + '“ -> „' + eb.name + '“');
+        if (ea.package !== eb.package) diffs.push('Paket: „' + ea.package + '“ -> „' + eb.package + '“');
+        if (ea.stereotype !== eb.stereotype) diffs.push('Stereotyp: «' + ea.stereotype + '» -> «' + eb.stereotype + '»');
+        if (String(ea.notes || '').trim() !== String(eb.notes || '').trim()) diffs.push('Notiz geändert');
+        if (diffs.length) {
+          elChanged.push({ package: eb.package || ea.package, name: eb.name || ea.name, stereotype: eb.stereotype, diffs: diffs });
+        }
+      }
+    }
+    for (var bi3 = 0; bi3 < b.elements.length; bi3++) {
+      if (!usedB[bi3]) {
+        var en = b.elements[bi3];
+        elAdded.push({ package: en.package, name: en.name, stereotype: en.stereotype });
+        canonB[en.id] = 'B#' + bi3;
+        canonLbl['B#' + bi3] = (en.package ? en.package + '::' : '') + en.name;
+      }
+    }
+
+    function connMap(items, canonMap) {
+      var out = {};
+      for (var cIdx = 0; cIdx < items.connectors.length; cIdx++) {
+        var c = items.connectors[cIdx];
+        var sEl = c.start_id != null ? items.idToElement[c.start_id] : items.idToElement[c.source];
+        var tEl = c.end_id != null ? items.idToElement[c.end_id] : items.idToElement[c.target];
+        var sKey = sEl ? canonMap[sEl.id] : String(c.source || c.start_id || '');
+        var tKey = tEl ? canonMap[tEl.id] : String(c.target || c.end_id || '');
+        var st = String(c.stereotype || c.connector_type || '');
+        var key = sKey + '->' + tKey + '|' + st.toLowerCase();
+        out[key] = { source: canonLbl[sKey] || sKey, target: canonLbl[tKey] || tKey, stereotype: st };
+      }
+      return out;
+    }
+
+    var cmA = connMap(a, canonA), cmB = connMap(b, canonB);
+    var cAdded = [], cRemoved = [];
+    for (var ck in cmB) if (Object.prototype.hasOwnProperty.call(cmB, ck) && !cmA[ck]) cAdded.push(cmB[ck]);
+    for (var ck2 in cmA) if (Object.prototype.hasOwnProperty.call(cmA, ck2) && !cmB[ck2]) cRemoved.push(cmA[ck2]);
+
+    var summary = {
+      packages_added: pAdded.length,
+      packages_removed: pRemoved.length,
+      elements_added: elAdded.length,
+      elements_removed: elRemoved.length,
+      elements_changed: elChanged.length,
+      connectors_added: cAdded.length,
+      connectors_removed: cRemoved.length
+    };
+    var identical = !pAdded.length && !pRemoved.length && !elAdded.length && !elRemoved.length && !elChanged.length && !cAdded.length && !cRemoved.length;
+    return {
+      identical: identical,
+      summary: summary,
+      packages: { added: pAdded, removed: pRemoved },
+      elements: { added: elAdded, removed: elRemoved, changed: elChanged },
+      connectors: { added: cAdded, removed: cRemoved }
+    };
+  }
+
+  /* ================= Textabdeckungs-Pruefung (ohne KI) ================= */
+
+  function evaluateCoverage(dbOrIr, textOrQuellen) {
+    var m = extractModelItems(dbOrIr);
+    var modelRefs = {};
+    function recordRef(raw, label) {
+      if (!raw) return;
+      var parts = String(raw).trim().split(/[,;\s]+/);
+      for (var i = 0; i < parts.length; i++) {
+        var r = parts[i].replace(/^\[|\]$/g, '').toUpperCase();
+        if (/^D\d+-S\d+$/.test(r)) {
+          if (!modelRefs[r]) modelRefs[r] = [];
+          if (modelRefs[r].indexOf(label) < 0) modelRefs[r].push(label);
+        }
+      }
+    }
+    for (var ei = 0; ei < m.elements.length; ei++) {
+      var el = m.elements[ei], t = el.tags || {};
+      recordRef(t.source_ref || t.herkunft || t.quellbeleg, el.name);
+    }
+
+    var segments = [], quellen = {};
+    if (typeof textOrQuellen === 'string' && textOrQuellen.trim()) {
+      var paras = textOrQuellen.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split(/\n\s*\n+/);
+      var sNo = 0, chap = '(Einleitung)';
+      for (var pi = 0; pi < paras.length; pi++) {
+        var p = paras[pi].trim();
+        if (!p) continue;
+        sNo++;
+        var first = p.split('\n')[0].trim();
+        var hm = first.match(/^#{1,6}\s+(.+)$/);
+        var isH = !!(hm && p.indexOf('\n') < 0);
+        if (hm) chap = hm[1].trim();
+        var ref = 'D1-S' + sNo;
+        quellen[ref] = p;
+        segments.push({ ref: ref, chapter: chap, isHeading: isH, text: p });
+      }
+    } else if (textOrQuellen && typeof textOrQuellen === 'object') {
+      var keys = Object.keys(textOrQuellen).sort(function (x, y) {
+        var mx = x.match(/^D(\d+)-S(\d+)$/i), my = y.match(/^D(\d+)-S(\d+)$/i);
+        if (mx && my) return (Number(mx[1]) - Number(my[1])) || (Number(mx[2]) - Number(my[2]));
+        return x < y ? -1 : 1;
+      });
+      var chap2 = '(Quellbelege)';
+      for (var ki = 0; ki < keys.length; ki++) {
+        var rk = keys[ki].toUpperCase(), txt = String(textOrQuellen[keys[ki]] || '').trim();
+        if (!txt) continue;
+        var hm2 = txt.split('\n')[0].trim().match(/^#{1,6}\s+(.+)$/);
+        var isH2 = !!(hm2 && txt.indexOf('\n') < 0);
+        if (hm2) chap2 = hm2[1].trim();
+        quellen[rk] = txt;
+        segments.push({ ref: rk, chapter: chap2, isHeading: isH2, text: txt });
+      }
+    }
+    if (!segments.length) return null;
+
+    var content = segments.filter(function (s) { return !s.isHeading; });
+    var basis = content.length ? content : segments;
+    var covered = 0, uncovered = [];
+    for (var si = 0; si < basis.length; si++) {
+      var seg = basis[si];
+      if (modelRefs[seg.ref]) covered++;
+      else uncovered.push({ ref: seg.ref, chapter: seg.chapter, preview: seg.text.length > 160 ? seg.text.slice(0, 160) + '…' : seg.text });
+    }
+    var pct = Math.round((1000 * covered) / Math.max(1, basis.length)) / 10;
+    return {
+      total_segments: segments.length,
+      content_segments: basis.length,
+      covered_segments: covered,
+      uncovered_segments: uncovered.length,
+      coverage_pct: pct,
+      uncovered: uncovered,
+      quellen: quellen
+    };
+  }
+
   /* ================= Export ================= */
 
   var api = {
     parseMdg: parseMdg,
     validateModel: validateModel,
+    validateArchimate: validateArchimate,
+    proposeRepairs: proposeRepairs,
+    diffModels: diffModels,
+    evaluateCoverage: evaluateCoverage,
     summarize: summarize
   };
 

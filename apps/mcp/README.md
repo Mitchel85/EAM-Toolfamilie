@@ -17,6 +17,7 @@
 | **🔗 MCP-Server** (neu v0.4) | Standard-Protokoll. Nutzbar aus Open-WebUI, Claude Desktop, VS Code. | Wenn du EINEN Server für ALLE Clients willst — einmal starten, überall nutzen. |
 
 **Alle Modi nutzen dieselbe `eam_qea_tool.py`** — du entscheidest, wie du sie einbettest.
+*(Tipp: Für einen komplett abhängigkeitsfreien 4-Format-MCP-Server ohne `pandas`/`networkx`/`mcp`-Paket — inklusive `.qea`, `.xmi`, ArchiMate `.xml`, `.json`, Modell-Diff, Textabdeckung und regelbasierter MDG-Reparatur — bringt der Python-Kern zusätzlich `eam-ai mcp` über JSON-RPC/stdio mit.)*
 
 | Quickstart-Guide | Datei |
 |---|---|

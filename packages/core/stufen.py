@@ -446,17 +446,13 @@ def _relevante_bekannte(
     known: Sequence[tuple[str, str]],
     limit: int = 60,
 ) -> tuple[tuple[str, str], ...]:
-    """Bestand fuer den Prompt: erst was der Absatz nennt, dann der Rest.
+    """Bestand fuer den Prompt: erst woertlich Genanntes, dann Teilwort-Treffer, dann Rest.
 
     Der Startkatalog kann ueber tausend Elemente enthalten. Alle in jeden
     Prompt zu schreiben, macht die Stufe wertlos -- gezeigt wird deshalb nur
     eine begrenzte, textnahe Auswahl.
     """
-    text = " ".join(segment.text for segment in batch).casefold()
-    genannt = [item for item in known if item[0] and item[0].casefold() in text]
-    uebrig = [item for item in known if item not in genannt]
-    rest = max(0, limit - len(genannt))
-    return tuple(genannt + (uebrig[-rest:] if rest else []))
+    return extract._bekannte_fuer(batch, known, limit)
 
 
 def _source_block(batch: Sequence[extract.Segment]) -> str:
@@ -469,10 +465,36 @@ def element_prompt(
     *,
     package: str,
     known: Sequence[tuple[str, str]] = (),
+    compact: bool = False,
 ) -> str:
     """Prompt fuer die Elementtabelle einer Charge -- ohne Beziehungen."""
+    bek_limit = 35 if compact else 60
+    bekannte = _relevante_bekannte(batch, known, limit=bek_limit)
+    if compact:
+        concrete = sorted(n for n, r in rulebook.elements.items() if not r.abstract)
+        element_block = ", ".join(concrete)
+        known_str = (
+            "Bekannte Elemente (Name[Stereotyp]): "
+            + ", ".join(f"{n}[{s}]" for n, s in bekannte)
+            + "\n\n"
+            if bekannte
+            else ""
+        )
+        return (
+            "Du bist ein Architektur-Extraktor. Extrahiere aus dem Quelltext\n"
+            "ausschliesslich ELEMENTE, keine Beziehungen.\n"
+            f"Technologieprofil: {rulebook.profile or '(ohne Profil)'} | Zielpaket: {package}\n\n"
+            f"{known_str}"
+            f"Erlaubte Element-Stereotype: {element_block}\n\n"
+            "Regeln: 1. Nur benannte Elemente, nichts erfinden. "
+            "2. Jedes Element braucht source_ref (z.B. D1-S1), exakten name, woertliche notes und confidence (0..1). "
+            "3. Antworte nur mit JSON ohne Markdown.\n"
+            'Antwortform: {"elements": [{"name": "...", "stereotype": "...", '
+            '"notes": "...", "source_ref": "D1-S1", "confidence": 0.9}], "connectors": []}\n\n'
+            "Quelltext:\n"
+            f"{_source_block(batch)}\n"
+        )
     element_block = "\n".join(_element_zeilen(rulebook))
-    bekannte = _relevante_bekannte(batch, known)
     return (
         "Du bist ein Architektur-Extraktor. Extrahiere aus dem Quelltext\n"
         "ausschliesslich ELEMENTE, keine Beziehungen.\n\n"
@@ -499,26 +521,47 @@ def connector_prompt(
     batch: Sequence[extract.Segment],
     rulebook: extract.RuleBook,
     *,
-    elemente: Sequence[Mapping[str, Any]],
+    elemente: Sequence[Mapping[str, Any]] | None = (),
     known: Sequence[tuple[str, str]] = (),
+    compact: bool = False,
 ) -> str:
-    """Prompt fuer die Beziehungen einer Charge -- Endpunkte aus der Tabelle."""
-    connector_block = "\n".join(extract._connector_lines(rulebook))
+    """Prompt fuer die Beziehungen einer Charge -- dynamisch auf aktive Stereotype gefiltert."""
+    stereo_by_name: dict[str, str] = {}
     gesehen: list[str] = []
     for name, stereotype in known:
-        if name and name not in gesehen:
-            gesehen.append(name)
-    for eintrag in elemente:
-        name = str(eintrag.get("name") or "").strip()
-        if name and name not in gesehen:
-            gesehen.append(name)
-    text = " ".join(segment.text for segment in batch).casefold()
-    genannt = [name for name in gesehen if name.casefold() in text]
-    uebrig = [name for name in gesehen if name not in genannt]
-    rest = max(0, 120 - len(genannt))
-    auswahl = genannt + (uebrig[-rest:] if rest else [])
+        clean = str(name or "").strip()
+        if clean and clean not in stereo_by_name:
+            stereo_by_name[clean] = str(stereotype or "").strip()
+            gesehen.append(clean)
+    for eintrag in elemente or ():
+        clean = str(eintrag.get("name") or "").strip()
+        stereo = str(eintrag.get("stereotype") or "").strip()
+        if clean:
+            if clean not in stereo_by_name:
+                gesehen.append(clean)
+            if stereo or clean not in stereo_by_name:
+                stereo_by_name[clean] = stereo
+
+    max_el = 60 if compact else 120
+    bek_pairs = [(n, stereo_by_name.get(n, "")) for n in gesehen]
+    auswahl_pairs = extract._bekannte_fuer(batch, bek_pairs, max_el)
+    auswahl = [n for n, _s in auswahl_pairs]
+    active_stereotypes = [stereo_by_name[n] for n in auswahl if stereo_by_name.get(n)]
+    filtered_lines = extract.connector_lines_for_stereotypes(
+        rulebook, active_stereotypes, compact=compact
+    )
+    if compact:
+        connector_block = "; ".join(filtered_lines) if filtered_lines else "(keine)"
+    else:
+        connector_block = "\n".join(filtered_lines) if filtered_lines else "(keine)"
+
     element_block = "\n".join(
-        f"- {name}" for name in sorted(auswahl, key=lambda item: (item.casefold(), item))
+        (
+            f"- {name} «{stereo_by_name[name]}»"
+            if stereo_by_name.get(name)
+            else f"- {name}"
+        )
+        for name in sorted(auswahl, key=lambda item: (item.casefold(), item))
     )
     return (
         "Du bist ein Architektur-Extraktor. Extrahiere aus dem Quelltext\n"
@@ -569,6 +612,40 @@ def _start_known(start: Mapping[str, Any]) -> list[tuple[str, str]]:
     return out
 
 
+def _request_stufen_adaptive(
+    backend: extract.Backend,
+    batch: Sequence[extract.Segment],
+    rulebook: extract.RuleBook,
+    build_fn: Any,
+    *,
+    use_compact: bool,
+    depth: int = 0,
+) -> tuple[dict[str, Any], int]:
+    """Fragt eine Stufen-Charge ab; bei Kontextlimit erst Kompaktmodus, dann Halbierung."""
+    prompt = build_fn(batch, use_compact)
+    try:
+        ans, _att = extract._request_answer(backend, prompt, rulebook, allow_empty=True)
+        return dict(ans), 1
+    except extract.ExtractionError as exc:
+        if not extract._is_context_limit_error(exc) or depth >= 6:
+            raise
+        if not use_compact:
+            return _request_stufen_adaptive(
+                backend, batch, rulebook, build_fn, use_compact=True, depth=depth + 1
+            )
+        split = extract._halve_batch(batch)
+        if split is None:
+            raise
+        left, right = split
+        ans_l, calls_l = _request_stufen_adaptive(
+            backend, left, rulebook, build_fn, use_compact=True, depth=depth + 1
+        )
+        ans_r, calls_r = _request_stufen_adaptive(
+            backend, right, rulebook, build_fn, use_compact=True, depth=depth + 1
+        )
+        return extract.merge_answers([ans_l, ans_r]), calls_l + calls_r
+
+
 def stufe2(
     *,
     workdir: str | Path,
@@ -578,6 +655,8 @@ def stufe2(
     timeout: float = 120.0,
     pause: float = 120.0,
     charge: int = extract.DEFAULT_BATCH_CHARS,
+    context_tokens: int | None = None,
+    compact: bool = False,
     text: str | Path | None = None,
     images: Sequence[str | Path] = (),
     backend: extract.Backend | None = None,
@@ -599,8 +678,22 @@ def stufe2(
 
     if backend is None:
         backend = extract.make_backend(
-            backend_kind, model=model, base_url=base_url, timeout=timeout
+            backend_kind,
+            model=model,
+            base_url=base_url,
+            timeout=timeout,
+            context_tokens=context_tokens,
         )
+
+    inferred_ctx = context_tokens if context_tokens is not None else getattr(backend, "context_tokens", None)
+    compact_mode = bool(compact or (inferred_ctx is not None and inferred_ctx <= 24_000))
+    eff_charge = charge
+    if inferred_ctx is not None and inferred_ctx > 0:
+        ctx_budget, _ctx_known = extract._budget_for_context(
+            inferred_ctx, rulebook, str(state.get("package") or "Architektur"), compact_mode
+        )
+        if eff_charge == extract.DEFAULT_BATCH_CHARS or eff_charge > ctx_budget:
+            eff_charge = ctx_budget
 
     bildbloecke: list[str] = []
     for ip in img_list:
@@ -614,7 +707,7 @@ def stufe2(
         dokument = "\n\n".join(bildbloecke + ([dokument] if dokument.strip() else []))
 
     segments = extract.split_documents(dokument)
-    batches = extract.plan_batches(segments, charge)
+    batches = extract.plan_batches(segments, eff_charge)
     start = _read_json(wd / STARTPAKET) if (wd / STARTPAKET).is_file() else {"elemente": []}
     known = _start_known(start)
     ausgabe = log or (lambda _message: None)
@@ -630,10 +723,16 @@ def stufe2(
                 known.append((name, str(eintrag.get("stereotype") or "").strip()))
     fehlend = [i for i, pfad in enumerate(element_dateien, start=1) if not pfad.is_file()]
     aufrufe = 0
+    pkg_name = str(state.get("package") or "Architektur")
     for position, i in enumerate(fehlend):
-        prompt = element_prompt(batches[i - 1], rulebook, package=str(state.get("package") or "Architektur"), known=known)
-        antwort, _versuche = extract._request_answer(backend, prompt, rulebook, allow_empty=True)
-        aufrufe += 1
+        antwort, calls = _request_stufen_adaptive(
+            backend,
+            batches[i - 1],
+            rulebook,
+            lambda b, c, _k=tuple(known): element_prompt(b, rulebook, package=pkg_name, known=_k, compact=c),
+            use_compact=compact_mode,
+        )
+        aufrufe += calls
         _write_json(element_dateien[i - 1], antwort)
         for eintrag in antwort.get("elements", ()):
             name = str(eintrag.get("name") or "").strip()
@@ -657,12 +756,17 @@ def stufe2(
     if pause > 0 and aufrufe > 0 and fehlend:
         ausgabe(f"  Pause {pause:g}s vor den Beziehungen")
         _pause(pause)
+    all_els = tuple(elemente.get("elements", ()))
+    all_known = tuple(known)
     for position, i in enumerate(fehlend):
-        prompt = connector_prompt(
-            batches[i - 1], rulebook, elemente=elemente.get("elements", ()), known=known
+        antwort, calls = _request_stufen_adaptive(
+            backend,
+            batches[i - 1],
+            rulebook,
+            lambda b, c: connector_prompt(b, rulebook, elemente=all_els, known=all_known, compact=c),
+            use_compact=compact_mode,
         )
-        antwort, _versuche = extract._request_answer(backend, prompt, rulebook, allow_empty=True)
-        aufrufe += 1
+        aufrufe += calls
         _write_json(beziehung_dateien[i - 1], antwort)
         ausgabe(f"Beziehungen {i}/{len(batches)}: {len(antwort.get('connectors', ()))} Beziehung(en)")
         if pause > 0 and position + 1 < len(fehlend):

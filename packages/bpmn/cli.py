@@ -64,6 +64,15 @@ def _export(args) -> int:
         ziel.write_text(bpmn_xml.schreibe_text(modell), encoding="utf-8")
     elif args.format == "svg":
         ziel.write_text(exporte.svg_text(modell), encoding="utf-8")
+    elif args.format == "qea":
+        from . import qea_bpmn
+
+        qea_bpmn.schreibe_qea(
+            modell,
+            ziel,
+            katalog=getattr(args, "katalog", None),
+            bestand_verbinden=bool(getattr(args, "bestand_verbinden", False)),
+        )
     else:
         ziel.write_bytes(exporte.exportiere_png(modell))
     print(f"geschrieben: {ziel} ({ziel.stat().st_size} Bytes)")
@@ -164,9 +173,11 @@ def main(argv: list[str] | None = None) -> int:
     k.add_argument("-o", "--ausgabe", required=True)
     k.set_defaults(funktion=_konform)
 
-    e = unter.add_parser("export", help="als XML, SVG oder PNG ausgeben")
+    e = unter.add_parser("export", help="als XML, SVG, PNG oder QEA ausgeben")
     e.add_argument("datei")
-    e.add_argument("--format", choices=("xml", "svg", "png"), default="svg")
+    e.add_argument("--format", choices=("xml", "svg", "png", "qea"), default="svg")
+    e.add_argument("--katalog", default=None, help="L2/L3-Architekturmodell (.qea/.xmi/.xml/.json) zur GUID-Kopplung")
+    e.add_argument("--bestand-verbinden", action="store_true", help="Bei .qea-Katalog Prozess direkt ins Gesamtmodell mergen")
     e.add_argument("-o", "--ausgabe", required=True)
     e.set_defaults(funktion=_export)
 

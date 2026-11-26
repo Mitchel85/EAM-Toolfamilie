@@ -1832,6 +1832,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_st2.add_argument("--pause", type=float, default=120.0, help="Pause zwischen zwei Aufrufen in s (Default: 120)")
     p_st2.add_argument("--charge", type=int, default=extract_module.DEFAULT_BATCH_CHARS,
                        help=f"Quelltext je Charge in Zeichen (Default: {extract_module.DEFAULT_BATCH_CHARS})")
+    p_st2.add_argument(
+        "--kontext-tokens",
+        type=int,
+        default=None,
+        metavar="N",
+        help="Kontextfenster des Modells in Tokens (z. B. 4096, 8192, 16384)",
+    )
     p_st2.add_argument("--quiet", action="store_true")
     p_st2.set_defaults(func=cmd_stufe2)
 
@@ -1915,6 +1922,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_alle.add_argument("--timeout", type=float, default=120.0)
     p_alle.add_argument("--pause", type=float, default=120.0)
     p_alle.add_argument("--charge", type=int, default=extract_module.DEFAULT_BATCH_CHARS)
+    p_alle.add_argument(
+        "--kontext-tokens",
+        type=int,
+        default=None,
+        metavar="N",
+        help="Kontextfenster des Modells in Tokens (z. B. 4096, 8192, 16384)",
+    )
     p_alle.add_argument("--ohne-struktur", action="store_true", help="Inhalt flach lassen")
     p_alle.add_argument("--ohne-sichten", action="store_true", help="keine Diagramme anlegen")
     p_alle.add_argument(
@@ -2022,9 +2036,34 @@ def build_parser() -> argparse.ArgumentParser:
     p_qs.add_argument("--in", "-i", dest="modell", required=True, type=Path, help="Modell-Datei")
     p_qs.add_argument("--mdg", type=Path, help="MDG-Technologie XML oder rules.json")
     p_qs.add_argument("--projekt", default="", help="Projektkuerzel")
+    p_qs.add_argument("--text", type=Path, default=None, help="Optionaler Quelltext fuer Textabdeckungs-Pruefung")
     p_qs.add_argument("-o", "--out", type=Path, help="QS-Bericht als JSON schreiben")
     p_qs.add_argument("--strict", action="store_true", help="Warnungen als Fehler werten (Exit 1)")
     p_qs.set_defaults(func=cmd_qs)
+
+    p_diff = sub.add_parser(
+        "diff",
+        help="Architektur-Standsvergleich ueber alle 4 Formate (.qea, .xmi, .xml, .json)",
+    )
+    p_diff.add_argument("--alt", required=True, type=Path, help="Altes/Referenz-Modell")
+    p_diff.add_argument("--neu", required=True, type=Path, help="Neues/Geaendertes Modell")
+    p_diff.add_argument("--mdg", type=Path, default=None, help="Optionale MDG-XML oder rules.json fuer Befund-Delta")
+    p_diff.add_argument("--format", "-f", choices=("text", "md", "json"), default="md")
+    p_diff.add_argument("--out", "-o", type=Path, default=None, help="Bericht in Datei schreiben")
+    p_diff.add_argument("--fail-on-changes", action="store_true", help="Exit 1 bei Abweichungen")
+    p_diff.set_defaults(func=cmd_diff)
+
+    p_repair = sub.add_parser(
+        "repair",
+        help="Regelbasierte MDG-Reparatur mit Vorschau (und mit --apply schreiben)",
+    )
+    p_repair.add_argument("--in", "-i", dest="modell", required=True, type=Path, help="Eingabemodell (.qea, .xmi, .xml, .json)")
+    p_repair.add_argument("--mdg", type=Path, default=None, help="MDG-XML oder rules.json")
+    p_repair.add_argument("--out", "-o", type=Path, default=None, help="Zielmodell (nur mit --apply)")
+    p_repair.add_argument("--apply", action="store_true", help="Reparatur schreiben (sonst nur Vorschau)")
+    p_repair.add_argument("--max-runden", type=int, default=6, help="Maximale Reparaturrunden (Default: 6)")
+    p_repair.add_argument("--json", action="store_true", help="Vorschau/Ergebnis als JSON ausgeben")
+    p_repair.set_defaults(func=cmd_repair)
 
     p_sa = sub.add_parser(
         "sichten-archiv",
@@ -2048,6 +2087,17 @@ def build_parser() -> argparse.ArgumentParser:
     sa_pruef.add_argument("archiv", type=Path, help="Archivdatei (.archiv)")
 
     p_sa.set_defaults(func=cmd_sichten_archiv)
+
+    p_mcp = sub.add_parser(
+        "mcp",
+        help="Abhaengigkeitsfreier 4-Format-MCP-Server ueber stdio (JSON-RPC 2.0)",
+    )
+    p_mcp.add_argument(
+        "--list-tools",
+        action="store_true",
+        help="Verfuegbare MCP-Werkzeuge als JSON ausgeben und beenden",
+    )
+    p_mcp.set_defaults(func=cmd_mcp)
     return parser
 
 
@@ -2280,10 +2330,10 @@ def cmd_qs(args: argparse.Namespace) -> int:
         for lf in lf_befunde:
             findings.append({
                 "severity": lf.severity.lower() if lf.severity.lower() in ("error", "warning") else ("warning" if lf.severity == "WARNUNG" else "info"),
-                "object_label": lf.element or lf.paket or "",
+                "object_label": lf.object or "",
                 "rule": lf.code,
-                "check": "leitfadenCheck",
-                "message": lf.meldung,
+                "check": lf.check or "leitfadenCheck",
+                "message": lf.message,
             })
 
         con = sqlite3.connect(str(pruef_qea))
@@ -2321,6 +2371,16 @@ def cmd_qs(args: argparse.Namespace) -> int:
         "beziehungen": len(conns),
     }
 
+    import text_coverage
+    cov = text_coverage.evaluate_coverage(
+        ir,
+        text_source=getattr(args, "text", None),
+        model_path=model_path,
+    )
+    if cov is not None:
+        summary["text_coverage_pct"] = cov.coverage_pct
+        summary["uncovered_segments"] = cov.uncovered_segments
+
     report = {
         "modell": str(model_path),
         "ok": summary["error"] == 0 and (not args.strict or summary["warning"] == 0),
@@ -2329,16 +2389,23 @@ def cmd_qs(args: argparse.Namespace) -> int:
         "ea": ea_stats,
         "findings": findings,
     }
+    if cov is not None:
+        report["coverage"] = cov.as_dict()
 
     if args.out:
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
+    cov_suffix = (
+        f", Textabdeckung {cov.coverage_pct}% ({cov.covered_segments}/{cov.content_segments} Absaetze)"
+        if cov is not None
+        else ""
+    )
     print(
         f"QS-Ergebnis: {'OK' if report['ok'] else 'NICHT OK'} -- "
         f"{summary['elemente']} Elemente, {summary['beziehungen']} Beziehungen; "
         f"{summary['error']} Fehler, {summary['warning']} Warnungen ({summary['waisen']} Waisen, "
-        f"{summary['quellbelege_fehlen']} ohne Quellbeleg)"
+        f"{summary['quellbelege_fehlen']} ohne Quellbeleg{cov_suffix})"
     )
 
     if summary["error"] > 0 or (args.strict and summary["warning"] > 0):
@@ -2507,6 +2574,7 @@ def cmd_stufe2(args: argparse.Namespace) -> int:
             timeout=args.timeout,
             pause=args.pause,
             charge=args.charge,
+            context_tokens=getattr(args, "kontext_tokens", None),
             log=_stufen_say(args),
         )
     except Exception as exc:  # noqa: BLE001
@@ -2631,6 +2699,7 @@ def cmd_alle(args: argparse.Namespace) -> int:
             timeout=args.timeout,
             pause=args.pause,
             charge=args.charge,
+            context_tokens=getattr(args, "kontext_tokens", None),
             log=say,
         )
         say("[3/4] Architektur bauen")
@@ -3031,6 +3100,109 @@ def cmd_edit(args: argparse.Namespace) -> int:
             file=sys.stderr,
         )
     return 0 if not result.rejected else 1
+
+
+def cmd_diff(args: argparse.Namespace) -> int:
+    """Vergleicht zwei Architekturstaende ueber alle 4 Formate."""
+    import model_diff
+
+    try:
+        res = model_diff.diff_models(args.alt, args.neu, mdg=args.mdg)
+    except model_diff.DiffError as exc:
+        print(f"FEHLER: {exc}", file=sys.stderr)
+        return 2
+    if args.format == "json":
+        text = json.dumps(res.as_dict(), ensure_ascii=False, indent=2) + "\n"
+    elif args.format == "text":
+        text = model_diff.render_text(res)
+    else:
+        text = model_diff.render_markdown(res)
+    if args.out is not None:
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(text, encoding="utf-8")
+    else:
+        sys.stdout.write(text)
+    if args.fail_on_changes and not res.identical:
+        return 1
+    return 0
+
+
+def cmd_repair(args: argparse.Namespace) -> int:
+    """Regelbasierte MDG-Reparatur mit Vorschau und optionalem Schreiben."""
+    import model_io
+    import repair_loop
+    import validator
+
+    model_path = Path(args.modell)
+    if not model_path.is_file():
+        print(f"FEHLER: Modell nicht gefunden: {model_path}", file=sys.stderr)
+        return 1
+    rules_path = args.mdg
+    if not rules_path:
+        default_mdg = Path(__file__).resolve().parents[1] / "rules" / "NAFv4-ADMBw-MDG-2026.05.xml"
+        rules_path = default_mdg if default_mdg.is_file() else Path(__file__).resolve().parents[1] / "knowledge" / "regelwerk.json"
+    if not rules_path or not Path(rules_path).is_file():
+        print("FEHLER: Regelwerk fehlt (--mdg angeben)", file=sys.stderr)
+        return 1
+
+    try:
+        ir = validator.load_ir(model_path)
+        ruleset = validator.load_rules(Path(rules_path))
+        outcome = repair_loop.repair(ir, ruleset, max_rounds=max(1, args.max_runden))
+    except Exception as exc:  # noqa: BLE001
+        print(f"FEHLER Reparatur: {exc}", file=sys.stderr)
+        return 1
+
+    all_changes = [ch.as_dict() for r in outcome.rounds for ch in r.changes]
+    summary_before = outcome.rounds[0].errors_before if outcome.rounds else validator.summarize_findings(outcome.findings)["error"]
+    summary_after = validator.summarize_findings(outcome.findings)
+
+    payload: dict[str, Any] = {
+        "modell": str(model_path),
+        "applied": bool(args.apply and args.out),
+        "changes_count": len(all_changes),
+        "errors_before": summary_before,
+        "errors_after": summary_after["error"],
+        "warnings_after": summary_after["warning"],
+        "changes": all_changes,
+        "remaining_findings": outcome.findings[:50],
+    }
+
+    if args.apply:
+        if args.out is None:
+            print("FEHLER: --apply verlangt --out", file=sys.stderr)
+            return 1
+        try:
+            written = model_io.write_model(outcome.ir, args.out)
+            payload["written"] = str(written)
+        except Exception as exc:  # noqa: BLE001
+            print(f"FEHLER beim Schreiben: {exc}", file=sys.stderr)
+            return 1
+
+    if args.json:
+        sys.stdout.write(json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
+    else:
+        mode_lbl = f"Geschrieben nach {payload.get('written')}" if args.apply else "Vorschau (nichts geschrieben, mit --out ZIEL --apply ausfuehren)"
+        print(
+            f"MDG-Reparatur ({mode_lbl}): {len(all_changes)} Aenderung(en), "
+            f"Fehler {summary_before} -> {summary_after['error']}, "
+            f"Warnungen {summary_after['warning']}"
+        )
+        for ch in all_changes[:30]:
+            print(f"  - [{ch['kind']}] {ch['target']}: {ch['before']!r} -> {ch['after']!r} ({ch['reason']})")
+    return 0
+
+
+def cmd_mcp(args: argparse.Namespace) -> int:
+    """Startet den schlanken 4-Format-MCP-Server ueber stdio (ohne Fremdpakete)."""
+    import mcp_stdio
+
+    if args.list_tools:
+        sys.stdout.write(
+            json.dumps({"tools": list(mcp_stdio.TOOLS)}, ensure_ascii=False, indent=2) + "\n"
+        )
+        return 0
+    return mcp_stdio.serve_stdio(version=__version__)
 
 
 def main(argv: Sequence[str] | None = None) -> int:

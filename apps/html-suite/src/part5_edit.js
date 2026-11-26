@@ -28,6 +28,33 @@ var EDIT = (function () {
   var _connSrcOid = null;
   var _connEndOid = null;
   var toastTimer = null;
+  var _undoStack = [];
+
+  function syncUndoBtn() {
+    var b = el('undobtn');
+    if (b) b.style.display = _undoStack.length ? 'inline-block' : 'none';
+  }
+  function pushSnapshot(bytes, label) {
+    if (!bytes) return;
+    try {
+      var copy = (bytes instanceof Uint8Array) ? bytes.slice() : new Uint8Array(bytes.slice ? bytes.slice(0) : bytes);
+      if (!copy.byteLength) return;
+      _undoStack.push({ bytes: copy, name: label || srcName || MODELLNAME || 'Architektur' });
+      if (_undoStack.length > 10) _undoStack.shift();
+      syncUndoBtn();
+    } catch (e) { }
+  }
+  function prevBytes() {
+    return _undoStack.length ? _undoStack[_undoStack.length - 1].bytes : null;
+  }
+  function canUndo() { return _undoStack.length > 0; }
+  function undoLive() {
+    if (!_undoStack.length) { toast('Kein vorheriger Stand zum Zurücksetzen.'); return; }
+    var snap = _undoStack.pop();
+    syncUndoBtn();
+    loadQea(snap.bytes.slice().buffer, snap.name, true);
+    toast('↩️ Auf vorherigen Stand zurückgesetzt.');
+  }
 
   /* ================= kleine Helfer ================= */
   function p2(n) { return (n < 10 ? '0' : '') + n; }
@@ -1164,6 +1191,7 @@ var EDIT = (function () {
         var out = db.export();
         var probe = qeaOpen(out.slice().buffer);
         if (!probe) throw new Error('Ausgabemodell nicht lesbar.');
+        pushSnapshot(srcBytes, srcName || MODELLNAME || 'Architektur');
         loadQea(out.slice().buffer, srcName || MODELLNAME || 'Architektur', true);
         toast('Modell aktualisiert — alle Ansichten sind auf dem neuesten Stand.');
         if (cb) cb(null);
@@ -1478,6 +1506,16 @@ var EDIT = (function () {
             sub: shortLabel(ca ? ca.name : '?', 28) + ' ↔ ' + shortLabel(cb ? cb.name : '?', 28) + (craw ? '' : ' •')
           });
           results.push({ ok: true, msg: 'Beziehung löschen: ' + (ca ? ca.name : '?') + ' → ' + (cb ? cb.name : '?') });
+        } else if (op.op === 'set_connector_stereotype') {
+          var cs = op.cid != null ? { id: String(op.cid), a: null, b: null, st: op.oldStereotype || '' } : nlConnector({ source: op.source, target: op.target, stereotype: op.oldStereotype || '' });
+          var gcs = groupOf(cs.id);
+          nlQueue({
+            kind: 'conn.set', key: 'conn:' + cs.id, id: Number(gcs.l), cid: cs.id, srcNo: gcs.n,
+            fields: { Stereotype: s0(op.value) }, oldStereotype: s0(op.oldStereotype || cs.st),
+            label: 'Regel-Reparatur: Beziehung «' + shortLabel(s0(op.oldStereotype || cs.st), 24) + '» → «' + shortLabel(s0(op.value), 24) + '»',
+            sub: shortLabel(s0(op.source), 30) + ' → ' + shortLabel(s0(op.target), 30)
+          });
+          results.push({ ok: true, msg: 'Kantenstereotyp: ' + s0(op.value) });
         } else {
           throw new Error('Unbekannte Operation „' + op.op + '“');
         }
@@ -1498,6 +1536,10 @@ var EDIT = (function () {
     q: q,
     save: save,
     applyLive: applyLive,
+    pushSnapshot: pushSnapshot,
+    undoLive: undoLive,
+    canUndo: canUndo,
+    prevBytes: prevBytes,
     removeChange: removeChange,
     clearAll: clearAll,
     clearAllConfirm: clearAllConfirm,

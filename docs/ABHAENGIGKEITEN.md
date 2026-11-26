@@ -90,7 +90,7 @@ Eine Zelle ist ein Ordner mit `package.json`. `dependencies` sind Laufzeit-,
 | `vendor/LICENSE-pdfjs.txt` | `cfc7749b96f63bd3…` | — | — | — |
 | `vendor/LICENSE-sql.js` | `60a3f6e4d7b29b43…` | x | x | x |
 | `vendor/eam-formats.js` | `2d5e8a1cffbdda25…` | x | x | — |
-| `vendor/eam-mdg.js` | `b8ee527812855079…` | x | x | — |
+| `vendor/eam-mdg.js` | `80a53ec741e6b8f7…` | x | x | — |
 | `vendor/jszip.min.js` | `acc7e41455a80765…` | x | — | — |
 | `vendor/pdf.min.js` | `1fc294eefda602e5…` | x | — | — |
 | `vendor/pdf.worker.min.js` | `99732130603cd498…` | x | — | — |

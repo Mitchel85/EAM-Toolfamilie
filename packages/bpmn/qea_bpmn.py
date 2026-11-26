@@ -40,10 +40,12 @@ Oeffentliche API::
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import os
 import re
+import tempfile
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 from . import modell as m
 from core import qea_writer
@@ -142,8 +144,174 @@ def _kante(
     return eintrag
 
 
+def _norm_key(text: Any) -> str:
+    return " ".join(str(text or "").split()).casefold()
+
+
+def _lade_katalog_eintraege(
+    katalog: str | os.PathLike[str] | Mapping[str, Any] | None,
+) -> dict[str, list[dict[str, Any]]]:
+    """Liest Elemente eines L2/L3-Architekturmodells (.qea, .xmi, .xml, .json oder IR) nach Name/Alias."""
+    if katalog is None:
+        return {}
+    if isinstance(katalog, Mapping):
+        ir = dict(katalog)
+    else:
+        from core import validator
+
+        ir = validator.load_ir(Path(katalog))
+    index: dict[str, list[dict[str, Any]]] = {}
+    for el in ir.get("elements") or ():
+        if not isinstance(el, Mapping):
+            continue
+        nm = str(el.get("name") or "").strip()
+        if not nm:
+            continue
+        item = {
+            "name": nm,
+            "package": str(el.get("package") or "").strip(),
+            "stereotype": str(el.get("stereotype") or "").strip(),
+            "ea_type": str(el.get("ea_type") or "Class").strip(),
+            "guid": str(el.get("guid") or el.get("ea_guid") or "").strip(),
+            "tags": dict(el.get("tags") or {}) if isinstance(el.get("tags"), Mapping) else {},
+        }
+        index.setdefault(_norm_key(nm), []).append(item)
+        al = str(el.get("alias") or "").strip()
+        if al and _norm_key(al) != _norm_key(nm):
+            index.setdefault(_norm_key(al), []).append(item)
+    return index
+
+
+def _binde_an_architektur_katalog(
+    ir: dict[str, Any],
+    katalog_index: Mapping[str, list[dict[str, Any]]],
+) -> dict[str, int]:
+    """Verknuepft L4-BPMN-Elemente kennungserhaltend mit L2/L3-Architekturelementen."""
+    stats = {"direkt_uebernommen": 0, "l3_bruecken": 0}
+    if not katalog_index:
+        return stats
+
+    pakete: list[dict[str, Any]] = ir["packages"]
+    vorhandene_pakete = {str(p.get("path") or "") for p in pakete}
+
+    def ensure_pkg(pfad: str) -> None:
+        teile = [t for t in pfad.split("/") if t]
+        for idx in range(1, len(teile) + 1):
+            sub = "/".join(teile[:idx])
+            if sub and sub not in vorhandene_pakete:
+                pakete.append({"path": sub})
+                vorhandene_pakete.add(sub)
+
+    used_guids: set[str] = set()
+    ref_remap: dict[str, str] = {}
+    anker_elemente: list[dict[str, Any]] = []
+    bruecken_kanten: list[dict[str, Any]] = []
+    anker_refs: dict[str, str] = {}
+
+    l3_activity_stereos = {"operationalactivity", "function", "servicefunction", "businessprocess", "applicationprocess"}
+    l3_actor_stereos = {"node", "system", "capability", "businessactor", "businessrole", "applicationcomponent"}
+
+    for el in ir["elements"]:
+        nm = str(el.get("name") or "").strip()
+        st = str(el.get("stereotype") or "").strip()
+        old_pkg = str(el.get("package") or "").strip()
+        old_ref = f"{old_pkg}::{nm}" if old_pkg else nm
+        kandidaten = katalog_index.get(_norm_key(nm), [])
+        if not kandidaten:
+            continue
+
+        # 1. Exakter Stereotyp-Treffer -> identisches Modellelement (GUID + Heimatpaket uebernehmen)
+        exact = next(
+            (
+                k
+                for k in kandidaten
+                if k["stereotype"].casefold() == st.casefold()
+                and (not k["guid"] or k["guid"] not in used_guids)
+            ),
+            None,
+        )
+        if exact is not None:
+            if exact["guid"]:
+                el["guid"] = exact["guid"]
+                used_guids.add(exact["guid"])
+            if exact["tags"]:
+                merged_tags = dict(exact["tags"])
+                merged_tags.update(dict(el.get("tags") or {}))
+                el["tags"] = merged_tags
+            if exact["package"] and exact["package"] != old_pkg:
+                ensure_pkg(exact["package"])
+                el["package"] = exact["package"]
+                ref_remap[old_ref] = f"{exact['package']}::{nm}"
+            stats["direkt_uebernommen"] += 1
+            continue
+
+        # 2. L3 <-> L4 Bruecke (z.B. OperationalActivityAction -> OperationalActivity / Function)
+        if st == STEREOTYP_AKTION:
+            l3 = next((k for k in kandidaten if k["stereotype"].casefold() in l3_activity_stereos), None)
+            rel_st, rel_ty = "Implements", "Realisation"
+        elif st in (STEREOTYP_LANE, STEREOTYP_POOL):
+            l3 = next((k for k in kandidaten if k["stereotype"].casefold() in l3_actor_stereos), None)
+            rel_st, rel_ty = "Association", "Association"
+        else:
+            l3 = None
+            rel_st, rel_ty = "", ""
+
+        if l3 is not None:
+            l3_pkg = l3["package"] or "Architektur"
+            ensure_pkg(l3_pkg)
+            l3_ref = f"{l3_pkg}::{l3['name']}"
+            if l3_ref not in anker_refs:
+                anker_el = _element(
+                    l3_pkg,
+                    l3["name"],
+                    l3["stereotype"],
+                    l3["ea_type"] or "Class",
+                    notes=f"L3-Architekturelement aus Katalog ({l3['stereotype']})",
+                    tags=dict(l3["tags"]) if l3["tags"] else None,
+                )
+                if l3["guid"] and l3["guid"] not in used_guids:
+                    anker_el["guid"] = l3["guid"]
+                    used_guids.add(l3["guid"])
+                anker_elemente.append(anker_el)
+                anker_refs[l3_ref] = l3_ref
+            cur_ref = ref_remap.get(old_ref, old_ref)
+            bruecken_kanten.append(
+                _kante(
+                    cur_ref,
+                    l3_ref,
+                    stereotype=rel_st,
+                    ea_type=rel_ty,
+                    notes=f"L3-L4-Kopplung ({st} -> {l3['stereotype']})",
+                    tags=_tags(l3_l4_bridge="true", target_guid=l3["guid"]),
+                )
+            )
+            stats["l3_bruecken"] += 1
+
+    if ref_remap:
+        for kante in ir["connectors"]:
+            for end_key in ("source", "target"):
+                val = str(kante.get(end_key) or "")
+                if val in ref_remap:
+                    kante[end_key] = ref_remap[val]
+        for diag in ir.get("diagrams") or ():
+            for mem in diag.get("members") or ():
+                if isinstance(mem, dict):
+                    for mk in ("ref", "element"):
+                        if mem.get(mk) in ref_remap:
+                            mem[mk] = ref_remap[mem[mk]]
+
+    ir["elements"].extend(anker_elemente)
+    ir["connectors"].extend(bruecken_kanten)
+    ir.setdefault("meta", {})["katalog_kopplung"] = stats
+    return stats
+
+
 def als_ir(
-    modell: m.Modell, paket: str = "Prozesse", sichten: bool = True
+    modell: m.Modell,
+    paket: str = "Prozesse",
+    sichten: bool = True,
+    *,
+    katalog: str | os.PathLike[str] | Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Baut das IR fuer :func:`qea_writer.write_qea`."""
     if not modell.prozesse:
@@ -388,7 +556,7 @@ def als_ir(
                     }
                 )
 
-    return {
+    ir: dict[str, Any] = {
         "ir_version": qea_writer.IR_VERSION,
         "technology": {"profile": "ADMBw"},
         "packages": pakete,
@@ -396,6 +564,9 @@ def als_ir(
         "connectors": kanten,
         "diagrams": diagramme,
     }
+    if katalog is not None:
+        _binde_an_architektur_katalog(ir, _lade_katalog_eintraege(katalog))
+    return ir
 
 
 def schreibe_qea(
@@ -403,16 +574,46 @@ def schreibe_qea(
     ziel: str | os.PathLike[str],
     paket: str = "Prozesse",
     sichten: bool = True,
+    *,
+    katalog: str | os.PathLike[str] | Mapping[str, Any] | None = None,
+    bestand_verbinden: bool = False,
 ) -> Path:
-    """Schreibt das BPMN-Modell als .qea und liefert den Pfad."""
-    return qea_writer.write_qea(als_ir(modell, paket, sichten=sichten), ziel)
+    """Schreibt das BPMN-Modell als .qea (optional GUID-erhaltend gekoppelt an ein Architekturmodell)."""
+    ir = als_ir(modell, paket, sichten=sichten, katalog=katalog)
+    ziel_pfad = Path(ziel)
+    if (
+        bestand_verbinden
+        and katalog is not None
+        and not isinstance(katalog, Mapping)
+        and Path(katalog).suffix.lower() == ".qea"
+        and Path(katalog).is_file()
+    ):
+        from core import model_merge
+
+        with tempfile.TemporaryDirectory(prefix="bpmn-qea-") as td:
+            teil_qea = Path(td) / "prozess.qea"
+            qea_writer.write_qea(ir, teil_qea)
+            model_merge.merge_models([str(Path(katalog)), str(teil_qea)], ziel_pfad, per_name=True)
+        return ziel_pfad
+    return qea_writer.write_qea(ir, ziel_pfad)
 
 
 def qea_bytes(
-    modell: m.Modell, paket: str = "Prozesse", sichten: bool = True
+    modell: m.Modell,
+    paket: str = "Prozesse",
+    sichten: bool = True,
+    *,
+    katalog: str | os.PathLike[str] | Mapping[str, Any] | None = None,
 ) -> bytes:
     """Liefert die .qea als Bytes (deterministisch, ohne Zwischendatei)."""
-    return qea_writer.render_bytes(als_ir(modell, paket, sichten=sichten))
+    return qea_writer.render_bytes(als_ir(modell, paket, sichten=sichten, katalog=katalog))
 
 
-__all__ = ["STEREOTYP_POOL", "STEREOTYP_LANE", "STEREOTYP_AKTION", "als_ir", "schreibe_qea", "qea_bytes"]
+__all__ = [
+    "STEREOTYP_POOL",
+    "STEREOTYP_LANE",
+    "STEREOTYP_AKTION",
+    "als_ir",
+    "schreibe_qea",
+    "qea_bytes",
+]

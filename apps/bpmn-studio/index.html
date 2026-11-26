@@ -1842,6 +1842,7 @@ h1 { font-size: 18px; margin: 0; letter-spacing: .2px; }
     <span class="trenner" aria-hidden="true"></span>
     <button id="btn-pruefen" type="button" class="haupt">ADMBw-Prüfung</button>
     <button id="btn-konform" type="button">ADMBw-konform machen</button>
+    <label class="knopf datei" title="L2/L3-Architekturmodell (.json, .xml ArchiMate, .xmi) als Rollen- &amp; Aktivitäten-Katalog koppeln">L3-Katalog<input id="katalog-laden" type="file" accept=".json,.xml,.archimate,.xmi,application/json,application/xml,text/xml" hidden></label>
     <button id="btn-text" type="button">Aus Text extrahieren</button>
     <label class="schalter" title="Optionaler KI-Adapter (standardmäßig aus)">
       <input id="ki-aktiv" type="checkbox"> KI
@@ -4230,6 +4231,29 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
     + 'Bedingte Schritte tragen die Bedingung in "bedingung" (z. B. "Bei Auflagen"). '
     + 'Aufgaben heißen Objekt + Verb ("Antrag prüfen"), nie "X ist zu prüfen".';
 
+  function zerlegeKiTextChunke(text, maxLen) {
+    var norm = String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
+    if (!maxLen || norm.length <= maxLen) return [norm];
+    var bloecke = norm.split(/\n\s*\n+/), teile = [], akt = '';
+    for (var i = 0; i < bloecke.length; i++) {
+      var b = bloecke[i].trim();
+      if (!b) continue;
+      while (b.length > maxLen) {
+        var cut = b.lastIndexOf('. ', maxLen);
+        cut = cut >= Math.floor(maxLen / 3) ? cut + 1 : maxLen;
+        if (akt) { teile.push(akt); akt = ''; }
+        teile.push(b.slice(0, cut).trim());
+        b = b.slice(cut).trim();
+      }
+      if (!b) continue;
+      var kand = akt ? (akt + '\n\n' + b) : b;
+      if (kand.length <= maxLen) akt = kand;
+      else { if (akt) teile.push(akt); akt = b; }
+    }
+    if (akt) teile.push(akt);
+    return teile.length ? teile : [norm];
+  }
+
   function kiExtrahieren(weiter) {
     // Serverbetrieb: der Schluessel liegt beim Server, der Browser schickt nur Text.
     var dienst = window.BPMN_KI_DIENST || '';
@@ -4437,9 +4461,44 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
       var wahl = daten && daten.choices && daten.choices[0];
       var inhalt = wahl && wahl.message && wahl.message.content;
       if (wahl && wahl.finish_reason === 'length') {
+        if (!weiter && text.length >= 800) {
+          var teileFallback = zerlegeKiTextChunke(text, Math.max(600, Math.floor(text.length / 2)));
+          if (teileFallback.length > 1) {
+            status.textContent = 'Text wird für kleines Kontextfenster automatisch in ' + teileFallback.length + ' Teilen ausgewertet …';
+            var gesammelt = [], poolGefunden = '';
+            return teileFallback.reduce(function (kette, teilText, idx) {
+              return kette.then(function () {
+                status.textContent = 'KI-Chargenlauf Teil ' + (idx + 1) + '/' + teileFallback.length + ' …';
+                var teilRumpf = Object.assign({}, rumpf, {
+                  messages: [
+                    { role: 'system', content: KI_REGELN + ' Leite nur die Schritte dieses Textabschnitts ab.' },
+                    { role: 'user', content: teilText }
+                  ]
+                });
+                return fetch(endpoint, { method: 'POST', headers: anfrageKopf, body: JSON.stringify(teilRumpf) })
+                  .then(function (r) { return r.json(); })
+                  .then(function (dj) {
+                    var c = dj && dj.choices && dj.choices[0] && dj.choices[0].message && dj.choices[0].message.content;
+                    if (!c) return;
+                    var clean = String(c).trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+                    var parsed = JSON.parse(clean);
+                    if (!poolGefunden && parsed.prozess) poolGefunden = parsed.prozess;
+                    (parsed.schritte || parsed.steps || []).forEach(function (st) { gesammelt.push(st); });
+                  });
+              });
+            }, Promise.resolve()).then(function () {
+              return { choices: [{ finish_reason: 'stop', message: { content: JSON.stringify({ prozess: poolGefunden, schritte: gesammelt }) } }] };
+            }).then(function (ersatz) {
+              inhalt = ersatz.choices[0].message.content;
+              return inhalt;
+            });
+          }
+        }
         throw new Error('Antwort wurde abgeschnitten: der Prozess ist für eine Antwort zu lang '
           + '(Token-Grenze). Bitte "Prozessabschnitt" nutzen — z. B. "Abschnitt 4" — oder den Text teilen.');
       }
+      return inhalt;
+    }).then(function (inhalt) {
       if (!inhalt) throw new Error('Antwort ohne Inhalt');
       var bereinigt = String(inhalt).trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
       var json;
@@ -4550,6 +4609,12 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
         e.target.value = '';
       });
     }
+    if ($('katalog-laden')) {
+      $('katalog-laden').addEventListener('change', function (e) {
+        katalogDateiLaden(e.target.files && e.target.files[0]);
+        e.target.value = '';
+      });
+    }
 
     var beispielKnopf = $('text-beispiel');
     if (beispielKnopf) {
@@ -4632,8 +4697,105 @@ function(e){const t=W('<a href="http://bpmn.io" target="_blank" class="bjs-power
       pruefe: pruefe,
       zerlege: zerlege,
       prozessXml: prozessXml,
+      katalogAbgleichen: katalogAbgleichen,
       version: '3.14.0'
     };
+  }
+
+  var architekturKatalog = [];
+
+  function parseKatalogText(roh, dateiname) {
+    var eintraege = [];
+    var low = String(dateiname || '').toLowerCase();
+    if (low.endsWith('.json') || String(roh).trim().charAt(0) === '{') {
+      var j = JSON.parse(roh);
+      var liste = j.elements || j.nodes || [];
+      liste.forEach(function (e) {
+        var nm = String(e.name || '').trim();
+        if (!nm || e.metaclass === 'Package') return;
+        eintraege.push({
+          name: nm,
+          stereotype: String(e.stereotype || e.metaclass || ''),
+          guid: String(e.guid || e.ea_guid || (e.properties && e.properties.ea_guid) || ''),
+          package: String(e.package || '')
+        });
+      });
+      return eintraege;
+    }
+    var doc = new DOMParser().parseFromString(String(roh || ''), 'application/xml');
+    var els = doc.getElementsByTagName('*');
+    for (var i = 0; i < els.length; i++) {
+      var tag = els[i].nodeName.split(':').pop();
+      if (tag === 'element') {
+        var nmEl = els[i].getElementsByTagName('name')[0];
+        var nm2 = nmEl ? String(nmEl.textContent || '').trim() : '';
+        var id = els[i].getAttribute('identifier') || '';
+        var xtype = (els[i].getAttribute('xsi:type') || els[i].getAttribute('type') || '').split(':').pop();
+        if (nm2) eintraege.push({ name: nm2, stereotype: xtype, guid: id, package: '' });
+      } else if (tag === 'packagedElement') {
+        var ptype = (els[i].getAttribute('xmi:type') || '').split(':').pop();
+        if (ptype === 'Package') continue;
+        var nm3 = String(els[i].getAttribute('name') || '').trim();
+        var xid = els[i].getAttribute('xmi:id') || els[i].getAttribute('id') || '';
+        if (nm3) eintraege.push({ name: nm3, stereotype: ptype, guid: xid, package: '' });
+      }
+    }
+    return eintraege;
+  }
+
+  function katalogAbgleichen(eintraege) {
+    architekturKatalog = eintraege || architekturKatalog || [];
+    if (!modeler || !architekturKatalog.length) return { gekoppelt: 0, offen: 0 };
+    var byName = {};
+    architekturKatalog.forEach(function (k) {
+      var key = k.name.trim().toLowerCase();
+      if (key && !byName[key]) byName[key] = k;
+    });
+    var registry = modeler.get('elementRegistry');
+    var modeling = modeler.get('modeling');
+    var bpmnFactory = modeler.get('bpmnFactory');
+    var gekoppelt = 0, offen = 0, bericht = [];
+    registry.getAll().forEach(function (el) {
+      if (el.type !== 'bpmn:Participant' && el.type !== 'bpmn:Lane' && !istAufgabe(el)) return;
+      var nm = String(name(el) || '').trim();
+      if (!nm) return;
+      var hit = byName[nm.toLowerCase()];
+      if (hit) {
+        gekoppelt++;
+        var marker = '[L3-Katalog: ' + (hit.stereotype || 'Element') + (hit.guid ? ' | ea_guid=' + hit.guid : '') + (hit.package ? ' | Paket=' + hit.package : '') + ']';
+        try {
+          var bo = el.businessObject;
+          var docs = (bo.documentation || []).filter(function (d) { return String(d.text || '').indexOf('[L3-Katalog:') < 0; });
+          docs.push(bpmnFactory.create('bpmn:Documentation', { text: marker }));
+          modeling.updateProperties(el, { documentation: docs });
+        } catch (err) { }
+        bericht.push('L3↔L4 gekoppelt: „' + nm + '" → «' + (hit.stereotype || 'Architektur') + '»' + (hit.guid ? ' (' + hit.guid + ')' : ''));
+      } else {
+        offen++;
+      }
+    });
+    protokoll = ['L3-Architekturkatalog geladen (' + architekturKatalog.length + ' Elemente): ' + gekoppelt + ' gekoppelt, ' + offen + ' ohne Katalogtreffer.'].concat(bericht.slice(0, 25));
+    zeichneProtokoll();
+    $('reiter-protokoll').click();
+    return { gekoppelt: gekoppelt, offen: offen };
+  }
+
+  function katalogDateiLaden(datei) {
+    if (!datei) return;
+    var r = new FileReader();
+    r.onload = function () {
+      try {
+        var liste = parseKatalogText(String(r.result || ''), datei.name);
+        if (!liste.length) {
+          ausgabe('In „' + datei.name + '" wurden keine Architekturelemente gefunden (unterstützt: .json, ArchiMate .xml, .xmi; für .qea bitte zuvor nach .json/.xmi exportieren oder „python -m bpmn.cli export --format qea --katalog" nutzen).', 'Katalog leer');
+          return;
+        }
+        katalogAbgleichen(liste);
+      } catch (e) {
+        ausgabe('Katalog konnte nicht gelesen werden: ' + e.message, 'Katalog-Fehler');
+      }
+    };
+    r.readAsText(datei, 'utf-8');
   }
 
   if (document.readyState === 'loading') {

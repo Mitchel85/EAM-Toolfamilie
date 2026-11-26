@@ -777,10 +777,9 @@ class Job:
         work_qea = self.directory / "_work.qea"
         if not work_qea.is_file() or work_qea.stat().st_mtime < model_path.stat().st_mtime:
             import model_io  # noqa: PLC0415
-            import qea_writer  # noqa: PLC0415
 
             ir = model_io.read_model(model_path)
-            qea_writer.write_qea(ir, work_qea)
+            model_io.write_model(ir, work_qea, fmt="qea")
         return work_qea
 
     def refresh_model_info(self) -> None:
@@ -829,6 +828,10 @@ class Job:
             links["chat"] = f"/api/jobs/{self.token}/chat"
             links["edit"] = f"/api/jobs/{self.token}/edit"
             links["extend"] = f"/api/jobs/{self.token}/extend"
+            links["repair"] = f"/api/jobs/{self.token}/repair"
+            if self.revision > 0:
+                links["diff"] = f"/api/jobs/{self.token}/diff"
+                links["undo"] = f"/api/jobs/{self.token}/undo"
         links["files"] = [
             {
                 "name": entry["name"],
@@ -842,6 +845,7 @@ class Job:
             "state": self.state,
             "backend": self.backend,
             "revision": self.revision,
+            "can_undo": self.revision > 0 and (self.directory / f"_rev_{self.revision - 1}.qea").is_file(),
             "log": list(self.log),
             "error": self.error,
             "result_line": self.result_line,
@@ -1258,6 +1262,77 @@ def _run_cli_qs(model_path: Path, mdg_path: Path, project: str) -> dict[str, Any
         out_path.unlink(missing_ok=True)
 
 
+def _run_cli_diff(alt_path: Path, neu_path: Path, mdg_path: Path | None) -> dict[str, Any]:
+    """Fuehrt `eam_ai diff` als Subprozess aus und liefert das JSON-Ergebnis."""
+    with tempfile.NamedTemporaryFile(suffix=".json", prefix="webui-diff-", delete=False) as tf:
+        out_path = Path(tf.name)
+    try:
+        cmd = [
+            sys.executable,
+            "-m",
+            "eam_ai",
+            "diff",
+            "--alt",
+            str(alt_path),
+            "--neu",
+            str(neu_path),
+            "--format",
+            "json",
+            "--out",
+            str(out_path),
+        ]
+        if mdg_path and mdg_path.is_file():
+            cmd += ["--mdg", str(mdg_path)]
+        proc = subprocess.run(
+            cmd,
+            cwd=str(Path(__file__).resolve().parent),
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if proc.returncode not in (0, 1):
+            raise RuntimeError(proc.stderr.strip() or proc.stdout.strip() or f"Exit {proc.returncode}")
+        return json.loads(out_path.read_text(encoding="utf-8"))
+    finally:
+        out_path.unlink(missing_ok=True)
+
+
+def _run_cli_repair(
+    model_path: Path, mdg_path: Path, *, out_path: Path | None = None, apply: bool = False
+) -> dict[str, Any]:
+    """Fuehrt `eam_ai repair --json` als Subprozess aus."""
+    cmd = [
+        sys.executable,
+        "-m",
+        "eam_ai",
+        "repair",
+        "--in",
+        str(model_path),
+        "--mdg",
+        str(mdg_path),
+        "--json",
+    ]
+    if apply and out_path is not None:
+        cmd += ["--out", str(out_path), "--apply"]
+    proc = subprocess.run(
+        cmd,
+        cwd=str(Path(__file__).resolve().parent),
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(proc.stderr.strip() or proc.stdout.strip() or f"Exit {proc.returncode}")
+    return json.loads(proc.stdout)
+
+
+def _save_revision_snapshot(job: Job, qea_path: Path) -> Path:
+    """Sichert den aktuellen Stand vor einer Mutation fuer Diff & Undo."""
+    snap = job.directory / f"_rev_{job.revision}.qea"
+    shutil.copy2(qea_path, snap)
+    return snap
+
+
 def _resolve_job_mdg(job: Job) -> Path | None:
     """Liefert die MDG-Datei des Auftrags (oder die mitgelieferte Standard-MDG)."""
     if job.mdg_path and job.mdg_path.is_file():
@@ -1294,17 +1369,17 @@ def _build_optional_backend(
     base_url = str(payload.get("base_url") or job.base_url or "").strip()
     if base_url:
         base_url = check_base_url(base_url)
-    import extract  # noqa: PLC0415
+    import qea_chat  # noqa: PLC0415
 
     try:
-        return extract.make_backend(
+        return qea_chat.make_optional_backend(
             kind,
             model=model or None,
             base_url=base_url or None,
             api_key=api_key or None,
-            timeout=max(10.0, float(max_seconds) - 5.0),
+            timeout=max(10.0, min(DEFAULT_HTTP_TIMEOUT, float(max_seconds) - 5.0)),
         )
-    except extract.ExtractionError as exc:
+    except qea_chat.QeaChatError as exc:
         raise RequestError(str(exc), status=400) from exc
 
 
@@ -1316,9 +1391,8 @@ def _refresh_job_after_mutation(job: Job, qea_path: Path) -> None:
     out_path = job.directory / model_name
     if out_path.resolve() != qea_path.resolve():
         import model_io  # noqa: PLC0415
-        import qea_reader  # noqa: PLC0415
 
-        ir = qea_reader.read_qea(qea_path)
+        ir = model_io.read_model(qea_path)
         model_io.write_model(ir, out_path, fmt=job.format)
     job.viewer_page = None
     (job.directory / "handbuch.md").unlink(missing_ok=True)
@@ -1431,6 +1505,8 @@ class Handler(BaseHTTPRequestHandler):
                     self._job_handbuch(unquote(rest[0]))
                 elif rest[1] == "qs":
                     self._job_qs(unquote(rest[0]))
+                elif rest[1] == "diff":
+                    self._job_diff(unquote(rest[0]))
                 else:
                     self._job_file(unquote(rest[0]), unquote(rest[1]))
                 return
@@ -1552,6 +1628,24 @@ class Handler(BaseHTTPRequestHandler):
             self._send_json(HTTPStatus.OK, payload)
         except Exception as exc:  # noqa: BLE001
             self._error(HTTPStatus.INTERNAL_SERVER_ERROR, f"QS-Fehler: {exc}")
+
+    def _job_diff(self, token: str) -> None:
+        """Liefert den Architektur-Diff zwischen vorherigem Stand und aktuellem Modell."""
+        job = self._require_done_job(token)
+        if job is None:
+            return
+        with job._op_lock:
+            qea_path = job.ensure_qea()
+            prev_idx = max(0, job.revision - 1)
+            prev_path = job.directory / f"_rev_{prev_idx}.qea"
+            if not prev_path.is_file():
+                prev_path = qea_path
+            mdg_path = _resolve_job_mdg(job)
+            try:
+                payload = _run_cli_diff(prev_path, qea_path, mdg_path)
+                self._send_json(HTTPStatus.OK, payload)
+            except Exception as exc:  # noqa: BLE001
+                self._error(HTTPStatus.INTERNAL_SERVER_ERROR, f"Diff-Fehler: {exc}")
 
     def _job_file(self, token: str, name: str) -> None:
         job = self.server.get_job(token)
@@ -1727,6 +1821,7 @@ class Handler(BaseHTTPRequestHandler):
                 try:
                     result = model_edit.edit_model(qea_path, ops, tmp_out, mdg=mdg_path)
                     if result.applied > 0:
+                        _save_revision_snapshot(job, qea_path)
                         os.replace(tmp_out, qea_path)
                         _refresh_job_after_mutation(job, qea_path)
                         job.add_log(
@@ -1792,7 +1887,7 @@ class Handler(BaseHTTPRequestHandler):
                 tmp_out = job.directory / f"_extend_{job.revision + 1}.qea"
                 findings_tmp = job.directory / "findings.json"
                 quellen_tmp = job.directory / "quellen.json"
-                http_timeout = max(5.0, float(self.server.config.max_seconds) - 10.0)
+                http_timeout = min(DEFAULT_HTTP_TIMEOUT, max(5.0, float(self.server.config.max_seconds) - 10.0))
                 cmd = [
                     sys.executable,
                     "-m",
@@ -1879,6 +1974,7 @@ class Handler(BaseHTTPRequestHandler):
                         job.result_line = job.scrub(res_line, secret=api_key)
                         job.summary = parse_result_line(job.result_line)
                     job.findings = _load_findings(findings_tmp)
+                    _save_revision_snapshot(job, qea_path)
                     os.replace(tmp_out, qea_path)
                     _refresh_job_after_mutation(job, qea_path)
                     job.add_log(f"Architektur erweitert (Rev {job.revision})")
@@ -1893,23 +1989,89 @@ class Handler(BaseHTTPRequestHandler):
         except Exception as exc:  # noqa: BLE001
             self._error(HTTPStatus.INTERNAL_SERVER_ERROR, f"Weiterbau-Fehler: {exc}")
 
+    def _job_repair(self, token: str) -> None:
+        """Regelbasierte MDG-Reparatur (action=propose|apply) fuer das Auftragsmodell."""
+        job = self._require_done_job(token)
+        if job is None:
+            return
+        try:
+            payload = self._read_json_body()
+            action = str(payload.get("action") or "propose").strip().lower()
+            if action not in ("propose", "apply"):
+                raise RequestError("action muss 'propose' oder 'apply' sein.", status=400)
+            mdg_path = _resolve_job_mdg(job)
+            if mdg_path is None:
+                raise RequestError("Keine MDG-Datei fuer die Reparatur verfuegbar.", status=400)
+            with job._op_lock:
+                qea_path = job.ensure_qea()
+                if action == "propose":
+                    rep = _run_cli_repair(qea_path, mdg_path, apply=False)
+                    self._send_json(HTTPStatus.OK, {"ok": True, "action": "propose", **rep})
+                    return
+                tmp_out = job.directory / f"_repair_{job.revision + 1}.qea"
+                try:
+                    rep = _run_cli_repair(qea_path, mdg_path, out_path=tmp_out, apply=True)
+                    if rep.get("changes_count", 0) > 0 and tmp_out.is_file():
+                        _save_revision_snapshot(job, qea_path)
+                        os.replace(tmp_out, qea_path)
+                        _refresh_job_after_mutation(job, qea_path)
+                        job.add_log(
+                            f"MDG-Auto-Reparatur (Rev {job.revision}): {rep['changes_count']} Aenderung(en)"
+                        )
+                    else:
+                        tmp_out.unlink(missing_ok=True)
+                finally:
+                    tmp_out.unlink(missing_ok=True)
+            self._send_json(HTTPStatus.OK, {"ok": True, "action": "apply", **rep, "job": job.as_json()})
+        except RequestError as exc:
+            self._error(exc.status, str(exc))
+        except Exception as exc:  # noqa: BLE001
+            self._error(HTTPStatus.BAD_REQUEST, f"Reparatur-Fehler: {exc}")
+
+    def _job_undo(self, token: str) -> None:
+        """Stellt den vorherigen Revisionsstand des Auftrags wieder her."""
+        job = self._require_done_job(token)
+        if job is None:
+            return
+        with job._op_lock:
+            if job.revision <= 0:
+                self._error(HTTPStatus.BAD_REQUEST, "Kein vorheriger Stand zum Zuruecksetzen vorhanden.")
+                return
+            prev_idx = job.revision - 1
+            snap = job.directory / f"_rev_{prev_idx}.qea"
+            if not snap.is_file():
+                self._error(HTTPStatus.NOT_FOUND, "Vorheriger Stand nicht mehr vorhanden.")
+                return
+            qea_path = job.ensure_qea()
+            shutil.copy2(snap, qea_path)
+            snap.unlink(missing_ok=True)
+            # _refresh_job_after_mutation erhoeht revision um 1; wir setzen vorher auf prev_idx - 1
+            job.revision = prev_idx - 1
+            _refresh_job_after_mutation(job, qea_path)
+            job.add_log(f"Rueckgaengig gemacht -> Stand #{job.revision}")
+            self._send_json(HTTPStatus.OK, {"ok": True, "job": job.as_json()})
+
     def do_POST(self) -> None:  # noqa: N802 - Vorgabe von http.server
         path = urlsplit(self.path).path
         if path.startswith("/api/jobs/"):
             rest = [segment for segment in path[len("/api/jobs/") :].split("/") if segment]
-            if len(rest) == 2 and rest[1] in ("chat", "edit", "extend"):
+            if len(rest) == 2 and rest[1] in ("chat", "edit", "extend", "repair", "undo"):
                 token = unquote(rest[0])
                 if rest[1] == "chat":
                     self._job_chat(token)
                 elif rest[1] == "edit":
                     self._job_edit(token)
+                elif rest[1] == "repair":
+                    self._job_repair(token)
+                elif rest[1] == "undo":
+                    self._job_undo(token)
                 else:
                     self._job_extend(token)
                 return
         if path not in ("/build", "/validate"):
             self._error(
                 HTTPStatus.NOT_FOUND,
-                "Erlaubt sind /build, /validate sowie /api/jobs/<id>/(chat|edit|extend).",
+                "Erlaubt sind /build, /validate sowie /api/jobs/<id>/(chat|edit|extend|repair|undo).",
             )
             return
         try:
@@ -2482,6 +2644,39 @@ function done(state, keepScroll) {
   }
   if (state.links && state.links.qs) {
     box.appendChild(btn("QS-Bericht", () => runInspect(state.links.qs, "QS-Pruefung")));
+  }
+  if (state.links && state.links.repair) {
+    box.appendChild(btn("MDG-Reparatur", async () => {
+      const out = $("inspect-out");
+      out.hidden = false; out.className = "out-box"; out.textContent = "Pruefe regelbasierte MDG-Reparaturen ...";
+      try {
+        const r = await fetch(state.links.repair, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "propose" }) });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || ("HTTP " + r.status));
+        if (!d.changes_count) { out.className = "out-box ok"; out.textContent = "Keine deterministisch reparierbaren MDG-Verstoesse gefunden."; return; }
+        out.className = "out-box ok";
+        out.textContent = "Vorschau (" + d.changes_count + " Aenderung(en), Fehler " + d.errors_before + " -> " + d.errors_after + "):\n" +
+          (d.changes || []).map((c) => "- [" + c.kind + "] " + c.target + ": " + c.before + " -> " + c.after).join("\n");
+        const applyBtn = btn("Reparatur jetzt anwenden", async () => {
+          const r2 = await fetch(state.links.repair, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "apply" }) });
+          const d2 = await r2.json();
+          if (!r2.ok) { out.className = "out-box bad"; out.textContent = d2.error || "Fehler"; return; }
+          if (d2.job) done(d2.job, true);
+        });
+        out.appendChild(document.createElement("br"));
+        out.appendChild(applyBtn);
+      } catch (e) { out.className = "out-box bad"; out.textContent = "Fehler: " + e.message; }
+    }));
+  }
+  if (state.links && state.links.diff) {
+    box.appendChild(btn("Vorher/Nachher-Diff", () => runInspect(state.links.diff, "Modell-Diff")));
+  }
+  if (state.links && state.links.undo) {
+    box.appendChild(btn("Rueckgaengig (Undo)", async () => {
+      const r = await fetch(state.links.undo, { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+      const d = await r.json();
+      if (r.ok && d.job) done(d.job, true);
+    }));
   }
   if (state.links && state.links.handbuch) {
     box.appendChild(link(state.links.handbuch, "Handbuch (.md)"));

@@ -28,6 +28,33 @@ var EDIT = (function () {
   var _connSrcOid = null;
   var _connEndOid = null;
   var toastTimer = null;
+  var _undoStack = [];
+
+  function syncUndoBtn() {
+    var b = el('undobtn');
+    if (b) b.style.display = _undoStack.length ? 'inline-block' : 'none';
+  }
+  function pushSnapshot(bytes, label) {
+    if (!bytes) return;
+    try {
+      var copy = (bytes instanceof Uint8Array) ? bytes.slice() : new Uint8Array(bytes.slice ? bytes.slice(0) : bytes);
+      if (!copy.byteLength) return;
+      _undoStack.push({ bytes: copy, name: label || srcName || MODELLNAME || 'Architektur' });
+      if (_undoStack.length > 10) _undoStack.shift();
+      syncUndoBtn();
+    } catch (e) { }
+  }
+  function prevBytes() {
+    return _undoStack.length ? _undoStack[_undoStack.length - 1].bytes : null;
+  }
+  function canUndo() { return _undoStack.length > 0; }
+  function undoLive() {
+    if (!_undoStack.length) { toast('Kein vorheriger Stand zum Zurücksetzen.'); return; }
+    var snap = _undoStack.pop();
+    syncUndoBtn();
+    loadQea(snap.bytes.slice().buffer, snap.name, true);
+    toast('↩️ Auf vorherigen Stand zurückgesetzt.');
+  }
 
   /* ================= kleine Helfer ================= */
   function p2(n) { return (n < 10 ? '0' : '') + n; }
@@ -1098,6 +1125,82 @@ var EDIT = (function () {
     });
   }
 
+  function applyLive(cb) {
+    if (!changes.length) { if (cb) cb('Keine Änderungen vorgemerkt.'); return; }
+    if (!srcBytes || srcCount > 1) { if (cb) cb('Direktübernahme steht im Einzelmodell-Modus für .qea-Dateien zur Verfügung.'); return; }
+    var list = changes.slice();
+    _tables = {};
+    loadSQL().then(function (SQL) {
+      var db = new SQL.Database(srcBytes);
+      try {
+        _tables = tablesSet(db);
+        db.run('BEGIN');
+        for (var i = 0; i < list.length; i++) applyChange(db, list[i]);
+        var chk = db.exec('PRAGMA integrity_check');
+        var okv = (chk.length && chk[0].values.length) ? String(chk[0].values[0][0]) : '?';
+        if (okv.toLowerCase() !== 'ok') throw new Error('SQLite-Integritätsprüfung: ' + okv);
+        db.run('COMMIT');
+        var out = db.export();
+        var probe = qeaOpen(out.slice().buffer);
+        if (!probe) throw new Error('Ausgabemodell nicht lesbar.');
+        pushSnapshot(srcBytes, srcName || MODELLNAME || 'Architektur');
+        loadQea(out.slice().buffer, srcName || MODELLNAME || 'Architektur', true);
+        toast('Modell aktualisiert — alle Ansichten sind auf dem neuesten Stand.');
+        if (cb) cb(null);
+      } catch (e) {
+        try { db.run('ROLLBACK'); } catch (e2) { }
+        if (cb) cb(e && e.message ? e.message : String(e));
+      } finally {
+        try { db.close(); } catch (e3) { }
+      }
+    }, function (e) {
+      if (cb) cb(e && e.message ? e.message : String(e));
+    });
+  }
+
+  function applyRepairOps(ops) {
+    var results = [], i;
+    for (i = 0; i < (ops || []).length; i++) {
+      var op = ops[i];
+      try {
+        if (op.op === 'set_stereotype') {
+          var oid = String(op.oid || ''), o = OBJS[oid];
+          if (!o) throw new Error('Element nicht gefunden.');
+          var g = groupOf(o.id), raw = findRow('t_object', 'Object_ID', g.l, g.db);
+          if (!raw) throw new Error('Elementzeile nicht gefunden.');
+          var oldSt = s0(rv(raw, 'Stereotype'));
+          q({
+            kind: 'el.set', key: 'el:' + o.id, id: Number(g.l), oid: o.id, srcNo: g.n,
+            fields: { Stereotype: s0(op.value) }, oldStereotype: oldSt,
+            label: 'Auto-Reparatur: Element „' + shortLabel(o.name, 40) + '“',
+            sub: 'Stereotype: «' + oldSt + '» → «' + s0(op.value) + '»'
+          });
+          results.push({ ok: true });
+        } else if (op.op === 'set_connector_stereotype') {
+          var cid = String(op.cid || ''), gc = groupOf(cid);
+          q({
+            kind: 'conn.set', key: 'conn:' + cid, id: Number(gc.l), cid: cid, srcNo: gc.n,
+            fields: { Stereotype: s0(op.value) }, oldStereotype: s0(op.oldStereotype),
+            label: 'Auto-Reparatur: Beziehung «' + shortLabel(s0(op.oldStereotype), 24) + '» → «' + shortLabel(s0(op.value), 24) + '»',
+            sub: shortLabel(s0(op.source), 30) + ' → ' + shortLabel(s0(op.target), 30)
+          });
+          results.push({ ok: true });
+        } else if (op.op === 'delete_connector') {
+          var dcid = String(op.cid || ''), gdc = groupOf(dcid);
+          q({
+            kind: 'conn.del', key: 'conndel:' + dcid, id: Number(gdc.l), cid: dcid, srcNo: gdc.n,
+            label: 'Auto-Reparatur: 🗑 Beziehung «' + shortLabel(s0(op.stereotype), 30) + '» entfernen',
+            sub: shortLabel(s0(op.source), 28) + ' ↔ ' + shortLabel(s0(op.target), 28)
+          });
+          results.push({ ok: true });
+        }
+      } catch (e) {
+        results.push({ ok: false, msg: e && e.message ? e.message : String(e) });
+      }
+    }
+    return results;
+  }
+
   /* Ausgabedatei benennen (Mehrfach-Modus: je Quell-Datei eigener Name) */
   function makeFileNameFor(srcNo) {
     var base;
@@ -1253,6 +1356,12 @@ var EDIT = (function () {
     normalizeToLocal: normalizeToLocal,
     q: q,
     save: save,
+    applyLive: applyLive,
+    applyRepairOps: applyRepairOps,
+    pushSnapshot: pushSnapshot,
+    undoLive: undoLive,
+    canUndo: canUndo,
+    prevBytes: prevBytes,
     removeChange: removeChange,
     clearAll: clearAll,
     clearAllConfirm: clearAllConfirm,

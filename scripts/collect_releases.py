@@ -58,7 +58,7 @@ AUSLIEFERUNGEN = [
         "apps/html-suite/dist/EAM-AI-Suite.html",
         "EAM-AI-Suite.html",
         "EAM AI Suite v9.1 — eine HTML-Datei",
-        "Prosa oder Handbuch hinein, `.qea` heraus: live prüfen, per Chat with Data befragen, per Sprache weiterbauen.",
+        "Prosa oder Handbuch hinein, `.qea` heraus: live prüfen (inkl. ArchiMate-Matrix, Diff, Auto-Repair & Textabdeckung), per Chat with Data befragen, per Sprache weiterbauen.",
     ),
     (
         "apps/html-suite/dist/EAM-AI-Suite.aspx",
@@ -70,7 +70,7 @@ AUSLIEFERUNGEN = [
         "apps/html-editor/dist/EAM-Suite.html",
         "EAM-Suite.html",
         "EAM Suite v8.6 — eine HTML-Datei",
-        "Mehrere Modelle laden, verschmelzen, bearbeiten und zurückschreiben; ohne KI.",
+        "Mehrere Modelle laden, verschmelzen, vergleichen (Diff & Undo), regelbasiert reparieren, bearbeiten und zurückschreiben; ohne KI.",
     ),
     (
         "apps/html-editor/dist/EAM-Suite.aspx",

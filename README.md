@@ -24,8 +24,8 @@ Modelle zusammenfinden.
 | **2 · Startpaket rein** | Startpaket (StEKa, Kataloge) übernehmen — EA GUIDs, NATO GUIDs (`OriginalGUID`, `URI`, `Uuid`), `StandardElement` & `t_xref` bleiben exakt erhalten | **EAM AI Suite** · **EAM Suite** (`STDIMPORT`) · `eam-ai toolbox` |
 | **3 · Prosa rein (multimodal)** | Text, Markdown, Word (`.docx` inkl. Tabellen & Bildern), PDF, Bilder (`.png`/`.jpg`) oder CSV/TSV-Tabellen — **iterativ/batchweise ohne Kontextlimit** | **EAM AI Suite** (HTML & Python) · **BPMN Studio** |
 | **4 · Architektur bauen** | Native Ausgabe in `.qea`, `.xmi` (UML 2.x/1.3) und `.json`; zusätzlich Projektion nach ArchiMate 3.2 Exchange `.xml` | **EAM AI Suite** · **EAM Suite** · `eam-ai build`/`convert`/`archimate` |
-| **5 · MDG-Validierung** | Dynamische Konformitätsprüfung gegen die geladene MDG-XML (Endpunkte, Metaklassen, abstrakte Stereotypen, Tags, GUIDs); für natives ArchiMate 3.2 Matrixprüfung via `archimate-check` | **EAM AI Suite** · **EAM Suite** · `eam-ai validate`/`archimate-check` · **EAM Analyzer** · **BPMN Studio** |
-| **6 · QS & Zusammenhänge** | Nachbarschaft, Pfadsuche, Impact-Analyse, Waisen-Erkennung, Befund-Overlay (`Issue`) & Quellbelege (`source_ref`) | **EAM AI Suite** (`⚡ QS-Prüfung`) · **EAM Suite** (`⚡ Auto-QS`) · `eam-ai qs`/`viewer`/`graph`/`handbuch`/`ea-check` · **EAM Analyzer** |
+| **5 · MDG-Validierung & Auto-Repair** | Dynamische Konformitätsprüfung gegen die geladene MDG-XML (Endpunkte, Metaklassen, abstrakte Stereotypen, Tags, GUIDs), regelbasierte **Reparatur-Vorschau ohne KI** (`repair`) sowie **ArchiMate-3.2-Matrixprüfung** in Python & Browser | **EAM AI Suite** · **EAM Suite** · `eam-ai validate`/`repair`/`archimate-check` · **EAM Analyzer** · **BPMN Studio** |
+| **6 · QS, Diff & Herkunft** | Nachbarschaft, Pfadsuche, Impact-Analyse, Waisen, **Vorher-Nachher-Modell-Diff & Undo**, klickbarer Quellabsatz-Sprung (`source_ref`) & Pflichtenheft-Textabdeckung (`qs --text`) | **EAM AI Suite** (`⚡ QS-Prüfung`, `🔀 Diff`) · **EAM Suite** (`⚡ Auto-QS`, `🔀 Diff`) · `eam-ai qs`/`diff`/`viewer`/`graph`/`handbuch`/`ea-check`/`mcp` · **EAM Analyzer** |
 | **7 · Sparx-EA-Sichten & Archiv** | Wahlweise Sichten gemäß MDG, Leitfaden oder Model Wizard (`--sichten`, `--wizard-dir`, Button `🖼️ Architektur mit Sichten bauen`) + SHA-256-Sichten-Archiv | **EAM AI Suite** · `eam-ai` · **Sichten-Archiv** · **BPMN Studio** |
 
 ### Metamodelle & Formate: NAF 4 / UAF vs. ArchiMate 3.2
@@ -35,12 +35,11 @@ Wichtige Abgrenzung zwischen **Dateiformat** und **Metamodell** — kurz & klar:
 - **Kern-Metamodell (NAF 4 / UAF, Standard-MDG: ADMBw, offen für eigene MDG-XMLs):** Die nativen Formate **`.qea`**, **`.xmi` (UML 2.x/1.3)** und **`.json`** transportieren dasselbe Metamodell und lassen sich verlustfrei ineinander konvertieren.
 - **ArchiMate 3.2 — Was die Pipeline kann:**
   - *NAF 4 / UAF → ArchiMate 3.2 exportieren:* Deterministische Projektion gemäß **NAFv4.1-ArchiMate-Guide** (dokumentierte Mapping-Tabelle in `packages/core/archimate_writer.py`); im Python-Kern (`eam-ai archimate`) geprüft gegen die **ArchiMate-3.2-Beziehungsmatrix** (`relationships.xml` aus Archi, EPL-2.0) inkl. Näherungsreport (Browser: vereinfachte Projektion ohne Matrixprüfung).
-  - *Bestehende ArchiMate-3.2-Modelle einlesen & nativ prüfen:* `eam-ai archimate-check` und MCP-Analyzer prüfen nativ gegen das ArchiMate-3.2-Metamodell (7 Schichten, Beziehungsmatrix, offene Referenzen, Waisen). Im Browser laufen Ansicht, Graph, Pfade und strukturelle QS (Waisen) **ohne** NAFv4/UAF-MDG-Fehlalarme.
+  - *Bestehende ArchiMate-3.2-Modelle einlesen & nativ prüfen:* `eam-ai archimate-check`, MCP-Analyzer **und beide Browser-Suiten (`EAMMDG.validateArchimate`)** prüfen nativ gegen die offizielle **ArchiMate-3.2-Beziehungsmatrix** (61 Konzepte, 7 Schichten, offene Referenzen, Waisen) — **ohne** NAFv4/UAF-MDG-Fehlalarme.
   - *Verlustfreier Rückweg für eigene Exporte:* Dateien aus dem eigenen Exporter (mit eingebetteten Metadaten-Properties) lassen sich verlustfrei zurück in `.qea`/IR lesen.
 - **ArchiMate 3.2 — Was die Pipeline nicht kann:**
   - *Kein nativer KI-Modellbau in ArchiMate 3.2:* Die KI baut NAF 4 / UAF (bzw. die geladene MDG); ArchiMate entsteht erst beim Export als Projektion.
-  - *Keine automatische 1:1-Übersetzung „fremdes ArchiMate → NAF 4 / UAF“:* Fremde ArchiMate-Dateien (z. B. aus Archi) werden nicht automatisch in NAFv4/UAF-Stereotypen umgewandelt.
-  - *Keine ArchiMate-3.2-Matrixprüfung im Browser* (dafür `eam-ai archimate-check` oder MCP-Analyzer nutzen) und *keine verlustfreie 1:1-Gleichheit* zwischen UAF und ArchiMate (z. B. UAF-Ports/Parts, Default-Schichten, Viewpoints).
+  - *Keine automatische 1:1-Übersetzung „fremdes ArchiMate → NAF 4 / UAF“* und *keine verlustfreie 1:1-Gleichheit* zwischen UAF und ArchiMate (z. B. UAF-Ports/Parts, Default-Schichten, Viewpoints).
 
 ## Die Werkzeuge im Vergleich
 
@@ -48,13 +47,13 @@ Kurz, was jedes Werkzeug kann — und wie sie sich unterscheiden.
 
 | Werkzeug | Formate | KI | Wofür es gut ist | Im Browser |
 |---|---|---|---|---|
-| **EAM AI Suite** (HTML) | `.qea` · `.xmi` · `.json` · ArchiMate `.xml` (Brücke) | ja (eigener Zugang, iterativ) | Die ganze 7-Stufen-Kette in einer Datei: aus Text, DOCX, PDF oder Bild iterativ ein MDG-geprüftes NAFv4/UAF-Modell bauen, direkt in Explorer/Graph/QS ansehen, per **Chat with Data** befragen, im Dialog oder per Sprache (inkl. neuer Elemente/Pakete) live weiterbauen und nach `.qea`/`.xmi`/`.json` oder ArchiMate exportieren | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/eam-ai-suite/) |
-| **EAM AI Suite** (Python `eam-ai`) | `.qea` · `.xmi` · `.json` · ArchiMate `.xml` (Brücke & Matrix-QS) | ja (Backend, Batch/Stufen) | Dieselbe Kette ohne Browser — für große Quellen (Batch/Stufen 1–4), WebUI (`serve` inkl. Live-Viewer-Vorschau, **Chat with Data**, NL-Änderung/Ausbau & Prosa-Weiterbau), MDG-Validierung, ArchiMate-3.2-Projektion & `archimate-check`, QS-Kombilauf (`qs`), Viewer, Handbuch & Konvertierung | — |
-| **EAM Suite** (HTML) | `.qea` · `.xmi` (UML 2.x/1.3) · `.json` · ArchiMate `.xml` (Ansicht/Brücke) | nein (bewusst offline/ohne KI) | Vorhandene Modelle laden, analysieren, verschmelzen, bearbeiten und mit `⚡ Auto-QS` gegen MDG/Waisen/GUIDs prüfen (erkennt natives ArchiMate ohne Fehlalarme; kein Neuaufbau von Grund auf) | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/eam-suite/) |
+| **EAM AI Suite** (HTML) | `.qea` · `.xmi` · `.json` · ArchiMate `.xml` (Brücke & Matrix-QS) | ja (eigener Zugang, iterativ) | Die ganze 7-Stufen-Kette in einer Datei: aus Text, DOCX, PDF oder Bild iterativ ein MDG-geprüftes NAFv4/UAF-Modell bauen, direkt in Explorer/Graph/QS ansehen (inkl. Textabdeckung, Quellabsatz-Sprung, Auto-Repair, **Modell-Diff & Undo**), per **Chat with Data** befragen, per Sprache weiterbauen und exportieren | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/eam-ai-suite/) |
+| **EAM AI Suite** (Python `eam-ai`) | `.qea` · `.xmi` · `.json` · ArchiMate `.xml` (Brücke & Matrix-QS) | ja (Backend, Batch/Stufen) | Dieselbe Kette ohne Browser — für große Quellen (Batch/Stufen 1–4), WebUI (`serve` inkl. Live-Viewer, Chat, NL-Edit, **Diff, Auto-Repair & Undo**), MDG-Validierung, ArchiMate-3.2-Projektion & `archimate-check`, QS inkl. Textabdeckung (`qs --text`), `diff`, `repair` & abhängigkeitsfreiem 4-Format-MCP (`eam-ai mcp`) | — |
+| **EAM Suite** (HTML) | `.qea` · `.xmi` (UML 2.x/1.3) · `.json` · ArchiMate `.xml` (Matrix-QS/Brücke) | nein (bewusst offline/ohne KI) | Vorhandene Modelle laden, analysieren, verschmelzen, bearbeiten, vergleichen (`🔀 Modell-Diff` & `↩️ Undo`), regelbasiert reparieren (`🔧 Auto-Repair`) und mit `⚡ Auto-QS` gegen MDG bzw. ArchiMate-3.2-Matrix prüfen | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/eam-suite/) |
 | **Sichten-Archiv** (HTML, Python) | `.qea` · `.archiv` | nein | Sichten und Layout aus einer `.qea` mit bit-identischer SHA-256-Prüfsumme auslagern und verlustfrei zurückspielen | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/sichten-archiv/) |
-| **EAM Analyzer** (Open WebUI, MCP) | `.qea` · `.xmi` · ArchiMate `.xml` · `.json` | über das KI-Modell des Werkzeugs | Modelle befragen, gegen MDG validieren, Impact-/Nachbarschafts-/Pfadanalysen und umfassende QS-Prüfungen fahren | — |
+| **EAM Analyzer** (Open WebUI, MCP) | `.qea` · `.xmi` · ArchiMate `.xml` · `.json` | über das KI-Modell des Werkzeugs | Modelle befragen, gegen MDG/ArchiMate validieren, vergleichen, reparieren sowie Impact-/Nachbarschafts-/Pfadanalysen fahren (`eam-qea-mcp-server.py` + abhängigkeitsfreies `eam-ai mcp`) | — |
 | **ADMBw Extraktor** (HTML, Python) | MDG-XML · JSON | nein | Regelwerk durchsuchen und als sechs Markdown-Dateien oder maschinenlesbares JSON (`rules.json`, `stereotypes`, `aliases`) exportieren | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/admbw-extraktor/) |
-| **BPMN Studio** (HTML, Python) | BPMN 2.0, PDF/DOCX/Bild, `.qea`, `.xmi`, ArchiMate `.xml`, `.json` | optional | Prozesse lesen, zeichnen, gegen 15 L4-Regeln prüfen, ADMBw-konform machen; Export inkl. BPMN-Aktivitätsdiagramm in `.qea`, `.xmi`, `.xml`, `.json`, SVG, PNG | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/bpmn-studio/) |
+| **BPMN Studio** (HTML, Python) | BPMN 2.0, PDF/DOCX/Bild, `.qea`, `.xmi`, ArchiMate `.xml`, `.json` | optional (gechunked) | Prozesse lesen, zeichnen, gegen 15 L4-Regeln prüfen, ADMBw-konform machen, **gegen L3-Architekturkatalog abgleichen** (`OperationalPerformer`/`OperationalActivity` GUIDs & `Represents`); Export inkl. BPMN-Aktivitätsdiagramm in `.qea`, `.xmi`, `.xml`, `.json`, SVG, PNG | [öffnen](https://mitchel85.github.io/EAM-Toolfamilie/bpmn-studio/) |
 
 Der Unterschied in einem Satz: die **AI Suiten bauen** Modelle (iterativ mit KI), die **EAM Suite
 analysiert, validiert und bearbeitet** sie (bewusst ohne KI), der **EAM Analyzer befragt und prüft** sie (als Werkzeug
@@ -73,8 +72,8 @@ GUIDs und Tags — Diagramme sind wahlweise erzeugte Darstellung.
 Damit auch umfangreiche Handbücher selbst mit Sprachmodellen mit kleinem Kontextfenster (4k–16k Tokens, z. B. lokale Ollama-/LM-Studio-Modelle) zuverlässig verarbeitet werden, arbeiten beide KI-Pipelines adaptiv und gechunked:
 
 - **HTML AI Suite (`part6_ki.js`)**: Wählbares **Kontextprofil** (`Standard`, `16k`, `8k`, `4k`) passt `max_tokens`, Regelwerk-Kompaktheit, Katalog-Limit und Abschnittsgrenze (`ki-charge`, ab 600 Zeichen) automatisch an. Große Eingaben werden über `zerlegeInTeile()` in Abschnitte zerlegt und über `inTeilenHolen()` sequentiell mit `localStorage`-Checkpoint abgearbeitet. Läuft ein Abschnitt in ein Token- oder Kontextlimit (`finish_reason=length` oder HTTP-400-Kontextfehler), halbiert `holeAbschnitt()` ihn automatisch rekursiv bis auf 600 Zeichen und verschmilzt die Teilergebnisse.
-- **Python-Pipeline (`extract.py`, `eam_ai.py`, `webui.py`, `stufen.py`)**: `extract_batched()` teilt große Quellen (inkl. überlanger Einzelabsätze ohne Leerzeilen) in Chargen (`plan_batches`) und deckelt bereits erfasste Elemente über `_bekannte_fuer()`. Mit `--kontext-tokens <N>` (auch in der WebUI wählbar) werden kompaktes Regelwerk (~80 % weniger Prompt-Tokens), sicheres `max_tokens` (OpenAI-kompatibel), `num_ctx` (Ollama) und passende Chargengrößen automatisch gesetzt — zusätzlich schaltet die Pipeline bei jedem Kontext-/Tokenlimit-Fehler automatisch in den Kompaktmodus und halbiert die Charge rekursiv. In der WebUI (`eam-ai serve` & Docker) ist das Gesamt-Zeitlimit (Default `1800 s` = 30 Min.) sauber vom HTTP-Timeout je Einzelcharge (`120 s`) entkoppelt, sodass mehrstufige Läufe nicht nach 120 s abbrechen. Für sehr große Läufe mit Pause/Resume gibt es zusätzlich den Stufenlauf (`eam-ai stufe1` bis `stufe4` / `alle`).
-- **BPMN Studio**: Die Standard-Extraktion im Browser arbeitet deterministisch/regelbasiert ohne LLM-Kontextlimit. (Hinweis: Der optionale Einzelaufruf-KI-Adapter `packages/bpmn/ki.py` nutzt keine eigene Batch-Schleife — für umfangreiche Prosa-Architekturen sind `eam-ai` bzw. die `EAM AI Suite` vorgesehen.)
+- **Python-Pipeline (`extract.py`, `eam_ai.py`, `webui.py`, `stufen.py`)**: `extract_batched()` teilt große Quellen (inkl. überlanger Einzelabsätze ohne Leerzeilen) in Chargen (`plan_batches`) und deckelt bereits erfasste Elemente über `_bekannte_fuer()` (inkl. Wortstamm-/Token-Treffer). Mit `--kontext-tokens <N>` (auch in `stufe2`, `alle` und in der WebUI wählbar) werden kompaktes Regelwerk (~80 % weniger Prompt-Tokens), dynamisch auf aktive Element-Stereotype gefilterte Konnektor-Regeln, sicheres `max_tokens` (OpenAI-kompatibel), `num_ctx` (Ollama) und passende Chargengrößen automatisch gesetzt — zusätzlich schaltet die Pipeline bei jedem Kontext-/Tokenlimit-Fehler automatisch in den Kompaktmodus und halbiert die Charge rekursiv. In der WebUI (`eam-ai serve` & Docker) ist das Gesamt-Zeitlimit (Default `1800 s` = 30 Min.) sauber vom HTTP-Timeout je Einzelcharge (`120 s`) entkoppelt, sodass mehrstufige Läufe nicht nach 120 s abbrechen. Für sehr große Läufe mit Pause/Resume gibt es zusätzlich den Stufenlauf (`eam-ai stufe1` bis `stufe4` / `alle`).
+- **BPMN Studio (`studio.js`, `packages/bpmn/ki.py`)**: Die Standard-Extraktion im Browser arbeitet deterministisch/regelbasiert ohne LLM-Kontextlimit; zusätzlich zerlegen sowohl der optionale Python-KI-Adapter (`ki.py`) als auch der Browser-KI-Pfad lange Prozesstexte automatisch in überlappende Abschnitte mit rekursiver Halbierung bei `finish_reason=length` bzw. Kontextfehlern.
 
 ## Optionale Sichten (Sparx EA MDG, Leitfaden & Model Wizard)
 
@@ -143,11 +142,18 @@ eam-ai --help
   ArchiMate 3.2 `.xml` (mit Report über `eam-ai archimate`).
 - `eam-ai validate --in modell.qea --mdg technologie.xml` — Architektur gegen MDG-Regeln
   (inkl. `AppliesTo`, `metarelationships`, abstrakter Stereotypen, Tags, GUIDs) prüfen.
-- `eam-ai qs --in modell.qea --mdg technologie.xml --out qs.json` — kombinierter QS-Lauf
-  (MDG-Validierung, Waisen-Erkennung, Quellbelege, EA-Tabellenprüfung).
+- `eam-ai qs --in modell.qea --mdg technologie.xml [--text pflichtenheft.docx] --out qs.json` —
+  kombinierter QS-Lauf (MDG-Validierung, Waisen-Erkennung, Quellbelege, EA-Tabellenprüfung sowie
+  prozentuale **Pflichtenheft-/Textabdeckung** über `--text` oder `quellen.json`).
+- `eam-ai diff --alt v1.qea --neu v2.qea [--mdg technologie.xml] --format md` — semantischer
+  **Vorher-Nachher-Modellvergleich** über alle 4 Formate inkl. Befund-Delta.
+- `eam-ai repair --in modell.qea --mdg technologie.xml [--out repariert.qea --apply]` —
+  interaktive **regelbasierte MDG-Reparatur** (Vorschau ohne KI, optionales Schreiben).
+- `eam-ai mcp` — **abhängigkeitsfreier 4-Format-MCP-Server** (JSON-RPC 2.0 über stdio, nur
+  Python-Standardbibliothek) für Claude Desktop, Cursor, Antigravity & VS Code.
 - `eam-ai viewer` · `eam-ai handbuch` · `eam-ai ea-check` · `eam-ai graph` — interaktiver
-  HTML-Viewer für alle 4 Formate, Betriebshandbuch-Generator, EA-Integritätsprüfung und
-  Graph-Analyse.
+  HTML-Viewer für alle 4 Formate (inkl. Original-Quellabsatz aus `quellen.json`),
+  Betriebshandbuch-Generator, EA-Integritätsprüfung und Graph-Analyse.
 - `eam-ai sichten-archiv {pack,unpack,verify}` — Sichten und Layout per SHA-256 aus `.qea`
   auslagern, zurückspielen und bit-identisch prüfen.
 - `eam-ai archimate --ir modell.qea --out modell.xml --report bericht.json` — **Export**:
@@ -191,7 +197,7 @@ eam-ai --help
 - `eam-ai toolbox` — Standardelemente aus einem Startpaket übernehmen, kennungserhaltend.
 - `eam-ai merge` · `eam-ai edit` · `eam-ai korrigiere` — zusammenführen, gezielt ändern,
   in Worten korrigieren.
-- `eam-ai frage` — Frage an ein vorhandenes Modell. `eam-ai serve` — Weboberfläche (inkl. `/validate`, `/jobs/<id>/qs`, `/jobs/<id>/handbuch`).
+- `eam-ai frage` — Frage an ein vorhandenes Modell. `eam-ai serve` — Weboberfläche (inkl. `/validate`, `/jobs/<id>/qs`, `/jobs/<id>/diff`, `/jobs/<id>/repair`, `/jobs/<id>/undo`, `/jobs/<id>/handbuch`).
 
 ### ADMBw Extraktor (Python)
 

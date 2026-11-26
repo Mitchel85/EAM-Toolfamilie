@@ -31,8 +31,12 @@ Entscheidungen:
 | `table_import.py` | CSV/XLSX → IR (stdlib, ohne openpyxl) | fertig |
 | `model_edit.py` | MDG-geprüfte Modelländerungen inkl. `add_package`, `add_element`, `add_connector` | fertig |
 | `nl_edit.py` | Anweisung in natürlicher Sprache → geprüfte Operationsliste (inkl. Ausbau) | fertig |
+| `model_diff.py` | Semantischer 4-Format-Modellvergleich (`eam-ai diff`) inkl. Befund-Delta | fertig |
+| `text_coverage.py` | Pflichtenheft-/Quelltext-Abdeckungsprüfung (`eam-ai qs --text` & `quellen.json`) | fertig |
+| `repair_loop.py` | Regelbasierte MDG-Reparatur mit Vorschau (`eam-ai repair`) | fertig |
+| `mcp_stdio.py` | Abhängigkeitsfreier 4-Format-MCP-Server über stdio (`eam-ai mcp`, stdlib) | fertig |
 | `qea_chat.py` | Chat with Data: lesende Fragen über Modell, Paket oder Element inkl. Quellen | fertig |
-| `webui.py` | Webdienst (`eam-ai serve`): Bau, Live-Viewer-Vorschau, Chat, NL-Edit & Prosa-Weiterbau | fertig |
+| `webui.py` | Webdienst (`eam-ai serve`): Bau, Live-Viewer, Chat, NL-Edit, Diff, Auto-Repair & Undo | fertig |
 | `eam_ai.py` / `eam-ai` | Gesamtlauf mit KI: MDG + Text → `.qea`/`.xmi`/`.xml`/`.json` | fertig |
 | `eam_suite.py` | Regelpfad-CLI: Import, Prüfung, Export (`--no-llm`) | fertig |
 | `build_backend.py` / `tools/build_bundle.py` | deterministisches Wheel + Offline-Bundle | fertig |

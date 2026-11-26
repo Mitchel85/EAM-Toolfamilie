@@ -217,7 +217,9 @@ var ISSUE = (function () {
           }
         }
       }
-      var findings = isNativeArchimate ? [] : EAMMDG.validateModel(DB, rules);
+      var findings = isNativeArchimate
+        ? (EAMMDG.validateArchimate ? EAMMDG.validateArchimate(DB) : [])
+        : EAMMDG.validateModel(DB, rules);
 
       var objs = DIAGOBJ[diagId] || [];
       var diagOids = {};
@@ -263,7 +265,7 @@ var ISSUE = (function () {
         }
       }
       var hintArch = isNativeArchimate
-        ? '\n\nHinweis: Natives ArchiMate-3.2-Modell erkannt — NAFv4/UAF-MDG-Prüfung wurde übersprungen (nur Waisen geprüft). Für die vollständige ArchiMate-3.2-Matrixprüfung nutze „eam-ai archimate-check“.'
+        ? '\n\nHinweis: Natives ArchiMate-3.2-Modell erkannt — ArchiMate-3.2-Matrixprüfung im Browser ausgeführt (analog zu „eam-ai archimate-check“).'
         : '';
       alert('Auto-QS: ' + countAdded + ' neue Befunde erfasst (' + findings.length + ' geprueft).' + hintArch);
     } catch (e) {

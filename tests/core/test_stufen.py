@@ -256,3 +256,45 @@ def test_startpaket_ohne_ea_guid_wird_trotzdem_gelesen(arbeitsordner: Path) -> N
     assert ergebnis["startelemente"] == 1
     assert "ohne ea_guid" in ergebnis["startpaket_hinweis"]
     assert (arbeitsordner / "work" / "01_steka.qea").is_file()
+
+
+def test_connector_prompt_filtert_dynamisch_auf_aktive_stereotype() -> None:
+    rules = eam_ai.load_technology(MDG)
+    rulebook = extract.load_rules(rules)
+    batch = extract.split_documents(TEXT)
+    elemente = [
+        {"name": "Kampfpanzer", "stereotype": "ServiceSpecification"},
+        {"name": "Lagezentrum", "stereotype": "OperationalActivity"},
+    ]
+    gefiltert = stufen.connector_prompt(batch, rulebook, elemente=elemente)
+    ungefiltert = stufen.connector_prompt(batch, rulebook, elemente=None)
+    assert "ActivitySupportsService" in gefiltert
+    assert "CapabilityDependency" not in gefiltert
+    assert "Exhibits" not in gefiltert
+    assert "«ServiceSpecification»" in gefiltert
+    assert "«OperationalActivity»" in gefiltert
+    assert len(gefiltert) < len(ungefiltert)
+
+
+def test_stufe2_halbiert_bei_kontextlimit_automatisch(arbeitsordner: Path) -> None:
+    lang = (
+        "Der Kampfpanzer meldet an das System Lagezentrum. " + ("Zusatzsatz A. " * 30)
+        + "\n\n"
+        + "Der Kampfpanzer wird vom System Lagezentrum gesteuert. " + ("Zusatzsatz B. " * 30)
+    )
+    q = arbeitsordner / "lang.md"
+    q.write_text(lang, encoding="utf-8")
+    work = arbeitsordner / "work-ctx"
+    stufen.stufe1(mdg=MDG, text=q, workdir=work, projekt="NSS")
+
+    class TightStufenBackend(FakeBackend):
+        def complete(self, prompt: str) -> str:
+            # Voll-Prompt scheitert am Kontextfenster, Kompakt-Prompt passt.
+            if len(prompt) > 3600:
+                raise extract.ContextLimitError("context_length_exceeded")
+            return super().complete(prompt)
+
+    be = TightStufenBackend()
+    res = stufen.stufe2(workdir=work, text=q, backend=be, pause=0, charge=5000)
+    assert res["elemente"] == 2
+    assert res["beziehungen"] == 1

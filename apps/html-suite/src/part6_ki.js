@@ -1184,6 +1184,11 @@
         }
         /* Lange Beschreibungen in Abschnitten auswerten -- sonst schneidet
            das Antwortlimit das Modell ab, und der Rest fehlt still. */
+        window.__EAM_LAST_SOURCE_TEXT = gesamt;
+        if (typeof EAMMDG !== 'undefined' && EAMMDG.evaluateCoverage) {
+          var initCov = EAMMDG.evaluateCoverage({ elements: [], connectors: [] }, gesamt);
+          if (initCov && initCov.quellen) window.__EAM_LAST_QUELLEN = initCov.quellen;
+        }
         if (gesamt.length > grenze) {
           return inTeilenHolen(set, sysMsg, gesamt, grenze, pauseSekunden());
         }
@@ -1256,7 +1261,7 @@
       if (st && allowed.indexOf(st) < 0) { ir.warnings.push('„' + n + '“: Stereotyp „' + st + '“ ist nicht im ADMBw-Katalog — wird trotzdem übernommen.'); }
       var pkg = String(e.package || '').trim() || ir.packages[0].name;
       nameIdx[n] = ir.elements.length;
-      ir.elements.push({ name: n, stereotype: st || 'Class', type: stereotypeType(st || 'Class'), package: pkg, note: String(e.note || '').substring(0, 2000), origin: String(e.origin || '').trim() });
+      ir.elements.push({ name: n, stereotype: st || 'Class', type: stereotypeType(st || 'Class'), package: pkg, note: String(e.note || '').substring(0, 2000), origin: String(e.origin || '').trim(), source_ref: String(e.source_ref || '').trim() });
     });
     if (!ir.elements.length) throw new Error('Die KI hat keine Elemente extrahiert — bitte Beschreibung präzisieren.');
 
@@ -1948,6 +1953,7 @@
         }
         var tagObj = Object.assign({}, e.tags || {});
         if (e.origin && !tagObj.Herkunft) tagObj.Herkunft = 'katalog:' + e.origin;
+        if (e.source_ref && !tagObj.source_ref) tagObj.source_ref = e.source_ref;
         Object.keys(tagObj).sort().forEach(function (tk) {
           try {
             ins('t_objectproperties', ['PropertyID', 'Object_ID', 'Property', 'Value', 'Notes', 'ea_guid'],
@@ -2090,6 +2096,10 @@
   function syncToApp(keepView) {
     if (!S.model) return Promise.resolve(false);
     return buildQea(true).then(function (bytes) {
+      if (typeof EDIT !== 'undefined' && EDIT.pushSnapshot && EDIT._srcInfo) {
+        var cur = EDIT._srcInfo();
+        if (cur && cur.bytes && cur.bytes.byteLength) EDIT.pushSnapshot(cur.bytes, cur.name || 'Vorheriger Stand');
+      }
       S.bytes = bytes;
       SINGLE = true; MULTI_MODE = false;
       loadQea(bytes, (S.model && S.model.name) || 'KI-Architektur', !!keepView);

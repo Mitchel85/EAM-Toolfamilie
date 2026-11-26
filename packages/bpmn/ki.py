@@ -279,8 +279,14 @@ def _sende(
         with oeffner(request, timeout=konfiguration.timeout) as antwort:
             roh = antwort.read()
     except urllib.error.HTTPError as fehler:
+        detail = ""
+        try:
+            err_body = fehler.read().decode("utf-8", errors="replace")[:300]
+            detail = f" ({err_body})" if err_body else ""
+        except Exception:
+            detail = ""
         raise KIError(
-            f"KI-Endpunkt antwortete mit HTTP {fehler.code}; Antwort nicht uebernommen"
+            f"KI-Endpunkt antwortete mit HTTP {fehler.code}; Antwort nicht uebernommen{detail}"
         ) from None
     except urllib.error.URLError as fehler:
         raise KIError(f"KI-Endpunkt nicht erreichbar: {fehler.reason}") from None
@@ -336,6 +342,91 @@ def _schritte_aus_antwort(daten: Mapping[str, Any]) -> list[dict[str, Any]]:
     return schritte
 
 
+def _zerlege_prozesstext(text: str, max_zeichen: int) -> list[str]:
+    """Teilt lange Prozessbeschreibungen an Absatz- oder Satzgrenzen in Chargen."""
+    norm = text.replace("\r\n", "\n").replace("\r", "\n").strip()
+    if max_zeichen <= 0 or len(norm) <= max_zeichen:
+        return [norm]
+    bloecke = [b.strip() for b in re.split(r"\n\s*\n+", norm) if b.strip()]
+    teile: list[str] = []
+    aktuell = ""
+    for block in bloecke:
+        while len(block) > max_zeichen:
+            cut = block.rfind(". ", 0, max_zeichen)
+            cut = (cut + 1) if cut >= max_zeichen // 3 else max_zeichen
+            kopf = block[:cut].strip()
+            if kopf:
+                if aktuell:
+                    teile.append(aktuell)
+                    aktuell = ""
+                teile.append(kopf)
+            block = block[cut:].strip()
+        if not block:
+            continue
+        kandidat = (aktuell + "\n\n" + block) if aktuell else block
+        if len(kandidat) <= max_zeichen:
+            aktuell = kandidat
+        else:
+            if aktuell:
+                teile.append(aktuell)
+            aktuell = block
+    if aktuell:
+        teile.append(aktuell)
+    return teile or [norm]
+
+
+def _ist_kontext_fehler(exc: Exception) -> bool:
+    low = str(exc).lower()
+    return any(
+        m in low
+        for m in (
+            "context_length",
+            "maximum context",
+            "too many tokens",
+            "prompt is too long",
+            "finish_reason=length",
+            "tokenlimit",
+        )
+    )
+
+
+def _hole_schritte_adaptiv(
+    abschnitt: str,
+    cfg: Konfiguration,
+    anweisung: str | None,
+    opener: Callable[..., Any] | None,
+    *,
+    tiefe: int = 0,
+) -> list[dict[str, Any]]:
+    try:
+        roh = _sende(_anfrage_bauen(abschnitt, cfg, anweisung), cfg, opener=opener)
+        try:
+            antwort = json.loads(roh)
+            wahl = antwort["choices"][0]
+            if wahl.get("finish_reason") == "length":
+                raise KIError("Antwort abgeschnitten (finish_reason=length)")
+            inhalt = wahl["message"]["content"]
+        except KIError:
+            raise
+        except (json.JSONDecodeError, KeyError, IndexError, TypeError) as fehler:
+            raise KIAntwortFehler(f"Antwort hat kein erwartetes Chat-Format: {fehler}") from None
+        return _schritte_aus_antwort(_json_aus_antwort(str(inhalt or "")))
+    except KIError as exc:
+        if not _ist_kontext_fehler(exc) or len(abschnitt) < 600 or tiefe >= 5:
+            raise
+        halb = max(300, len(abschnitt) // 2)
+        unterteile = _zerlege_prozesstext(abschnitt, halb)
+        if len(unterteile) < 2:
+            unterteile = [abschnitt[:halb].strip(), abschnitt[halb:].strip()]
+        gesammelt: list[dict[str, Any]] = []
+        for ut in unterteile:
+            if ut:
+                gesammelt.extend(
+                    _hole_schritte_adaptiv(ut, cfg, anweisung, opener, tiefe=tiefe + 1)
+                )
+        return gesammelt
+
+
 def extrahiere_mit_ki(
     text: str,
     prozess_name: str | None = None,
@@ -344,8 +435,9 @@ def extrahiere_mit_ki(
     erlaube_personenbezug: bool = False,
     konfiguration: Konfiguration | None = None,
     opener: Callable[..., Any] | None = None,
+    max_zeichen: int = 8000,
 ) -> extraktion.Extraktion:
-    """Extrahiert Schritte ueber den konfigurierten KI-Endpunkt.
+    """Extrahiert Schritte ueber den konfigurierten KI-Endpunkt (bei langen Texten gechunked).
 
     Es gibt keinen stillen Rueckfall auf die Regeln: Ist der Adapter aus oder
     unvollstaendig, wird :class:`KINichtKonfiguriert` geworfen.
@@ -364,22 +456,26 @@ def extrahiere_mit_ki(
     if treffer and not erlaube_personenbezug:
         raise KIDatenschutz(treffer)
 
-    roh = _sende(_anfrage_bauen(text, cfg, anweisung), cfg, opener=opener)
-    try:
-        antwort = json.loads(roh)
-        inhalt = antwort["choices"][0]["message"]["content"]
-    except (json.JSONDecodeError, KeyError, IndexError, TypeError) as fehler:
-        raise KIAntwortFehler(f"Antwort hat kein erwartetes Chat-Format: {fehler}") from None
+    abschnitte = _zerlege_prozesstext(text, max_zeichen)
+    alle_schritte: list[dict[str, Any]] = []
+    for abschnitt in abschnitte:
+        teil_schritte = _hole_schritte_adaptiv(abschnitt, cfg, anweisung, opener)
+        for s in teil_schritte:
+            s_copy = dict(s)
+            s_copy["nummer"] = len(alle_schritte) + 1
+            alle_schritte.append(s_copy)
 
-    schritte = _schritte_aus_antwort(_json_aus_antwort(str(inhalt or "")))
+    hinweise = [
+        "KI-Ausgabe: alle Elemente stehen auf 'unsicher' und sind fachlich zu pruefen.",
+        f"Modell: {cfg.modell}",
+    ]
+    if len(abschnitte) > 1:
+        hinweise.append(f"Chargenlauf: {len(abschnitte)} Textabschnitte zusammengefasst.")
     ergebnis = extraktion.baue_modell(
-        schritte,
+        alle_schritte,
         prozess_name or extraktion._prozessname_aus_text(text),
         quelle="ki",
-        hinweise=[
-            "KI-Ausgabe: alle Elemente stehen auf 'unsicher' und sind fachlich zu pruefen.",
-            f"Modell: {cfg.modell}",
-        ],
+        hinweise=hinweise,
     )
     ergebnis.rollen = [lane.name for lane in ergebnis.modell.prozesse["Process_1"].alle_lanes()]
     return ergebnis

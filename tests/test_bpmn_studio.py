@@ -28,7 +28,7 @@ def test_studio_kennt_den_auftrag() -> None:
 
 def test_studio_marken_sind_gesetzt() -> None:
     text = DATEI.read_text(encoding="utf-8")
-    for marke in ("ADMBw", "BPMN 2.0", "SVG", "PNG"):
+    for marke in ("ADMBw", "BPMN 2.0", "SVG", "PNG", 'id="katalog-laden"', "katalogAbgleichen", "zerlegeKiTextChunke"):
         assert marke in text
 
 

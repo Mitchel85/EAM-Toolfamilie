@@ -23,7 +23,7 @@ APPS = {
         "product": "EAM AI Suite",
         "version": "v9.1",
         "title": "EAM AI Suite — QEA-Architekturen analysieren, erkunden, bearbeiten &amp; exportieren",
-        "bytes": 3_711_286,
+        "bytes": 3_757_586,
         "min_size": 3_000_000,
         "max_size": 4_000_000,
         "markers": ("window.KI", "var EDIT =", "var MERGE", "var STDIMPORT =", "function openAny(", "function exportXmi(", "syncToApp", "applyLive"),
@@ -33,7 +33,7 @@ APPS = {
         "product": "EAM Suite",
         "version": "v8.6",
         "title": "EAM Suite — QEA-Architekturen analysieren, erkunden, bearbeiten &amp; exportieren",
-        "bytes": 1_553_338,
+        "bytes": 1_607_426,
         "min_size": 1_000_000,
         "max_size": 2_000_000,
         "markers": ("var EDIT =", "var MERGE", "var ISSUE =", "var STDIMPORT =", "function openAny(", "function exportXmi("),
@@ -274,5 +274,23 @@ def test_suite_chat_live_sync_und_nl_ausbau(gebaut: dict[str, dict]) -> None:
         "function ctxProfile()",
     ):
         assert marker in html, f"Suite-Marker fehlt: {marker}"
+
+
+def test_browser_archimate_matrix_diff_undo_repair_und_coverage(gebaut: dict[str, dict]) -> None:
+    """Beide Browser-Suiten enthalten ArchiMate-3.2-Matrix, Auto-Repair, Diff, Undo & Provenance-Sprung."""
+    for app in ("html-suite", "html-editor"):
+        html = gebaut[app]["html"].read_text(encoding="utf-8")
+        for marker in (
+            "function validateArchimate(",
+            "function proposeRepairs(",
+            "function diffModels(",
+            "function evaluateCoverage(",
+            "function openDiffModal(",
+            "function openRepairPreviewModal(",
+            "function undoLive(",
+            "openSourceRefModal",
+        ):
+            assert marker in html, f"{app}: Browser-Optimierungsmarker fehlt: {marker}"
+
 
 
