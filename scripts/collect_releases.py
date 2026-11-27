@@ -467,9 +467,6 @@ code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-subtl
 .btn-secondary{background:var(--surface);color:var(--ink);border-color:var(--border-strong)}
 .btn-secondary:hover{background:var(--surface-subtle);border-color:#94a3b8}
 .btn-sm{padding:8px 13px;font-size:.85rem}
-.trust-strip{margin-top:32px;padding-top:18px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:10px 26px;font-size:.86rem;color:var(--muted)}
-.trust-strip span{display:inline-flex;align-items:center;gap:8px}
-.trust-dot{width:6px;height:6px;border-radius:50%;background:var(--brand);flex-shrink:0}
 
 .section{padding:52px 0}
 .section-alt{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
@@ -545,11 +542,6 @@ code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-subtl
       <div class="btn-row">
         <a class="btn btn-primary" href="${releases}">Release ${version} ansehen</a>
         <a class="btn btn-secondary" href="${repo}">Quelltext &amp; README (GitHub)</a>
-      </div>
-      <div class="trust-strip">
-        <span><i class="trust-dot"></i>Lokal im Browser, ohne Konto</span>
-        <span><i class="trust-dot"></i>.qea · .xmi · .json · ArchiMate .xml</span>
-        <span><i class="trust-dot"></i>Open Source · MIT-Lizenz</span>
       </div>
     </div>
   </div>
