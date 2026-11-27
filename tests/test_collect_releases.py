@@ -163,6 +163,14 @@ def test_manifest_nennt_nur_ausgelieferte_dateien(tmp_path: Path) -> None:
     container_wf = (ROOT / ".github" / "workflows" / "container.yml").read_text(encoding="utf-8")
     assert "branches: [main]" in container_wf
     assert "type=raw,value=latest" in container_wf
+    pages_wf = (ROOT / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")
+    assert "branches: [main]" in pages_wf
+    assert "_build.yml" in pages_wf
+    release_wf = (ROOT / ".github" / "workflows" / "release.yml").read_text(encoding="utf-8")
+    assert "branches: [main]" in release_wf
+    assert "_build.yml" in release_wf
+    assert "make_latest: true" in release_wf
+    assert not (ROOT / ".github" / "workflows" / "nightly.yml").exists()
 
     # Derselbe Quellstand ergibt dieselben Bytes.
     erst = _sha256(archiv)

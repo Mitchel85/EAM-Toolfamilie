@@ -5,7 +5,7 @@ name: ci
 
 on:
   push:
-    branches: [main, 'rebuild/**']
+    branches: ['rebuild/**']
   pull_request:
 
 jobs:
