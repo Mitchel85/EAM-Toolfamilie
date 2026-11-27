@@ -311,7 +311,7 @@ def _call_tool(name: str, args: Mapping[str, Any]) -> dict[str, Any]:
     raise KeyError(f"Unbekanntes MCP-Werkzeug: {name}")
 
 
-def dispatch_request(message: Mapping[str, Any], *, version: str = "3.15.0") -> dict[str, Any] | None:
+def dispatch_request(message: Mapping[str, Any], *, version: str = "1.0.0") -> dict[str, Any] | None:
     """Verarbeitet eine einzelne JSON-RPC-2.0-Nachricht (synchron, testfreundlich)."""
     method = str(message.get("method") or "")
     msg_id = message.get("id")

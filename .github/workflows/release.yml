@@ -35,7 +35,7 @@ jobs:
       - name: Release anlegen
         uses: softprops/action-gh-release@v2
         with:
-          name: "EAM Platform ${{ github.ref_name }}"
+          name: "EAM Toolfamilie ${{ github.ref_name }}"
           body_path: dist/README.md
           # Muster statt fester Liste: neue Auslieferungen (Apps, Auto-ZIPs)
           # landen sonst nicht im Release — genau so gingen Analyzer-HTML und

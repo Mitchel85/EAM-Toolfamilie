@@ -1,8 +1,8 @@
 # EAM Toolfamilie — Container fuer die Python-Auslieferung.
 #
 # Der Kern ist stdlib-only; kein pip, keine Build-Tools im Image.
-#   docker build -t eam-toolfamilie:3.15.0 .
-#   docker run --rm -p 127.0.0.1:8080:8080 eam-toolfamilie:3.15.0
+#   docker build -t eam-toolfamilie:1.0.0 .
+#   docker run --rm -p 127.0.0.1:8080:8080 eam-toolfamilie:1.0.0
 
 FROM python:3.12-slim
 

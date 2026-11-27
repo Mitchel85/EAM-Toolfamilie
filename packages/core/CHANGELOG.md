@@ -4,6 +4,19 @@ Alle Aenderungen am Lieferumfang. Die Version steht an genau drei Stellen und
 wird von `tests/test_packaging.py` gegeneinander geprueft:
 `eam_ai.__version__`, `pyproject.toml` und diese Datei.
 
+## 1.0.0 - 2026-11-27
+
+### Erstes einheitliches Release der EAM Toolfamilie (Neustart der Versionierung bei 1.0.0)
+
+- Einheitlicher Startpunkt `v1.0.0` fuer Python-Kern (`eam-ai`), HTML-/ASPX-Suiten,
+  GitHub Pages (`START-HIER.html` im `estel.email`-Design) und GHCR-Container.
+- Umfasst alle Funktionen aus der vorherigen Entwicklungsreihe: 4-Format-Schicht
+  (`.qea`, `.xmi`, ArchiMate `.xml`, `.json`), Modell-Diff & Undo, kleiner Kontext-Support
+  (`4k`–`16k`, Kompaktmodus, rekursive Halbierung, dynamischer Stereotyp-Filter),
+  Textabdeckung & Quellabsatz-Sprung, ArchiMate-3.2-Matrix & Auto-Repair im Browser,
+  BPMN-L3-Katalogbruecke, abhaengigkeitsfreier 4-Format-MCP-Server (`eam-ai mcp`)
+  sowie automatischer Container-Sync auf `main`.
+
 ## 3.15.0 - 2026-11-26
 
 ### Modell-Diff, Undo, Textabdeckung, Auto-Repair, kleiner Kontext-Support & Stdlib-MCP
