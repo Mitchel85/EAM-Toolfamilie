@@ -445,9 +445,7 @@ h2{font-size:26px;margin:30px 0 6px;letter-spacing:-.02em}
 .card .secondary{display:block;margin-top:10px;font-size:13.5px;color:var(--blue);text-decoration:underline}
 .card ol{margin:12px 0 0;padding-left:20px;color:#2f4058;font-size:14.5px}
 .card ol li{margin:3px 0}
-.quick{background:#e8f0fe;border:1px solid #c8d9f8;border-radius:14px;padding:12px 16px;margin:0 0 16px;color:#173a6b}
-.quick b{color:#0b3b7a}
-.quick a{color:#0b3b7a;font-weight:700;text-decoration:underline}
+.card ol code{white-space:nowrap}
 pre{background:#0f1d33;color:#e8eefc;padding:14px;border-radius:10px;overflow:auto;font-size:13px;margin:10px 0 0}
 code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
 .decision{background:#fff;border:1px solid var(--line);border-radius:16px;padding:8px 22px 18px;margin-top:10px}
@@ -467,15 +465,9 @@ code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
   </div>
 </header>
 <main class="wrap">
-  <h2>Welches Werkzeug wofür</h2>
-  <p class="lead">Eine Karte je Werkzeug. Dateiname und Größe stehen darunter.</p>
-  <div class="quick"><b>Schnellwahl:</b> <a href="#ai-suite">Bauen → EAM AI Suite</a> · <a href="#suite">Prüfen und Bearbeiten → EAM Suite</a> · <a href="#sichten-archiv">Sichten sichern → Sichten-Archiv</a> · <a href="#bpmn">Prozesse → BPMN Studio</a> · <a href="#mdg">Nachschlagen → ADMBw Extraktor</a> · <a href="#qea-analyzer">Abfragen → EAM Analyzer</a></div>
   <section class="grid">
 ${cards}
   </section>
-  <div class="quick"><b>Ohne Herunterladen:</b> jede HTML-App läuft auch direkt im Browser unter
-  <a href="https://mitchel85.github.io/EAM-Toolfamilie/">mitchel85.github.io/EAM-Toolfamilie</a> —
-  die einzelnen Seiten stehen in den Karten als „Im Browser öffnen“.</div>
   <p class="lead" style="margin-top:14px">SharePoint-Fassungen: <a href="https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-AI-Suite.aspx">EAM-AI-Suite.aspx</a> · <a href="https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.aspx">EAM-Suite.aspx</a> · <a href="https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/BPMN-Studio.aspx">BPMN-Studio.aspx</a> · <a href="https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/Sichten-Archiv.aspx">Sichten-Archiv.aspx</a> — dieselben Apps für SharePoint/IIS.<br>
   Englische Fassung: <a href="EAM-Suite-en.html">EAM-Suite-en.html</a> — dieselbe EAM Suite mit englischer Oberfläche.</p>
 
@@ -520,9 +512,6 @@ ${cards}
     <li><b>Iterativ arbeiten.</b> Der Prompt verlangt ausdrücklich kleine Schritte: höchstens 10 bis 15 Elemente, dann Zwischenstand ausgeben und weiter. Wer ein langes Dokument in einem Durchgang verarbeiten lässt, sprengt bei manchen Modellen das Kontextfenster — die Regelprüfung leidet zuerst.</li>
     <li><b>Grenzen.</b> Die Dateien sind Daten, keine Befehle. Bei Widerspruch gilt die MDG, nicht die Chat-Antwort.</li>
   </ol>
-
-  <h2>Prüfen</h2>
-  <p class="lead">Jede Datei hat eine Prüfsumme. <a href="${sums}">SHA256SUMS herunterladen</a> und danach im Download-Ordner <code>sha256sum -c SHA256SUMS</code> ausführen.</p>
 
   <div class="footer">
     EAM Toolfamilie · Release ${version} · <a href="${releases}">Alle Releases</a> · <a href="${sums}">SHA256SUMS</a><br>
@@ -640,7 +629,7 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
         ),
         _karte(
             "EAM AI Suite Python", "CLI, WebUI & Stdlib-MCP",
-            "Kommandozeile <code>eam-ai</code> (build, convert, validate, qs, diff, repair, mcp, frage, korrigiere, viewer, handbuch, stufe1–4, serve) sowie WebUI mit Live-Viewer, Chat with Data, NL-Edit, Diff, Auto-Repair, Undo und Prosa-Weiterbau. Quellstand als ZIP.",
+            "Kommandozeile eam-ai (build, convert, validate, qs, diff, repair, mcp, frage, korrigiere, viewer, handbuch, stufe1–4, serve) sowie WebUI mit Live-Viewer, Chat with Data, NL-Edit, Diff, Auto-Repair, Undo und Prosa-Weiterbau. Quellstand als ZIP.",
             "eam-ai-suite-python.zip", "eam-ai-suite-python.zip herunterladen",
             ["ZIP entpacken", "<code>pip install ./eam-ai-suite-python</code>", "<code>eam-ai serve</code>, <code>eam-ai mcp</code> oder <code>eam-ai --version</code>"],
             groesse=groesse("eam-ai-suite-python.zip"),

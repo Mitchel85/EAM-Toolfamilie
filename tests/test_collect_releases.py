@@ -120,7 +120,10 @@ def test_manifest_nennt_nur_ausgelieferte_dateien(tmp_path: Path) -> None:
     ):
         assert f"mitchel85.github.io/EAM-Toolfamilie/{app}" in seite, app
     assert "mitchel85.github.io/EAM-Toolfamilie/eam-analyzer/" not in seite
-    assert "Schnellwahl" in seite
+    assert "Schnellwahl" not in seite
+    assert "Ohne Herunterladen" not in seite
+    assert "<h2>Prüfen</h2>" not in seite
+    assert "&lt;code&gt;" not in seite
 
     # Altbestand ist weg, das Manifest kann nicht wieder 84 Einträge erzeugen.
     assert not (dist / "offline").exists()
