@@ -26,6 +26,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import tomllib
 import zipfile
 from pathlib import Path
@@ -33,6 +34,9 @@ from string import Template
 from typing import TypedDict
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT / "scripts") not in sys.path:
+    sys.path.insert(0, str(ROOT / "scripts"))
+import build_openwebui_standalone  # noqa: E402
 
 #: (Quelle im Repo, Zielname in dist/, Produkt, Einstiegshinweis)
 #: Kopfzeilen fuer Auslieferungen, die eine Marke tragen sollen, ohne dass die
@@ -599,9 +603,9 @@ ${cards}
     <div class="wrap">
       <div class="section-head">
         <h2>EAM AI Suite Python — CLI, Container &amp; Open WebUI</h2>
-        <p>Derselbe abhängigkeitsfreie Python-Kern (<code>eam-ai</code>) für Terminal, WebUI, Docker-Server, Stdlib-MCP und direkte Einbindung als Tool, Pipe oder Skill in Open WebUI.</p>
+        <p>Derselbe abhängigkeitsfreie Python-Kern (<code>eam-ai</code>) in vier Betriebsarten: CLI/WebUI, Docker-Container (GHCR), Open WebUI mit Server/Container sowie Open WebUI Standalone ganz ohne Container.</p>
       </div>
-      <div class="grid-3">
+      <div class="grid">
 ${python_cards}
       </div>
     </div>
@@ -806,14 +810,25 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
   </div>
 </article>""",
         _karte(
-            "Open WebUI Tool, Pipe & Skill", "Open WebUI · Dual-Modus",
-            "Bindet EAM AI Suite Python direkt in Open WebUI ein — wahlweise gegen den GHCR-Container (mode=http) oder lokal (mode=local). Inklusive Pipe-Funktion, Skill-Markdown und Docker-Compose-Vorlage.",
+            "Open WebUI (mit Server / Container)", "Open WebUI · Dual-Modus",
+            "Bindet EAM AI Suite Python in Open WebUI ein — wahlweise gegen den GHCR-Container (mode=http) oder lokales eam-ai (mode=local). Inklusive Pipe-Funktion, Skill-Markdown und Docker-Compose.",
             "EAM-AI-Suite-OpenWebUI.zip", "Komplettpaket (.zip)",
             groesse=groesse("EAM-AI-Suite-OpenWebUI.zip"),
             slug="openwebui",
             weitere=[
                 ("eam_ai_suite_openwebui.py", "Tool (.py)"),
                 ("eam_ai_suite_pipe.py", "Pipe (.py)"),
+            ],
+        ),
+        _karte(
+            "Open WebUI Standalone (ohne Container)", "Open WebUI · Zero-Container",
+            "Vollständig autarke Einzeldatei für Zielhosts, auf denen nur Open-WebUI-Funktionen und Skills importierbar sind — kein Docker, kein pip, auch komplett offline/air-gapped.",
+            "EAM-AI-Suite-OpenWebUI-Standalone.zip", "Standalone-Paket (.zip)",
+            groesse=groesse("EAM-AI-Suite-OpenWebUI-Standalone.zip"),
+            slug="openwebui-standalone",
+            weitere=[
+                ("eam_ai_suite_openwebui_standalone.py", "Standalone Tool (.py)"),
+                ("eam_ai_suite_pipe_standalone.py", "Standalone Pipe (.py)"),
             ],
         ),
     ]
@@ -830,6 +845,44 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
         encoding="utf-8",
         newline="\n",
     )
+    return ziel
+
+
+def baue_openwebui_standalone_zip(
+    dist: Path, version: str, tool_path: Path, pipe_path: Path
+) -> Path:
+    """Packt die autarken Standalone-Open-WebUI-Dateien deterministisch in ein App-ZIP."""
+    name = "EAM-AI-Suite-OpenWebUI-Standalone"
+    ziel = dist / f"{name}.zip"
+    anleitung = "\n".join(
+        [
+            f"EAM AI Suite Python — Open WebUI Standalone (ohne Container) (Release {version})",
+            "=" * 74,
+            "",
+            "Fuer Open-WebUI-Zielhosts ohne Docker-Deployment und ohne pip-Zugriff.",
+            "Die komplette Python-Engine + MDG-Regelwerk ist in den .py-Dateien eingebettet.",
+            "",
+            "Start:",
+            "  1. eam_ai_suite_openwebui_standalone.py in Open WebUI (Workspace -> Tools) importieren",
+            "  2. Oder eam_ai_suite_pipe_standalone.py als Function (Workspace -> Functions) einbinden",
+            "  3. In den Valves LLM-URL/Modell setzen (oder backend='datei' fuer Offline-Test)",
+            "",
+        ]
+    )
+    eintraege: list[tuple[str, bytes]] = [
+        (f"{name}/KURZANLEITUNG.txt", anleitung.encode("utf-8")),
+        (f"{name}/README-STANDALONE.md", (ROOT / "apps/cli/openwebui/README-STANDALONE.md").read_bytes()),
+        (f"{name}/eam_ai_suite_openwebui_standalone.py", tool_path.read_bytes()),
+        (f"{name}/eam_ai_suite_pipe_standalone.py", pipe_path.read_bytes()),
+        (f"{name}/eam_ai_suite_skill.md", (ROOT / "apps/cli/openwebui/eam_ai_suite_skill.md").read_bytes()),
+    ]
+    eintraege.sort(key=lambda item: item[0])
+    with zipfile.ZipFile(ziel, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
+        for arcname, data in eintraege:
+            info = zipfile.ZipInfo(arcname, date_time=(1980, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = 0o644 << 16
+            zf.writestr(info, data)
     return ziel
 
 
@@ -898,6 +951,34 @@ def main() -> int:
         )
         vorhanden.append((app_zip.name, buendel["produkt"], buendel["text"]))
         ausgeliefert.append((app_zip.name, app_zip))
+
+    # 4. EAM AI Suite Python-Variante: autarke Open-WebUI-Standalone-Dateien (Zero-Container).
+    sa_tool, sa_pipe = build_openwebui_standalone.build_all(dist, version)
+    sa_zip = baue_openwebui_standalone_zip(dist, version, sa_tool, sa_pipe)
+    for sa_datei, sa_produkt, sa_hinweis in (
+        (
+            sa_tool,
+            "EAM AI Suite Python — Open-WebUI-Tool Standalone (ohne Container)",
+            "Autarke Einzeldatei fuer Open WebUI ohne Docker und ohne pip; bettet Engine und MDG-Regelwerk direkt ein.",
+        ),
+        (
+            sa_pipe,
+            "EAM AI Suite Python — Open-WebUI-Pipe Standalone (ohne Container)",
+            "Autarke Pipe-Funktion fuer Open WebUI ohne Docker und ohne pip; erscheint als eigenes Modell.",
+        ),
+        (
+            sa_zip,
+            "EAM AI Suite Python — Open-WebUI-Standalone-Paket (Tool, Pipe, Skill)",
+            "Komplettpaket fuer Open-WebUI-Hosts ohne Container-Deployment: Standalone-Tool, Standalone-Pipe, Skill und Anleitung.",
+        ),
+    ):
+        groesse = f"{sa_datei.stat().st_size:,}".replace(",", ".")
+        zeilen.append(
+            f"| `{sa_datei.name}` | {sa_produkt} | {groesse} B | "
+            f"`{sha256(sa_datei)[:16]}…` |"
+        )
+        vorhanden.append((sa_datei.name, sa_produkt, sa_hinweis))
+        ausgeliefert.append((sa_datei.name, sa_datei))
 
     start = schreibe_startseite(dist, version)
     start_groesse = f"{start.stat().st_size:,}".replace(",", ".")

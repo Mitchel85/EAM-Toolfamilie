@@ -68,6 +68,9 @@ def test_manifest_nennt_nur_ausgelieferte_dateien(tmp_path: Path) -> None:
         archiv.name,
         "eam-ai-suite-python.zip",
         "START-HIER.html",
+        "eam_ai_suite_openwebui_standalone.py",
+        "eam_ai_suite_pipe_standalone.py",
+        "EAM-AI-Suite-OpenWebUI-Standalone.zip",
     } | {f"{buendel['name']}.zip" for buendel in modul.APP_ZIPS}
     sums = _sums(dist)
     assert set(sums) == erwartet
@@ -95,8 +98,9 @@ def test_manifest_nennt_nur_ausgelieferte_dateien(tmp_path: Path) -> None:
     start = dist / "START-HIER.html"
     assert start.is_file()
     seite = start.read_text(encoding="utf-8")
-    assert seite.count('class="card') == 9
+    assert seite.count('class="card') == 10
     assert 'id="python-plattform"' in seite
+    assert 'id="openwebui-standalone"' in seite
     for datei in (
         "EAM-AI-Suite.html",
         "EAM-Suite.html",
@@ -110,6 +114,9 @@ def test_manifest_nennt_nur_ausgelieferte_dateien(tmp_path: Path) -> None:
         "eam_ai_suite_openwebui.py",
         "eam_ai_suite_pipe.py",
         "EAM-AI-Suite-OpenWebUI.zip",
+        "eam_ai_suite_openwebui_standalone.py",
+        "eam_ai_suite_pipe_standalone.py",
+        "EAM-AI-Suite-OpenWebUI-Standalone.zip",
     ):
         assert f"releases/latest/download/{datei}" in seite, datei
     # GitHub Pages: die HTML-Apps haben eine Direkt-URL. Der EAM Analyzer

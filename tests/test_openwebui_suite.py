@@ -136,6 +136,85 @@ def test_openwebui_pipe_end_to_end(live_webui: str) -> None:
 def test_openwebui_begleitdateien_vorhanden() -> None:
     skill = (OWUI_DIR / "eam_ai_suite_skill.md").read_text(encoding="utf-8")
     compose = (OWUI_DIR / "docker-compose.openwebui.yml").read_text(encoding="utf-8")
+    standalone_readme = (OWUI_DIR / "README-STANDALONE.md").read_text(encoding="utf-8")
     assert "eam_ai_suite_openwebui.py" in skill
     assert "ghcr.io/mitchel85/eam-toolfamilie:latest" in compose
-    assert "http://eam-toolfamilie:8080" in compose
+    assert "eam_ai_suite_openwebui_standalone.py" in standalone_readme
+
+
+def test_openwebui_standalone_zero_container_end_to_end(tmp_path: Path) -> None:
+    """Generiert die autarken Standalone-Dateien und testet Tool + Pipe komplett ohne externen Server."""
+    builder = _load_module("build_openwebui_standalone", ROOT / "scripts" / "build_openwebui_standalone.py")
+    out_dir = tmp_path / "standalone_out"
+    tool_path, pipe_path = builder.build_all(out_dir, version="1.0.0")
+    assert tool_path.is_file()
+    assert pipe_path.is_file()
+
+    # 1. Standalone Tool testen (inkl. export_artifact in export_dir + Base64)
+    tool_mod = _load_module("eam_ai_suite_openwebui_standalone", tool_path)
+    tools = tool_mod.Tools()
+    tools.valves.llm_backend = "datei"
+    tools.valves.cache_dir = str(tmp_path / "cache_tool")
+    tools.valves.export_dir = str(tmp_path / "exports")
+
+    built = json.loads(asyncio.run(tools.build_architecture(TEXT, package_name="Architektur")))
+    assert built["ok"] is True, built
+    assert built["mode"] == "standalone"
+    job_id = built["job_id"]
+
+    qs = json.loads(asyncio.run(tools.validate_and_qs(job_id)))
+    assert "summary" in qs or "findings" in qs
+
+    edited = json.loads(
+        asyncio.run(
+            tools.nl_edit(
+                job_id,
+                'Erstelle Element "Lagebilddienst" als ServiceSpecification in Paket "Architektur".',
+                apply=True,
+            )
+        )
+    )
+    assert edited["ok"] is True
+
+    diff = json.loads(asyncio.run(tools.diff_versions(job_id)))
+    assert diff["identical"] is False
+
+    rep = json.loads(asyncio.run(tools.repair_preview(job_id, apply=False)))
+    assert rep["ok"] is True
+
+    chat = json.loads(asyncio.run(tools.ask_model(job_id, "Welche Elemente gibt es?")))
+    assert chat["ok"] is True
+    assert "Lagebilddienst" in chat["answer"]
+
+    exported = json.loads(asyncio.run(tools.export_artifact(job_id, "ergebnis.zip", as_base64=True)))
+    assert exported["ok"] is True
+    assert exported["bytes"] > 100
+    assert exported["base64"]
+    assert Path(exported["saved_path"]).is_file()
+
+    undone = json.loads(asyncio.run(tools.undo_version(job_id)))
+    assert undone["ok"] is True
+
+    # 2. Standalone Pipe testen (Build + Folgekommando `frage`)
+    pipe_mod = _load_module("eam_ai_suite_pipe_standalone", pipe_path)
+    pipe = pipe_mod.Pipe()
+    pipe.valves.llm_backend = "datei"
+    pipe.valves.cache_dir = str(tmp_path / "cache_pipe")
+    assert pipe.pipes()[0]["id"] == "eam-ai-suite-standalone"
+
+    reply = asyncio.run(pipe.pipe({"messages": [{"role": "user", "content": TEXT}]}))
+    assert "Architektur erstellt (Standalone" in reply
+    assert "[eam-job:" in reply
+
+    ans = asyncio.run(
+        pipe.pipe(
+            {
+                "messages": [
+                    {"role": "user", "content": TEXT},
+                    {"role": "assistant", "content": reply},
+                    {"role": "user", "content": "frage Welche Elemente gibt es?"},
+                ]
+            }
+        )
+    )
+    assert "[eam-job:" in ans
