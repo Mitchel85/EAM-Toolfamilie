@@ -411,113 +411,239 @@ _START_TEMPLATE = r"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EAM Toolfamilie — Werkzeuge herunterladen</title>
+<title>EAM Toolfamilie — Werkzeuge für Architekturmodelle</title>
 <style>
-:root{--ink:#12213a;--muted:#5b6b82;--line:#dbe3ee;--blue:#0b57d0;--blue2:#0842a0;--bg:#f2f6fb;--card:#fff;--green:#0f7b45}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.5}
-a{color:var(--blue)}
-.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
-.hero{background:linear-gradient(135deg,#0b1f3a 0%,#123a6b 60%,#0b57d0 100%);color:#fff;padding:46px 0 40px;margin-bottom:26px}
-.kicker{font-size:13px;letter-spacing:.08em;text-transform:uppercase;opacity:.8;font-weight:700}
-h1{font-size:clamp(28px,4vw,44px);line-height:1.12;margin:12px 0 14px;letter-spacing:-.02em}
-.hero p{font-size:18px;max-width:760px;opacity:.94;margin:0 0 20px}
-.steps{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 24px}
-.steps span{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);padding:8px 12px;border-radius:999px;font-size:14px}
-.steps b{color:#fff}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--blue);color:#fff;text-decoration:none;font-weight:800;padding:13px 18px;border-radius:12px;border:1px solid rgba(0,0,0,.05)}
-.btn:hover{background:var(--blue2)}
-.btn.light{background:#fff;color:#0b3b7a}
-.btn.light:hover{background:#eaf1ff}
-.note{background:#fff;border:1px solid var(--line);border-left:6px solid var(--green);border-radius:12px;padding:14px 16px;margin:22px 0;color:#24364f}
-.note b{color:#0f5d38}
-h2{font-size:26px;margin:30px 0 6px;letter-spacing:-.02em}
-.lead{color:var(--muted);margin:0 0 18px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;box-shadow:0 6px 22px rgba(18,33,58,.06)}
-.card.wide{grid-column:1/-1}
-.card:hover{box-shadow:0 10px 30px rgba(18,33,58,.11)}
-.badge{display:inline-block;align-self:flex-start;background:#e8f0fe;color:#0b4bb3;font-size:12px;font-weight:800;padding:5px 9px;border-radius:999px;margin-bottom:10px}
-.card h3{font-size:21px;margin:0 0 6px}
-.card p{color:#35465e;margin:0 0 12px}
-.meta{font-size:13.5px;color:#4a5b73;margin:0 0 14px;word-break:break-word}
-.card .btn{margin-top:auto;word-break:break-word;text-align:center}
-.card .secondary{display:block;margin-top:10px;font-size:13.5px;color:var(--blue);text-decoration:underline}
-.card ol{margin:12px 0 0;padding-left:20px;color:#2f4058;font-size:14.5px}
-.card ol li{margin:3px 0}
-.card ol code{white-space:nowrap}
-pre{background:#0f1d33;color:#e8eefc;padding:14px;border-radius:10px;overflow:auto;font-size:13px;margin:10px 0 0}
-code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
-.decision{background:#fff;border:1px solid var(--line);border-radius:16px;padding:8px 22px 18px;margin-top:10px}
-.decision li{margin:10px 0;color:#2b3d56}
-.decision b{color:var(--ink)}
-.footer{color:var(--muted);font-size:14px;padding:34px 0 44px;border-top:1px solid var(--line);margin-top:30px}
-@media(max-width:560px){.hero{padding:34px 0 30px}.card{padding:16px}.decision{padding:4px 14px 12px}}
+:root{
+  --bg:#f6f7f9;
+  --surface:#ffffff;
+  --surface-subtle:#f1f4f8;
+  --ink:#0f172a;
+  --ink-secondary:#334155;
+  --muted:#5b6778;
+  --border:#e2e8f0;
+  --border-strong:#cbd5e1;
+  --brand:#0f6b63;
+  --brand-hover:#0b534d;
+  --brand-soft:#eef8f6;
+  --brand-border:#bfe5df;
+  --navy:#0f2433;
+  --navy-soft:#1c3648;
+  --radius-sm:8px;
+  --radius-md:12px;
+  --shadow-xs:0 1px 2px rgba(15,23,42,.04);
+  --shadow-sm:0 4px 16px rgba(15,23,42,.05);
+  --font-sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  --max-w:1080px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-sans);line-height:1.6;font-size:16px;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:var(--brand);text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:3px}
+a:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-subtle);padding:1px 5px;border-radius:4px;color:var(--ink)}
+.wrap{max-width:var(--max-w);margin:0 auto;padding:0 24px}
+
+.site-nav{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:var(--max-w);margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.brand{display:inline-flex;align-items:center;gap:11px;color:var(--ink);font-weight:750;font-size:1rem;letter-spacing:-.015em}
+.brand:hover{text-decoration:none}
+.brand-mark{width:32px;height:30px;border-radius:8px;background:var(--navy);color:#f8fafc;display:grid;place-items:center;font-size:.72rem;font-weight:800;letter-spacing:-.02em;flex-shrink:0}
+.nav-links{display:flex;align-items:center;gap:22px;flex-wrap:wrap;font-size:.92rem;font-weight:500}
+.nav-links a{color:var(--ink-secondary)}
+.nav-links a:hover{color:var(--ink);text-decoration:none}
+
+.hero{background:linear-gradient(180deg,#ffffff 0%,#f6f7f9 100%);border-bottom:1px solid var(--border);padding:56px 0 46px}
+.hero-inner{max-width:780px}
+.eyebrow{display:inline-block;font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--brand);margin-bottom:12px}
+.hero h1{margin:0 0 14px;font-size:clamp(1.95rem,4vw,2.75rem);line-height:1.14;letter-spacing:-.03em;font-weight:800;color:var(--ink)}
+.hero-lead{margin:0 0 26px;font-size:1.08rem;line-height:1.62;color:var(--ink-secondary);max-width:66ch}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 16px;border-radius:var(--radius-sm);font-weight:650;font-size:.9rem;line-height:1.2;border:1px solid transparent;cursor:pointer;transition:background-color .15s ease,border-color .15s ease,color .15s ease;text-decoration:none}
+.btn:hover{text-decoration:none}
+.btn-primary{background:var(--brand);color:#ffffff}
+.btn-primary:hover{background:var(--brand-hover)}
+.btn-secondary{background:var(--surface);color:var(--ink);border-color:var(--border-strong)}
+.btn-secondary:hover{background:var(--surface-subtle);border-color:#94a3b8}
+.btn-sm{padding:8px 13px;font-size:.85rem}
+.trust-strip{margin-top:32px;padding-top:18px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:10px 26px;font-size:.86rem;color:var(--muted)}
+.trust-strip span{display:inline-flex;align-items:center;gap:8px}
+.trust-dot{width:6px;height:6px;border-radius:50%;background:var(--brand);flex-shrink:0}
+
+.section{padding:52px 0}
+.section-alt{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.section-head{margin-bottom:24px;max-width:720px}
+.section-head h2{margin:0 0 6px;font-size:clamp(1.35rem,2.4vw,1.7rem);letter-spacing:-.025em;font-weight:780;color:var(--ink)}
+.section-head p{margin:0;color:var(--muted);font-size:.95rem}
+
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:22px 24px;box-shadow:var(--shadow-xs);display:flex;flex-direction:column;justify-content:space-between;gap:14px}
+.badge{display:inline-block;align-self:flex-start;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);background:var(--brand-soft);border:1px solid var(--brand-border);padding:3px 9px;border-radius:999px;margin-bottom:8px}
+.badge-muted{color:var(--ink-secondary);background:var(--surface-subtle);border-color:var(--border)}
+.card h3{margin:0 0 6px;font-size:1.14rem;font-weight:760;letter-spacing:-.015em;color:var(--ink)}
+.card p{margin:0;font-size:.92rem;color:var(--muted);line-height:1.58}
+.meta{margin-top:12px;font-size:.82rem;color:var(--ink-secondary);background:var(--surface-subtle);padding:7px 10px;border-radius:6px;word-break:break-word}
+.cmd{margin:10px 0 0;background:var(--navy);color:#e2e8f0;padding:10px 12px;border-radius:var(--radius-sm);overflow-x:auto;font-family:var(--font-mono);font-size:.8rem;line-height:1.45}
+.cmd code{background:transparent;padding:0;color:inherit;font-size:inherit}
+.actions{display:flex;flex-wrap:wrap;gap:8px;padding-top:12px;border-top:1px solid var(--border)}
+
+.alt-bar{margin-top:20px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:.88rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px}
+.alt-bar strong{color:var(--ink-secondary)}
+
+.steps-list{margin:0;padding:0;list-style:none;display:grid;gap:10px;counter-reset:step}
+.steps-list li{counter-increment:step;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 16px 13px 48px;position:relative;font-size:.93rem;color:var(--ink-secondary)}
+.steps-list li::before{content:counter(step);position:absolute;left:14px;top:13px;width:24px;height:24px;border-radius:50%;background:var(--brand-soft);border:1px solid var(--brand-border);color:var(--brand);font-size:.78rem;font-weight:800;display:grid;place-items:center}
+.steps-list li b{color:var(--ink)}
+
+.two-col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.info-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px 22px;box-shadow:var(--shadow-xs)}
+.info-box h3{margin:0 0 10px;font-size:1.02rem;font-weight:750;color:var(--ink)}
+.info-box ul{margin:0;padding-left:18px;color:var(--ink-secondary);font-size:.91rem}
+.info-box li{margin-bottom:6px}
+.info-box li:last-child{margin-bottom:0}
+
+.site-footer{background:var(--surface);border-top:1px solid var(--border);padding:28px 0;font-size:.86rem;color:var(--muted)}
+.footer-inner{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px 24px}
+.footer-links{display:flex;flex-wrap:wrap;gap:16px}
+.footer-links a{color:var(--ink-secondary)}
+.footer-links a:hover{color:var(--brand)}
+
+@media(max-width:760px){
+  .grid,.two-col{grid-template-columns:1fr}
+  .hero{padding:40px 0 34px}
+  .section{padding:38px 0}
+}
 </style>
 </head>
 <body>
-<header class="hero">
-  <div class="wrap">
-    <div class="kicker">EAM Toolfamilie · Release ${version}</div>
-    <h1>Werkzeuge für<br>Architekturmodelle</h1>
-    <a class="btn light" href="${releases}">Alle Dateien im Release ansehen</a>
-    <a class="btn light" href="${repo}">Quelltext und README</a>
+<header class="site-nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">
+      <span class="brand-mark" aria-hidden="true">EAM</span>
+      <span>EAM Toolfamilie</span>
+    </a>
+    <nav class="nav-links" aria-label="Hauptnavigation">
+      <a href="#werkzeuge">Werkzeuge</a>
+      <a href="#workflow">Workflow</a>
+      <a href="#archimate">ArchiMate</a>
+      <a href="#chatbot">Chatbot</a>
+      <a href="https://estel.email/">estel.email</a>
+    </nav>
   </div>
 </header>
-<main class="wrap">
-  <section class="grid">
-${cards}
-  </section>
-  <p class="lead" style="margin-top:14px">SharePoint-Fassungen: <a href="https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-AI-Suite.aspx">EAM-AI-Suite.aspx</a> · <a href="https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.aspx">EAM-Suite.aspx</a> · <a href="https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/BPMN-Studio.aspx">BPMN-Studio.aspx</a> · <a href="https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/Sichten-Archiv.aspx">Sichten-Archiv.aspx</a> — dieselben Apps für SharePoint/IIS.<br>
-  Englische Fassung: <a href="EAM-Suite-en.html">EAM-Suite-en.html</a> — dieselbe EAM Suite mit englischer Oberfläche.</p>
 
-  <h2>Auswahl nach Aufgabe</h2>
-  <ul class="decision">
-    <li><b>Ich habe Text, ein Handbuch, DOCX, PDF, ein Bild oder Tabellen und will iterativ ein Modell bauen.</b> → EAM AI Suite</li>
-    <li><b>Ich habe ein Modell (.qea, .xmi, ArchiMate-.xml oder .json) und will es verstehen, MDG-prüfen und QS-absichern (ohne KI).</b> → EAM Suite</li>
-    <li><b>Ich will vorhandene Modelle analysieren, verschmelzen oder bearbeiten (ohne KI).</b> → EAM Suite</li>
-    <li><b>Ich will Sichten und Layout verlustfrei auslagern und zurückspielen (SHA-256).</b> → Sichten-Archiv</li>
-    <li><b>Ich will nur das Regelwerk nachschlagen oder als JSON/Markdown exportieren.</b> → ADMBw Extraktor</li>
-    <li><b>Ich will ein Modell abfragen, Pfade/Impact prüfen oder gegen MDG validieren — in Open WebUI oder per MCP.</b> → EAM Analyzer</li>
-    <li><b>Ich will BPMN-Prozesse zeichnen, L4-prüfen und ADMBw-konform nach .qea/.xmi/.xml/.json exportieren.</b> → BPMN Studio</li>
-    <li><b>Ich will Kommandozeile (<code>eam-ai</code>), Stufenlauf für große Quellen oder Weboberfläche.</b> → Python-ZIP</li>
-    <li><b>Ich will einen eigenen Server.</b> → Container-Image</li>
-  </ul>
-
-  <h2>So entsteht eine Architektur (7 Stufen)</h2>
-  <p class="lead">Der durchgängige Workflow über alle Anwendungen — für kleine und große Architekturen.</p>
-  <ol class="decision">
-    <li><b>MDG rein.</b> Die Technologie-Datei (MDG-XML) wird dynamisch geladen. Daraus entsteht das Regelwerk: Stereotype, <code>metarelationships</code>, <code>TaggedValueTypes</code>, Viewpoints und <code>&lt;ModelTemplates&gt;</code>.</li>
-    <li><b>Startpaket rein — mit GUID-Treue.</b> Standardelemente (StEKa, Kataloge) werden mit ihren EA-GUIDs, NATO-GUIDs (<code>OriginalGUID</code>, <code>URI</code>, <code>Uuid</code>), <code>StandardElement</code> und <code>t_xref</code> wörtlich übernommen.</li>
-    <li><b>Prosa rein (multimodal &amp; auch für kleine LLMs).</b> Text, DOCX (inkl. Tabellen &amp; Bildern), PDF, Bilder oder CSV/TSV-Tabellen. Große Quellen werden in der <b>EAM AI Suite</b> (Kontextprofile <code>4k</code>–<code>16k</code>, <code>inTeilenHolen</code>, rekursive Halbierung) und in <b>Python</b> (<code>extract_batched</code>, <code>--kontext-tokens</code>, Stufenlauf 1–4 mit dynamischem Stereotyp-Filter) iterativ ohne Kontextlimit verarbeitet.</li>
-    <li><b>Architektur bauen (3 native Formate + ArchiMate-Brücke).</b> Verlustfreie NAFv4/UAF-Ausgabe und Konvertierung in <code>.qea</code>, <code>.xmi</code> (UML 2.x/1.3) und <code>.json</code>; zusätzlich regelbasierte Projektion nach ArchiMate 3.2 Exchange <code>.xml</code> sowie native ArchiMate-Prüfung per <code>eam-ai archimate-check</code> und direkt im Browser.</li>
-    <li><b>Gegen die MDG validieren &amp; regelbasiert reparieren.</b> Dynamische Prüfung aller Elemente, Beziehungen, Metaklassen, Tags, GUIDs und abstrakten Stereotype gegen NAFv4/UAF-MDG, interaktive <b>Reparatur-Vorschau ohne KI</b> (<code>repair</code> / <code>🔧 Auto-Repair</code>) sowie offizielle <b>ArchiMate-3.2-Matrixprüfung</b> in Python, MCP und Browser.</li>
-    <li><b>QS, Modell-Diff &amp; Quellbelege.</b> Nachbarschaft, Pfadsuche, Impact-Analyse, Waisen, <b>Vorher-Nachher-Modell-Diff &amp; Undo</b> (<code>diff</code> / <code>🔀 Modell-Diff</code>), Pflichtenheft-Textabdeckung (<code>qs --text</code>) und klickbarer Sprung zum Original-Quellabsatz (<code>source_ref</code>).</li>
-    <li><b>Wahlweise Sparx-EA-Sichten &amp; Sichten-Archiv.</b> Sichten optional gemäß MDG, Leitfaden oder Model Wizard (<code>--sichten</code>, <code>--wizard-dir</code> bzw. Button <code>🖼️ Architektur mit Sichten bauen</code>) erzeugen — oder per <b>Sichten-Archiv</b> bit-identisch (SHA-256) auslagern und zurückspielen.</li>
-  </ol>
-
-  <h2>ArchiMate 3.2 — Was geht &amp; was nicht</h2>
-  <p class="lead">Das Kern-Metamodell der Toolfamilie ist <b>NAF 4 / UAF</b> (Standard-MDG: ADMBw, offen für eigene MDG-XMLs) in den nativen Formaten <code>.qea</code>, <code>.xmi</code> und <code>.json</code>. <b>ArchiMate 3.2</b> ist ein eigenes Metamodell und wird gezielt als Brücken- und Prüf-Format unterstützt:</p>
-  <ul class="decision">
-    <li><b>Was geht:</b> NAF 4 / UAF → ArchiMate 3.2 Export-Projektion (Mapping gemäß <b>NAFv4.1-ArchiMate-Guide</b>; Python <code>eam-ai archimate</code> inkl. <b>ArchiMate-3.2-Beziehungsmatrix</b> aus Archi/EPL-2.0 &amp; Näherungsreport) · bestehende ArchiMate-3.2-Modelle einlesen und über <code>eam-ai archimate-check</code>, MCP <b>und direkt im Browser</b> (<code>EAMMDG.validateArchimate</code>) nativ gegen die 61×61-Beziehungsmatrix prüfen · verlustfreier Rückweg für eigene Exporte.</li>
-    <li><b>Was nicht geht:</b> Kein nativer KI-Modellbau direkt in ArchiMate 3.2 (KI baut NAF 4 / UAF bzw. geladene MDG) · keine automatische 1:1-Übersetzung fremder ArchiMate-Modelle in NAF 4 / UAF · keine verlustfreie 1:1-Gleichheit zwischen UAF und ArchiMate.</li>
-  </ul>
-  <h2>Regeldateien in einem Chatbot nutzen</h2>
-  <p class="lead">Die sechs Markdown-Dateien aus dem ADMBw Extraktor sind reine Fachdaten. Jeder Chatbot kann sie als Wissensquelle lesen — ChatGPT, Claude, Gemini, Open WebUI oder ein lokales Modell. Der Chatbot schlägt dann vor; prüfen tut er nicht.</p>
-  <ol class="decision">
-    <li><b>Dateien erzeugen.</b> Im ADMBw Extraktor die MDG-XML laden und „Alle 6" herunterladen: <code>admbw-knowledge-stereotypes.md</code>, <code>-topology.md</code>, <code>-viewpoints.md</code>, <code>-tagtypes.md</code>, <code>-stereotype-tags.md</code>, <code>admbw-meta.md</code>.</li>
-    <li><b>Open WebUI.</b> <i>Workspace → Knowledge → „+"</i>, die sechs Dateien hochladen, Sammlung <i>ADMBw-Regelwerk</i> nennen. Im Chat mit <code>#</code> vor der Frage anhängen — oder unter <i>Workspace → Models</i> beim Modell als Knowledge eintragen, dann greift sie in jedem Chat.</li>
-    <li><b>Andere Chatbots.</b> ChatGPT: Projekt anlegen, Dateien hinzufügen (oder Custom GPT → Knowledge). Claude: Projekt → Knowledge. Gemini: Gem oder Notebook mit den Dateien als Quelle. Lokal: Dateien in den Kontext legen oder einen Index bauen.</li>
-    <li><b>Master-Prompt.</b> <code>ADMBw-Prompt.md</code> als System-Anweisung setzen, die sechs Wissensdateien als Knowledge. Der Prompt sagt, wie gebaut wird; die Dateien sagen, was erlaubt ist.</li>
-    <li><b>Iterativ arbeiten.</b> Der Prompt verlangt ausdrücklich kleine Schritte: höchstens 10 bis 15 Elemente, dann Zwischenstand ausgeben und weiter. Wer ein langes Dokument in einem Durchgang verarbeiten lässt, sprengt bei manchen Modellen das Kontextfenster — die Regelprüfung leidet zuerst.</li>
-    <li><b>Grenzen.</b> Die Dateien sind Daten, keine Befehle. Bei Widerspruch gilt die MDG, nicht die Chat-Antwort.</li>
-  </ol>
-
-  <div class="footer">
-    EAM Toolfamilie · Release ${version} · <a href="${releases}">Alle Releases</a> · <a href="${sums}">SHA256SUMS</a><br>
-    Michael Estel · <a href="https://estel.email/">Übersicht, Bücher &amp; Kontakt (estel.email)</a> · <a href="https://estel.email/impressum.html">Impressum</a> · <a href="https://estel.email/datenschutz.html">Datenschutz</a>
+<section id="top" class="hero">
+  <div class="wrap">
+    <div class="hero-inner">
+      <span class="eyebrow">EAM Toolfamilie &middot; Release ${version}</span>
+      <h1>Werkzeuge für Architekturmodelle.</h1>
+      <p class="hero-lead">
+        Erstellen, prüfen, vergleichen und analysieren von Modellen nach <strong>NAF 4 / UAF</strong> (ADMBw &amp; eigene MDG-XMLs),
+        <strong>ArchiMate 3.2</strong> und <strong>BPMN 2.0</strong> — lokal im Browser, als Python-CLI/WebUI oder Container.
+      </p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="${releases}">Release ${version} ansehen</a>
+        <a class="btn btn-secondary" href="${repo}">Quelltext &amp; README (GitHub)</a>
+      </div>
+      <div class="trust-strip">
+        <span><i class="trust-dot"></i>Lokal im Browser, ohne Konto</span>
+        <span><i class="trust-dot"></i>.qea · .xmi · .json · ArchiMate .xml</span>
+        <span><i class="trust-dot"></i>Open Source · MIT-Lizenz</span>
+      </div>
+    </div>
   </div>
+</section>
+
+<main>
+  <section id="werkzeuge" class="section">
+    <div class="wrap">
+      <div class="grid">
+${cards}
+      </div>
+      <div class="alt-bar">
+        <span><strong>SharePoint / IIS (.aspx):</strong>
+          <a href="https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-AI-Suite.aspx">EAM-AI-Suite.aspx</a> &middot;
+          <a href="https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/EAM-Suite.aspx">EAM-Suite.aspx</a> &middot;
+          <a href="https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/BPMN-Studio.aspx">BPMN-Studio.aspx</a> &middot;
+          <a href="https://github.com/Mitchel85/EAM-Toolfamilie/releases/latest/download/Sichten-Archiv.aspx">Sichten-Archiv.aspx</a>
+        </span>
+        <span><strong>Englisch:</strong> <a href="EAM-Suite-en.html">EAM-Suite-en.html</a></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="workflow" class="section section-alt">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Workflow in 7 Stufen</h2>
+        <p>Von der MDG-Technologie bis zum geprüften Modell — durchgängig über Browser, CLI, WebUI und MCP.</p>
+      </div>
+      <ol class="steps-list">
+        <li><b>MDG einlesen.</b> Beliebige MDG-XML dynamisch parsen (Stereotype, <code>metarelationships</code>, Tags, Viewpoints).</li>
+        <li><b>Startpaket übernehmen.</b> Standardelemente (StEKa, Kataloge) mit EA-/NATO-GUIDs und <code>t_xref</code> unverändert halten.</li>
+        <li><b>Prosa &amp; Tabellen aufnehmen.</b> Text, DOCX, PDF, Bilder oder CSV — adaptiv gechunked auch für lokale 4k–16k-Modelle.</li>
+        <li><b>Modell bauen.</b> Verlustfrei in <code>.qea</code>, <code>.xmi</code> und <code>.json</code> sowie als Projektion nach ArchiMate 3.2 <code>.xml</code>.</li>
+        <li><b>Validieren &amp; reparieren.</b> MDG-Konformität, ArchiMate-3.2-Matrix (Python &amp; Browser) und regelbasierte Reparatur-Vorschau ohne KI.</li>
+        <li><b>QS, Diff &amp; Herkunft.</b> Pfad-/Impact-Analyse, Waisen, Modell-Diff &amp; Undo, Textabdeckung und Sprung zum Originalabsatz (<code>source_ref</code>).</li>
+        <li><b>Sichten &amp; Archiv.</b> Optionale EA-Diagramme (<code>--sichten</code>) oder bit-identisches Auslagern und Zurückspielen per Sichten-Archiv.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="archimate" class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>ArchiMate 3.2 — Einordnung</h2>
+        <p>Kern-Metamodell ist NAF 4 / UAF (MDG); ArchiMate 3.2 wird als Brücken- und Prüf-Format unterstützt.</p>
+      </div>
+      <div class="two-col">
+        <div class="info-box">
+          <h3>Was funktioniert</h3>
+          <ul>
+            <li>Deterministische Export-Projektion NAF 4 / UAF &rarr; ArchiMate 3.2 (<code>eam-ai archimate</code>) inkl. Näherungsreport.</li>
+            <li>Native Prüfung gegen die offizielle 61&times;61-Beziehungsmatrix in Python (<code>archimate-check</code>), MCP und direkt im Browser.</li>
+            <li>Verlustfreier Rückweg nach <code>.qea</code>/IR für Dateien aus dem eigenen Exporter.</li>
+          </ul>
+        </div>
+        <div class="info-box">
+          <h3>Bewusste Grenzen</h3>
+          <ul>
+            <li>Kein nativer KI-Modellbau direkt in ArchiMate 3.2 — die KI baut NAF 4 / UAF bzw. die geladene MDG.</li>
+            <li>Keine automatische 1:1-Übersetzung fremder ArchiMate-Modelle in NAFv4/UAF-Stereotype.</li>
+            <li>Keine verlustfreie 1:1-Gleichheit zwischen UAF- und ArchiMate-Metamodell.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="chatbot" class="section section-alt">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>ADMBw-Regeldateien im eigenen Chatbot</h2>
+        <p>Die sechs Markdown-Dateien aus dem ADMBw Extraktor dienen als Wissensquelle in ChatGPT, Claude, Gemini oder Open WebUI.</p>
+      </div>
+      <ol class="steps-list">
+        <li><b>Exportieren.</b> Im ADMBw Extraktor die MDG-XML laden und alle 6 Wissensdateien (<code>admbw-knowledge-*.md</code>, <code>admbw-meta.md</code>) speichern.</li>
+        <li><b>Als Knowledge hinterlegen.</b> In Open WebUI (Workspace &rarr; Knowledge), ChatGPT/Claude-Projekten oder lokalem Kontext einbinden.</li>
+        <li><b>Prompt + kleine Schritte.</b> <code>ADMBw-Prompt.md</code> als System-Anweisung setzen und abschnittsweise arbeiten (max. 10–15 Elemente je Schritt).</li>
+        <li><b>Prüfen bleibt Werkzeugsache.</b> Der Chatbot schlägt vor — valide Prüfung übernehmen EAM Suite, EAM AI Suite oder <code>eam-ai validate</code>.</li>
+      </ol>
+    </div>
+  </section>
 </main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div>EAM Toolfamilie &middot; Release ${version} &middot; <a href="${releases}">Alle Releases</a> &middot; <a href="${sums}">SHA256SUMS</a></div>
+    <div class="footer-links">
+      <a href="https://estel.email/">Michael Estel (estel.email)</a>
+      <a href="https://estel.email/impressum.html">Impressum</a>
+      <a href="https://estel.email/datenschutz.html">Datenschutz</a>
+    </div>
+  </div>
+</footer>
 </body>
 </html>
 """
@@ -536,115 +662,112 @@ def _menschlich(n: int) -> str:
 
 
 def _karte(titel: str, badge: str, text: str, datei: str, label: str,
-           schritte: list[str], extra: str = "", groesse: str = "",
+           schritte: list[str] | None = None, extra: str = "", groesse: str = "",
            slug: str = "", weitere: list[tuple[str, str]] | None = None,
-           seiten: str = "") -> str:
-    schritt_html = "".join(f"<li>{s}</li>" for s in schritte)
-    meta = html.escape(datei) + (f" · {html.escape(groesse)}" if groesse else "")
+           seiten: str = "", muted_badge: bool = False) -> str:
+    del schritte  # bewusst keine redundanten 1-2-3-Listen mehr in den Karten
+    meta = html.escape(datei) + (f" &middot; {html.escape(groesse)}" if groesse else "")
     kennung = f' id="{html.escape(slug)}"' if slug else ""
-    weitere_html = "".join(
-        f'<a class="btn" style="margin-top:8px" href="{html.escape(_dl(andere))}">⬇ {html.escape(andere_label)}</a>'
-        for andere, andere_label in (weitere or [])
-    )
-    seiten_html = (
-        f'<a class="secondary" href="{html.escape(seiten)}">Im Browser öffnen (GitHub Pages)</a>'
-        if seiten else ""
-    )
+    badge_cls = "badge badge-muted" if muted_badge else "badge"
+    aktionen: list[str] = []
+    if seiten:
+        aktionen.append(f'<a class="btn btn-primary btn-sm" href="{html.escape(seiten)}">Im Browser öffnen</a>')
+        aktionen.append(f'<a class="btn btn-secondary btn-sm" href="{html.escape(_dl(datei))}">{html.escape(label)}</a>')
+    else:
+        aktionen.append(f'<a class="btn btn-primary btn-sm" href="{html.escape(_dl(datei))}">{html.escape(label)}</a>')
+    for andere, andere_label in (weitere or []):
+        aktionen.append(f'<a class="btn btn-secondary btn-sm" href="{html.escape(_dl(andere))}">{html.escape(andere_label)}</a>')
     return f"""<article class="card"{kennung}>
-  <span class="badge">{html.escape(badge)}</span>
-  <h3>{html.escape(titel)}</h3>
-  <p>{html.escape(text)}</p>
-  <div class="meta">{meta}</div>
-  <a class="btn" href="{html.escape(_dl(datei))}">⬇ {html.escape(label)}</a>
-  {seiten_html}
-  {weitere_html}
-  {extra}
-  <ol>{schritt_html}</ol>
+  <div>
+    <span class="{badge_cls}">{html.escape(badge)}</span>
+    <h3>{html.escape(titel)}</h3>
+    <p>{html.escape(text)}</p>
+    <div class="meta">{meta}</div>
+    {extra}
+  </div>
+  <div class="actions">{"".join(aktionen)}</div>
 </article>"""
 
 
 def schreibe_startseite(dist: Path, version: str) -> Path:
-    """Schreibt eine klickbare Einstiegsseite; keine externen Ressourcen."""
+    """Schreibt eine klickbare Einstiegsseite im estel.email-Design; keine externen Ressourcen."""
     def groesse(name: str) -> str:
         datei = dist / name
         return _menschlich(datei.stat().st_size) if datei.is_file() else ""
 
     karten = [
         _karte(
-            "EAM AI Suite", "Bauen, Diff, Chat & Weiterbau",
-            "Text, Handbuch, DOCX, PDF, Bild oder Tabelle iterativ (auch mit 4k–16k LLMs) einlesen und daraus ein NAFv4/UAF-Modell erzeugen; live in Explorer/Graph/QS prüfen (inkl. ArchiMate-Matrix, Modell-Diff, Undo, Auto-Repair & Textabdeckung), per Chat with Data befragen, per Sprache weiterbauen und exportieren.",
-            "EAM-AI-Suite.html", "EAM-AI-Suite.html herunterladen",
-            ["Datei herunterladen", "Datei öffnen", "Modell erzeugen, live prüfen, befragen & weiterbauen"],
+            "EAM AI Suite", "KI · Browser",
+            "Aus Prosa, DOCX, PDF, Bild oder Tabelle iterativ (auch 4k–16k) MDG-geprüfte Modelle bauen, live prüfen (ArchiMate-Matrix, Diff, Undo, Auto-Repair), befragen und per Sprache weiterbauen.",
+            "EAM-AI-Suite.html", "HTML herunterladen",
             groesse=groesse("EAM-AI-Suite.html"),
             slug="ai-suite",
             seiten=SEITEN + "eam-ai-suite/",
         ),
         _karte(
-            "EAM Suite", "Prüfen, Diff & Bearbeiten (ohne KI)",
-            "Vorhandene Modelle (.qea, .xmi, .json, ArchiMate-.xml) offline laden, verschmelzen, vergleichen (Modell-Diff & Undo), regelbasiert reparieren (Auto-Repair) und per Auto-QS gegen MDG bzw. ArchiMate-3.2-Matrix prüfen; ohne KI, bewusst kein Neuaufbau von null.",
-            "EAM-Suite.html", "EAM-Suite.html herunterladen",
-            ["Datei herunterladen", "Datei öffnen", "Modelle prüfen, vergleichen & bearbeiten"],
+            "EAM Suite", "Offline · Ohne KI",
+            "Vorhandene Modelle (.qea, .xmi, .json, ArchiMate-.xml) laden, verschmelzen, vergleichen (Diff & Undo), regelbasiert reparieren und gegen MDG bzw. ArchiMate-3.2-Matrix prüfen.",
+            "EAM-Suite.html", "HTML herunterladen",
             groesse=groesse("EAM-Suite.html"),
             slug="suite",
             seiten=SEITEN + "eam-suite/",
+            muted_badge=True,
         ),
         _karte(
-            "Sichten-Archiv", "Sichten und Layout",
-            "Sichten und Layout aus einer .qea bit-identisch (SHA-256) in ein .archiv auslagern und nach einer Pipeline-Bearbeitung verlustfrei zurückspielen; ohne KI.",
-            "Sichten-Archiv.html", "Sichten-Archiv.html herunterladen",
-            ["Datei herunterladen", "Datei öffnen", "Sichten auslagern oder zurückspielen"],
-            groesse=groesse("Sichten-Archiv.html"),
-            slug="sichten-archiv",
-            seiten=SEITEN + "sichten-archiv/",
-        ),
-        _karte(
-            "BPMN Studio", "Prozesse (L3 ↔ L4)",
-            "BPMN 2.0 lesen, zeichnen, gegen 15 L4-Regeln prüfen, ADMBw-konform machen und gegen L3-Architekturkataloge (GUIDs & Represents) abgleichen; Export inkl. Aktivitätsdiagramm nach .qea, .xmi, ArchiMate-.xml, .json, SVG und PNG.",
-            "BPMN-Studio.html", "BPMN-Studio.html herunterladen",
-            ["Datei herunterladen", "Datei öffnen", "Prozess bearbeiten & mit Katalog abgleichen"],
+            "BPMN Studio", "Prozesse · L3 ↔ L4",
+            "BPMN 2.0 zeichnen, gegen 15 L4-Regeln prüfen, ADMBw-konform machen, mit L3-Architekturkatalogen (GUIDs & Represents) abgleichen und nach .qea, .xmi, .xml, .json, SVG & PNG exportieren.",
+            "BPMN-Studio.html", "HTML herunterladen",
             groesse=groesse("BPMN-Studio.html"),
             slug="bpmn",
             seiten=SEITEN + "bpmn-studio/",
         ),
         _karte(
-            "ADMBw Extraktor", "Nachschlagen und exportieren",
-            "MDG-XML laden: Stereotype, Topologie, Viewpoints, Tag-Typen und Stereotyp-Tags durchsuchen; als sechs Markdown-Dateien oder JSON exportieren. Als HTML im Browser oder als Python-Skript.",
-            "ADMBw-Extraktor.html", "ADMBw-Extraktor.html herunterladen",
-            ["HTML im Browser öffnen oder Python starten", "MDG-XML laden", "Regeldateien exportieren"],
+            "ADMBw Extraktor", "MDG-Regelwerk",
+            "MDG-XML durchsuchen (Stereotype, Topologie, Viewpoints, Tags) und als sechs Markdown-Wissensdateien oder JSON exportieren — im Browser oder per Python.",
+            "ADMBw-Extraktor.html", "HTML herunterladen",
             groesse=groesse("ADMBw-Extraktor.html"),
             slug="mdg",
-            weitere=[("admbw-extraktor.py", "Python-Variante herunterladen")],
+            weitere=[("admbw-extraktor.py", "Python-Skript")],
             seiten=SEITEN + "admbw-extraktor/",
+            muted_badge=True,
         ),
         _karte(
-            "EAM Analyzer", "Abfragen & QS",
-            "Vorhandene Modelle (.qea, .xmi, ArchiMate-.xml, .json) befragen, gegen MDG/ArchiMate validieren sowie Impact-, Pfad- und QS-Prüfungen fahren — als Open-WebUI-Tool oder MCP-Server (ergänzt um eam-ai mcp ohne Fremdpakete).",
-            "eam_qea_analyzer_openwebui.py", "Open-WebUI-Tool herunterladen",
-            ["Open-WebUI-Tool herunterladen", "Modell laden (.qea/.xmi/.xml/.json)", "Modell fragen & prüfen"],
+            "Sichten-Archiv", "Sichten · SHA-256",
+            "Diagrammsichten und Layout aus einer .qea bit-identisch in ein .archiv auslagern und nach Pipeline-Läufen verlustfrei zurückspielen.",
+            "Sichten-Archiv.html", "HTML herunterladen",
+            groesse=groesse("Sichten-Archiv.html"),
+            slug="sichten-archiv",
+            seiten=SEITEN + "sichten-archiv/",
+            muted_badge=True,
+        ),
+        _karte(
+            "EAM Analyzer", "Open WebUI & MCP",
+            "Modelle (.qea, .xmi, ArchiMate-.xml, .json) in Open WebUI oder per MCP befragen, gegen MDG/ArchiMate prüfen sowie Impact- und Pfadanalysen fahren.",
+            "eam_qea_analyzer_openwebui.py", "Open-WebUI-Tool",
             groesse=groesse("eam_qea_analyzer_openwebui.py"),
             slug="qea-analyzer",
-            weitere=[
-                ("eam-qea-mcp-server.py", "MCP-Server herunterladen"),
-            ],
+            weitere=[("eam-qea-mcp-server.py", "MCP-Server")],
+            muted_badge=True,
         ),
         _karte(
-            "EAM AI Suite Python", "CLI, WebUI & Stdlib-MCP",
-            "Kommandozeile eam-ai (build, convert, validate, qs, diff, repair, mcp, frage, korrigiere, viewer, handbuch, stufe1–4, serve) sowie WebUI mit Live-Viewer, Chat with Data, NL-Edit, Diff, Auto-Repair, Undo und Prosa-Weiterbau. Quellstand als ZIP.",
-            "eam-ai-suite-python.zip", "eam-ai-suite-python.zip herunterladen",
-            ["ZIP entpacken", "<code>pip install ./eam-ai-suite-python</code>", "<code>eam-ai serve</code>, <code>eam-ai mcp</code> oder <code>eam-ai --version</code>"],
+            "EAM AI Suite Python", "CLI · WebUI · Stdlib-MCP",
+            "Kommandozeile eam-ai (build, convert, validate, qs, diff, repair, mcp, stufe1–4, serve) sowie WebUI mit Live-Viewer, Chat with Data, NL-Edit, Diff, Auto-Repair & Undo.",
+            "eam-ai-suite-python.zip", "ZIP herunterladen",
+            extra='<pre class="cmd"><code>pip install ./eam-ai-suite-python &amp;&amp; eam-ai serve</code></pre>',
             groesse=groesse("eam-ai-suite-python.zip"),
             slug="python",
         ),
-        f"""<article class="card wide">
-  <span class="badge">Für Server · Automatisch synchron</span>
-  <h3>Container</h3>
-  <p>Fertiges Image mit Webdienst (Live-Viewer, Chat with Data, NL-Edit, Modell-Diff, Auto-Repair, Undo &amp; Prosa-Weiterbau) und <code>eam-ai</code>-CLI inkl. Regelwerk; baut bei jedem grünen Push auf <code>main</code> automatisch neu.</p>
-  <div class="meta">ghcr.io/mitchel85/eam-toolfamilie:latest &nbsp;·&nbsp; Release-Tag: ghcr.io/mitchel85/eam-toolfamilie:v{html.escape(version)}</div>
-  <a class="btn" href="{html.escape(REPO_URL + "/pkgs/container/eam-toolfamilie")}">Zur Container-Seite</a>
-  <pre><code>docker pull ghcr.io/mitchel85/eam-toolfamilie:latest
-docker run --rm -p 8080:8080 \\
-  ghcr.io/mitchel85/eam-toolfamilie:latest</code></pre>
-  <ol><li>Docker starten</li><li>Befehl kopieren</li><li>http://localhost:8080 öffnen</li></ol>
+        f"""<article class="card" id="container">
+  <div>
+    <span class="badge">Container &middot; Auto-Sync</span>
+    <h3>Docker-Image (GHCR)</h3>
+    <p>Fertiger Webdienst inkl. <code>eam-ai</code>-CLI und Regelwerk ohne lokale Python-Installation; baut bei jedem grünen Push auf <code>main</code> automatisch neu.</p>
+    <div class="meta">ghcr.io/mitchel85/eam-toolfamilie:latest &middot; Tag v{html.escape(version)}</div>
+    <pre class="cmd"><code>docker run --rm -p 8080:8080 ghcr.io/mitchel85/eam-toolfamilie:latest</code></pre>
+  </div>
+  <div class="actions">
+    <a class="btn btn-primary btn-sm" href="{html.escape(REPO_URL + "/pkgs/container/eam-toolfamilie")}">Container-Seite</a>
+  </div>
 </article>""",
     ]
     ziel = dist / STARTSEITE
