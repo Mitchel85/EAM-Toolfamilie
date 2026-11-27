@@ -95,7 +95,8 @@ def test_manifest_nennt_nur_ausgelieferte_dateien(tmp_path: Path) -> None:
     start = dist / "START-HIER.html"
     assert start.is_file()
     seite = start.read_text(encoding="utf-8")
-    assert seite.count('class="card') == 8
+    assert seite.count('class="card') == 9
+    assert 'id="python-plattform"' in seite
     for datei in (
         "EAM-AI-Suite.html",
         "EAM-Suite.html",
@@ -106,6 +107,9 @@ def test_manifest_nennt_nur_ausgelieferte_dateien(tmp_path: Path) -> None:
         "eam-qea-mcp-server.py",
         "admbw-extraktor.py",
         "eam-ai-suite-python.zip",
+        "eam_ai_suite_openwebui.py",
+        "eam_ai_suite_pipe.py",
+        "EAM-AI-Suite-OpenWebUI.zip",
     ):
         assert f"releases/latest/download/{datei}" in seite, datei
     # GitHub Pages: die HTML-Apps haben eine Direkt-URL. Der EAM Analyzer

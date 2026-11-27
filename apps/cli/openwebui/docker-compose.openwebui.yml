@@ -1,0 +1,39 @@
+# EAM AI Suite Python + Open WebUI (Docker Compose)
+#
+# Starten:
+#   docker compose -f docker-compose.openwebui.yml up -d
+#
+# Danach erreichbar:
+#   - Open WebUI:         http://localhost:3000
+#   - EAM AI Suite WebUI: http://localhost:8080
+#
+# In Open WebUI -> Workspace -> Tools: `eam_ai_suite_openwebui.py` importieren.
+# Standard-Valve `eam_api_url` zeigt bereits auf `http://eam-toolfamilie:8080`.
+
+services:
+  eam-toolfamilie:
+    image: ghcr.io/mitchel85/eam-toolfamilie:latest
+    container_name: eam-toolfamilie
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - eam_models:/data/eam-models
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: unless-stopped
+    depends_on:
+      - eam-toolfamilie
+    ports:
+      - "127.0.0.1:3000:8080"
+    environment:
+      - EAM_API_URL=http://eam-toolfamilie:8080
+    volumes:
+      - open_webui_data:/app/backend/data
+      - eam_models:/data/eam-models
+
+volumes:
+  eam_models:
+  open_webui_data:

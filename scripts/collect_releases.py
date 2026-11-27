@@ -144,6 +144,18 @@ AUSLIEFERUNGEN = [
         "EAM QEA Analyzer — MCP-Server",
         "MCP-Wrapper für Open WebUI, Claude Desktop und VS Code; braucht eam_qea_analyzer_openwebui.py im selben Ordner.",
     ),
+    (
+        "apps/cli/openwebui/eam_ai_suite_openwebui.py",
+        "eam_ai_suite_openwebui.py",
+        "EAM AI Suite Python — Open-WebUI-Tool (Dual-Modus)",
+        "In Open WebUI unter Werkzeuge einfügen; spricht den GHCR-Container (`eam-ai serve`) oder lokales `eam-ai` an.",
+    ),
+    (
+        "apps/cli/openwebui/eam_ai_suite_pipe.py",
+        "eam_ai_suite_pipe.py",
+        "EAM AI Suite Python — Open-WebUI-Pipe (7-Stufen-Architekt)",
+        "In Open WebUI unter Functions einfügen; erscheint als eigenes Modell mit Fortschrittsstatus und Download-Links.",
+    ),
 ]
 
 #: App-Buendel fuer den Auto-Zip: je Anwendung ein Archiv mit Kurzanleitung.
@@ -226,6 +238,19 @@ APP_ZIPS: tuple[AppBuendel, ...] = (
             ("Sichten-Archiv.aspx", "apps/html-sichten-archiv/dist/Sichten-Archiv.aspx", "SharePoint-/IIS-Fassung mit BOM"),
         ),
         "start": ("Sichten-Archiv.html im Browser öffnen", "`.qea` laden und Sichten in `.archiv` auslagern", "Nach Bearbeitung `.archiv` wieder in die `.qea` zurückspielen"),
+    },
+    {
+        "name": "EAM-AI-Suite-OpenWebUI",
+        "produkt": "EAM AI Suite Python — Open-WebUI-Paket (Tool, Pipe, Skill & Compose)",
+        "text": "Open-WebUI-Tool (`mode=http|local`), Pipe-Funktion (7-Stufen-Architekt), Skill-Markdown und Docker-Compose-Vorlage für Open WebUI + GHCR-Container.",
+        "dateien": (
+            ("eam_ai_suite_openwebui.py", "apps/cli/openwebui/eam_ai_suite_openwebui.py", "Open-WebUI-Tool (Workspace -> Tools)"),
+            ("eam_ai_suite_pipe.py", "apps/cli/openwebui/eam_ai_suite_pipe.py", "Open-WebUI-Pipe (Workspace -> Functions)"),
+            ("eam_ai_suite_skill.md", "apps/cli/openwebui/eam_ai_suite_skill.md", "Open-WebUI-Skill / System-Prompt"),
+            ("docker-compose.openwebui.yml", "apps/cli/openwebui/docker-compose.openwebui.yml", "Docker Compose: Open WebUI + ghcr.io/mitchel85/eam-toolfamilie:latest"),
+            ("README.md", "apps/cli/openwebui/README.md", "Einrichtungsanleitung"),
+        ),
+        "start": ("`docker compose -f docker-compose.openwebui.yml up -d` starten", "`eam_ai_suite_openwebui.py` in Open WebUI importieren", "`eam_ai_suite_skill.md` als Skill/Prompt hinterlegen"),
     },
 )
 
@@ -475,6 +500,7 @@ code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-subtl
 .section-head p{margin:0;color:var(--muted);font-size:.95rem}
 
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:22px 24px;box-shadow:var(--shadow-xs);display:flex;flex-direction:column;justify-content:space-between;gap:14px}
 .badge{display:inline-block;align-self:flex-start;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);background:var(--brand-soft);border:1px solid var(--brand-border);padding:3px 9px;border-radius:999px;margin-bottom:8px}
 .badge-muted{color:var(--ink-secondary);background:var(--surface-subtle);border-color:var(--border)}
@@ -506,6 +532,9 @@ code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-subtl
 .footer-links a{color:var(--ink-secondary)}
 .footer-links a:hover{color:var(--brand)}
 
+@media(max-width:920px){
+  .grid-3{grid-template-columns:1fr}
+}
 @media(max-width:760px){
   .grid,.two-col{grid-template-columns:1fr}
   .hero{padding:40px 0 34px}
@@ -522,6 +551,7 @@ code{font-family:var(--font-mono);font-size:.86em;background:var(--surface-subtl
     </a>
     <nav class="nav-links" aria-label="Hauptnavigation">
       <a href="#werkzeuge">Werkzeuge</a>
+      <a href="#python-plattform">Python &amp; Open WebUI</a>
       <a href="#workflow">Workflow</a>
       <a href="#archimate">ArchiMate</a>
       <a href="#chatbot">Chatbot</a>
@@ -565,7 +595,19 @@ ${cards}
     </div>
   </section>
 
-  <section id="workflow" class="section section-alt">
+  <section id="python-plattform" class="section section-alt">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>EAM AI Suite Python — CLI, Container &amp; Open WebUI</h2>
+        <p>Derselbe abhängigkeitsfreie Python-Kern (<code>eam-ai</code>) für Terminal, WebUI, Docker-Server, Stdlib-MCP und direkte Einbindung als Tool, Pipe oder Skill in Open WebUI.</p>
+      </div>
+      <div class="grid-3">
+${python_cards}
+      </div>
+    </div>
+  </section>
+
+  <section id="workflow" class="section">
     <div class="wrap">
       <div class="section-head">
         <h2>Workflow in 7 Stufen</h2>
@@ -583,7 +625,7 @@ ${cards}
     </div>
   </section>
 
-  <section id="archimate" class="section">
+  <section id="archimate" class="section section-alt">
     <div class="wrap">
       <div class="section-head">
         <h2>ArchiMate 3.2 — Einordnung</h2>
@@ -610,7 +652,7 @@ ${cards}
     </div>
   </section>
 
-  <section id="chatbot" class="section section-alt">
+  <section id="chatbot" class="section">
     <div class="wrap">
       <div class="section-head">
         <h2>ADMBw-Regeldateien im eigenen Chatbot</h2>
@@ -741,8 +783,10 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
             weitere=[("eam-qea-mcp-server.py", "MCP-Server")],
             muted_badge=True,
         ),
+    ]
+    python_karten = [
         _karte(
-            "EAM AI Suite Python", "CLI · WebUI · Stdlib-MCP",
+            "Python CLI & WebUI", "Paket · Stdlib-MCP",
             "Kommandozeile eam-ai (build, convert, validate, qs, diff, repair, mcp, stufe1–4, serve) sowie WebUI mit Live-Viewer, Chat with Data, NL-Edit, Diff, Auto-Repair & Undo.",
             "eam-ai-suite-python.zip", "ZIP herunterladen",
             extra='<pre class="cmd"><code>pip install ./eam-ai-suite-python &amp;&amp; eam-ai serve</code></pre>',
@@ -761,11 +805,23 @@ def schreibe_startseite(dist: Path, version: str) -> Path:
     <a class="btn btn-primary btn-sm" href="{html.escape(REPO_URL + "/pkgs/container/eam-toolfamilie")}">Container-Seite</a>
   </div>
 </article>""",
+        _karte(
+            "Open WebUI Tool, Pipe & Skill", "Open WebUI · Dual-Modus",
+            "Bindet EAM AI Suite Python direkt in Open WebUI ein — wahlweise gegen den GHCR-Container (mode=http) oder lokal (mode=local). Inklusive Pipe-Funktion, Skill-Markdown und Docker-Compose-Vorlage.",
+            "EAM-AI-Suite-OpenWebUI.zip", "Komplettpaket (.zip)",
+            groesse=groesse("EAM-AI-Suite-OpenWebUI.zip"),
+            slug="openwebui",
+            weitere=[
+                ("eam_ai_suite_openwebui.py", "Tool (.py)"),
+                ("eam_ai_suite_pipe.py", "Pipe (.py)"),
+            ],
+        ),
     ]
     ziel = dist / STARTSEITE
     ziel.write_text(
         Template(_START_TEMPLATE).substitute(
             cards="\n".join(karten),
+            python_cards="\n".join(python_karten),
             version=html.escape(version),
             releases=f"{REPO_URL}/releases",
             repo=REPO_URL,
